@@ -16,7 +16,6 @@ const DEFAULT_TIMER_SOUND = roastTimerSoundFiles[0]?.value || '/sounds/roasttime
 const CURRENT_SETTINGS_VERSION = 1;
 
 const DEFAULT_SETTINGS: RoastTimerSettings = {
-  goToRoastRoomTimeSeconds: 60,
   timerSoundEnabled: true,
   timerSoundFile: DEFAULT_TIMER_SOUND,
   timerSoundVolume: 1,

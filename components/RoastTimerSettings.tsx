@@ -11,7 +11,7 @@ import { playTimerSound, stopTimerSound } from '@/lib/sounds';
 import { roastTimerSoundFiles } from '@/lib/soundFiles';
 import type { RoastTimerSettings } from '@/types';
 import { useToastContext } from '@/components/Toast';
-import { NumberInput, Checkbox, Select, Button } from '@/components/ui';
+import { Checkbox, Select, Button } from '@/components/ui';
 import type { SelectOption } from '@/components/ui';
 
 interface RoastTimerSettingsProps {
@@ -156,26 +156,8 @@ export function RoastTimerSettings({ onClose }: RoastTimerSettingsProps) {
       <h2 className="text-xl sm:text-2xl font-bold mb-6 text-ink">タイマー設定</h2>
 
       <div className="space-y-6">
-        {/* 焙煎室に行くまでの時間 */}
-        <div>
-          <NumberInput
-            label="焙煎室に行くまでの時間（秒）"
-            min={1}
-            value={settings.goToRoastRoomTimeSeconds}
-            onChange={(e) =>
-              setSettings({
-                ...settings,
-                goToRoastRoomTimeSeconds: parseInt(e.target.value, 10) || 60,
-              })
-            }
-          />
-          <p className="mt-1 text-xs sm:text-sm text-ink-muted">
-            おすすめ焙煎タイマーで使用される時間です。平均焙煎時間からこの秒数を引いた値がおすすめタイマー時間として提案されます。
-          </p>
-        </div>
-
         {/* タイマー音の設定 */}
-        <div className="border-t pt-6 border-edge">
+        <div>
           <h3 className="text-lg font-semibold mb-4 text-ink">タイマー音</h3>
 
           <div className="space-y-4">
