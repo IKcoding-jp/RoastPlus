@@ -14,6 +14,20 @@ export const CHANGE_TYPE_CONFIG: Record<ChangelogEntryType, { label: string; col
 // 詳細な更新履歴データ
 export const DETAILED_CHANGELOG: ChangelogEntry[] = [
   {
+    id: 'v0.17.7',
+    version: '0.17.7',
+    date: '2026-03-22',
+    type: 'improvement',
+    title: 'ローストタイマーの設定画面をシンプルにしました',
+    content: `
+- 使われなくなった「焙煎室に行くまでの時間」の設定項目を削除しました
+- おすすめ焙煎時間の計算機能を廃止しました
+    `.trim(),
+    tags: ['ローストタイマー', '設定'],
+    createdAt: '2026-03-22T08:00:00.000Z',
+    updatedAt: '2026-03-22T08:00:00.000Z',
+  },
+  {
     id: 'v0.17.6',
     version: '0.17.6',
     date: '2026-03-22',
