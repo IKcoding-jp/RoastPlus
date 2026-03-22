@@ -3,7 +3,6 @@
 import type { RoastLevel, RoastWeight } from './common';
 
 export interface RoastTimerSettings {
-  goToRoastRoomTimeSeconds: number;
   timerSoundEnabled: boolean;
   timerSoundFile: string;
   timerSoundVolume: number;

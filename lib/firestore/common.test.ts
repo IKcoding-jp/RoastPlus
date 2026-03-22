@@ -138,7 +138,7 @@ describe('normalizeAppData', () => {
         selectedMemberId: 'member-1',
         taskLabelHeaderTextLeft: '  左ヘッダー  ',
         roastTimerSettings: {
-          goToRoastRoomTimeSeconds: 90,
+
           timerSoundEnabled: false,
           timerSoundFile: '/sounds/roasttimer/bell.mp3',
           timerSoundVolume: 0.8,
@@ -150,7 +150,6 @@ describe('normalizeAppData', () => {
     } as never);
     expect(result.userSettings?.selectedMemberId).toBe('member-1');
     expect(result.userSettings?.taskLabelHeaderTextLeft).toBe('左ヘッダー');
-    expect(result.userSettings?.roastTimerSettings?.goToRoastRoomTimeSeconds).toBe(90);
     expect(result.userSettings?.roastTimerSettings?.timerSoundEnabled).toBe(false);
   });
 
@@ -158,7 +157,7 @@ describe('normalizeAppData', () => {
     const result = normalizeAppData({
       userSettings: {
         roastTimerSettings: {
-          goToRoastRoomTimeSeconds: 60,
+
           timerSoundEnabled: true,
           timerSoundFile: '/sounds/alarm/bell.mp3', // 旧パス
           timerSoundVolume: 0.5,
