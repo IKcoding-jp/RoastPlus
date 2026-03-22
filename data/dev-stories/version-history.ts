@@ -3,6 +3,11 @@ import type { VersionHistoryEntry } from '@/types';
 // 更新履歴データ
 export const VERSION_HISTORY: VersionHistoryEntry[] = [
   {
+    version: '0.17.6',
+    date: '2026-03-22',
+    summary: '開発秘話のページデザインを改善しました',
+  },
+  {
     version: '0.17.5',
     date: '2026-03-15',
     summary: 'コーヒー豆図鑑の画像表示が速くなりました',
