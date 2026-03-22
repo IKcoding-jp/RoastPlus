@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { HiChevronLeft, HiChevronRight } from 'react-icons/hi';
 import { RiLightbulbFlashFill } from 'react-icons/ri';
-import { BackLink, Button } from '@/components/ui';
+import { BackLink, Button, FloatingNav } from '@/components/ui';
 import { DialogueSection } from '@/components/dev-stories/DialogueSection';
 import { DetailSection } from '@/components/dev-stories/DetailSection';
 import { getEpisodeById, getSortedEpisodes } from '@/data/dev-stories/episodes';
@@ -51,19 +51,15 @@ export default function EpisodeDetailClient({ id }: EpisodeDetailClientProps) {
 
     return (
         <div className="min-h-screen flex flex-col bg-page transition-colors duration-1000">
-            {/* ヘッダー */}
-            <header className="flex-none px-4 py-3 sm:px-6 lg:px-8 flex items-center bg-surface/50 backdrop-blur-sm border-b border-edge/50">
-                <BackLink href="/dev-stories" variant="icon-only" aria-label="戻る" className="-ml-2" />
-                <div className="ml-3 flex-1 min-w-0">
-                    <h1 className="text-lg font-bold text-ink truncate">{episode.title}</h1>
-                    {episode.subtitle && (
-                        <p className="text-sm text-ink-sub truncate">{episode.subtitle}</p>
-                    )}
-                </div>
-            </header>
+            <FloatingNav backHref="/dev-stories" />
 
             {/* メインコンテンツ */}
-            <main className="flex-1 container mx-auto p-4 lg:p-6 max-w-3xl">
+            <main className="flex-1 container mx-auto p-4 lg:p-6 max-w-3xl pt-14">
+                {/* タイトル */}
+                <h1 className="text-lg font-bold text-ink truncate">{episode.title}</h1>
+                {episode.subtitle && (
+                    <p className="text-sm text-ink-sub truncate mb-2">{episode.subtitle}</p>
+                )}
                 {/* 日付 */}
                 <div className="text-sm text-ink-muted mb-4">{formatDate(episode.publishedAt)}</div>
 

@@ -14,6 +14,20 @@ export const CHANGE_TYPE_CONFIG: Record<ChangelogEntryType, { label: string; col
 // 詳細な更新履歴データ
 export const DETAILED_CHANGELOG: ChangelogEntry[] = [
   {
+    id: 'v0.17.6',
+    version: '0.17.6',
+    date: '2026-03-22',
+    type: 'style',
+    title: '開発秘話のページデザインを改善しました',
+    content: `
+- 一覧ページのヘッダーをすっきりしたデザインに変更しました
+- 記事の詳細ページで他のページと統一されたナビゲーションになりました
+    `.trim(),
+    tags: ['開発秘話', 'デザイン', 'ナビゲーション'],
+    createdAt: '2026-03-22T08:00:00.000Z',
+    updatedAt: '2026-03-22T08:00:00.000Z',
+  },
+  {
     id: 'v0.17.5',
     version: '0.17.5',
     date: '2026-03-15',
