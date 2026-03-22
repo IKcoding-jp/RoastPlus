@@ -41,7 +41,7 @@ describe('roastTimerSettings', () => {
       const settings = await loadRoastTimerSettings();
 
       expect(settings).toMatchObject({
-        goToRoastRoomTimeSeconds: 60,
+
         timerSoundEnabled: true,
         timerSoundFile: '/sounds/roasttimer/alarm1.mp3',
         timerSoundVolume: 1,
@@ -54,7 +54,7 @@ describe('roastTimerSettings', () => {
 
     it('保存された設定を正しく読み込む', async () => {
       const storedSettings: RoastTimerSettings = {
-        goToRoastRoomTimeSeconds: 120,
+
         timerSoundEnabled: false,
         timerSoundFile: '/sounds/roasttimer/alarm2.mp3',
         timerSoundVolume: 0.5,
@@ -73,7 +73,7 @@ describe('roastTimerSettings', () => {
 
     it('部分的な設定の場合、デフォルト値とマージする', async () => {
       const partialSettings = {
-        goToRoastRoomTimeSeconds: 90,
+
         timerSoundVolume: 0.7,
       };
 
@@ -81,7 +81,6 @@ describe('roastTimerSettings', () => {
 
       const settings = await loadRoastTimerSettings();
 
-      expect(settings.goToRoastRoomTimeSeconds).toBe(90);
       expect(settings.timerSoundVolume).toBe(0.7);
       expect(settings.timerSoundEnabled).toBe(true); // デフォルト値
       expect(settings.settingsVersion).toBe(1); // デフォルト値
@@ -101,7 +100,7 @@ describe('roastTimerSettings', () => {
 
     it('マイグレーション: バージョン0→1でtimerSoundEnabledをtrueに強制更新', async () => {
       const oldSettings = {
-        goToRoastRoomTimeSeconds: 60,
+
         timerSoundEnabled: false, // 旧設定ではfalse
         timerSoundFile: '/sounds/roasttimer/alarm1.mp3',
         timerSoundVolume: 1,
@@ -122,7 +121,7 @@ describe('roastTimerSettings', () => {
 
     it('パスの正規化: 存在しないパスはデフォルトにフォールバック', async () => {
       const settingsWithInvalidPath = {
-        goToRoastRoomTimeSeconds: 60,
+
         timerSoundEnabled: true,
         timerSoundFile: '/sounds/invalid/path.mp3', // 存在しないパス
         timerSoundVolume: 1,
@@ -142,7 +141,7 @@ describe('roastTimerSettings', () => {
 
     it('パスの正規化: 旧パス（/sounds/alarm/）を新パス（/sounds/roasttimer/）に変換', async () => {
       const settingsWithOldPath = {
-        goToRoastRoomTimeSeconds: 60,
+
         timerSoundEnabled: true,
         timerSoundFile: '/sounds/alarm/alarm1.mp3', // 旧パス
         timerSoundVolume: 1,
@@ -169,7 +168,7 @@ describe('roastTimerSettings', () => {
       const settings = await loadRoastTimerSettings();
 
       expect(settings).toMatchObject({
-        goToRoastRoomTimeSeconds: 60,
+
         timerSoundEnabled: true,
         settingsVersion: 1,
       });
@@ -181,7 +180,7 @@ describe('roastTimerSettings', () => {
       const settings = await loadRoastTimerSettings();
 
       expect(settings).toMatchObject({
-        goToRoastRoomTimeSeconds: 60,
+
         timerSoundEnabled: true,
       });
     });
@@ -192,7 +191,7 @@ describe('roastTimerSettings', () => {
       const settings = await loadRoastTimerSettings();
 
       expect(settings).toMatchObject({
-        goToRoastRoomTimeSeconds: 60,
+
         timerSoundEnabled: true,
       });
     });
@@ -201,7 +200,7 @@ describe('roastTimerSettings', () => {
   describe('saveRoastTimerSettings', () => {
     it('設定を正しく保存する', async () => {
       const newSettings: RoastTimerSettings = {
-        goToRoastRoomTimeSeconds: 120,
+
         timerSoundEnabled: false,
         timerSoundFile: '/sounds/roasttimer/alarm2.mp3',
         timerSoundVolume: 0.5,
@@ -218,7 +217,7 @@ describe('roastTimerSettings', () => {
 
     it('保存後、キャッシュが更新される', async () => {
       const newSettings: RoastTimerSettings = {
-        goToRoastRoomTimeSeconds: 120,
+
         timerSoundEnabled: false,
         timerSoundFile: '/sounds/roasttimer/alarm2.mp3',
         timerSoundVolume: 0.5,
@@ -236,7 +235,7 @@ describe('roastTimerSettings', () => {
 
     it('LocalStorageエラー時は例外をスローする', async () => {
       const newSettings: RoastTimerSettings = {
-        goToRoastRoomTimeSeconds: 60,
+
         timerSoundEnabled: true,
         timerSoundFile: '/sounds/roasttimer/alarm1.mp3',
         timerSoundVolume: 1,
@@ -296,7 +295,7 @@ describe('roastTimerSettings', () => {
       const cached = getCachedRoastTimerSettings();
       expect(cached).not.toBeNull();
       expect(cached).toMatchObject({
-        goToRoastRoomTimeSeconds: 60,
+
         timerSoundEnabled: true,
       });
     });
@@ -308,7 +307,6 @@ describe('roastTimerSettings', () => {
 
       const settings = await loadRoastTimerSettings();
 
-      expect(settings.goToRoastRoomTimeSeconds).toBe(60);
       expect(settings.timerSoundEnabled).toBe(true);
       expect(settings.timerSoundVolume).toBe(1);
     });
@@ -328,7 +326,7 @@ describe('roastTimerSettings', () => {
 
     it('設定画面から戻る: キャッシュをクリアして再読み込み', async () => {
       vi.mocked(getRoastTimerSettings).mockReturnValue({
-        goToRoastRoomTimeSeconds: 60,
+
         timerSoundEnabled: true,
         timerSoundFile: '/sounds/roasttimer/alarm1.mp3',
         timerSoundVolume: 1,
@@ -343,7 +341,7 @@ describe('roastTimerSettings', () => {
 
       // 設定変更（LocalStorageを直接変更）
       vi.mocked(getRoastTimerSettings).mockReturnValue({
-        goToRoastRoomTimeSeconds: 120,
+
         timerSoundEnabled: true,
         timerSoundFile: '/sounds/roasttimer/alarm2.mp3',
         timerSoundVolume: 0.8,
@@ -358,13 +356,12 @@ describe('roastTimerSettings', () => {
 
       // 再読み込み
       const newSettings = await loadRoastTimerSettings();
-      expect(newSettings.goToRoastRoomTimeSeconds).toBe(120);
       expect(newSettings.timerSoundFile).toBe('/sounds/roasttimer/alarm2.mp3');
     });
 
     it('アプリ更新: バージョン0の設定を自動マイグレーション', async () => {
       const v0Settings = {
-        goToRoastRoomTimeSeconds: 60,
+
         timerSoundEnabled: false, // v0ではfalseだった
         timerSoundFile: '/sounds/roasttimer/alarm1.mp3',
         timerSoundVolume: 1,

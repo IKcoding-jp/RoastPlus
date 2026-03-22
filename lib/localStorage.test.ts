@@ -159,7 +159,7 @@ describe('localStorage', () => {
   describe('ローストタイマー設定', () => {
     it('タイマー設定を保存できる（バージョニング付き）', () => {
       const settings: RoastTimerSettings = {
-        goToRoastRoomTimeSeconds: 60,
+
         timerSoundEnabled: true,
         timerSoundFile: '/sounds/alarm.mp3',
         timerSoundVolume: 1,
@@ -179,7 +179,7 @@ describe('localStorage', () => {
 
     it('バージョニング付きタイマー設定を取得できる', () => {
       const settings: RoastTimerSettings = {
-        goToRoastRoomTimeSeconds: 120,
+
         timerSoundEnabled: false,
         timerSoundFile: '/sounds/bell.mp3',
         timerSoundVolume: 0.5,
@@ -200,7 +200,7 @@ describe('localStorage', () => {
 
     it('レガシーデータ（version未設定）を取得できる', () => {
       const settings: RoastTimerSettings = {
-        goToRoastRoomTimeSeconds: 120,
+
         timerSoundEnabled: false,
         timerSoundFile: '/sounds/bell.mp3',
         timerSoundVolume: 0.5,
