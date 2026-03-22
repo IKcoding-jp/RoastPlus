@@ -132,7 +132,6 @@ export function normalizeAppData(data: Partial<AppData> | undefined | null): App
     if (data.userSettings.roastTimerSettings && typeof data.userSettings.roastTimerSettings === 'object') {
       const settings = data.userSettings.roastTimerSettings;
       cleanedUserSettings.roastTimerSettings = {
-        goToRoastRoomTimeSeconds: typeof settings.goToRoastRoomTimeSeconds === 'number' ? settings.goToRoastRoomTimeSeconds : 60,
         timerSoundEnabled: typeof settings.timerSoundEnabled === 'boolean' ? settings.timerSoundEnabled : true,
         timerSoundFile: typeof settings.timerSoundFile === 'string'
           ? settings.timerSoundFile.startsWith('/sounds/alarm/')
