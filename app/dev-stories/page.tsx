@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
+
 import { RiLightbulbFlashFill } from 'react-icons/ri';
 import { FloatingNav } from '@/components/ui';
 import { EpisodeCard } from '@/components/dev-stories/EpisodeCard';
@@ -12,41 +12,7 @@ export default function DevStoriesPage() {
 
   return (
     <div className="h-screen overflow-y-hidden flex flex-col px-3 sm:px-6 lg:px-8 pt-14 pb-2 sm:pb-3 lg:pb-4 bg-page transition-colors duration-1000">
-      <FloatingNav
-        backHref="/"
-        right={
-          <div className="flex items-center gap-0.5 sm:gap-1">
-            <Image
-              src="/avatars/header_characters.png"
-              alt="フカイリとアサイリ"
-              width={48}
-              height={48}
-              className="h-10 sm:h-12 w-auto object-contain animate-wobble-left"
-            />
-            <Image
-              src="/avatars/header_dori_server.png"
-              alt="ドリとサーバ"
-              width={48}
-              height={48}
-              className="h-10 sm:h-12 w-auto object-contain animate-wobble-right"
-            />
-            <Image
-              src="/avatars/header_mill_kettle.png"
-              alt="ミルとケトル"
-              width={48}
-              height={48}
-              className="h-10 sm:h-12 w-auto object-contain animate-wobble-left"
-            />
-            <Image
-              src="/avatars/header_press_siphon.png"
-              alt="プレスとサイフォン"
-              width={48}
-              height={48}
-              className="h-10 sm:h-12 w-auto object-contain animate-wobble-right"
-            />
-          </div>
-        }
-      />
+      <FloatingNav backHref="/" />
       <div className="max-w-7xl mx-auto w-full flex flex-col flex-1 min-h-0">
         <main className="flex-1 min-h-0 overflow-y-auto pb-20 sm:pb-0">
           {episodes.length === 0 ? (
