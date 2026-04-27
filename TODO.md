@@ -12,10 +12,10 @@
 
 ## Phase 1: 毎日使う画面（7ページ）
 
-### app/drip-guide/page.tsx 🔴
-- [ ] L7: `phosphor-react` の `Plus` → `react-icons/hi` の `HiPlus`
-- [ ] L18: `h-screen` → `h-dvh`
-- [ ] L24: 生 `<Link className="flex items-center gap-2 bg-btn-primary...">` → セマンティックトークン整理版（計画パターン2参照）
+### app/drip-guide/page.tsx ✅（PR: #363）
+- [x] L7: `phosphor-react` の `Plus` → `react-icons/hi` の `HiPlus`
+- [x] L18: `h-screen` → `h-dvh`
+- [x] L24: 生 `<Link className="flex items-center gap-2 bg-btn-primary...">` → セマンティックトークン整理版
 
 ### app/roast-timer/page.tsx 🔴
 - [ ] L30: `h-screen` → `h-dvh`
