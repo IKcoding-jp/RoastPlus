@@ -19,9 +19,9 @@ export default function NewTastingRecordPageClient() {
   }, [params, router]);
 
   return (
-      <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#F7F7F5' }}>
+      <div className="flex min-h-screen items-center justify-center bg-page">
       <div className="text-center">
-        <div className="text-lg text-gray-600">リダイレクト中...</div>
+        <div className="text-lg text-ink-sub">リダイレクト中...</div>
       </div>
     </div>
   );

@@ -193,7 +193,7 @@ function RoastRecordPageContent() {
 
   // 一覧表示（デフォルト）
   return (
-    <div className="h-screen overflow-y-hidden flex flex-col px-4 sm:px-6 lg:px-8 pt-14 pb-2 sm:pb-3 lg:pb-4 bg-page">
+    <div className="h-dvh overflow-y-hidden flex flex-col px-4 sm:px-6 lg:px-8 pt-14 pb-2 sm:pb-3 lg:pb-4 bg-page">
       <FloatingNav
         backHref="/"
         right={
