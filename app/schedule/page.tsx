@@ -73,9 +73,8 @@ export default function SchedulePage() {
             aria-label="日付を選択"
             className="!min-h-0 !px-1 !py-1"
           >
-            <span className="text-base font-bold tracking-tight font-sans whitespace-nowrap leading-tight text-ink flex items-center gap-1">
+            <span className="text-base font-bold tracking-tight font-sans whitespace-nowrap leading-tight text-ink">
               {formatDateString(selectedDate)}
-              {isToday && <span className="text-[9px] font-bold tracking-wider text-white bg-header-bg rounded-full px-[7px] py-[2px] leading-none">TODAY</span>}
             </span>
           </Button>
           <IconButton
@@ -114,9 +113,8 @@ export default function SchedulePage() {
                 className="gap-2 md:gap-2.5"
               >
                 <HiCalendar className="h-5 w-5 md:h-6 md:w-6 flex-shrink-0 text-spot" />
-                <span className="text-base md:text-lg font-bold tracking-tight font-sans whitespace-nowrap leading-tight text-ink flex items-center gap-1">
+                <span className="text-base md:text-lg font-bold tracking-tight font-sans whitespace-nowrap leading-tight text-ink">
                   {formatDateString(selectedDate)}
-                  {isToday && <span className="text-[9px] font-bold tracking-wider text-white bg-header-bg rounded-full px-[7px] py-[2px] leading-none">TODAY</span>}
                 </span>
               </Button>
               <IconButton
