@@ -3,19 +3,21 @@
 import { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import type { AppData, RoastSchedule } from '@/types';
-import { HiPlus, HiCalendar, HiCamera } from 'react-icons/hi';
+import { HiPlus } from 'react-icons/hi';
 import { RoastScheduleMemoDialog } from './RoastScheduleMemoDialog';
 import { ScheduleCard } from './roast-scheduler/ScheduleCard';
-import { Button, Card } from '@/components/ui';
+import { Button } from '@/components/ui';
+import { EmptyScheduleState } from '@/components/schedule/EmptyScheduleState';
 
 interface RoastSchedulerTabProps {
   data: AppData | null;
   onUpdate: (data: AppData) => void;
   selectedDate: string; // YYYY-MM-DD形式
   isToday: boolean; // 選択日が今日かどうか
+  onCamera?: () => void;
 }
 
-export function RoastSchedulerTab({ data, onUpdate, selectedDate, isToday: _isToday }: RoastSchedulerTabProps) {
+export function RoastSchedulerTab({ data, onUpdate, selectedDate, isToday: _isToday, onCamera }: RoastSchedulerTabProps) {
   const [editingSchedule, setEditingSchedule] = useState<RoastSchedule | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [draggedId, setDraggedId] = useState<string | null>(null);
@@ -292,24 +294,13 @@ export function RoastSchedulerTab({ data, onUpdate, selectedDate, isToday: _isTo
 
       {sortedSchedules.length === 0 ? (
         <div className="flex-1 flex items-center justify-center">
-          <Card variant="guide" className="max-w-xs mx-auto">
-            <div className="flex justify-center mb-4">
-              <div className="w-14 h-14 rounded-full bg-header-bg flex items-center justify-center shadow-md">
-                <HiCalendar className="h-7 w-7 text-white" />
-              </div>
-            </div>
-            <p className="text-base font-semibold text-ink mb-3">スケジュールがありません</p>
-            <div className="space-y-2.5 text-sm text-ink-muted text-left">
-              <div className="flex items-center gap-2.5">
-                <HiCamera className="h-4 w-4 flex-shrink-0" />
-                <span>画像からAIで読み取る</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <HiPlus className="h-4 w-4 flex-shrink-0" />
-                <span>手動でスケジュールを追加する</span>
-              </div>
-            </div>
-          </Card>
+          <EmptyScheduleState
+            icon="calendar"
+            message="ローストスケジュールはまだありません"
+            onCamera={onCamera}
+            onAdd={handleAdd}
+            addLabel="スケジュールを追加"
+          />
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto min-h-0">
@@ -342,22 +333,6 @@ export function RoastSchedulerTab({ data, onUpdate, selectedDate, isToday: _isTo
               </Button>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* モバイル版：追加ボタンを一番下に表示（空の場合） */}
-      {sortedSchedules.length === 0 && (
-        <div className="mt-4 flex lg:hidden items-center justify-center">
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={handleAdd}
-            aria-label="スケジュールを追加"
-            className="!min-h-0 !py-1.5 !px-3 !text-sm !gap-1"
-          >
-            <HiPlus className="h-3.5 w-3.5" />
-            <span>追加</span>
-          </Button>
         </div>
       )}
 

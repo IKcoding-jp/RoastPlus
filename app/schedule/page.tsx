@@ -73,8 +73,9 @@ export default function SchedulePage() {
             aria-label="日付を選択"
             className="!min-h-0 !px-1 !py-1"
           >
-            <span className={`text-base font-bold tracking-tight font-sans whitespace-nowrap leading-tight ${isToday ? 'text-spot' : 'text-ink'}`}>
+            <span className="text-base font-bold tracking-tight font-sans whitespace-nowrap leading-tight text-ink flex items-center gap-1">
               {formatDateString(selectedDate)}
+              {isToday && <span className="text-[9px] font-bold tracking-wider text-white bg-header-bg rounded-full px-[7px] py-[2px] leading-none">TODAY</span>}
             </span>
           </Button>
           <IconButton
@@ -113,8 +114,9 @@ export default function SchedulePage() {
                 className="gap-2 md:gap-2.5"
               >
                 <HiCalendar className="h-5 w-5 md:h-6 md:w-6 flex-shrink-0 text-spot" />
-                <span className={`text-base md:text-lg font-bold tracking-tight font-sans whitespace-nowrap leading-tight ${isToday ? 'text-spot' : 'text-ink'}`}>
+                <span className="text-base md:text-lg font-bold tracking-tight font-sans whitespace-nowrap leading-tight text-ink flex items-center gap-1">
                   {formatDateString(selectedDate)}
+                  {isToday && <span className="text-[9px] font-bold tracking-wider text-white bg-header-bg rounded-full px-[7px] py-[2px] leading-none">TODAY</span>}
                 </span>
               </Button>
               <IconButton
@@ -180,20 +182,20 @@ export default function SchedulePage() {
           {/* モバイル版：タブ切替 */}
           <div className="block lg:hidden flex-1 flex flex-col min-h-0">
             <TabsContent value="today" className="flex-1 flex flex-col min-h-0">
-              <TodaySchedule key={selectedDate} data={data} onUpdate={updateData} selectedDate={selectedDate} isToday={isToday}  />
+              <TodaySchedule key={selectedDate} data={data} onUpdate={updateData} selectedDate={selectedDate} isToday={isToday} onCamera={() => setIsOCROpen(true)} />
             </TabsContent>
             <TabsContent value="roast" className="flex-1 flex flex-col min-h-0">
-              <RoastSchedulerTab data={data} onUpdate={updateData} selectedDate={selectedDate} isToday={isToday}  />
+              <RoastSchedulerTab data={data} onUpdate={updateData} selectedDate={selectedDate} isToday={isToday} onCamera={() => setIsOCROpen(true)} />
             </TabsContent>
           </div>
 
           {/* デスクトップ版：横並び */}
           <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6 lg:flex-1 lg:min-h-0">
             <div className="flex flex-col min-h-0">
-              <TodaySchedule key={selectedDate} data={data} onUpdate={updateData} selectedDate={selectedDate} isToday={isToday}  />
+              <TodaySchedule key={selectedDate} data={data} onUpdate={updateData} selectedDate={selectedDate} isToday={isToday} onCamera={() => setIsOCROpen(true)} />
             </div>
             <div className="flex flex-col min-h-0">
-              <RoastSchedulerTab data={data} onUpdate={updateData} selectedDate={selectedDate} isToday={isToday}  />
+              <RoastSchedulerTab data={data} onUpdate={updateData} selectedDate={selectedDate} isToday={isToday} onCamera={() => setIsOCROpen(true)} />
             </div>
           </div>
         </main>

@@ -3,17 +3,18 @@
 import { useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import type { AppData, TodaySchedule as TodayScheduleType, TimeLabel } from '@/types';
-import { HiClock, HiUser, HiArrowDown, HiCamera, HiPlusCircle } from 'react-icons/hi';
+import { HiUser, HiArrowDown } from 'react-icons/hi';
 import { useTodayScheduleSync } from '@/hooks/useTodayScheduleSync';
 import { TimeInputRow } from '@/components/today-schedule/TimeInputRow';
 import { TimeEditDialog } from '@/components/today-schedule/TimeEditDialog';
-import { Card } from '@/components/ui';
+import { EmptyScheduleState } from '@/components/schedule/EmptyScheduleState';
 
 interface TodayScheduleProps {
   data: AppData | null;
   onUpdate: (data: AppData) => void;
   selectedDate: string;
   isToday: boolean;
+  onCamera?: () => void;
 }
 
 interface TodayScheduleInnerProps extends TodayScheduleProps {
@@ -36,7 +37,7 @@ export function TodaySchedule(props: TodayScheduleProps) {
   return <TodayScheduleInner key={scheduleKey} {...props} currentSchedule={currentSchedule} />;
 }
 
-function TodayScheduleInner({ data, onUpdate, selectedDate, currentSchedule }: TodayScheduleInnerProps) {
+function TodayScheduleInner({ data, onUpdate, selectedDate, currentSchedule, onCamera }: TodayScheduleInnerProps) {
   const [editingLabelId, setEditingLabelId] = useState<string | null>(null);
 
   const {
@@ -132,24 +133,11 @@ function TodayScheduleInner({ data, onUpdate, selectedDate, currentSchedule }: T
 
       {localTimeLabels.length === 0 ? (
         <div className="flex-1 flex items-center justify-center">
-          <Card variant="guide" className="max-w-xs mx-auto">
-            <div className="flex justify-center mb-4">
-              <div className="w-14 h-14 rounded-full bg-header-bg flex items-center justify-center shadow-md">
-                <HiClock className="h-7 w-7 text-white" />
-              </div>
-            </div>
-            <p className="text-base font-semibold text-ink mb-3">時間ラベルがありません</p>
-            <div className="space-y-2.5 text-sm text-ink-muted text-left">
-              <div className="flex items-center gap-2.5">
-                <HiCamera className="h-4 w-4 flex-shrink-0" />
-                <span>画像からAIで読み取る</span>
-              </div>
-              <div className="flex items-center gap-2.5">
-                <HiPlusCircle className="h-4 w-4 flex-shrink-0" />
-                <span>手動で時間を追加する</span>
-              </div>
-            </div>
-          </Card>
+          <EmptyScheduleState
+            icon="clock"
+            message="今日のスケジュールはまだありません"
+            onCamera={onCamera}
+          />
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto min-h-0">
