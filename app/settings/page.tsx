@@ -13,7 +13,7 @@ import { PasswordModal } from '@/components/settings/PasswordModal';
 import { HiDocumentText, HiShieldCheck, HiLogout, HiMail, HiColorSwatch } from 'react-icons/hi';
 import { MdHistory } from 'react-icons/md';
 import LoginPage from '@/app/login/page';
-import { Button, Switch, FloatingNav } from '@/components/ui';
+import { Button, Switch, FloatingNav, Card } from '@/components/ui';
 import { VERSION_HISTORY } from '@/data/dev-stories/version-history';
 import { getUserData } from '@/lib/firestore';
 import { formatConsentDate } from '@/lib/consent';
@@ -93,10 +93,8 @@ export default function SettingsPage() {
             <div className="max-w-4xl mx-auto">
                 <main className="space-y-6">
                     {/* テーマ設定 */}
-                    <Link
-                        href="/settings/theme"
-                        className="block bg-surface rounded-lg shadow-sm border border-edge p-6 hover:shadow-card-hover hover:border-edge-strong transition-all"
-                    >
+                    <Link href="/settings/theme">
+                      <Card variant="hoverable" className="p-6">
                         <div className="flex items-center justify-between">
                             <div className="flex-1">
                                 <h2 className="text-xl font-semibold text-ink mb-2 flex items-center gap-2">
@@ -109,10 +107,11 @@ export default function SettingsPage() {
                             </div>
                             <span className="text-ink-muted text-xl">&gt;</span>
                         </div>
+                      </Card>
                     </Link>
 
                     {/* 開発者モードセクション */}
-                    <div className="bg-surface rounded-lg shadow-sm border border-edge p-6">
+                    <Card variant="default" className="p-6">
                         <div className="flex items-center justify-between">
                             <div className="flex-1">
                                 <h2 className="text-xl font-semibold text-ink mb-2">
@@ -130,14 +129,12 @@ export default function SettingsPage() {
                                 />
                             </div>
                         </div>
-                    </div>
+                    </Card>
 
                     {/* Developer Design Lab（開発者モード有効時のみ表示） */}
                     {isEnabled && (
-                        <Link
-                            href="/dev/design-lab"
-                            className="block bg-surface rounded-lg shadow-sm border border-edge p-6 hover:shadow-card-hover hover:border-edge-strong transition-all"
-                        >
+                        <Link href="/dev/design-lab">
+                          <Card variant="hoverable" className="p-6">
                             <div className="flex items-center justify-between">
                                 <div className="flex-1">
                                     <h2 className="text-xl font-semibold text-ink mb-2 flex items-center gap-2">
@@ -150,11 +147,12 @@ export default function SettingsPage() {
                                 </div>
                                 <span className="text-ink-muted text-xl">&gt;</span>
                             </div>
+                          </Card>
                         </Link>
                     )}
 
                     {/* アプリバージョンセクション */}
-                    <div className="bg-surface rounded-lg shadow-sm border border-edge p-6">
+                    <Card variant="default" className="p-6">
                         <h2 className="text-xl font-semibold text-ink mb-4">
                             アプリバージョン
                         </h2>
@@ -198,13 +196,11 @@ export default function SettingsPage() {
                                 </div>
                             )}
                         </div>
-                    </div>
+                    </Card>
 
                     {/* 更新履歴セクション */}
-                    <Link
-                        href="/changelog"
-                        className="block bg-surface rounded-lg shadow-sm border border-edge p-6 hover:shadow-card-hover hover:border-edge-strong transition-all"
-                    >
+                    <Link href="/changelog">
+                      <Card variant="hoverable" className="p-6">
                         <div className="flex items-center justify-between">
                             <div className="flex-1">
                                 <h2 className="text-xl font-semibold text-ink mb-2 flex items-center gap-2">
@@ -220,10 +216,11 @@ export default function SettingsPage() {
                             </div>
                             <span className="text-ink-muted text-xl">&gt;</span>
                         </div>
+                      </Card>
                     </Link>
 
                     {/* 法的情報セクション */}
-                    <div className="bg-surface rounded-lg shadow-sm border border-edge p-6">
+                    <Card variant="default" className="p-6">
                         <h2 className="text-xl font-semibold text-ink mb-4 flex items-center gap-2">
                             <HiDocumentText className="h-5 w-5 text-ink-sub" />
                             法的情報
@@ -277,10 +274,10 @@ export default function SettingsPage() {
                                 </div>
                             )}
                         </div>
-                    </div>
+                    </Card>
 
                     {/* アカウントセクション */}
-                    <div className="bg-surface rounded-lg shadow-sm border border-edge p-6">
+                    <Card variant="default" className="p-6">
                         <h2 className="text-xl font-semibold text-ink mb-4 flex items-center gap-2">
                             <HiLogout className="h-5 w-5 text-ink-sub" />
                             アカウント
@@ -306,7 +303,7 @@ export default function SettingsPage() {
                                 </Button>
                             </div>
                         </div>
-                    </div>
+                    </Card>
                 </main>
 
                 {/* パスワード入力モーダル */}

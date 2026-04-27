@@ -11,7 +11,7 @@ import { TastingRecordForm } from '@/components/TastingRecordForm';
 import { TastingSessionForm } from '@/components/TastingSessionForm';
 import { Loading } from '@/components/Loading';
 import type { TastingSession, TastingRecord } from '@/types';
-import { Plus } from 'phosphor-react';
+import { HiPlus } from 'react-icons/hi';
 import { useToastContext } from '@/components/Toast';
 import { Button, IconButton, Card, FloatingNav } from '@/components/ui';
 
@@ -252,7 +252,7 @@ function TastingPageContent() {
                   aria-label="新規セッション作成"
                   className="flex items-center gap-2 shadow-md"
                 >
-                  <Plus size={20} weight="bold" />
+                  <HiPlus size={20} />
                   <span className="whitespace-nowrap">セッションを作成</span>
                 </Button>
               </div>
@@ -262,7 +262,7 @@ function TastingPageContent() {
                   onClick={() => router.push('/tasting/sessions/new')}
                   aria-label="新規セッション作成"
                 >
-                  <Plus size={22} weight="bold" />
+                  <HiPlus size={22} />
                 </IconButton>
               </div>
             </>

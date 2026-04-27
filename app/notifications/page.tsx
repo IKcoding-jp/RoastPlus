@@ -10,7 +10,7 @@ import { NotificationModal } from '@/components/notifications/NotificationModal'
 import { NotificationCard } from '@/components/notifications/NotificationCard';
 import { DeleteConfirmDialog } from '@/components/notifications/DeleteConfirmDialog';
 import { IoAdd } from 'react-icons/io5';
-import { FloatingNav, Button } from '@/components/ui';
+import { FloatingNav, Button, Card } from '@/components/ui';
 import type { Notification } from '@/types';
 
 export default function NotificationsPage() {
@@ -167,9 +167,9 @@ export default function NotificationsPage() {
           )}
 
           {notifications.length === 0 ? (
-            <div className="bg-white rounded-lg shadow-md p-8 text-center">
-              <p className="text-gray-600">通知はありません</p>
-            </div>
+            <Card variant="default" className="p-8 text-center">
+              <p className="text-ink-sub">通知はありません</p>
+            </Card>
           ) : (
             <div className="space-y-4">
               {sortedNotifications.map((notification, index) => {

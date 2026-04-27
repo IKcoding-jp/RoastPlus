@@ -52,7 +52,7 @@ export default function SchedulePage() {
   }
 
   return (
-    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabType)} defaultValue="today" className="h-screen md:h-[100dvh] lg:h-screen pt-14 sm:pt-3 pb-4 px-4 sm:px-4 lg:px-6 flex flex-col overflow-hidden bg-page">
+    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabType)} defaultValue="today" className="h-dvh pt-14 sm:pt-3 pb-4 px-4 sm:px-4 lg:px-6 flex flex-col overflow-hidden bg-page">
       <FloatingNav backHref="/" />
       {/* モバイル版：日付ナビ（戻るボタンの右〜画面右端で中央配置） */}
       <div className="sm:hidden fixed top-3 left-14 right-3 z-50 flex">

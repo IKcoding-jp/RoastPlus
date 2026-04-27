@@ -35,7 +35,7 @@ export default function EpisodeDetailClient({ id }: EpisodeDetailClientProps) {
 
     if (!episode) {
         return (
-            <div className="h-screen flex flex-col items-center justify-center px-4 bg-page transition-colors duration-1000">
+            <div className="h-dvh flex flex-col items-center justify-center px-4 bg-page transition-colors duration-1000">
                 <div className="text-center">
                     <div className="flex justify-center mb-4">
                         <div className="p-4 bg-ground rounded-full">
