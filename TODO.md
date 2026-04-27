@@ -17,8 +17,8 @@
 - [x] L18: `h-screen` → `h-dvh`
 - [x] L24: 生 `<Link className="flex items-center gap-2 bg-btn-primary...">` → セマンティックトークン整理版
 
-### app/roast-timer/page.tsx 🔴
-- [ ] L30: `h-screen` → `h-dvh`
+### app/roast-timer/page.tsx ✅（PR: #364）
+- [x] L30: `h-screen` → `h-dvh`
 
 ### app/tasting/page.tsx 🔴
 - [ ] L14: `phosphor-react` の `Plus` → `react-icons/hi` の `HiPlus`
