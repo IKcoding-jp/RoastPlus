@@ -65,7 +65,7 @@ export default function ClockPage() {
 
   if (!now || !isLoaded) {
     return (
-      <div className="flex items-center justify-center h-screen" style={{ backgroundColor: colors.bg }}>
+      <div className="flex items-center justify-center h-dvh" style={{ backgroundColor: colors.bg }}>
         <div className="flex items-center gap-3">
           <div className="h-5 w-5 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: colors.accent, borderTopColor: 'transparent' }} />
           <span className="text-lg" style={{ color: colors.uiText }}>読み込み中...</span>
@@ -78,7 +78,7 @@ export default function ClockPage() {
 
   return (
     <div
-      className="flex flex-col items-center justify-center h-screen select-none relative"
+      className="flex flex-col items-center justify-center h-dvh select-none relative"
       style={{ backgroundColor: colors.bg }}
     >
       {/* ヘッダー：戻るボタン＋設定ボタン */}

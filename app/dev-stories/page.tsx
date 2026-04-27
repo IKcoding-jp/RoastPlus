@@ -11,7 +11,7 @@ export default function DevStoriesPage() {
   const episodes = getSortedEpisodes();
 
   return (
-    <div className="h-screen overflow-y-hidden flex flex-col px-3 sm:px-6 lg:px-8 pt-14 pb-2 sm:pb-3 lg:pb-4 bg-page transition-colors duration-1000">
+    <div className="h-dvh overflow-y-hidden flex flex-col px-3 sm:px-6 lg:px-8 pt-14 pb-2 sm:pb-3 lg:pb-4 bg-page transition-colors duration-1000">
       <FloatingNav backHref="/" />
       <div className="max-w-7xl mx-auto w-full flex flex-col flex-1 min-h-0">
         <main className="flex-1 min-h-0 overflow-y-auto pb-20 sm:pb-0">
