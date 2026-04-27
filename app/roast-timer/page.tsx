@@ -27,7 +27,7 @@ export default function RoastTimerPage() {
   }
 
   return (
-    <div className="h-screen overflow-hidden flex flex-col bg-page">
+    <div className="h-dvh overflow-hidden flex flex-col bg-page">
       <FloatingNav backHref="/" />
       <div className="flex-1 min-h-0">
         <RoastTimer />
