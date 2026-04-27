@@ -54,12 +54,12 @@ interface EmptyScheduleStateProps {
 
 #### デザイン仕様
 
-- アイコン: Heroicons の outline スタイル（`HiOutlineClock` / `HiOutlineCalendar`）、`w-12 h-12`、`text-ink-muted/40`程度の薄グレー、`stroke-width="1.2"`
+- アイコン: `react-icons/hi` の outline スタイル（`HiOutlineClock` / `HiOutlineCalendar`）、`w-12 h-12`、`opacity-30`で薄グレー表示。存在しない場合は solid アイコン（`HiClock` / `HiCalendar`）に `opacity-25` を適用
 - メインメッセージ: `text-sm font-semibold text-ink`
 - サブメッセージ: `text-xs text-ink-muted`
 - ボタン行: flex、gap-2、中央揃え
   - 「読み取る」: `Button variant="primary" size="sm"` + `HiCamera` アイコン
-  - 「追加」: `Button variant="outline" size="sm"` + `HiPlus` アイコン
+  - 「追加」: `Button variant="ghost" size="sm" className="!text-ink hover:!bg-ground"` + `HiPlus` アイコン（`outline` は spot カラーのため不使用）
 - カード不使用（親の `rounded-2xl` カード内に直接配置）
 - 絵文字不使用（SVGアイコンのみ）
 
