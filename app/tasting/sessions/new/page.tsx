@@ -7,7 +7,7 @@ import { useAppData } from '@/hooks/useAppData';
 import { TastingSessionForm } from '@/components/TastingSessionForm';
 import { Loading } from '@/components/Loading';
 import type { TastingSession } from '@/types';
-import { PlusCircle } from 'phosphor-react';
+import { HiPlusCircle } from 'react-icons/hi';
 import { useToastContext } from '@/components/Toast';
 import { motion } from 'framer-motion';
 import { BackLink } from '@/components/ui';
@@ -87,7 +87,7 @@ export default function NewTastingSessionPage() {
           <div className="flex flex-col items-center space-y-2">
             <div className="p-3 rounded-2xl shadow-sm mb-2 relative bg-surface border border-edge">
               <div className="absolute inset-0 rounded-2xl scale-110 blur-xl opacity-30 -z-10 bg-spot-surface" />
-              <PlusCircle size={32} weight="duotone" className="text-spot" />
+              <HiPlusCircle size={32} className="text-spot" />
             </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-ink">
               新規セッション作成
