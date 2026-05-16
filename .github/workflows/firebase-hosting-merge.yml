@@ -5,6 +5,13 @@ on:
     types: [closed]
     branches:
       - main
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - "AGENTS.md"
+      - "CLAUDE.md"
+      - "DESIGN.md"
+      - ".github/**"
 
 permissions:
   checks: write
@@ -12,9 +19,38 @@ permissions:
   pull-requests: write
 
 jobs:
-  build_and_deploy:
+  detect_changes:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    outputs:
+      hosting_changed: ${{ steps.filter.outputs.hosting_changed }}
+      functions_changed: ${{ steps.filter.outputs.functions_changed }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Detect deploy targets
+        id: filter
+        run: |
+          changed_files="$(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}")"
+          echo "$changed_files"
+
+          if echo "$changed_files" | grep -Eq '^(app|components|hooks|lib|types|public|data|scripts)/|^(package-lock\.json|package\.json|next\.config\.ts|postcss\.config\.mjs|tsconfig\.json|firebase\.json)$'; then
+            echo "hosting_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "hosting_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if echo "$changed_files" | grep -q '^functions/'; then
+            echo "functions_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "functions_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  build_and_deploy:
+    if: needs.detect_changes.outputs.hosting_changed == 'true'
+    runs-on: ubuntu-latest
+    needs: detect_changes
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -58,29 +94,17 @@ jobs:
 
   deploy_functions:
     name: Deploy Cloud Functions
-    if: github.event.pull_request.merged == true
+    if: needs.detect_changes.outputs.functions_changed == 'true'
     runs-on: ubuntu-latest
+    needs: detect_changes
     steps:
       - uses: actions/checkout@v6
-        with:
-          fetch-depth: 2
-      - name: Check for functions changes
-        id: changes
-        run: |
-          if git diff HEAD~1 --name-only | grep -q '^functions/'; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "changed=false" >> $GITHUB_OUTPUT
-          fi
       - uses: actions/setup-node@v6
-        if: steps.changes.outputs.changed == 'true'
         with:
           node-version: 20
       - name: Install Functions dependencies
-        if: steps.changes.outputs.changed == 'true'
         run: cd functions && npm ci
       - name: Deploy Functions
-        if: steps.changes.outputs.changed == 'true'
         uses: w9jds/firebase-action@v15.10.0
         with:
           args: deploy --only functions
