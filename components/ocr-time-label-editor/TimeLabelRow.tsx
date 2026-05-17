@@ -1,9 +1,10 @@
 'use client';
 
+import { useState } from 'react';
 import type { TimeLabel } from '@/types';
-import { HiPlus, HiTrash, HiPencil, HiUser, HiArrowDown } from 'react-icons/hi';
+import { HiPlus, HiTrash, HiPencil, HiUser, HiChevronDown } from 'react-icons/hi';
 import type { useOCRTimeLabelEditor } from './useOCRTimeLabelEditor';
-import { Button, IconButton, Input, NumberInput, Textarea } from '@/components/ui';
+import { Badge, Button, IconButton, Input, NumberInput, Textarea } from '@/components/ui';
 
 interface TimeLabelRowProps {
   label: TimeLabel;
@@ -13,6 +14,7 @@ interface TimeLabelRowProps {
 }
 
 export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRowProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const {
     editingTime,
     setEditingTime,
@@ -33,12 +35,14 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
     handleUpdateSubTask,
   } = editor;
 
-  const labelClass = 'block text-sm font-medium mb-1 text-ink-sub';
+  const labelClass = 'block text-xs font-medium mb-1 text-ink-sub';
+  const hasExtraDetails = Boolean(label.memo);
+  const timeRange = label.time || '--:--';
 
   return (
-    <div className="border rounded-lg p-4 transition-colors border-edge bg-surface hover:bg-ground">
+    <div className="border rounded-lg p-2 transition-colors border-edge bg-surface hover:bg-ground">
       {isEditing ? (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {/* 時間編集 */}
           <div>
             <label className={labelClass}>
@@ -50,14 +54,14 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value === '' || (parseInt(value) >= 0 && parseInt(value) <= 23)) {
-                    setEditingTime(prev => ({ ...prev, hour: value }));
+                    setEditingTime((prev) => ({ ...prev, hour: value }));
                   }
                 }}
                 min={0}
                 max={23}
                 required
                 placeholder="時"
-                className="w-20 text-center"
+                className="w-16 text-center !text-sm"
               />
               <span className="text-ink-sub">:</span>
               <NumberInput
@@ -65,13 +69,13 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value === '' || (parseInt(value) >= 0 && parseInt(value) <= 59)) {
-                    setEditingTime(prev => ({ ...prev, minute: value }));
+                    setEditingTime((prev) => ({ ...prev, minute: value }));
                   }
                 }}
                 min={0}
                 max={59}
                 placeholder="分"
-                className="w-20 text-center"
+                className="w-16 text-center !text-sm"
               />
             </div>
           </div>
@@ -100,7 +104,7 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
           {/* 担当者編集 */}
           <div>
             <label className={labelClass}>
-              <span className="flex items-center gap-1.5">
+              <span className="inline-flex items-center gap-1.5">
                 <HiUser className="h-4 w-4" />
                 担当者
               </span>
@@ -114,9 +118,7 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
 
           {/* 継続終了時間編集 */}
           <div>
-            <label className={labelClass}>
-              継続終了時間（時間経過タスクの場合）
-            </label>
+            <label className={labelClass}>継続終了時間（時間経過タスクの場合）</label>
             <div className="flex items-center gap-2">
               <span className="text-sm text-ink-muted">〜</span>
               <NumberInput
@@ -124,13 +126,13 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value === '' || (parseInt(value) >= 0 && parseInt(value) <= 23)) {
-                    setEditingContinuesUntil(prev => ({ ...prev, hour: value }));
+                    setEditingContinuesUntil((prev) => ({ ...prev, hour: value }));
                   }
                 }}
                 min={0}
                 max={23}
                 placeholder="時"
-                className="w-20 text-center"
+                className="w-16 text-center !text-sm"
               />
               <span className="text-ink-sub">:</span>
               <NumberInput
@@ -138,13 +140,13 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
                 onChange={(e) => {
                   const value = e.target.value;
                   if (value === '' || (parseInt(value) >= 0 && parseInt(value) <= 59)) {
-                    setEditingContinuesUntil(prev => ({ ...prev, minute: value }));
+                    setEditingContinuesUntil((prev) => ({ ...prev, minute: value }));
                   }
                 }}
                 min={0}
                 max={59}
                 placeholder="分"
-                className="w-20 text-center"
+                className="w-16 text-center !text-sm"
               />
               <span className="text-sm text-ink-muted">まで</span>
               {editingContinuesUntil.hour && (
@@ -163,8 +165,8 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
           {/* サブタスク編集 */}
           <div>
             <label className={`${labelClass} mb-2`}>
-              <span className="flex items-center gap-1.5">
-                <HiArrowDown className="h-4 w-4" />
+              <span className="inline-flex items-center gap-1.5">
+                <HiChevronDown className="h-4 w-4" />
                 連続タスク（サブタスク）
               </span>
             </label>
@@ -172,7 +174,7 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
               {editingSubTasks.map((subTask) => (
                 <div key={subTask.id} className="flex items-start gap-2 p-2 rounded-md bg-ground">
                   <span className="text-sm mt-2 text-ink-muted">↓</span>
-                  <div className="flex-1 space-y-2">
+                  <div className="flex-1 space-y-1.5">
                     <Input
                       value={subTask.content}
                       onChange={(e) => handleUpdateSubTask(subTask.id, { content: e.target.value })}
@@ -197,24 +199,16 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
                   </IconButton>
                 </div>
               ))}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleAddSubTask}
-              >
+              <Button variant="ghost" size="sm" onClick={handleAddSubTask}>
                 <HiPlus className="h-4 w-4" />
-                サブタスクを追加
+                <span>サブタスクを追加</span>
               </Button>
             </div>
           </div>
 
           {/* 編集ボタン */}
           <div className="flex gap-2 justify-end">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleCancel}
-            >
+            <Button variant="secondary" size="sm" onClick={handleCancel}>
               キャンセル
             </Button>
             <Button
@@ -228,70 +222,74 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
           </div>
         </div>
       ) : (
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <span className="text-lg font-semibold text-ink">
-                {label.time || '--:--'}
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <div className="mb-1.5 flex items-center gap-3">
+              <span className="shrink-0 rounded-md border border-edge bg-overlay px-2 py-1 text-sm font-bold text-ink shadow-sm whitespace-nowrap">
+                {timeRange}
               </span>
-              {label.content && (
-                <span className="text-base text-ink-sub">{label.content}</span>
+              <span className="min-w-0 flex-1 text-sm font-semibold leading-6 text-ink break-words">
+                {label.content || '内容未入力'}
+                {label.subTasks && label.subTasks.length > 0 && (
+                  <>
+                    {label.subTasks
+                      .sort((a, b) => a.order - b.order)
+                      .map((subTask) => (
+                        <span key={subTask.id} className="text-ink-sub">
+                          <span className="mx-1.5 text-ink-muted">・</span>
+                          {subTask.content || '内容未入力'}
+                        </span>
+                      ))}
+                  </>
+                )}
+              </span>
+            </div>
+
+            <div className="ml-[86px] flex flex-wrap items-center gap-1.5">
+              {label.assignee && (
+                <Badge size="sm" variant="secondary" className="!text-[10px]">
+                  <span className="inline-flex items-center gap-1">
+                    <HiUser className="h-3 w-3" />
+                    {label.assignee}
+                  </span>
+                </Badge>
               )}
-              {/* 継続終了時間 */}
-              {label.continuesUntil && (
-                <span className="text-xs font-medium text-spot">
-                  〜{label.continuesUntil}まで
-                </span>
+              {label.memo && (
+                <Badge size="sm" variant="secondary" className="!text-[10px]">
+                  メモあり
+                </Badge>
               )}
             </div>
-            {/* 担当者表示 */}
-            {label.assignee && (
-              <div className="flex items-center gap-1.5 mb-2">
-                <HiUser className="h-3.5 w-3.5 text-ink-muted" />
-                <span className="text-sm px-2 py-0.5 rounded-full text-ink-sub bg-ground">
-                  {label.assignee}
-                </span>
-              </div>
-            )}
-            {label.memo && (
-              <p className="text-sm whitespace-pre-wrap mb-2 text-ink-sub">{label.memo}</p>
-            )}
-            {/* サブタスク表示 */}
-            {label.subTasks && label.subTasks.length > 0 && (
-              <div className="ml-4 space-y-1 border-l-2 pl-3 border-edge">
-                {label.subTasks
-                  .sort((a, b) => a.order - b.order)
-                  .map((subTask) => (
-                    <div key={subTask.id} className="flex items-center gap-2">
-                      <HiArrowDown className="h-3.5 w-3.5 flex-shrink-0 text-ink-muted" />
-                      <span className="text-sm text-ink-sub">{subTask.content}</span>
-                      {subTask.assignee && (
-                        <span className="text-xs px-1.5 py-0.5 rounded-full text-ink-muted bg-ground">
-                          {subTask.assignee}
-                        </span>
-                      )}
-                    </div>
-                  ))}
+
+            {isExpanded && hasExtraDetails && (
+              <div className="mt-1.5 space-y-1.5 pt-1.5 border-t border-edge/70">
+                {label.memo && <p className="text-xs leading-relaxed whitespace-pre-wrap text-ink-sub">{label.memo}</p>}
               </div>
             )}
           </div>
-          <div className="flex gap-2">
-            <IconButton
-              variant="ghost"
-              size="md"
-              onClick={() => handleEdit(label)}
-              aria-label="編集"
-            >
-              <HiPencil className="h-5 w-5" />
+          <div className="-mt-0.5 flex gap-1 shrink-0">
+            {hasExtraDetails && (
+              <IconButton
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsExpanded((prev) => !prev)}
+                aria-label={isExpanded ? '詳細を閉じる' : '詳細を見る'}
+                className="text-ink-muted"
+              >
+                <HiChevronDown className={`h-3.5 w-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+              </IconButton>
+            )}
+            <IconButton variant="ghost" size="sm" onClick={() => handleEdit(label)} aria-label="編集">
+              <HiPencil className="h-4 w-4" />
             </IconButton>
             <IconButton
               variant="ghost"
-              size="md"
+              size="sm"
               onClick={() => onDelete(label.id)}
               className="text-red-500"
               aria-label="削除"
             >
-              <HiTrash className="h-5 w-5" />
+              <HiTrash className="h-4 w-4" />
             </IconButton>
           </div>
         </div>

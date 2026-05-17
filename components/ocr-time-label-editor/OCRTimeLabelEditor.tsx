@@ -20,7 +20,7 @@ export function OCRTimeLabelEditor({
   const editor = useOCRTimeLabelEditor({ timeLabels, onUpdate });
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2.5">
       {editor.sortedLabels.length === 0 ? (
         <div className="text-center py-8 text-ink-muted">
           <p>スケジュールがありません</p>
@@ -41,8 +41,8 @@ export function OCRTimeLabelEditor({
       <Button
         onClick={editor.handleAdd}
         variant="primary"
-        size="lg"
-        className="w-full"
+        size="sm"
+        className="w-full !px-3 !py-2 !min-h-[36px] !text-sm"
       >
         <HiPlus className="h-5 w-5" />
         <span>スケジュールを追加</span>
