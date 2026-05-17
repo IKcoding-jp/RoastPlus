@@ -8,7 +8,7 @@ import { useRoastTimer } from '@/hooks/useRoastTimer';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { RoastTimerSettings } from './RoastTimerSettings';
 import { TimerDisplay, TimerControls, SetupPanel } from './roast-timer';
-import { Modal } from '@/components/ui';
+import { Button, Modal } from '@/components/ui';
 import { DEFAULT_DURATIONS } from '@/lib/constants';
 import type { BeanName } from '@/lib/beanConfig';
 import type { RoastLevel, Weight } from '@/lib/constants';
@@ -111,7 +111,8 @@ export function RoastTimer() {
         className="flex items-center justify-end shrink-0"
         style={{ height: 56, padding: '12px 12px 0' }}
       >
-        <button
+        <Button
+          variant="surface"
           type="button"
           onClick={() => setShowSettings(true)}
           className="h-11 rounded-full flex items-center gap-[6px] cursor-pointer"
@@ -131,7 +132,7 @@ export function RoastTimer() {
           <span className="text-xs font-semibold" style={{ color: 'var(--ink-sub)' }}>
             設定
           </span>
-        </button>
+        </Button>
       </div>
 
       {/* メインコンテンツ: スマホ=縦型、md以上=左右分割 */}
