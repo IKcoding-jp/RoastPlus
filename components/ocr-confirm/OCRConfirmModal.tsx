@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import type { TimeLabel, RoastSchedule } from '@/types';
-import { HiX, HiClock, HiFire } from 'react-icons/hi';
+import { HiX, HiClock, HiFire, HiRefresh } from 'react-icons/hi';
 import { OCRTimeLabelEditor } from '../OCRTimeLabelEditor';
 import { OCRRoastScheduleEditor } from '../OCRRoastScheduleEditor';
 import { useToastContext } from '../Toast';
 import { sortTimeLabels, sortRoastSchedules } from './OCRConfirmHelpers';
 import type { TabType } from './OCRConfirmHelpers';
-import { Button, IconButton } from '@/components/ui';
+import { Button, IconButton, Tabs, TabsList, TabsTrigger, TabsContent, Modal } from '@/components/ui';
 
 interface OCRConfirmModalProps {
   timeLabels: TimeLabel[];
@@ -131,128 +131,178 @@ export function OCRConfirmModal({
   const hasExistingData = existingTimeLabels.length > 0 || existingRoastSchedules.length > 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="rounded-lg shadow-xl max-w-4xl w-full mx-4 flex flex-col max-h-[90vh] bg-overlay border border-edge">
+    <Modal
+      show
+      onClose={onCancel}
+      contentClassName="bg-overlay rounded-2xl shadow-2xl w-full max-w-4xl h-[90dvh] max-h-[calc(100dvh-2rem)] border border-edge flex flex-col overflow-hidden"
+      closeOnBackdropClick={false}
+    >
+      <div className="flex flex-col h-full">
         {/* ヘッダー */}
-        <div className="flex items-center justify-between p-4 sm:p-6 border-b flex-shrink-0 border-edge">
-          <h2 className="text-lg sm:text-xl font-bold text-ink">
-            読み取り結果の確認
-          </h2>
+        <div className="flex items-center justify-between gap-3 px-4 py-3 border-b flex-shrink-0 border-edge bg-overlay">
+          <div className="flex min-w-0 items-center gap-2">
+            <h2 className="text-base font-bold tracking-tight text-ink">
+              読み取り結果の確認
+            </h2>
+            <span className="text-[11px] text-ink-sub">
+              {timeLabels.length}件の予定 / {roastSchedules.length}件のロースト
+            </span>
+          </div>
           <IconButton
             variant="ghost"
-            size="md"
+            size="sm"
             onClick={onCancel}
             rounded
             aria-label="閉じる"
+            className="!rounded-full"
           >
-            <HiX className="h-5 w-5 sm:h-6 sm:w-6" />
+            <HiX className="h-4 w-4 sm:h-5 sm:w-5" />
           </IconButton>
         </div>
 
-        {/* モード選択 */}
         {hasExistingData && (
-          <div className="px-4 sm:px-6 py-3 border-b flex-shrink-0 border-edge">
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-medium text-ink">適用方法:</span>
-              <div className="flex gap-2">
-                <Button
-                  variant={mode === 'replace' ? 'primary' : 'ghost'}
-                  size="sm"
-                  onClick={() => setMode('replace')}
-                >
-                  置き換え
-                </Button>
-                <Button
-                  variant={mode === 'add' ? 'primary' : 'ghost'}
-                  size="sm"
-                  onClick={() => setMode('add')}
-                >
-                  追加
-                </Button>
-              </div>
+          <div className="flex items-center justify-end gap-2 px-4 py-2 border-b flex-shrink-0 border-edge bg-ground/40">
+            <span className="text-[11px] font-semibold text-ink-sub">保存方法</span>
+            <div className="flex rounded-lg bg-overlay p-0.5 border border-edge">
+              <Button
+                variant={mode === 'replace' ? 'primary' : 'ghost'}
+                size="sm"
+                onClick={() => setMode('replace')}
+                className="!min-h-[28px] !px-3 !text-xs"
+              >
+                置き換え
+              </Button>
+              <Button
+                variant={mode === 'add' ? 'primary' : 'ghost'}
+                size="sm"
+                onClick={() => setMode('add')}
+                className="!min-h-[28px] !px-3 !text-xs"
+              >
+                追加
+              </Button>
             </div>
           </div>
         )}
 
-        {/* タブ */}
-        <div className="flex border-b flex-shrink-0 border-edge">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setActiveTab('timeLabels')}
-            className={`flex-1 !rounded-none !min-h-[44px] flex items-center justify-center gap-2 ${
-              activeTab === 'timeLabels'
-                ? 'bg-surface text-spot border-b-2 border-spot'
-                : 'bg-surface text-ink-sub hover:bg-ground'
-            }`}
-          >
-            <HiClock className="h-5 w-5" />
-            <span>本日のスケジュール</span>
-            <span className="rounded-full px-2 py-0.5 text-xs bg-ground text-ink">
-              {timeLabels.length}
-            </span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setActiveTab('roastSchedules')}
-            className={`flex-1 !rounded-none !min-h-[44px] flex items-center justify-center gap-2 ${
-              activeTab === 'roastSchedules'
-                ? 'bg-surface text-spot border-b-2 border-spot'
-                : 'bg-surface text-ink-sub hover:bg-ground'
-            }`}
-          >
-            <HiFire className="h-5 w-5" />
-            <span>ローストスケジュール</span>
-            <span className="rounded-full px-2 py-0.5 text-xs bg-ground text-ink">
-              {roastSchedules.length}
-            </span>
-          </Button>
+        <div className="flex-1 min-h-0 overflow-y-auto p-3 md:overflow-hidden bg-ground/50">
+          {/* モバイル: タブ */}
+          <div className="md:hidden landscape:hidden">
+            <Tabs
+              value={activeTab}
+              defaultValue="timeLabels"
+              onValueChange={(value) => setActiveTab(value as TabType)}
+              className="flex flex-col flex-1 min-h-0"
+            >
+              <div className="border-b border-edge flex-shrink-0">
+                <TabsList className="mt-2 grid grid-cols-2">
+                  <TabsTrigger
+                    value="timeLabels"
+                    className="text-xs !gap-1.5 !px-2 !py-1.5 !min-h-0"
+                  >
+                    <HiClock className="h-4 w-4" />
+                    <span>本日の予定</span>
+                    <span className="rounded-full px-2 py-0.5 text-xs bg-ground text-ink">
+                      {timeLabels.length}
+                    </span>
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="roastSchedules"
+                    className="text-xs !gap-1.5 !px-2 !py-1.5 !min-h-0"
+                  >
+                    <HiFire className="h-4 w-4" />
+                    <span>ロースト</span>
+                    <span className="rounded-full px-2 py-0.5 text-xs bg-ground text-ink">
+                      {roastSchedules.length}
+                    </span>
+                  </TabsTrigger>
+                </TabsList>
+              </div>
+              <div className="flex-1 min-h-0">
+                <TabsContent value="timeLabels" className="space-y-2 pb-1">
+                  <OCRTimeLabelEditor
+                    timeLabels={timeLabels}
+                    onUpdate={setTimeLabels}
+                    onDelete={(id) => {
+                      setTimeLabels(timeLabels.filter((label) => label.id !== id));
+                    }}
+                  />
+                </TabsContent>
+                <TabsContent value="roastSchedules" className="space-y-2 pb-1">
+                  <OCRRoastScheduleEditor
+                    roastSchedules={roastSchedules}
+                    selectedDate={selectedDate}
+                    onUpdate={setRoastSchedules}
+                    onDelete={(id) => {
+                      setRoastSchedules(roastSchedules.filter((schedule) => schedule.id !== id));
+                    }}
+                  />
+                </TabsContent>
+              </div>
+            </Tabs>
+          </div>
+
+          {/* 横画面: 左右並び */}
+          <div className="hidden md:grid md:grid-cols-2 md:h-full md:gap-3 landscape:grid landscape:grid-cols-2 landscape:h-full landscape:gap-3">
+            <section className="flex h-full flex-col min-h-0 border rounded-xl border-edge bg-overlay shadow-sm">
+              <div className="px-3 py-2 border-b border-edge flex items-center gap-2 bg-overlay">
+                <span className="h-5 w-1 rounded-full bg-accent" />
+                <h3 className="text-sm font-bold text-ink">本日の予定</h3>
+              </div>
+              <div className="flex-1 min-h-0 overflow-y-auto p-2.5">
+                <OCRTimeLabelEditor
+                  timeLabels={timeLabels}
+                  onUpdate={setTimeLabels}
+                  onDelete={(id) => {
+                    setTimeLabels(timeLabels.filter((label) => label.id !== id));
+                  }}
+                />
+              </div>
+            </section>
+
+            <section className="flex h-full flex-col min-h-0 border rounded-xl border-edge bg-overlay shadow-sm">
+              <div className="px-3 py-2 border-b border-edge flex items-center gap-2 bg-overlay">
+                <span className="h-5 w-1 rounded-full bg-accent" />
+                <h3 className="text-sm font-bold text-ink">ロースト</h3>
+              </div>
+              <div className="flex-1 min-h-0 overflow-y-auto p-2.5">
+                <OCRRoastScheduleEditor
+                  roastSchedules={roastSchedules}
+                  selectedDate={selectedDate}
+                  onUpdate={setRoastSchedules}
+                  onDelete={(id) => {
+                    setRoastSchedules(roastSchedules.filter((schedule) => schedule.id !== id));
+                  }}
+                />
+              </div>
+            </section>
+          </div>
         </div>
 
-        {/* コンテンツ */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-          {activeTab === 'timeLabels' ? (
-            <OCRTimeLabelEditor
-              timeLabels={timeLabels}
-              onUpdate={setTimeLabels}
-              onDelete={(id) => {
-                setTimeLabels(timeLabels.filter((label) => label.id !== id));
-              }}
-            />
-          ) : (
-            <OCRRoastScheduleEditor
-              roastSchedules={roastSchedules}
-              selectedDate={selectedDate}
-              onUpdate={setRoastSchedules}
-              onDelete={(id) => {
-                setRoastSchedules(roastSchedules.filter((schedule) => schedule.id !== id));
-              }}
-            />
-          )}
-        </div>
+  
 
         {/* フッター */}
-        <div className="flex items-center justify-between p-4 sm:p-6 border-t gap-3 flex-shrink-0 border-edge">
+        <div className="flex items-center justify-between px-4 py-3 border-t gap-2 flex-shrink-0 border-edge bg-overlay">
           <Button
-            variant="ghost"
-            size="md"
+            variant="secondary"
+            size="sm"
             onClick={onRetry}
             aria-label="再解析"
+            className="!border-edge !bg-ground !text-ink-sub hover:!bg-surface hover:!text-ink"
           >
+            <HiRefresh className="h-4 w-4" />
             再解析
           </Button>
           <div className="flex gap-2">
             <Button
               variant="secondary"
-              size="md"
+              size="sm"
               onClick={onCancel}
             >
               キャンセル
             </Button>
             <Button
               variant="primary"
-              size="md"
+              size="sm"
               onClick={handleSave}
             >
               保存
@@ -260,6 +310,6 @@ export function OCRConfirmModal({
           </div>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }
