@@ -27,6 +27,8 @@ const createLocalStorageMock = () => {
   };
 };
 
+const localDate = (hour: number, minute: number, second = 0) => new Date(2026, 4, 17, hour, minute, second);
+
 describe('workChime', () => {
   beforeEach(() => {
     vi.stubGlobal('localStorage', createLocalStorageMock());
@@ -77,7 +79,7 @@ describe('workChime', () => {
   });
 
   it('現在の作業時間帯と終了までの分数を返す', () => {
-    const now = new Date('2026-05-17T10:40:04+09:00');
+    const now = localDate(10, 40, 4);
 
     const current = getCurrentWorkChimePeriod(now, DEFAULT_WORK_CHIME_SETTINGS);
 
@@ -94,7 +96,7 @@ describe('workChime', () => {
   });
 
   it('次の区切りと残り分数を時間帯から返す', () => {
-    const now = new Date('2026-05-17T10:40:04+09:00');
+    const now = localDate(10, 40, 4);
 
     const next = getNextWorkChime(now, DEFAULT_WORK_CHIME_SETTINGS);
 
@@ -113,7 +115,7 @@ describe('workChime', () => {
   });
 
   it('当日の最後の区切り後は翌日の最初の区切りを返す', () => {
-    const now = new Date('2026-05-17T23:30:00+09:00');
+    const now = localDate(23, 30);
 
     const next = getNextWorkChime(now, DEFAULT_WORK_CHIME_SETTINGS);
 
@@ -122,7 +124,7 @@ describe('workChime', () => {
   });
 
   it('発火時刻に該当するチャイムを時間帯から返す', () => {
-    const now = new Date('2026-05-17T11:00:12+09:00');
+    const now = localDate(11, 0, 12);
 
     const due = getDueWorkChime(now, DEFAULT_WORK_CHIME_SETTINGS, []);
 
@@ -135,7 +137,7 @@ describe('workChime', () => {
   });
 
   it('16:35の掃除開始チャイムを返す', () => {
-    const now = new Date('2026-05-17T16:35:12+09:00');
+    const now = localDate(16, 35, 12);
 
     const due = getDueWorkChime(now, DEFAULT_WORK_CHIME_SETTINGS, []);
 
@@ -146,7 +148,7 @@ describe('workChime', () => {
   });
 
   it('同じ日に同じチャイムは再発火しない', () => {
-    const now = new Date('2026-05-17T10:45:40+09:00');
+    const now = localDate(10, 45, 40);
 
     const due = getDueWorkChime(now, DEFAULT_WORK_CHIME_SETTINGS, ['2026-05-17:break-1']);
 
@@ -154,7 +156,7 @@ describe('workChime', () => {
   });
 
   it('無効化されている場合は現在表示も発火もしない', () => {
-    const now = new Date('2026-05-17T10:45:12+09:00');
+    const now = localDate(10, 45, 12);
     const settings = {
       ...DEFAULT_WORK_CHIME_SETTINGS,
       enabled: false,

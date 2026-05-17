@@ -26,6 +26,8 @@ const createLocalStorageMock = () => {
   };
 };
 
+const localDate = (hour: number, minute: number, second = 0) => new Date(2026, 4, 17, hour, minute, second);
+
 describe('useWorkChime', () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -34,7 +36,7 @@ describe('useWorkChime', () => {
   });
 
   it('アンロック前は該当時刻でも音を鳴らさない', () => {
-    renderHook(() => useWorkChime(new Date('2026-05-17T10:45:00+09:00')));
+    renderHook(() => useWorkChime(localDate(10, 45)));
 
     expect(playWorkChimeMock).not.toHaveBeenCalled();
   });
@@ -42,7 +44,7 @@ describe('useWorkChime', () => {
   it('アンロック後に該当時刻で音を鳴らして通知を表示する', () => {
     const { result, rerender } = renderHook(
       ({ now }) => useWorkChime(now),
-      { initialProps: { now: new Date('2026-05-17T10:44:59+09:00') } }
+      { initialProps: { now: localDate(10, 44, 59) } }
     );
 
     act(() => {
@@ -51,14 +53,14 @@ describe('useWorkChime', () => {
 
     playWorkChimeMock.mockClear();
 
-    rerender({ now: new Date('2026-05-17T10:45:00+09:00') });
+    rerender({ now: localDate(10, 45) });
 
     expect(playWorkChimeMock).toHaveBeenCalledWith('break', { volume: 0.8 });
     expect(result.current.activeChime?.message).toBe('休憩時間です');
   });
 
   it('現在の時間帯を返す', () => {
-    const { result } = renderHook(() => useWorkChime(new Date('2026-05-17T10:40:00+09:00')));
+    const { result } = renderHook(() => useWorkChime(localDate(10, 40)));
 
     expect(result.current.currentPeriod?.period.id).toBe('work-1');
     expect(result.current.currentPeriod?.label).toBe('作業中');
@@ -68,7 +70,7 @@ describe('useWorkChime', () => {
   it('同じ分では重複再生しない', () => {
     const { result, rerender } = renderHook(
       ({ now }) => useWorkChime(now),
-      { initialProps: { now: new Date('2026-05-17T10:44:59+09:00') } }
+      { initialProps: { now: localDate(10, 44, 59) } }
     );
 
     act(() => {
@@ -77,8 +79,8 @@ describe('useWorkChime', () => {
 
     playWorkChimeMock.mockClear();
 
-    rerender({ now: new Date('2026-05-17T10:45:00+09:00') });
-    rerender({ now: new Date('2026-05-17T10:45:40+09:00') });
+    rerender({ now: localDate(10, 45) });
+    rerender({ now: localDate(10, 45, 40) });
 
     expect(playWorkChimeMock).toHaveBeenCalledTimes(1);
   });
@@ -86,14 +88,14 @@ describe('useWorkChime', () => {
   it('5秒後に通知を消す', () => {
     const { result, rerender } = renderHook(
       ({ now }) => useWorkChime(now),
-      { initialProps: { now: new Date('2026-05-17T10:44:59+09:00') } }
+      { initialProps: { now: localDate(10, 44, 59) } }
     );
 
     act(() => {
       result.current.enableAudio();
     });
 
-    rerender({ now: new Date('2026-05-17T10:45:00+09:00') });
+    rerender({ now: localDate(10, 45) });
     expect(result.current.activeChime).not.toBeNull();
 
     act(() => {
