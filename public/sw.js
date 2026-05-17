@@ -1,23 +1,24 @@
 // Service Worker for PWA
-const CACHE_NAME = 'roast-plus-v3';
-const RUNTIME_CACHE = 'roast-plus-runtime-v3';
+const CACHE_NAME = 'roast-plus-v4';
+const RUNTIME_CACHE = 'roast-plus-runtime-v4';
 
 // キャッシュするリソース
 const PRECACHE_URLS = [
   '/',
-  '/assignment.html',
-  '/settings.html',
-  '/login.html',
-  '/notifications.html',
+  '/index.html',
+  '/assignment/index.html',
+  '/settings/index.html',
+  '/login/index.html',
+  '/notifications/index.html',
   '/android-chrome-192x192.png',
   '/android-chrome-512x512.png',
 ];
 
-// Next.jsの静的エクスポートでは、ルートパス（/assignment）は実際には/assignment.htmlとして生成される
+// Next.jsの静的エクスポートでは、ルートパス（/assignment）は実際には/assignment/index.htmlとして生成される
 // この関数は、ルートパスをHTMLファイルパスに変換する
 function getHtmlPath(url) {
   const urlObj = new URL(url);
-  const pathname = urlObj.pathname;
+  const pathname = urlObj.pathname.replace(/\/+$/, '') || '/';
   
   // 既に.htmlで終わっているか、拡張子がある場合はそのまま返す
   if (pathname.endsWith('.html') || pathname.match(/\.[a-zA-Z0-9]+$/)) {
@@ -29,8 +30,8 @@ function getHtmlPath(url) {
     return '/index.html';
   }
   
-  // その他のルートパスは.htmlを追加
-  return `${pathname}.html`;
+  // その他のルートパスはindex.htmlを追加
+  return `${pathname}/index.html`;
 }
 
 // インストール時の処理
