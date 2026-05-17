@@ -1,7 +1,4 @@
 import {
-  doc,
-  updateDoc,
-  deleteDoc,
   collection,
   getDocs,
 } from 'firebase/firestore';
@@ -53,51 +50,6 @@ export async function getDefectBeanMasterData(): Promise<DefectBean[]> {
   } catch (error) {
     console.error('Failed to get defect bean master data:', error);
     return [];
-  }
-}
-
-/**
- * 欠陥豆マスターデータを更新
- * @param defectBeanId 欠陥豆ID
- * @param defectBean 更新する欠陥豆データ
- */
-export async function updateDefectBeanMaster(
-  defectBeanId: string,
-  defectBean: Partial<DefectBean>
-): Promise<void> {
-  try {
-    const db = getDb();
-    const defectBeanRef = doc(db, 'defectBeans', defectBeanId);
-
-    const updateData: Partial<DefectBean> & { updatedAt: string } = {
-      ...defectBean,
-      updatedAt: new Date().toISOString(),
-    };
-
-    // id, isMaster, createdAtは更新しない
-    delete updateData.id;
-    delete updateData.isMaster;
-    delete updateData.createdAt;
-
-    await updateDoc(defectBeanRef, updateData);
-  } catch (error) {
-    console.error('Failed to update defect bean master:', error);
-    throw error;
-  }
-}
-
-/**
- * 欠陥豆マスターデータを削除
- * @param defectBeanId 削除する欠陥豆ID
- */
-export async function deleteDefectBeanMaster(defectBeanId: string): Promise<void> {
-  try {
-    const db = getDb();
-    const defectBeanRef = doc(db, 'defectBeans', defectBeanId);
-    await deleteDoc(defectBeanRef);
-  } catch (error) {
-    console.error('Failed to delete defect bean master:', error);
-    throw error;
   }
 }
 

@@ -15,7 +15,7 @@ const UPLOAD_TIMEOUT_MS = 30_000;
 
 /**
  * 欠点豆の画像をFirebase Storageにアップロード
- * @param userId ユーザーID（空文字列の場合はマスターデータ）
+ * @param userId ユーザーID
  * @param defectBeanId 欠点豆ID
  * @param file 画像ファイル
  * @returns ダウンロードURL
@@ -37,10 +37,11 @@ export async function uploadDefectBeanImage(
   const doUpload = async (): Promise<string> => {
     const storageInstance = getStorageInstance();
 
-    // マスターデータの場合は別のパスを使用
-    const storagePath = userId
-      ? `defect-beans/${userId}/${defectBeanId}/${Date.now()}_${file.name}`
-      : `defect-beans-master/${defectBeanId}/${Date.now()}_${file.name}`;
+    if (!userId) {
+      throw new Error('User ID is required to upload defect bean images');
+    }
+
+    const storagePath = `defect-beans/${userId}/${defectBeanId}/${Date.now()}_${file.name}`;
 
     const storageRef = ref(storageInstance, storagePath);
     await uploadBytes(storageRef, file);
