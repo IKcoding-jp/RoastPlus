@@ -112,7 +112,7 @@ npm run test:e2e # E2E
 | 言語 | TypeScript 5 |
 | 認証・DB | Firebase Authentication, Firestore |
 | ストレージ | Firebase Storage |
-| AI | Google Gemini API（試飲分析） |
+| AI | OpenAI GPT-4o API（Cloud Functions経由） |
 | テスト | Vitest, Playwright |
 | PWA | Service Worker, Web App Manifest |
 
@@ -129,4 +129,3 @@ npm run test:e2e # E2E
 ## ライセンス
 
 社内運用向けの実用コードとして管理し、利用範囲や導入方針はリポジトリ内の運用ルールに従って判断してください。
-
