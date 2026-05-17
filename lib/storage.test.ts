@@ -52,6 +52,17 @@ describe('uploadDefectBeanImage', () => {
     expect(url).toBe('https://example.com/image.jpg');
   });
 
+
+  it('ユーザーIDが空の場合はアップロードを拒否する', async () => {
+    const mockFile = new File([''], 'test.jpg', { type: 'image/jpeg' });
+
+    await expect(uploadDefectBeanImage('', 'beanId123', mockFile)).rejects.toThrow(
+      'User ID is required to upload defect bean images'
+    );
+    expect(mockRef).not.toHaveBeenCalled();
+    expect(mockUploadBytes).not.toHaveBeenCalled();
+  });
+
   it('uploadBytes がエラーをthrowした場合はそのエラーを再throwする', async () => {
     const uploadError = new Error('Storage permission denied');
     mockUploadBytes.mockRejectedValue(uploadError);

@@ -6,8 +6,6 @@ export { getDb, getUserDocRef, removeUndefinedFields, normalizeAppData, defaultD
 export { getUserData, saveUserData, subscribeUserData, SAVE_USER_DATA_DEBOUNCE_MS } from './userData';
 export {
   getDefectBeanMasterData,
-  updateDefectBeanMaster,
-  deleteDefectBeanMaster,
   saveDefectBean,
   deleteDefectBean,
   updateDefectBeanSetting,
