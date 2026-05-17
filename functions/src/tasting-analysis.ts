@@ -11,6 +11,10 @@ export const analyzeTastingSession = onCall(
     cors: [
       'https://roastplus-72fa6.web.app',
       'https://roastplus-72fa6.firebaseapp.com',
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001',
     ],
     maxInstances: 10,
     timeoutSeconds: 60,
