@@ -3,20 +3,106 @@
 import { useState, useMemo, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { Coffee, Plus, Faders } from 'phosphor-react';
-import type { AppData } from '@/types';
+import type { AppData, TastingRecord, TastingSession } from '@/types';
 import { TastingSessionCarousel } from './TastingSessionCarousel';
 import { TastingSessionFilterModal } from './TastingSessionFilterModal';
 import { useMembers, getActiveMembers } from '@/hooks/useMembers';
 import { useAuth } from '@/lib/auth';
 import { useTastingFilters } from '@/hooks/useTastingFilters';
 import { motion } from 'framer-motion';
-import { Button, IconButton, Card } from '@/components/ui';
+import { Button, IconButton, EmptyState } from '@/components/ui';
+
+const SAMPLE_TASTING_PREFIX = 'sample-tasting-';
+
+const SAMPLE_SESSIONS = [
+  {
+    beanName: 'エチオピア イルガチェフェ',
+    roastLevel: '浅煎り',
+    comments: [
+      '花のような香りが強く、冷めるとレモンティーのような明るさが出ました。',
+      '酸味はきれいだけど少し軽め。朝の一杯にちょうどよさそうです。',
+      '香りの印象が一番残りました。甘みは控えめで後味がすっきりしています。',
+      '口に含んだ瞬間は華やかで、後半は少し紅茶っぽい余韻でした。',
+      '苦味が少ないので飲みやすいです。浅煎りが苦手な人にも説明しやすそう。',
+      '香りはかなり良いですが、もう少し甘さがあるとさらに好みです。',
+      '冷めてからの透明感がよく、試飲の変化を見るには面白い豆でした。',
+      '軽やかで明るい印象。お菓子と合わせるより単体で飲みたいです。',
+    ],
+  },
+  {
+    beanName: 'ブラジル ショコラ',
+    roastLevel: '中煎り',
+    comments: [
+      'ナッツ感とチョコっぽさがあって飲みやすいです。ミルクにも合いそう。',
+      '酸味が少なく、苦味も丸いので万人向けに感じました。',
+      '香りは穏やかですが、甘みとコクのバランスが良かったです。',
+      '後味に少しカカオ感が残ります。毎日飲むならこれが一番安定しそう。',
+      '派手さはないけど安心感があります。ホットでもアイスでも使いやすそう。',
+      '口当たりがやわらかく、苦味が尖っていないところが良いです。',
+      'もう少し香りが立つと嬉しいですが、味のまとまりは高いと思います。',
+      'ミルクを入れても味が消えなさそう。店頭向けに使いやすい印象です。',
+    ],
+  },
+  {
+    beanName: 'グアテマラ アンティグア',
+    roastLevel: '中深煎り',
+    comments: [
+      'ココアのような厚みがあり、後半に少しスパイス感がありました。',
+      '苦味と甘みのバランスがよく、ホットでゆっくり飲みたい味です。',
+      '口当たりがしっかりしていて、余韻も長めに残りました。',
+      '香ばしさが前に出ますが、重すぎないので飲み疲れしにくいです。',
+      '甘い焼き菓子と合わせると良さそう。酸味は控えめでした。',
+      '中深煎りらしいコクがあり、後味に少しビター感が残ります。',
+      '香りよりも味の厚みが印象的でした。安定した人気が出そうです。',
+      '温度が下がっても薄くならず、最後までコーヒー感が残りました。',
+    ],
+  },
+  {
+    beanName: 'コロンビア ウィラ',
+    roastLevel: '中煎り',
+    comments: [
+      '赤い果実っぽい酸味がありつつ、甘みもあって飲みやすいです。',
+      '温度が下がると酸味が少し前に出ます。香りは華やかでした。',
+      '全体的にまとまりがよく、試飲会でも説明しやすそうです。',
+      '酸味と甘みのバランスがよく、明るいけど尖っていない印象です。',
+      '飲み始めは軽く、後味に少しシロップのような甘さが残りました。',
+      '香りは控えめですが、味の輪郭が分かりやすいです。',
+      '冷めると果実感が出てきて、時間変化を見るのが楽しい豆でした。',
+      '苦味が弱めなので、酸味を楽しみたい人にすすめやすいと思います。',
+    ],
+  },
+  {
+    beanName: 'インドネシア マンデリン',
+    roastLevel: '深煎り',
+    comments: [
+      '重めのボディとハーブっぽい香りがあり、かなり個性的でした。',
+      '苦味はしっかりありますが、嫌な焦げ感は少ないです。',
+      '余韻が長く、アイスコーヒーにしても存在感が残りそうです。',
+      '土っぽさとスパイス感があり、好き嫌いは分かれそうですが印象的です。',
+      'ミルクを入れると丸くなりそう。ブラックだとかなり力強いです。',
+      '苦味の奥に甘さがあり、深煎り好きには刺さりそうです。',
+      '香りに独特の重さがあります。食後の一杯に向いていそうです。',
+      '後味が長く続くので、少量でも満足感がありました。',
+    ],
+  },
+] as const;
+
+const SAMPLE_REVIEWERS = [
+  { id: `${SAMPLE_TASTING_PREFIX}member-1`, name: '佐藤' },
+  { id: `${SAMPLE_TASTING_PREFIX}member-2`, name: '飯田' },
+  { id: `${SAMPLE_TASTING_PREFIX}member-3`, name: '鈴木' },
+  { id: `${SAMPLE_TASTING_PREFIX}member-4`, name: '田中' },
+  { id: `${SAMPLE_TASTING_PREFIX}member-5`, name: '高橋' },
+  { id: `${SAMPLE_TASTING_PREFIX}member-6`, name: '伊藤' },
+  { id: `${SAMPLE_TASTING_PREFIX}member-7`, name: '中村' },
+  { id: `${SAMPLE_TASTING_PREFIX}member-8`, name: '小林' },
+];
 
 interface TastingSessionListProps {
   data: AppData;
   onUpdate?: (newDataOrUpdater: AppData | ((currentData: AppData) => AppData)) => Promise<void> | void;
+  sampleButtonContainerId?: string;
   filterButtonContainerId?: string;
   filterButtonContainerIdMobile?: string;
 }
@@ -24,6 +110,7 @@ interface TastingSessionListProps {
 export function TastingSessionList({
   data,
   onUpdate,
+  sampleButtonContainerId,
   filterButtonContainerId,
   filterButtonContainerIdMobile,
 }: TastingSessionListProps) {
@@ -42,6 +129,9 @@ export function TastingSessionList({
   );
 
   const activeMemberCount = getActiveMembers(allMembers).length + (manager ? 1 : 0);
+  const [isEmptyPreview, setIsEmptyPreview] = useState(false);
+  const visibleTastingSessions = isEmptyPreview ? [] : tastingSessions;
+  const visibleTastingRecords = isEmptyPreview ? [] : tastingRecords;
 
   const {
     searchQuery,
@@ -56,14 +146,16 @@ export function TastingSessionList({
     setSelectedRoastLevels,
     filteredAndSortedSessions,
     activeFilterCount,
-  } = useTastingFilters(tastingSessions);
+  } = useTastingFilters(visibleTastingSessions);
 
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [containers, setContainers] = useState<{
+    sample: HTMLElement | null;
     desktop: HTMLElement | null;
     mobile: HTMLElement | null;
-  }>({ desktop: null, mobile: null });
+  }>({ sample: null, desktop: null, mobile: null });
+  const showDevDataButtons = process.env.NODE_ENV !== 'production' && !!onUpdate;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- ハイドレーション後のポータル有効化に必要
@@ -72,11 +164,15 @@ export function TastingSessionList({
       const desktopEl = filterButtonContainerId
         ? document.getElementById(filterButtonContainerId)
         : null;
+      const sampleEl = sampleButtonContainerId
+        ? document.getElementById(sampleButtonContainerId)
+        : null;
       const mobileEl = filterButtonContainerIdMobile
         ? document.getElementById(filterButtonContainerIdMobile)
         : null;
 
       setContainers({
+        sample: sampleEl && sampleEl.getBoundingClientRect().width > 0 ? sampleEl : null,
         desktop: desktopEl && desktopEl.getBoundingClientRect().width > 0 ? desktopEl : null,
         mobile: mobileEl && mobileEl.getBoundingClientRect().width > 0 ? mobileEl : null,
       });
@@ -90,7 +186,7 @@ export function TastingSessionList({
       clearTimeout(timer);
       window.removeEventListener('resize', updateContainers);
     };
-  }, [filterButtonContainerId, filterButtonContainerIdMobile]);
+  }, [sampleButtonContainerId, filterButtonContainerId, filterButtonContainerIdMobile]);
 
   // AI分析結果をFirestoreに保存するコールバック
   const handleUpdateSession = (sessionId: string, aiAnalysis: string, recordCount: number) => {
@@ -129,22 +225,125 @@ export function TastingSessionList({
     setSelectedRoastLevels(filters.selectedRoastLevels);
   };
 
+  const handleAddSampleData = () => {
+    if (!onUpdate) return;
+
+    const now = new Date('2026-02-08T09:00:00.000Z');
+    const ownerId = userId ?? `${SAMPLE_TASTING_PREFIX}user`;
+    const sampleMembers = [
+      ...(manager ? [{ id: manager.id, name: manager.name }] : []),
+      ...getActiveMembers(allMembers).map((member) => ({ id: member.id, name: member.name })),
+    ];
+    const existingReviewerIds = new Set(sampleMembers.map((member) => member.id));
+    const reviewers = [
+      ...sampleMembers,
+      ...SAMPLE_REVIEWERS.filter((member) => !existingReviewerIds.has(member.id)),
+    ].slice(0, 8);
+
+    const sampleSessions: TastingSession[] = SAMPLE_SESSIONS.map((session, sessionIndex) => {
+      const createdAt = new Date(now);
+      createdAt.setDate(now.getDate() - sessionIndex);
+
+      return {
+        id: `${SAMPLE_TASTING_PREFIX}session-${sessionIndex + 1}`,
+        beanName: session.beanName,
+        roastLevel: session.roastLevel,
+        memo: '見た目確認用のテストデータです。',
+        createdAt: createdAt.toISOString(),
+        updatedAt: createdAt.toISOString(),
+        userId: ownerId,
+        aiAnalysis: `${session.beanName}は、${session.comments[0]} 複数人の感想でも方向性が揃っており、現場で共有しやすいサンプルです。`,
+        aiAnalysisUpdatedAt: createdAt.toISOString(),
+        aiAnalysisRecordCount: reviewers.length,
+      };
+    });
+
+    const sampleRecords: TastingRecord[] = SAMPLE_SESSIONS.flatMap((session, sessionIndex) => {
+      const tastingDate = new Date(now);
+      tastingDate.setDate(now.getDate() - sessionIndex);
+      const dateText = tastingDate.toISOString().split('T')[0];
+
+      return reviewers.map((reviewer, reviewerIndex) => {
+        const createdAt = new Date(tastingDate);
+        createdAt.setHours(9 + reviewerIndex, 15, 0, 0);
+        const base = 3 + ((sessionIndex + reviewerIndex) % 3);
+
+        return {
+          id: `${SAMPLE_TASTING_PREFIX}record-${sessionIndex + 1}-${reviewerIndex + 1}`,
+          sessionId: `${SAMPLE_TASTING_PREFIX}session-${sessionIndex + 1}`,
+          beanName: session.beanName,
+          tastingDate: dateText,
+          roastLevel: session.roastLevel,
+          bitterness: Math.min(5, session.roastLevel === '深煎り' ? base + 1 : base),
+          acidity: Math.max(1, session.roastLevel === '浅煎り' ? base + 1 : base - 1),
+          body: Math.min(5, session.roastLevel === '深煎り' || session.roastLevel === '中深煎り' ? base + 1 : base),
+          sweetness: Math.min(5, base),
+          aroma: Math.min(5, session.roastLevel === '浅煎り' ? base + 1 : base),
+          overallRating: Math.min(5, base),
+          overallImpression: `${reviewer.name}: ${session.comments[reviewerIndex]}`,
+          createdAt: createdAt.toISOString(),
+          updatedAt: createdAt.toISOString(),
+          userId: ownerId,
+          memberId: reviewer.id,
+        };
+      });
+    });
+
+    onUpdate((currentData) => ({
+      ...currentData,
+      tastingSessions: [
+        ...currentData.tastingSessions.filter((session) => !session.id.startsWith(SAMPLE_TASTING_PREFIX)),
+        ...sampleSessions,
+      ],
+      tastingRecords: [
+        ...currentData.tastingRecords.filter((record) => !record.id.startsWith(SAMPLE_TASTING_PREFIX)),
+        ...sampleRecords,
+      ],
+    }));
+  };
+
   const filterButtonDesktop = (
     <Button
       variant="surface"
+      size="sm"
       onClick={() => setIsFilterModalOpen(true)}
       badge={activeFilterCount}
       title="フィルター"
       aria-label="フィルター"
-      className="flex items-center gap-2"
+      className="!px-3 !py-2 gap-1.5"
     >
       <Faders
         size={20}
         weight={activeFilterCount > 0 ? 'fill' : 'bold'}
       />
-      <span className="whitespace-nowrap">フィルター</span>
+      <span className="text-xs sm:text-sm whitespace-nowrap">フィルター</span>
     </Button>
   );
+
+  const devDataButtonsDesktop = showDevDataButtons ? (
+    <div className="flex items-center gap-2">
+      {tastingSessions.length > 0 && (
+        <Button
+          variant="surface"
+          size="sm"
+          onClick={() => setIsEmptyPreview((current) => !current)}
+          className="!px-3 !py-2 gap-1.5"
+        >
+          <span className="text-xs sm:text-sm whitespace-nowrap">
+            {isEmptyPreview ? '元の表示に戻す' : '空表示を確認'}
+          </span>
+        </Button>
+      )}
+      <Button
+        variant="surface"
+        size="sm"
+        onClick={handleAddSampleData}
+        className="!px-3 !py-2 gap-1.5"
+      >
+        <span className="text-xs sm:text-sm whitespace-nowrap">テストデータを追加</span>
+      </Button>
+    </div>
+  ) : null;
 
   const filterButtonMobile = (
     <IconButton
@@ -159,40 +358,56 @@ export function TastingSessionList({
     </IconButton>
   );
 
-  if (tastingSessions.length === 0) {
+  if (visibleTastingSessions.length === 0) {
     return (
-      <div className="h-full flex items-center justify-center py-12 px-4">
+      <div className="min-h-[calc(100dvh-96px)] flex items-center justify-center px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-md w-full"
+          className="w-full"
         >
-          <Card className="rounded-[3rem] p-10 text-center space-y-8">
-            <div className="relative mx-auto w-32 h-32 flex items-center justify-center">
-              <div className="relative flex items-center justify-center">
-                <Coffee size={64} weight="duotone" className="text-spot opacity-70" />
+          <EmptyState
+            size="md"
+            className="mx-auto max-w-sm"
+            icon={<Coffee size={40} weight="duotone" />}
+            title={isEmptyPreview ? '空表示プレビュー中' : '試飲感想がありません'}
+            description={isEmptyPreview ? '実データはそのままです。' : '最初の試飲感想を追加してください。'}
+            action={
+              <div className="flex flex-col gap-3">
+                {isEmptyPreview ? (
+                  <Button
+                    variant="primary"
+                    size="md"
+                    onClick={() => setIsEmptyPreview(false)}
+                    className="justify-center"
+                  >
+                    元の表示に戻す
+                  </Button>
+                ) : (
+                  <Button
+                    variant="primary"
+                    size="md"
+                    onClick={() => router.push('/tasting/sessions/new')}
+                    className="gap-2 justify-center"
+                  >
+                    <Plus size={18} weight="bold" />
+                    試飲感想を追加
+                  </Button>
+                )}
+
+                {showDevDataButtons && !isEmptyPreview && (
+                  <Button
+                    variant="surface"
+                    size="sm"
+                    onClick={handleAddSampleData}
+                    className="justify-center"
+                  >
+                    テストデータを追加
+                  </Button>
+                )}
               </div>
-            </div>
-
-            <div className="space-y-3">
-              <h3 className="text-2xl font-black tracking-tight text-ink">
-                試飲セッションがありません
-              </h3>
-              <p className="text-sm font-medium leading-relaxed text-ink-muted">
-                最初の試飲セッションを作成して、
-                <br />
-                コーヒーの奥深い世界を記録しましょう。
-              </p>
-            </div>
-
-            <Link
-              href="/tasting/sessions/new"
-              className="inline-flex items-center gap-3 px-8 py-4 text-white rounded-2xl font-black text-lg transition-all active:scale-95 bg-gradient-to-r from-spot to-spot/80 shadow-xl shadow-spot/20 hover:from-spot/90 hover:to-spot/70"
-            >
-              <Plus size={24} weight="bold" />
-              <span>セッションを開始</span>
-            </Link>
-          </Card>
+            }
+          />
         </motion.div>
       </div>
     );
@@ -201,6 +416,7 @@ export function TastingSessionList({
   return (
     <>
       {/* フィルターボタンを外部コンテナにPortalでレンダリング */}
+      {mounted && containers.sample && devDataButtonsDesktop && createPortal(devDataButtonsDesktop, containers.sample)}
       {mounted && containers.desktop && createPortal(filterButtonDesktop, containers.desktop)}
       {mounted && containers.mobile && createPortal(filterButtonMobile, containers.mobile)}
 
@@ -220,7 +436,7 @@ export function TastingSessionList({
         <div className="flex-1 min-h-0 overflow-y-hidden pt-4 pb-2">
           <TastingSessionCarousel
             sessions={filteredAndSortedSessions}
-            tastingRecords={tastingRecords}
+            tastingRecords={visibleTastingRecords}
             activeMemberCount={activeMemberCount}
             router={router}
             onUpdateSession={handleUpdateSession}

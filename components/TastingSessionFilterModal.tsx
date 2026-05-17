@@ -1,25 +1,14 @@
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
-  MagnifyingGlass,
-  X,
-  Faders,
-  CalendarBlank,
   SortAscending,
-  Thermometer,
+  SortDescending,
 } from 'phosphor-react';
 import { ROAST_LEVELS } from '@/lib/constants';
-import { Button, IconButton, Input } from '@/components/ui';
+import { Button, FilterModal, FilterOptionButton, FilterSearchInput, FilterSection, FilterSortOption, Input } from '@/components/ui';
 
 type SortOption = 'newest' | 'oldest' | 'beanName';
 
-const inputControlClassName = '!min-h-[52px] !rounded-xl !border !py-3 !text-base';
-const chipClassName =
-  '!min-h-[40px] !rounded-xl !px-3 !py-2 !text-xs !font-semibold !shadow-none border text-center';
-const selectedChipClassName = '!bg-spot !text-white !border-spot';
-const idleChipClassName =
-  '!bg-ground !text-ink-sub !border-edge hover:!border-edge-strong hover:!bg-surface';
-
+const inputControlClassName = '!min-h-[40px] !rounded-lg !py-2 !text-sm';
 interface TastingSessionFilterModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -111,174 +100,112 @@ export function TastingSessionFilterModal({
   const hasActiveFilters =
     tempSearchQuery.trim() || tempDateFrom || tempDateTo || tempSelectedRoastLevels.length > 0;
 
+  const sortOptions = [
+    { id: 'newest', label: '新しい順', icon: <SortDescending size={20} weight="bold" /> },
+    { id: 'oldest', label: '古い順', icon: <SortAscending size={20} weight="bold" /> },
+    { id: 'beanName', label: '名前順', icon: <SortAscending size={20} weight="bold" /> },
+  ] as const;
+
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="absolute inset-0 bg-black/40"
-          />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden flex flex-col bg-overlay"
+    <FilterModal
+      show={isOpen}
+      onClose={onClose}
+      title="フィルター"
+      headerAction={
+        hasActiveFilters ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            type="button"
+            onClick={handleReset}
+            className="!min-h-0 !px-0 !py-0 !rounded-none !text-xs !font-semibold !text-spot underline underline-offset-2 hover:!text-spot-hover"
           >
-            {/* ヘッダー */}
-            <div className="px-5 py-4 flex items-center justify-between bg-[#261a14]">
-              <div className="flex items-center gap-3">
-                <div className="p-1.5 rounded-xl bg-white/10">
-                  <Faders size={20} weight="fill" className="text-primary" />
-                </div>
-                <h2 className="text-[15px] font-bold text-white tracking-tight">フィルター設定</h2>
-              </div>
-              <div className="flex items-center gap-2">
-                {hasActiveFilters && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    type="button"
-                    onClick={handleReset}
-                    className="!min-h-0 !px-0 !py-0 !rounded-none !text-[11px] !font-semibold !text-white/50 underline underline-offset-2 hover:!text-white/80"
-                  >
-                    リセット
-                  </Button>
-                )}
-                <IconButton
-                  variant="ghost"
-                  onClick={onClose}
-                  aria-label="閉じる"
-                  className="text-white/60 hover:text-white/90 hover:bg-white/10"
-                >
-                  <X size={20} weight="bold" />
-                </IconButton>
-              </div>
-            </div>
+            リセット
+          </Button>
+        ) : null
+      }
+      footer={
+        <>
+          <Button
+            variant="surface"
+            onClick={onClose}
+            className="flex-1 !min-h-[44px] !rounded-lg !text-sm"
+          >
+            キャンセル
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleApply}
+            className="flex-1 !min-h-[44px] !rounded-lg !text-sm"
+          >
+            適用
+          </Button>
+        </>
+      }
+    >
+      {/* 検索バー */}
+      <FilterSection label="検索">
+        <FilterSearchInput
+          value={tempSearchQuery}
+          onChange={setTempSearchQuery}
+          placeholder="豆の名前で検索..."
+          className={inputControlClassName}
+        />
+      </FilterSection>
 
-            {/* コンテンツ */}
-            <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
-              {/* 検索バー */}
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ink-muted">
-                  <MagnifyingGlass size={16} weight="bold" />
-                  豆の名前で検索
-                </label>
-                <Input
-                  type="text"
-                  value={tempSearchQuery}
-                  onChange={(e) => setTempSearchQuery(e.target.value)}
-                  placeholder="豆の名前を入力..."
-                  className={inputControlClassName}
-                />
-              </div>
-
-              {/* ソート */}
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ink-muted">
-                  <SortAscending size={16} weight="bold" />
-                  並び替え
-                </label>
-                <div className="grid grid-cols-3 gap-1.5">
-                  {(
-                    [
-                      { id: 'newest', label: '新しい順' },
-                      { id: 'oldest', label: '古い順' },
-                      { id: 'beanName', label: '名前順' },
-                    ] as const
-                  ).map((opt) => (
-                    <Button
-                      key={opt.id}
-                      variant="ghost"
-                      size="sm"
-                      type="button"
-                      aria-pressed={tempSortOption === opt.id}
-                      onClick={() => setTempSortOption(opt.id)}
-                      className={`${chipClassName} ${
-                        tempSortOption === opt.id
-                          ? selectedChipClassName
-                          : idleChipClassName
-                      }`}
-                    >
-                      {opt.label}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 日付範囲 */}
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ink-muted">
-                  <CalendarBlank size={16} weight="bold" />
-                  日付範囲
-                </label>
-                <div className="grid grid-cols-2 gap-3">
-                  <Input
-                    type="date"
-                    value={tempDateFrom}
-                    onChange={(e) => setTempDateFrom(e.target.value)}
-                    className={inputControlClassName}
-                  />
-                  <Input
-                    type="date"
-                    value={tempDateTo}
-                    onChange={(e) => setTempDateTo(e.target.value)}
-                    className={inputControlClassName}
-                  />
-                </div>
-              </div>
-
-              {/* 焙煎度合い */}
-              <div className="space-y-2 pb-2">
-                <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ink-muted">
-                  <Thermometer size={16} weight="bold" />
-                  焙煎度合い
-                </label>
-                <div className="grid grid-cols-4 gap-1.5">
-                  {ROAST_LEVELS.map((level) => (
-                    <Button
-                      key={level}
-                      variant="ghost"
-                      size="sm"
-                      type="button"
-                      aria-pressed={tempSelectedRoastLevels.includes(level)}
-                      onClick={() => handleRoastLevelToggle(level)}
-                      className={`${chipClassName} ${
-                        tempSelectedRoastLevels.includes(level)
-                          ? selectedChipClassName
-                          : idleChipClassName
-                      }`}
-                    >
-                      {level}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* フッター */}
-            <div className="p-5 pt-4 border-t flex gap-3 bg-ground border-edge">
-              <Button
-                variant="surface"
-                onClick={onClose}
-                className="flex-1 !min-h-[48px] !rounded-xl !text-[15px]"
-              >
-                キャンセル
-              </Button>
-              <Button
-                variant="primary"
-                onClick={handleApply}
-                className="flex-1 !min-h-[48px] !rounded-xl !text-[15px]"
-              >
-                適用
-              </Button>
-            </div>
-          </motion.div>
+      {/* ソート */}
+      <FilterSection label="ソート">
+        <div className="flex flex-col gap-1">
+          {sortOptions.map((opt) => (
+            <FilterSortOption
+              key={opt.id}
+              selected={tempSortOption === opt.id}
+              icon={opt.icon}
+              type="button"
+              aria-pressed={tempSortOption === opt.id}
+              onClick={() => setTempSortOption(opt.id)}
+            >
+              {opt.label}
+            </FilterSortOption>
+          ))}
         </div>
-      )}
-    </AnimatePresence>
+      </FilterSection>
+
+      {/* 日付範囲 */}
+      <FilterSection label="日付範囲">
+        <div className="grid grid-cols-2 gap-2">
+          <Input
+            type="date"
+            value={tempDateFrom}
+            onChange={(e) => setTempDateFrom(e.target.value)}
+            className={inputControlClassName}
+          />
+          <Input
+            type="date"
+            value={tempDateTo}
+            onChange={(e) => setTempDateTo(e.target.value)}
+            className={inputControlClassName}
+          />
+        </div>
+      </FilterSection>
+
+      {/* 焙煎度合い */}
+      <FilterSection label="焙煎度合い">
+        <div className="grid grid-cols-4 gap-2">
+          {ROAST_LEVELS.map((level) => (
+            <FilterOptionButton
+              key={level}
+              selected={tempSelectedRoastLevels.includes(level)}
+              type="button"
+              aria-pressed={tempSelectedRoastLevels.includes(level)}
+              onClick={() => handleRoastLevelToggle(level)}
+              className="!min-h-[40px] !px-1.5 !text-[12px] whitespace-nowrap"
+            >
+              {level}
+            </FilterOptionButton>
+          ))}
+        </div>
+      </FilterSection>
+    </FilterModal>
   );
 }
