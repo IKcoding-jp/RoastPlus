@@ -41,7 +41,7 @@ jobs:
             echo "hosting_changed=false" >> "$GITHUB_OUTPUT"
           fi
 
-          if echo "$changed_files" | grep -q '^functions/'; then
+          if echo "$changed_files" | grep -Eq '^(functions/|firebase\.json$)'; then
             echo "functions_changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "functions_changed=false" >> "$GITHUB_OUTPUT"
@@ -102,8 +102,8 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 20
-      - name: Install Functions dependencies
-        run: cd functions && npm ci
+      - name: Install and build Functions
+        run: cd functions && npm ci && npm run build
       - name: Deploy Functions
         uses: w9jds/firebase-action@v15.10.0
         with:
