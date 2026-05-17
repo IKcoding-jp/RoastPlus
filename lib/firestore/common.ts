@@ -5,6 +5,7 @@ import {
 } from 'firebase/firestore';
 import app from '../firebase';
 import type { AppData, UserSettings } from '@/types';
+import { normalizeHiddenHomeFeatureKeys } from '@/lib/homeFeatureVisibility';
 
 // Firestoreインスタンスのシングルトン管理
 let db: Firestore | null = null;
@@ -115,6 +116,10 @@ export function normalizeAppData(data: Partial<AppData> | undefined | null): App
     }
     if (data.userSettings.selectedManagerId !== undefined) {
       cleanedUserSettings.selectedManagerId = data.userSettings.selectedManagerId;
+    }
+    const homeHiddenFeatureKeys = normalizeHiddenHomeFeatureKeys(data.userSettings.homeHiddenFeatureKeys);
+    if (homeHiddenFeatureKeys.length > 0) {
+      cleanedUserSettings.homeHiddenFeatureKeys = homeHiddenFeatureKeys;
     }
     if (typeof data.userSettings.taskLabelHeaderTextLeft === 'string') {
       const trimmedLeft = data.userSettings.taskLabelHeaderTextLeft.trim();

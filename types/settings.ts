@@ -5,6 +5,7 @@ import type { RoastTimerSettings } from './timer';
 export interface UserSettings {
   selectedMemberId?: string; // 試飲記録用メンバー
   selectedManagerId?: string; // チェイス利用設定用
+  homeHiddenFeatureKeys?: string[]; // ホーム表示設定（非表示にする機能キー）
   roastTimerSettings?: RoastTimerSettings;
   taskLabelHeaderTextLeft?: string;
   taskLabelHeaderTextRight?: string;
