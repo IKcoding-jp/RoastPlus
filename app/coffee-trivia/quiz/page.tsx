@@ -12,6 +12,7 @@ import { useQuizData } from '@/hooks/useQuizData';
 import { useQuizSound } from '@/hooks/useQuizSound';
 import type { QuizCategory } from '@/lib/coffee-quiz/types';
 import { CATEGORY_LABELS } from '@/lib/coffee-quiz/types';
+import { getSafeReturnUrl } from '@/lib/returnUrl';
 
 // アイコン
 const ArrowLeftIcon = () => (
@@ -45,7 +46,7 @@ function QuizPageContent() {
   // 問題IDリストを解析
   const questionIds = questionIdsParam ? questionIdsParam.split(',').filter(Boolean) : undefined;
   // 戻り先URL（デコード）
-  const returnUrl = returnUrlParam ? decodeURIComponent(returnUrlParam) : '/coffee-trivia';
+  const returnUrl = getSafeReturnUrl(returnUrlParam, '/coffee-trivia');
 
   const { isAuthenticated, loading: authLoading, progress } = useQuizData();
 
