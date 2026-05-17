@@ -1,3 +1,93 @@
+# DESIGN.md Refresh Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** `DESIGN.md` を、ページ別のデザイン一貫性を保つための判断基準と実装リファレンスに整理する。
+
+**Architecture:** アプリコードは変更せず、`DESIGN.md` だけを再構成する。冒頭にデザイン方針とページタイプ別ルールを置き、後半に既存のカラー、タイポグラフィ、余白、コンポーネント、禁止事項を実装時に使いやすい順番で整理する。
+
+**Tech Stack:** Markdown, Next.js 16 App Router, React 19, Tailwind CSS v4, CSS variables, `components/ui`
+
+---
+
+## Scope
+
+この計画で変更する本体ファイルは `DESIGN.md` のみ。
+
+補助的に参照するファイル:
+- `docs/superpowers/specs/2026-05-17-design-md-refresh-design.md`
+- `docs/steering/PRODUCT.md`
+- `docs/steering/FEATURES.md`
+- `docs/steering/TECH_SPEC.md`
+- `app/globals.css`
+- `components/ui/registry.tsx`
+
+この計画では、実アプリの画面、共通UIコンポーネント、CSS変数、テストコード、依存関係は変更しない。
+
+ユーザーのリポジトリ方針により、コミットは明示依頼があるまで行わない。
+
+## File Structure
+
+### Modify: `DESIGN.md`
+
+責務:
+- RoastPlus のデザイン判断基準を示す。
+- ページタイプ別に一貫性を保つルールを示す。
+- 実装時に使う Tailwind/CSS変数/共通UIの参照を示す。
+- 禁止事項と実装前チェックリストを示す。
+
+完成後の章立て:
+
+```markdown
+# DESIGN.md — RoastPlus デザインガイド
+
+## 目次
+1. デザインコンセプト
+2. デザイン原則
+3. ページタイプ別ルール
+4. ページ間で揃える共通ルール
+5. カラーシステム
+6. タイポグラフィ
+7. 余白・最大幅・角丸
+8. 共通UIコンポーネント
+9. レイアウトパターン
+10. アニメーションとフィードバック
+11. 禁止事項
+12. 実装前チェックリスト
+13. 参照先
+```
+
+---
+
+### Task 1: 現行 `DESIGN.md` の使える情報を保持する
+
+**Files:**
+- Read: `DESIGN.md`
+- Read: `docs/superpowers/specs/2026-05-17-design-md-refresh-design.md`
+- Modify: `DESIGN.md`
+
+- [ ] **Step 1: 現行情報の保持対象を確認する**
+
+保持する情報:
+- 7テーマ構成
+- CSS変数ベースのセマンティックトークン
+- `bg-overlay` と `bg-surface` の使い分け
+- `components/ui` の共通UI使用方針
+- `Button`, `Card`, `Modal`, `Dialog`, `Tabs`, `Accordion` の使い分け
+- `h-dvh`, `min-h-0`, `max-w-*` などの既存レイアウト知識
+- ハードコード色、生Tailwindボタン、テーマ直判定の禁止
+- `components/ui/index.ts` と `components/ui/registry.tsx` への登録ルール
+
+削る、または弱める情報:
+- 「コードベース全体で何回使用」のような分析ログ寄りの表現
+- `.claude/skills/roastplus-ui/` を必ず参照するという前提表現
+- 実装者が判断しづらい「完全まとめ」表現
+
+- [ ] **Step 2: `DESIGN.md` の先頭を差し替える**
+
+`DESIGN.md` 冒頭を次の内容にする。
+
+```markdown
 # DESIGN.md — RoastPlus デザインガイド
 
 RoastPlus の画面を一貫して設計・実装するためのデザインガイド。
@@ -5,9 +95,13 @@ RoastPlus の画面を一貫して設計・実装するためのデザインガ�
 この文書は、単なる色やコンポーネントの一覧ではなく、「どのページタイプでは何を優先するか」を判断するための基準です。新しい画面を作るとき、既存画面を直すときは、まずページタイプ別ルールを確認してください。
 
 RoastPlus は、コーヒー焙煎・抽出業務を支援する現場向けPWAです。毎日使う少人数チーム向けの業務ツールなので、印象的な装飾よりも、迷わないこと、押しやすいこと、ページごとの一貫性を優先します。
+```
 
----
+- [ ] **Step 3: 目次を新構成に差し替える**
 
+`## 目次` を次の内容にする。
+
+```markdown
 ## 目次
 
 1. [デザインコンセプト](#1-デザインコンセプト)
@@ -23,9 +117,18 @@ RoastPlus は、コーヒー焙煎・抽出業務を支援する現場向けPWA�
 11. [禁止事項](#11-禁止事項)
 12. [実装前チェックリスト](#12-実装前チェックリスト)
 13. [参照先](#13-参照先)
+```
 
 ---
 
+### Task 2: デザイン方針とページタイプ別ルールを追加する
+
+**Files:**
+- Modify: `DESIGN.md`
+
+- [ ] **Step 1: `1. デザインコンセプト` を追加する**
+
+```markdown
 ## 1. デザインコンセプト
 
 **現場で迷わない業務PWA。コーヒーらしさは、操作を邪魔しないアクセントとして効かせる。**
@@ -33,9 +136,11 @@ RoastPlus は、コーヒー焙煎・抽出業務を支援する現場向けPWA�
 RoastPlus の主軸は「現場オペレーション重視」です。明るく、読みやすく、押しやすく、日常業務で迷わないことを優先します。
 
 コーヒーらしさは、ブランド色、テーマ、タイマー、カードヘッダー、限定的な演出で表現します。すべての画面を濃いブラウンや強い装飾で覆う方向にはしません。
+```
 
----
+- [ ] **Step 2: `2. デザイン原則` を追加する**
 
+```markdown
 ## 2. デザイン原則
 
 優先順位は次の順に固定します。
@@ -48,9 +153,11 @@ RoastPlus の主軸は「現場オペレーション重視」です。明るく�
 | 4 | 情報が一目で読める | 時間、担当、状態、次アクションは本文より強く見せる。 |
 | 5 | コーヒーらしさは控えめに効かせる | コーヒーらしい色や演出は、業務理解を邪魔しない範囲で使う。 |
 | 6 | 毎日使って疲れない | 強いアニメーション、過度なグラデーション、重い装飾は限定する。 |
+```
 
----
+- [ ] **Step 3: `3. ページタイプ別ルール` を追加する**
 
+```markdown
 ## 3. ページタイプ別ルール
 
 RoastPlus のページは、見た目ではなく「ユーザーが何をする画面か」で分類します。新しい画面を作るときは、まずこの6タイプのどれに当たるかを決めます。
@@ -63,9 +170,11 @@ RoastPlus のページは、見た目ではなく「ユーザーが何をする�
 | 集中操作 / 実行 | 作業中に状態と次操作を見る | ローストタイマー、ドリップガイド、クイズ、時計 | 固定または準固定画面 | 最小ナビ、固定ヘッダー | 画面全体 | 下部操作、中央に主要状態 | `Button`, `IconButton`, `ProgressBar` | 説明文やカードを増やしすぎる |
 | 詳細 / 参照 | 読む、判断材料を見る | 欠点豆詳細、開発秘話、規約、履歴詳細 | 読み物レイアウト | `FloatingNav` + タイトル | `max-w-3xl` 前後 | 必要な場合のみ本文末尾 | `Card`, `Badge`, `Accordion` | 操作ボタンを主役にする |
 | モーダル / 確認 | 短い判断、設定、確認 | 削除確認、フィルター、OCR確認、詳細設定 | 中央ダイアログ、またはモバイル下寄せ | モーダル内タイトル | `max-w-sm` から `max-w-md` | 下部にキャンセル、実行 | `Modal`, `Dialog`, `Button` | 長い内容や複雑な設定を詰め込む |
+```
 
----
+- [ ] **Step 4: `4. ページ間で揃える共通ルール` を追加する**
 
+```markdown
 ## 4. ページ間で揃える共通ルール
 
 ### 4.1 ヘッダー
@@ -100,10 +209,21 @@ RoastPlus のページは、見た目ではなく「ユーザーが何をする�
 - 一覧カードは 1カード1主題にする。
 - ホームカードやダッシュボードカードは短くする。
 - 詳細ページで情報を広げる。
-- カードの入れ子は禁止する。必要ならセクション見出し、区切り線、グループ背景で整理する。
+- カードの入れ子は禁止する。必要ならセクション分けにする。
+```
 
 ---
 
+### Task 3: 実装リファレンスを新方針に合わせて再構成する
+
+**Files:**
+- Modify: `DESIGN.md`
+
+- [ ] **Step 1: `5. カラーシステム` を整理する**
+
+既存のカラー表を残しつつ、冒頭に次を追加する。
+
+```markdown
 ## 5. カラーシステム
 
 RoastPlus では、色を直接指定せず、意味を持つセマンティックトークンを使います。テーマ切替は `data-theme` と CSS変数で行うため、コンポーネント側でテーマ名を見て色を分岐しません。
@@ -114,104 +234,27 @@ RoastPlus では、色を直接指定せず、意味を持つセマンティッ�
 - モーダルやダイアログは必ず `bg-overlay` を使う。
 - ブランド固定色は、ロゴ、ホーム、コーヒーらしさを出す限定箇所に使う。
 - `bg-white`, `text-gray-*`, `border-gray-*`, `bg-black` などのハードコード色は使わない。
-
-### 5.2 テーマ概要
-
-| 項目 | 内容 |
-|------|------|
-| テーマ数 | 7テーマ（`default`, `christmas`, `dark-roast`, `light-roast`, `matcha`, `caramel`, `dark`） |
-| テーマ切替方法 | `<html data-theme="christmas">` でCSS変数が自動切替 |
-| カラー方針 | セマンティックトークン必須。ハードコードカラーは禁止 |
-| スタイリング | Tailwind CSS v4 + CSS変数 |
-
-### 5.3 背景色
-
-| Tailwindクラス | CSS変数 | default値 | 用途 |
-|--------------|---------|-----------|------|
-| `bg-page` | `--page` | `#F7F7F5` | ページ全体背景 |
-| `bg-surface` | `--surface` | `#FFFFFF` | カード・セクション背景 |
-| `bg-overlay` | `--overlay` | `#FFFFFF` | モーダル・ダイアログ。不透明必須 |
-| `bg-ground` | `--ground` | `#F5F5F5` | テーブルヘッダー・セクション背景 |
-| `bg-field` | `--field` | `#FFFFFF` | 入力フィールド背景 |
-| `bg-spot` | `--spot` | `#d97706` | アクセント背景 |
-| `bg-spot-subtle` | `--spot-subtle` | `#f0f0f0` | アクセント薄背景 |
-| `bg-spot-surface` | `--spot-surface` | `#f7f7f7` | アクセント極薄背景 |
-| `bg-btn-primary` | `--btn-primary` | `#d97706` | プライマリボタン背景 |
-| `bg-btn-primary-hover` | `--btn-primary-hover` | `#b45309` | プライマリボタンホバー |
-| `bg-header-bg` | `--header-bg` | `#261a14` | ヘッダー背景 |
-
-### 5.4 テキスト色
-
-| Tailwindクラス | CSS変数 | default値 | 用途 |
-|--------------|---------|-----------|------|
-| `text-ink` | `--ink` | `#1f2937` | メインテキスト |
-| `text-ink-sub` | `--ink-sub` | `#4b5563` | 補助テキスト・説明文 |
-| `text-ink-muted` | `--ink-muted` | `#9ca3af` | プレースホルダー・薄いテキスト |
-| `text-spot` | `--spot` | `#d97706` | アクセントテキスト |
-| `text-spot-hover` | `--spot-hover` | `#b45309` | アクセントホバー |
-| `text-header-text` | `--header-text` | `#FFFFFF` | ヘッダーテキスト |
-| `text-header-accent` | `--header-accent` | `#EF8A00` | ヘッダーアクセント |
-| `text-danger` | `--danger` | `#dc2626` | エラー・削除 |
-| `text-success` | `--success` | `#16a34a` | 成功 |
-| `text-warning` | `--warning` | `#eab308` | 警告 |
-| `text-info` | `--info` | `#00b8d4` | 情報 |
-| `text-error` | `--error` | `#ef4444` | エラーテキスト |
-
-### 5.5 ボーダー色
-
-| Tailwindクラス | CSS変数 | default値 | 用途 |
-|--------------|---------|-----------|------|
-| `border-edge` | `--edge` | `#e5e7eb` | 通常ボーダー |
-| `border-edge-strong` | `--edge-strong` | `#d1d5db` | 強調ボーダー・ホバー |
-| `border-edge-subtle` | `--edge-subtle` | `#f3f4f6` | 薄いボーダー |
-| `border-error` | `--error` | `#ef4444` | エラーボーダー |
-
-### 5.6 ステータス薄背景
-
-| Tailwindクラス | default値 | 用途 |
-|--------------|-----------|------|
-| `bg-danger-subtle` | `#fee2e2` | エラー薄背景 |
-| `bg-success-subtle` | `#dcfce7` | 成功薄背景 |
-| `bg-warning-subtle` | `#fef9c3` | 警告薄背景 |
-
-### 5.7 シャドウ
-
-| クラス | 用途 |
-|--------|------|
-| `shadow-card` | カード通常シャドウ |
-| `shadow-card-hover` | カードホバーシャドウ |
-| `shadow-card-glow` | 薄いシャドウ |
-
-### 5.8 ブランド固定色
-
-ブランド固定色は、通常画面では乱用しません。ロゴ、ホーム、テーマプレビュー、コーヒーらしい強調に限定します。
-
-| Tailwindクラス | 値 | 用途 |
-|--------------|-----|------|
-| `text-primary` / `bg-primary` | `#EF8A00` | ブランドオレンジ |
-| `bg-primary-dark` | `#D67A00` | ダークオレンジ |
-| `text-primary-light` | `#FF9A1A` | ライトオレンジ |
-| `bg-dark` | `#211714` | ダークブラウン |
-| `bg-dark-light` | `#3A2F2B` | ライトブラウン |
-| `text-gold` | `#FFC107` | ゴールド |
-
-### 5.9 カードヘッダーグラデーション
-
-```tsx
-<div className="bg-gradient-to-r from-card-header-from via-card-header-via to-card-header-to">
-  {/* グラデーションヘッダー */}
-</div>
 ```
 
-グラデーションは、ホーム、ブランド強調、タイマーなど、コーヒーらしさを出したい箇所に限定します。
+保持する表:
+- 背景色
+- テキスト色
+- ボーダー色
+- ステータス薄背景
+- シャドウ
+- ブランドカラー
 
----
+削る表現:
+- 「コードベース全体で2,400回以上使用されている」
 
+- [ ] **Step 2: `6. タイポグラフィ` を整理する**
+
+既存のサイズ表を残しつつ、冒頭を次にする。
+
+```markdown
 ## 6. タイポグラフィ
 
 文字サイズは、画面タイプと情報の重要度で決めます。大きな文字は、タイマー、数値、現在状態など、作業中に遠目でも読む必要がある情報に限定します。
-
-### 6.1 用途別の基本形
 
 | 用途 | 推奨クラス | 使う場所 |
 |------|------------|----------|
@@ -221,55 +264,16 @@ RoastPlus では、色を直接指定せず、意味を持つセマンティッ�
 | 補助文 | `text-sm text-ink-sub` | 説明、注記 |
 | ラベル | `text-xs font-medium text-ink-muted` | バッジ、補足情報 |
 | 大きな数値 | `text-3xl` から `text-4xl font-bold` | タイマー、進捗数値 |
-
-### 6.2 フォントサイズ
-
-| クラス | px換算 | 主な用途 |
-|--------|--------|---------|
-| `text-xs` | 12px | バッジ・ラベル・補足情報 |
-| `text-sm` | 14px | 補助テキスト・フォームラベル |
-| `text-base` | 16px | 本文 |
-| `text-lg` | 18px | セクション見出し |
-| `text-xl` | 20px | ページタイトル（モバイル） |
-| `text-2xl` | 24px | ページタイトル（デスクトップ） |
-| `text-3xl` | 30px | 大きな数値 |
-| `text-4xl` | 36px | タイマーなどのヒーロー数値 |
-
-### 6.3 フォントウェイト
-
-| クラス | 用途 |
-|--------|------|
-| `font-bold` | 見出し・強調 |
-| `font-semibold` | サブ見出し・ボタンラベル |
-| `font-medium` | ラベル・タブ |
-| `font-normal` | 本文 |
-
-### 6.4 典型パターン
-
-```tsx
-{/* ページタイトル */}
-<h1 className="text-xl sm:text-2xl font-bold text-ink">タイトル</h1>
-
-{/* セクション見出し */}
-<h2 className="text-lg font-semibold text-ink">セクション名</h2>
-
-{/* 説明文 */}
-<p className="text-sm text-ink-sub">補足説明</p>
-
-{/* 数値表示 */}
-<span className="text-4xl font-bold text-ink">00:00</span>
-
-{/* バッジ・ラベル */}
-<span className="text-xs font-medium text-ink-muted">ラベル</span>
 ```
 
----
+- [ ] **Step 3: `7. 余白・最大幅・角丸` を整理する**
 
+既存のスペーシング、角丸情報を統合して次の冒頭を追加する。
+
+```markdown
 ## 7. 余白・最大幅・角丸
 
 余白と最大幅は、ページタイプ別の一貫性を保つために固定パターンを優先します。
-
-### 7.1 基本スケール
 
 | 用途 | 推奨 |
 |------|------|
@@ -283,61 +287,16 @@ RoastPlus では、色を直接指定せず、意味を持つセマンティッ�
 | セクション間 | `space-y-6` |
 | カード角丸 | `rounded-2xl` |
 | ボタン、入力 | `rounded-lg` |
+```
 
-### 7.2 垂直スペーシング
+- [ ] **Step 4: `8. 共通UIコンポーネント` を整理する**
 
-| クラス | px | 用途 |
-|--------|----|------|
-| `space-y-2` | 8px | 密なリスト |
-| `space-y-4` | 16px | フォーム要素間 |
-| `space-y-6` | 24px | セクション内グループ |
-| `space-y-8` | 32px | 主要セクション間 |
+`components/ui` の一覧は残し、使い分け表を追加する。
 
-### 7.3 グリッド・フレックスギャップ
-
-| クラス | px | 用途 |
-|--------|----|------|
-| `gap-2` | 8px | アイコン+テキスト |
-| `gap-3` | 12px | モバイルグリッド |
-| `gap-4` | 16px | デスクトップグリッド |
-| `gap-6` | 24px | 大きなグリッド |
-
-### 7.4 コンテナ余白
-
-| クラス | 値 | 用途 |
-|--------|----|------|
-| `px-4` | 16px | モバイル横余白 |
-| `sm:px-6` | 24px | タブレット横余白 |
-| `lg:px-8` | 32px | デスクトップ横余白 |
-| `py-4` | 16px | モバイル縦余白 |
-| `py-6` | 24px | タブレット縦余白 |
-| `p-4` | 16px | カード内余白 |
-| `p-6` | 24px | フォームカード内余白 |
-
-### 7.5 角丸
-
-| クラス | px | 主な用途 |
-|--------|----|---------|
-| `rounded-lg` | 8px | ボタン・入力・小要素 |
-| `rounded-xl` | 12px | バッジ・中要素 |
-| `rounded-2xl` | 16px | カード・モーダル |
-| `rounded-3xl` | 24px | 大きな特殊要素 |
-| `rounded-full` | 50% | アイコンボタン・アバター・ピル型バッジ |
-
----
-
+```markdown
 ## 8. 共通UIコンポーネント
 
 ボタン、カード、入力、セレクト、チェックボックス、モーダルなどを生のTailwindだけで新規実装しません。まず `components/ui` の既存コンポーネントを使います。
-
-### 8.1 基本ルール
-
-- 共通UIは `@/components/ui` から import する。
-- shadcn/ui、Radix UI、styled-components、emotion は使わない。
-- 新しい共通UIを追加した場合は `components/ui/index.ts` と `components/ui/registry.tsx` に登録する。
-- 44px以上のタッチ領域を保つ。
-
-### 8.2 使い分け
 
 | コンポーネント | 主な用途 | 注意 |
 |----------------|----------|------|
@@ -346,214 +305,51 @@ RoastPlus では、色を直接指定せず、意味を持つセマンティッ�
 | `FloatingNav` | 通常ページの戻る導線 | ホームと集中画面では例外あり |
 | `Card` | 情報のまとまり | カードの入れ子は禁止 |
 | `Input`, `Textarea`, `Select` | フォーム入力 | ラベルと補足文を近くに置く |
-| `Checkbox`, `Switch` | ON/OFFや複数選択 | 生のinputを直接使わない |
 | `Modal` | 任意コンテンツのモーダル | `bg-overlay` 必須 |
 | `Dialog` | 確認ダイアログ | 削除は `danger` |
 | `Tabs` | 同階層の表示切替 | ページ遷移の代替にしすぎない |
 | `Accordion` | 補足情報の開閉 | 主要情報を隠しすぎない |
 | `EmptyState` | 空状態 | 次アクションを出す |
-
-### 8.3 import例
-
-```tsx
-import {
-  Button,
-  IconButton,
-  BackLink,
-  FloatingNav,
-  Input,
-  NumberInput,
-  InlineInput,
-  Textarea,
-  Select,
-  Checkbox,
-  Switch,
-  Card,
-  Modal,
-  Dialog,
-  Badge,
-  RoastLevelBadge,
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-  ProgressBar,
-  EmptyState,
-} from '@/components/ui';
 ```
-
-### 8.4 Button
-
-| variant | 用途 |
-|---------|------|
-| `primary` | 主要アクション |
-| `secondary` | 副次アクション |
-| `danger` | 削除・危険操作 |
-| `success` | 完了・承認 |
-| `warning` | 注意喚起 |
-| `info` | 情報系アクション |
-| `outline` | 軽量アクション |
-| `ghost` | ナビゲーション、控えめな操作 |
-| `coffee` | ブランド強調 |
-| `surface` | フィルター・補助 |
-
-```tsx
-<Button variant="primary" size="md">保存</Button>
-<Button variant="danger" size="sm" loading={isDeleting}>削除中</Button>
-<Button variant="outline" fullWidth>全幅ボタン</Button>
-```
-
-### 8.5 Card
-
-| variant | 用途 |
-|---------|------|
-| `default` | 汎用カード |
-| `hoverable` | クリッカブルカード |
-| `action` | ホームグリッドカード |
-| `coffee` | ブランド強調カード |
-| `table` | テーブル外枠 |
-| `guide` | ガイド表示、空状態 |
-
-### 8.6 Modal / Dialog
-
-```tsx
-<Modal
-  show={isOpen}
-  onClose={close}
-  contentClassName="bg-overlay rounded-2xl shadow-xl max-w-sm w-full border border-edge"
->
-  <div className="p-6">...</div>
-</Modal>
-
-<Dialog
-  isOpen={show}
-  onClose={close}
-  title="削除の確認"
-  description="取り消せません"
-  confirmText="削除"
-  onConfirm={handleDelete}
-  variant="danger"
-/>
-```
-
-モーダル背景は必ず `bg-overlay` を使います。`bg-surface` はダーク系テーマで半透明になるため、モーダルには使いません。
 
 ---
 
+### Task 4: レイアウト、アニメーション、禁止事項、チェックリストを仕上げる
+
+**Files:**
+- Modify: `DESIGN.md`
+
+- [ ] **Step 1: `9. レイアウトパターン` をページタイプと対応させる**
+
+既存のレイアウトコード例を残し、各見出しを次に寄せる。
+
+```markdown
 ## 9. レイアウトパターン
 
 ### 9.1 通常スクロールページ
 
 一覧、設定、詳細ページで使う基本形。
 
-```tsx
-<div className="min-h-screen bg-page">
-  <FloatingNav backHref="/" />
-  <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 max-w-4xl">
-    <header className="mb-6 sm:mb-8">
-      <h1 className="text-xl sm:text-2xl font-bold text-ink">タイトル</h1>
-    </header>
-    <main className="space-y-6">
-      <Card variant="default">...</Card>
-    </main>
-  </div>
-</div>
-```
-
 ### 9.2 フル画面固定ページ
 
 ローストタイマー、ドリップガイド、時計など、作業中に状態を見続ける画面で使う。
-
-```tsx
-<div className="h-dvh flex flex-col bg-surface overflow-hidden">
-  <header className="flex-shrink-0 border-b border-edge px-4 py-3">...</header>
-  <main className="flex-1 flex flex-col min-h-0 overflow-y-auto">
-    {/* flex-1 min-h-0 の組み合わせでスクロールを制御 */}
-  </main>
-  <footer className="flex-shrink-0 border-t border-edge px-4 py-3">...</footer>
-</div>
-```
-
-`h-dvh` はPWAのアドレスバー表示/非表示に追従するため、固定画面では `h-screen` より優先します。
 
 ### 9.3 フォームページ
 
 入力と保存を迷わせないため、最大幅を狭めて縦積みにする。
 
-```tsx
-<div className="min-h-screen bg-page">
-  <FloatingNav backHref="/" />
-  <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
-    <Card variant="default" className="p-6">
-      <form className="space-y-6">
-        <Input label="名前" />
-        <div className="flex gap-4 justify-end">
-          <Button variant="secondary">キャンセル</Button>
-          <Button variant="primary" type="submit">保存</Button>
-        </div>
-      </form>
-    </Card>
-  </div>
-</div>
-```
-
 ### 9.4 ホームグリッド
 
 機能選択を迷わせないため、2列から4列のカードグリッドを基本にする。
 
-```tsx
-<div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
-  {items.map((item) => (
-    <Card key={item.id} variant="action">...</Card>
-  ))}
-</div>
-```
-
 ### 9.5 ヘッダーパターン
 
-```tsx
-{/* 通常ページ */}
-<div className="flex items-center gap-4">
-  <BackLink href="/" variant="icon-only" />
-  <h1 className="text-xl sm:text-2xl font-bold text-ink">タイトル</h1>
-</div>
-
-{/* スティッキー */}
-<header className="sticky top-0 z-30 flex-shrink-0 bg-surface border-b border-edge px-4 py-3">
-  <div className="flex items-center justify-between">
-    <BackLink href="/" variant="icon-only" />
-    <h1 className="text-xl font-bold text-ink">タイトル</h1>
-    <Button variant="primary" size="sm">追加</Button>
-  </div>
-</header>
-
-{/* ホーム */}
-<header className="relative z-50 shadow-lg bg-header-bg">
-  <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-    <span className="text-2xl font-bold text-header-text">
-      Roast<span className="text-header-accent">Plus</span>
-    </span>
-  </div>
-</header>
+通常ページ、スティッキー、ホームヘッダーの使い分けを示す。
 ```
 
-### 9.6 レスポンシブブレークポイント
+- [ ] **Step 2: `10. アニメーションとフィードバック` を整理する**
 
-```text
-default : 0px     モバイル
-sm      : 640px   タブレット
-md      : 768px   小型デスクトップ
-lg      : 1024px  大型デスクトップ
-```
-
-モバイルファーストで記述し、`sm:`, `md:`, `lg:` で上書きします。
-
----
-
+```markdown
 ## 10. アニメーションとフィードバック
 
 アニメーションは、状態変化を理解しやすくするために使います。装飾だけの強い動きは避けます。
@@ -567,91 +363,30 @@ lg      : 1024px  大型デスクトップ
 | エラー、成功 | Toast やインラインメッセージで次の行動を示す |
 
 `prefers-reduced-motion` を尊重し、動きを減らす設定のユーザーには不要なアニメーションを見せません。
-
-### 10.1 カスタムCSSアニメーション
-
-| クラス | 効果 | 用途 |
-|--------|------|------|
-| `animate-pulse-scale` | 2秒ループ、scale 1→1.05→1 | Newラベル |
-| `animate-home-page` | 左スライド + フェードイン | ホームページ入場 |
-| `animate-home-card` | 下スライド + フェードイン | グリッドカード順次出現 |
-| `new-label-gradient` | グラデーション流動 | ラベル装飾 |
-
-### 10.2 Tailwindトランジション
-
-| 用途 | クラス | 時間 |
-|------|--------|------|
-| ホバー色変化 | `transition-colors duration-200` | 200ms |
-| モーダル開閉 | `transition-all duration-300` | 300ms |
-| カードリフト | `hover:-translate-y-2 hover:shadow-card-hover transition-all duration-300` | 300ms |
-| テーマ変更 | `transition-colors duration-1000` | 1000ms |
-
-### 10.3 Framer Motion
-
-```tsx
-<motion.div
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.3 }}
->
-  ...
-</motion.div>
 ```
 
----
+既存のCSSアニメーション表、Tailwindトランジション表、Framer Motionパターンは、この章の後半に残す。
 
+- [ ] **Step 3: `11. 禁止事項` を更新する**
+
+```markdown
 ## 11. 禁止事項
 
 ### 11.1 ハードコード色
 
 `bg-white`, `text-gray-*`, `border-gray-*`, `bg-black` など、テーマに追従しない色指定は使いません。
 
-```tsx
-// NG
-<div className="bg-white text-gray-900 border-gray-200">
-
-// OK
-<div className="bg-surface text-ink border-edge">
-```
-
 ### 11.2 生Tailwindのボタン、カード、入力
 
 `Button`, `Card`, `Input`, `Select`, `Checkbox` など、共通UIがあるものを独自実装しません。
-
-```tsx
-// NG
-<button className="bg-orange-500 text-white px-4 py-2 rounded-lg">
-  保存
-</button>
-
-// OK
-<Button variant="primary">保存</Button>
-```
 
 ### 11.3 テーマ名の直接判定
 
 コンポーネント側で `theme === 'christmas'` のような分岐をして通常色を変えません。テーマ差分はCSS変数で吸収します。
 
-```tsx
-// NG
-const isChristmas = theme === 'christmas';
-<div className={isChristmas ? 'bg-[#0a2f1a]' : 'bg-white'}>
-
-// OK
-<div className="bg-surface">
-```
-
 ### 11.4 モーダル背景の `bg-surface`
 
 ダークテーマで透過するため、モーダルやダイアログは `bg-overlay` を使います。
-
-```tsx
-// NG
-<div className="bg-surface rounded-2xl">...</div>
-
-// OK
-<Modal contentClassName="bg-overlay rounded-2xl ...">
-```
 
 ### 11.5 カードの入れ子
 
@@ -660,9 +395,11 @@ const isChristmas = theme === 'christmas';
 ### 11.6 目的のない装飾
 
 過度なグラデーション、強い影、装飾アニメーションは、操作理解に役立つ場合だけ使います。
+```
 
----
+- [ ] **Step 4: `12. 実装前チェックリスト` を追加する**
 
+```markdown
 ## 12. 実装前チェックリスト
 
 UIを作る、または直す前に確認します。
@@ -679,9 +416,11 @@ UIを作る、または直す前に確認します。
 - [ ] モバイルで44px以上のタッチ領域を確保している
 - [ ] カードの入れ子を作っていない
 - [ ] アニメーションが操作理解を邪魔していない
+```
 
----
+- [ ] **Step 5: `13. 参照先` を更新する**
 
+```markdown
 ## 13. 参照先
 
 | ドキュメント / ファイル | 内容 |
@@ -694,4 +433,114 @@ UIを作る、または直す前に確認します。
 | `app/globals.css` | CSS変数、テーマ定義、カスタムアニメーション |
 | `components/ui/registry.tsx` | 共通UIコンポーネントのデモ |
 | `/dev/design-lab` | 開発者向けデザイン確認ページ |
+```
+
+---
+
+### Task 5: ドキュメント検証を実行する
+
+**Files:**
+- Verify: `DESIGN.md`
+
+- [ ] **Step 1: 未確定表現を検索する**
+
+Run:
+
+```powershell
+rg "TBD|TODO|未定|要確認|\?\?" DESIGN.md
+```
+
+Expected:
+
+```text
+No matches.
+```
+
+- [ ] **Step 2: 章見出しが想定通りか確認する**
+
+Run:
+
+```powershell
+rg "^## " DESIGN.md
+```
+
+Expected:
+
+```text
+## 目次
+## 1. デザインコンセプト
+## 2. デザイン原則
+## 3. ページタイプ別ルール
+## 4. ページ間で揃える共通ルール
+## 5. カラーシステム
+## 6. タイポグラフィ
+## 7. 余白・最大幅・角丸
+## 8. 共通UIコンポーネント
+## 9. レイアウトパターン
+## 10. アニメーションとフィードバック
+## 11. 禁止事項
+## 12. 実装前チェックリスト
+## 13. 参照先
+```
+
+- [ ] **Step 3: 重要キーワードが含まれることを確認する**
+
+Run:
+
+```powershell
+rg "ページタイプ|FloatingNav|bg-overlay|components/ui|EmptyState|カードの入れ子|44px|現場で迷わない" DESIGN.md
+```
+
+Expected:
+
+```text
+Each keyword appears at least once.
+```
+
+- [ ] **Step 4: 差分を確認する**
+
+Run:
+
+```powershell
+git diff -- DESIGN.md
+```
+
+Expected:
+- `DESIGN.md` のみが本文変更されている。
+- アプリコード、CSS、テスト、設定ファイルは変更されていない。
+- 仕様で合意した「ページ別の一貫性」が冒頭側に入っている。
+
+- [ ] **Step 5: 作業ツール用ファイルの扱いを確認する**
+
+Run:
+
+```powershell
+git status --short --branch
+```
+
+Expected:
+- `DESIGN.md` が変更されている。
+- 既存のユーザー変更である `.serena/project.yml` と `CLAUDE.md` は触らない。
+- ブレスト用に作成した `scripts/start-brainstorm-companion.ps1` と `.superpowers/brainstorm/manual-design/` は、ユーザーに残すか削除するか確認してから扱う。
+
+---
+
+## Self-Review
+
+Spec coverage:
+- デザインコンセプト: Task 2 Step 1
+- デザイン原則: Task 2 Step 2
+- ページタイプ別ルール: Task 2 Step 3
+- ページ間共通ルール: Task 2 Step 4
+- カラー、タイポグラフィ、余白、コンポーネント: Task 3
+- レイアウト、アニメーション、禁止事項、チェックリスト: Task 4
+- 検証: Task 5
+
+Placeholder scan:
+- この計画には `TBD`, `TODO`, `未定`, `要確認` を使わない。
+- 「適切に」「必要に応じて」だけで終わる実装指示を置かない。
+
+Type consistency:
+- コード変更はない。
+- 文書内の主要用語は `ページタイプ`, `FloatingNav`, `bg-overlay`, `components/ui`, `EmptyState` に統一する。
 

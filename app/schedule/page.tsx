@@ -54,26 +54,26 @@ export default function SchedulePage() {
   return (
     <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabType)} defaultValue="today" className="h-dvh pt-14 sm:pt-3 pb-4 px-4 sm:px-4 lg:px-6 flex flex-col overflow-hidden bg-page">
       <FloatingNav backHref="/" />
-      {/* モバイル版：日付ナビ（戻るボタンの右〜画面右端で中央配置） */}
-      <div className="sm:hidden fixed top-3 left-14 right-3 z-50 flex">
-        <div className="w-full flex items-center justify-between rounded-2xl px-3 py-2 bg-surface/80 backdrop-blur-sm border border-edge shadow-md">
+      {/* モバイル版：日付ナビ（戻るボタンの右側に余白を確保） */}
+      <div className="sm:hidden fixed top-3 left-16 right-4 z-50 flex">
+        <div className="w-full min-h-10 flex items-center justify-between rounded-xl px-2 py-1.5 bg-surface/80 backdrop-blur-sm border border-edge shadow-sm">
           <IconButton
             variant="ghost"
             size="sm"
             onClick={moveToPreviousDay}
             aria-label="前日"
-            className="active:scale-90 transition-transform !min-h-0 !p-1"
+            className="active:scale-90 transition-transform !min-h-0 !min-w-0 !h-8 !w-8 !p-1"
           >
-            <HiChevronLeft className="h-5 w-5" />
+            <HiChevronLeft className="h-4 w-4" />
           </IconButton>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setIsDatePickerOpen(true)}
             aria-label="日付を選択"
-            className="!min-h-0 !px-1 !py-1"
+            className="!min-h-0 !px-2 !py-1"
           >
-            <span className="text-base font-bold tracking-tight font-sans whitespace-nowrap leading-tight text-ink">
+            <span className="text-[15px] font-bold tracking-tight font-sans whitespace-nowrap leading-tight text-ink">
               {formatDateString(selectedDate)}
             </span>
           </Button>
@@ -83,9 +83,9 @@ export default function SchedulePage() {
             onClick={moveToNextDay}
             disabled={isMaxDate}
             aria-label="翌日"
-            className="active:scale-90 transition-transform !min-h-0 !p-1"
+            className="active:scale-90 transition-transform !min-h-0 !min-w-0 !h-8 !w-8 !p-1"
           >
-            <HiChevronRight className="h-5 w-5" />
+            <HiChevronRight className="h-4 w-4" />
           </IconButton>
         </div>
       </div>
