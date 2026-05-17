@@ -1,0 +1,80 @@
+import { describe, expect, it, vi } from 'vitest';
+
+import { playWorkChime } from './workChimeAudio';
+
+function createAudioContextMock() {
+  const events: Array<{ frequency: number; start: number; stop: number; type: OscillatorType }> = [];
+  const gainValues: number[] = [];
+
+  const destination = {};
+
+  return {
+    ctx: {
+      currentTime: 10,
+      destination,
+      createOscillator: vi.fn(() => {
+        const oscillator = {
+          type: 'sine' as OscillatorType,
+          frequency: {
+            setValueAtTime: vi.fn((frequency: number) => {
+              events.push({ frequency, start: 0, stop: 0, type: oscillator.type });
+            }),
+          },
+          detune: { setValueAtTime: vi.fn() },
+          connect: vi.fn(),
+          start: vi.fn((start: number) => {
+            events[events.length - 1].start = start;
+          }),
+          stop: vi.fn((stop: number) => {
+            events[events.length - 1].stop = stop;
+          }),
+        };
+
+        return oscillator;
+      }),
+      createGain: vi.fn(() => ({
+        gain: {
+          setValueAtTime: vi.fn((value: number) => gainValues.push(value)),
+          exponentialRampToValueAtTime: vi.fn((value: number) => gainValues.push(value)),
+        },
+        connect: vi.fn(),
+      })),
+    },
+    events,
+    gainValues,
+  };
+}
+
+describe('workChimeAudio', () => {
+  it('休憩チャイムは下がる2音をスケジュールする', () => {
+    const mock = createAudioContextMock();
+
+    playWorkChime('break', { volume: 0.8, audioContext: mock.ctx });
+
+    expect(mock.ctx.createOscillator).toHaveBeenCalledTimes(6);
+    expect(mock.events[0].frequency).toBe(784);
+    expect(mock.events[3].frequency).toBe(659);
+  });
+
+  it('作業開始チャイムは上がる3音をスケジュールする', () => {
+    const mock = createAudioContextMock();
+
+    playWorkChime('work-start', { volume: 0.8, audioContext: mock.ctx });
+
+    expect(mock.ctx.createOscillator).toHaveBeenCalledTimes(9);
+    expect(mock.events[0].frequency).toBe(659);
+    expect(mock.events[3].frequency).toBe(784);
+    expect(mock.events[6].frequency).toBe(988);
+  });
+
+  it('音量は0から1に丸める', () => {
+    const low = createAudioContextMock();
+    const high = createAudioContextMock();
+
+    playWorkChime('break', { volume: -1, audioContext: low.ctx });
+    playWorkChime('break', { volume: 2, audioContext: high.ctx });
+
+    expect(low.gainValues).toContain(0);
+    expect(high.gainValues.some((value) => value > 1)).toBe(false);
+  });
+});

@@ -1,13 +1,47 @@
 'use client';
 
-import { useState, useCallback, useSyncExternalStore } from 'react';
+import { useState, useCallback, useEffect, useSyncExternalStore } from 'react';
 import { HiCog6Tooth } from 'react-icons/hi2';
+import { MdSchedule } from 'react-icons/md';
 import { BackLink, IconButton } from '@/components/ui';
 import { useClockSettings } from '@/hooks/useClockSettings';
 import { ClockSettingsModal } from '@/components/clock/ClockSettingsModal';
+import { NextChimeStrip } from '@/components/clock/NextChimeStrip';
+import { WorkChimeAlert } from '@/components/clock/WorkChimeAlert';
+import { WorkChimeScheduleModal } from '@/components/clock/WorkChimeScheduleModal';
+import { useWorkChime } from '@/hooks/useWorkChime';
 import { getThemeColors, getFontFamily, getFontWidthFactor, getScaledClamp } from '@/lib/clockSettings';
+import type { DueWorkChime, WorkChimeKind } from '@/lib/workChime';
 
 const DAY_NAMES = ['日', '月', '火', '水', '木', '金', '土'];
+
+function getPreviewChime(): DueWorkChime | null {
+  if (typeof window === 'undefined') return null;
+
+  const preview = new URLSearchParams(window.location.search).get('previewChime');
+  const previews: Record<string, { time: string; kind: WorkChimeKind; label: string; message: string }> = {
+    break: { time: '10:45', kind: 'break', label: '休憩開始', message: '休憩時間です' },
+    work: { time: '10:00', kind: 'work-start', label: '作業開始', message: '作業開始です' },
+    cleanup: { time: '16:35', kind: 'cleanup-start', label: '掃除開始', message: '掃除開始です' },
+  };
+  const target = preview ? previews[preview] : null;
+
+  if (!target) return null;
+
+  return {
+    period: {
+      id: `preview-${preview}`,
+      start: target.time,
+      end: target.time,
+      kind: target.kind === 'break' ? 'break' : target.kind === 'cleanup-start' ? 'cleanup' : 'work',
+    },
+    time: target.time,
+    kind: target.kind,
+    label: target.label,
+    playKey: `preview-${preview}`,
+    message: target.message,
+  };
+}
 
 function formatTime(date: Date, use24Hour: boolean): { h: string; m: string; s: string; ampm?: string } {
   let hours = date.getHours();
@@ -57,6 +91,28 @@ export default function ClockPage() {
   const now = useCurrentTime();
   const { settings, isLoaded, updateSettings, resetSettings } = useClockSettings();
   const [showSettings, setShowSettings] = useState(false);
+  const [showWorkChimeSchedule, setShowWorkChimeSchedule] = useState(false);
+  const {
+    settings: workChimeSettings,
+    currentPeriod,
+    nextChime,
+    activeChime,
+    isAudioEnabled,
+    enableAudio,
+    updateSettings: updateWorkChimeSettings,
+    dismissActiveChime,
+  } = useWorkChime(now);
+  const [previewChime, setPreviewChime] = useState<DueWorkChime | null>(() => getPreviewChime());
+  useEffect(() => {
+    if (!previewChime) return;
+
+    const timer = window.setTimeout(() => {
+      setPreviewChime(null);
+    }, 5000);
+
+    return () => window.clearTimeout(timer);
+  }, [previewChime]);
+  const displayedChime = previewChime ?? activeChime;
 
   const colors = getThemeColors(settings.theme);
   const fontFamily = getFontFamily(settings.fontKey);
@@ -84,6 +140,17 @@ export default function ClockPage() {
       {/* ヘッダー：戻るボタン＋設定ボタン */}
       <div className="absolute top-4 left-4 sm:top-6 sm:left-6">
         <BackLink href="/" variant="icon-only" aria-label="ホームに戻る" />
+      </div>
+
+      <div className="absolute top-4 right-20 sm:top-6 sm:right-24">
+        <IconButton
+          variant="ghost"
+          rounded
+          onClick={() => setShowWorkChimeSchedule(true)}
+          aria-label="チャイム時刻設定"
+        >
+          <MdSchedule className="h-6 w-6" style={{ color: colors.uiText }} />
+        </IconButton>
       </div>
 
       <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
@@ -168,15 +235,36 @@ export default function ClockPage() {
             background: `linear-gradient(to right, ${colors.accentSub}, ${colors.accent}, ${colors.accentSub})`,
           }}
         />
+
+        {!displayedChime && workChimeSettings.enabled && (
+          <NextChimeStrip currentPeriod={currentPeriod} nextChime={nextChime} colors={colors} />
+        )}
       </div>
+
+      <WorkChimeAlert
+        chime={displayedChime}
+        colors={colors}
+        onClose={previewChime ? () => setPreviewChime(null) : dismissActiveChime}
+      />
 
       {/* 設定モーダル */}
       <ClockSettingsModal
         show={showSettings}
         settings={settings}
+        workChimeSettings={workChimeSettings}
+        isWorkChimeAudioEnabled={isAudioEnabled}
         onUpdate={updateSettings}
+        onWorkChimeUpdate={updateWorkChimeSettings}
+        onEnableWorkChimeAudio={enableAudio}
         onReset={resetSettings}
         onClose={() => setShowSettings(false)}
+      />
+
+      <WorkChimeScheduleModal
+        show={showWorkChimeSchedule}
+        settings={workChimeSettings}
+        onUpdate={updateWorkChimeSettings}
+        onClose={() => setShowWorkChimeSchedule(false)}
       />
     </div>
   );
