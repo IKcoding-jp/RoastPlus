@@ -168,10 +168,9 @@ export function TastingSessionList({
           className="max-w-md w-full"
         >
           <Card className="rounded-[3rem] p-10 text-center space-y-8">
-            <div className="relative mx-auto w-32 h-32">
-              <div className="absolute inset-0 rounded-full scale-110 blur-2xl opacity-60 bg-spot-subtle"></div>
-              <div className="relative w-full h-full rounded-full flex items-center justify-center border-2 shadow-inner bg-ground border-edge">
-                <Coffee size={64} weight="duotone" className="text-spot opacity-50" />
+            <div className="relative mx-auto w-32 h-32 flex items-center justify-center">
+              <div className="relative flex items-center justify-center">
+                <Coffee size={64} weight="duotone" className="text-spot opacity-70" />
               </div>
             </div>
 

@@ -176,7 +176,7 @@ export function QuizResult({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="bg-spot-subtle rounded-xl p-3 text-center border border-spot/20"
+            className="bg-surface rounded-xl p-3 text-center border border-edge"
           >
             <span className="text-2xl font-bold text-spot">+{totalXP}</span>
             <p className="text-spot/70 text-xs mt-0.5">XP</p>

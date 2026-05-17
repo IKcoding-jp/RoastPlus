@@ -13,6 +13,13 @@ import { Button, IconButton, Input } from '@/components/ui';
 
 type SortOption = 'newest' | 'oldest' | 'beanName';
 
+const inputControlClassName = '!min-h-[52px] !rounded-xl !border !py-3 !text-base';
+const chipClassName =
+  '!min-h-[40px] !rounded-xl !px-3 !py-2 !text-xs !font-semibold !shadow-none border text-center';
+const selectedChipClassName = '!bg-spot !text-white !border-spot';
+const idleChipClassName =
+  '!bg-ground !text-ink-sub !border-edge hover:!border-edge-strong hover:!bg-surface';
+
 interface TastingSessionFilterModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -119,7 +126,7 @@ export function TastingSessionFilterModal({
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden flex flex-col bg-overlay border-2 border-edge-strong"
+            className="relative rounded-2xl shadow-xl max-w-md w-full max-h-[90vh] overflow-hidden flex flex-col bg-overlay"
           >
             {/* ヘッダー */}
             <div className="px-5 py-4 flex items-center justify-between bg-[#261a14]">
@@ -131,13 +138,15 @@ export function TastingSessionFilterModal({
               </div>
               <div className="flex items-center gap-2">
                 {hasActiveFilters && (
-                  <button
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     type="button"
                     onClick={handleReset}
-                    className="text-[11px] font-semibold text-white/50 underline underline-offset-2 hover:text-white/80 transition-colors"
+                    className="!min-h-0 !px-0 !py-0 !rounded-none !text-[11px] !font-semibold !text-white/50 underline underline-offset-2 hover:!text-white/80"
                   >
                     リセット
-                  </button>
+                  </Button>
                 )}
                 <IconButton
                   variant="ghost"
@@ -151,7 +160,7 @@ export function TastingSessionFilterModal({
             </div>
 
             {/* コンテンツ */}
-            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+            <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
               {/* 検索バー */}
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ink-muted">
@@ -163,6 +172,7 @@ export function TastingSessionFilterModal({
                   value={tempSearchQuery}
                   onChange={(e) => setTempSearchQuery(e.target.value)}
                   placeholder="豆の名前を入力..."
+                  className={inputControlClassName}
                 />
               </div>
 
@@ -180,19 +190,21 @@ export function TastingSessionFilterModal({
                       { id: 'beanName', label: '名前順' },
                     ] as const
                   ).map((opt) => (
-                    <button
+                    <Button
                       key={opt.id}
+                      variant="ghost"
+                      size="sm"
                       type="button"
                       aria-pressed={tempSortOption === opt.id}
                       onClick={() => setTempSortOption(opt.id)}
-                      className={`py-2 rounded-xl text-xs font-semibold text-center transition-colors ${
+                      className={`${chipClassName} ${
                         tempSortOption === opt.id
-                          ? 'bg-spot text-white border border-spot shadow-sm'
-                          : 'bg-ground border border-edge text-ink-sub hover:border-edge-strong'
+                          ? selectedChipClassName
+                          : idleChipClassName
                       }`}
                     >
                       {opt.label}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
@@ -208,11 +220,13 @@ export function TastingSessionFilterModal({
                     type="date"
                     value={tempDateFrom}
                     onChange={(e) => setTempDateFrom(e.target.value)}
+                    className={inputControlClassName}
                   />
                   <Input
                     type="date"
                     value={tempDateTo}
                     onChange={(e) => setTempDateTo(e.target.value)}
+                    className={inputControlClassName}
                   />
                 </div>
               </div>
@@ -225,19 +239,21 @@ export function TastingSessionFilterModal({
                 </label>
                 <div className="grid grid-cols-4 gap-1.5">
                   {ROAST_LEVELS.map((level) => (
-                    <button
+                    <Button
                       key={level}
+                      variant="ghost"
+                      size="sm"
                       type="button"
                       aria-pressed={tempSelectedRoastLevels.includes(level)}
                       onClick={() => handleRoastLevelToggle(level)}
-                      className={`py-2 rounded-xl text-[11px] font-semibold text-center transition-colors ${
+                      className={`${chipClassName} ${
                         tempSelectedRoastLevels.includes(level)
-                          ? 'bg-[#261a14] text-[#f5c89a] border border-[#261a14]'
-                          : 'bg-ground border border-edge text-ink-sub hover:border-edge-strong'
+                          ? selectedChipClassName
+                          : idleChipClassName
                       }`}
                     >
                       {level}
-                    </button>
+                    </Button>
                   ))}
                 </div>
               </div>
@@ -246,16 +262,16 @@ export function TastingSessionFilterModal({
             {/* フッター */}
             <div className="p-5 pt-4 border-t flex gap-3 bg-ground border-edge">
               <Button
-                variant="secondary"
+                variant="surface"
                 onClick={onClose}
-                className="flex-1"
+                className="flex-1 !min-h-[48px] !rounded-xl !text-[15px]"
               >
                 キャンセル
               </Button>
               <Button
                 variant="primary"
                 onClick={handleApply}
-                className="flex-1"
+                className="flex-1 !min-h-[48px] !rounded-xl !text-[15px]"
               >
                 適用
               </Button>

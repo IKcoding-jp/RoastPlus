@@ -12,9 +12,11 @@ import { Loading } from '@/components/Loading';
 import { ActionCard } from '@/components/home/ActionCard';
 import { HomeHeader } from '@/components/home/HomeHeader';
 import { useChristmasMode } from '@/hooks/useChristmasMode';
+import { useHomeFeatureVisibility } from '@/hooks/useHomeFeatureVisibility';
 import { useAuth } from '@/lib/auth';
 import { getUserData } from '@/lib/firestore';
 import { needsConsent } from '@/lib/consent';
+import type { HomeFeatureKey } from '@/lib/homeFeatures';
 import dynamic from 'next/dynamic';
 
 const Snowfall = dynamic(() => import('@/components/Snowfall').then(mod => ({ default: mod.Snowfall })), {
@@ -26,7 +28,7 @@ import { GiCandyCanes, GiGingerbreadMan } from 'react-icons/gi';
 import { BsStars } from 'react-icons/bs';
 
 interface Action {
-  key: string;
+  key: HomeFeatureKey;
   title: string;
   description: string;
   href: string;
@@ -141,6 +143,8 @@ export default function HomePage(_props: HomePageProps = {}) {
   const [cardHeight, setCardHeight] = useState<number | null>(null);
   const [checkingConsent, setCheckingConsent] = useState(true);
   const { isChristmasMode } = useChristmasMode();
+  const { isVisible } = useHomeFeatureVisibility();
+  const visibleActions = ACTIONS.filter((action) => isVisible(action.key));
 
   // スプラッシュ画面の表示時間を管理（フェードアウト時間を加味）
   useEffect(() => {
@@ -199,14 +203,16 @@ export default function HomePage(_props: HomePageProps = {}) {
       const headerHeight = 72; // ヘッダーの高さ目安
       const paddingTop = 8; // pt-2 = 8px
       const paddingBottom = 8; // pb-2 = 8px
-      const gridGap = 48; // 4つのgap × 12px (5行で4つのgap)
+      const rowCount = Math.max(Math.ceil(visibleActions.length / 2), 1);
+      const gridGap = Math.max(rowCount - 1, 0) * 12; // gap-3 = 12px
 
       const availableHeight = viewportHeight - headerHeight - paddingTop - paddingBottom;
-      const cardHeightPerRow = (availableHeight - gridGap) / 5; // 10カードを5行に配置
+      const cardHeightPerRow = (availableHeight - gridGap) / rowCount;
 
-      // 最低100pxは確保
+      // 少ない表示件数でもカードが大きくなりすぎないようにする
       const minCardHeight = 100;
-      const calculatedHeight = Math.max(cardHeightPerRow, minCardHeight);
+      const maxCardHeight = 150;
+      const calculatedHeight = Math.min(Math.max(cardHeightPerRow, minCardHeight), maxCardHeight);
 
       setCardHeight(calculatedHeight);
     };
@@ -223,7 +229,7 @@ export default function HomePage(_props: HomePageProps = {}) {
       window.removeEventListener('resize', calculateCardHeight);
       window.removeEventListener('orientationchange', calculateCardHeight);
     };
-  }, []);
+  }, [visibleActions.length]);
 
   // スプラッシュ表示中はLoadingを出さない（スプラッシュが前面に表示されるため）
   if ((loading || checkingConsent) && !splashVisible) {
@@ -256,7 +262,7 @@ export default function HomePage(_props: HomePageProps = {}) {
           className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4"
           style={cardHeight ? { gridAutoRows: `${cardHeight}px` } : { gridAutoRows: '1fr' }}
         >
-          {ACTIONS.map(({ key, title, description, href, icon: DefaultIcon, badge }, index) => {
+          {visibleActions.map(({ key, title, description, href, icon: DefaultIcon, badge }, index) => {
             const Icon = isChristmasMode ? (CHRISTMAS_ICONS[key] || DefaultIcon) : DefaultIcon;
 
             return (

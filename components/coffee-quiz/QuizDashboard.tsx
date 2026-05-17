@@ -195,7 +195,7 @@ export function QuizDashboard({
           href="/coffee-trivia/badges"
           className="group flex items-center gap-3 bg-surface rounded-xl p-3.5 border border-edge hover:border-spot/20 hover:shadow-sm transition-all"
         >
-          <div className="w-10 h-10 rounded-lg bg-spot-subtle group-hover:bg-spot/15 flex items-center justify-center transition-colors text-spot">
+          <div className="w-10 h-10 flex items-center justify-center transition-colors text-spot group-hover:text-spot-hover">
             <TrophyIcon />
           </div>
           <div>

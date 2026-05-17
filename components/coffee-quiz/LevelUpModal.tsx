@@ -71,7 +71,7 @@ export function LevelUpModal({ show, newLevel, onClose }: LevelUpModalProps) {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.3, type: 'spring' }}
-                className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-spot-subtle border-2 border-spot/20 mb-4"
+                className="inline-flex items-center justify-center w-20 h-20 mb-4"
               >
                 <span className="text-4xl font-bold text-spot">
                   {newLevel}

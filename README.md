@@ -15,18 +15,6 @@
 
 ---
 
-## Screenshots
-
-| ホーム | ローストタイマー |
-|:---:|:---:|
-| ![ホーム画面](docs/screenshots/01-home.png) | ![ローストタイマー](docs/screenshots/02-roast-timer.png) |
-
-| 担当表 | ドリップガイド |
-|:---:|:---:|
-| ![担当表](docs/screenshots/03-assignment.png) | ![ドリップガイド](docs/screenshots/05-drip-guide.png) |
-
----
-
 ## 概要
 
 **RoastPlus** は、コーヒー豆加工業務（焙煎・ハンドピック・ドリップ等）を行う現場向けに開発した**業務効率化・作業支援Webアプリケーション**です。
