@@ -9,9 +9,7 @@ import {
   CalendarBlank,
   Thermometer,
   Trash,
-  X,
   Plus,
-  Check,
   Warning,
 } from 'phosphor-react';
 import { Input, Select, Button } from '@/components/ui';
@@ -24,23 +22,6 @@ interface TastingSessionFormProps {
   onCancel: () => void;
   onDelete?: (id: string) => void;
 }
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.05 },
-  },
-};
-
-const itemVariants = {
-  hidden: { y: 14, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: { type: 'spring' as const, damping: 22, stiffness: 350 },
-  },
-};
 
 export function TastingSessionForm({
   session,
@@ -88,29 +69,24 @@ export function TastingSessionForm({
 
   return (
     <motion.form
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
       onSubmit={handleSubmit}
       className="space-y-4"
     >
       {/* メインカード */}
-      <motion.div
-        variants={itemVariants}
-        className="rounded-2xl bg-surface border border-edge shadow-sm overflow-hidden"
-      >
+      <div className="rounded-lg bg-surface border border-edge shadow-sm overflow-hidden">
         {/* セクションヘッダー */}
-        <div className="px-5 sm:px-6 pt-5 sm:pt-6 pb-4 border-b border-edge flex items-center gap-2">
-          <Coffee size={16} weight="fill" className="text-spot" />
-          <span className="text-sm font-semibold text-ink">セッション詳細</span>
+        <div className="px-4 py-3 border-b border-edge flex items-center gap-2">
+          <Coffee size={15} weight="fill" className="text-spot" />
+          <span className="text-sm font-semibold text-ink">基本情報</span>
         </div>
 
         {/* フィールド群 */}
-        <div className="px-5 sm:px-6 pt-4 pb-5 sm:pb-6 space-y-5">
+        <div className="p-4 space-y-4">
           {/* 豆の名前 */}
-          <div className="space-y-2">
-            <label className="flex items-center gap-2 text-sm font-bold ml-1 text-ink-sub">
-              <Coffee size={18} weight="bold" className="text-spot" />
+          <div className="space-y-1.5">
+            <label className="flex items-center gap-1.5 text-xs font-bold ml-1 text-ink-sub">
               豆の名前 <span className="text-red-500">*</span>
             </label>
             <Input
@@ -122,11 +98,11 @@ export function TastingSessionForm({
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* 焙煎度合い */}
-            <div className="space-y-2">
-              <label className="flex items-center gap-2 text-sm font-bold ml-1 text-ink-sub">
-                <Thermometer size={18} weight="bold" className="text-spot" />
+            <div className="space-y-1.5">
+              <label className="flex items-center gap-1.5 text-xs font-bold ml-1 text-ink-sub">
+                <Thermometer size={14} weight="bold" className="text-spot" />
                 焙煎度合い <span className="text-red-500">*</span>
               </label>
               <Select
@@ -142,9 +118,9 @@ export function TastingSessionForm({
             </div>
 
             {/* 試飲日 */}
-            <div className="space-y-2">
-              <label className="flex items-center gap-2 text-sm font-bold ml-1 text-ink-sub">
-                <CalendarBlank size={18} weight="bold" className="text-spot" />
+            <div className="space-y-1.5">
+              <label className="flex items-center gap-1.5 text-xs font-bold ml-1 text-ink-sub">
+                <CalendarBlank size={14} weight="bold" className="text-spot" />
                 試飲日 <span className="text-red-500">*</span>
               </label>
               <Input
@@ -156,17 +132,16 @@ export function TastingSessionForm({
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* ボタン行 */}
-      <motion.div variants={itemVariants} className="flex gap-3">
+      <div className="flex gap-3">
         <Button
           type="button"
-          variant="secondary"
+          variant="surface"
           onClick={onCancel}
           className="flex-1"
         >
-          <X size={20} weight="bold" />
           キャンセル
         </Button>
         <Button
@@ -176,45 +151,34 @@ export function TastingSessionForm({
         >
           {isNew ? (
             <>
-              <Plus size={20} weight="bold" />
-              セッションを作成
+              <Plus size={18} weight="bold" />
+              試飲感想を追加
             </>
           ) : (
-            <>
-              <Check size={20} weight="bold" />
-              更新する
-            </>
+            '更新する'
           )}
         </Button>
-      </motion.div>
+      </div>
 
       {/* Danger Zone（編集時のみ） */}
       {!isNew && onDelete && (
-        <motion.div
-          variants={itemVariants}
-          className="rounded-xl border border-edge bg-danger-subtle p-4"
-        >
+        <div className="rounded-lg border border-edge bg-surface p-4">
           <div className="flex items-center gap-1.5 mb-3">
             <Warning size={13} weight="fill" className="text-danger" />
-            <span className="text-xs font-bold text-danger tracking-wider">
+            <span className="text-xs font-bold text-danger">
               危険な操作
             </span>
           </div>
-          <motion.div
-            whileHover={{ x: [0, -3, 3, -2, 2, 0] }}
-            transition={{ duration: 0.4 }}
+          <Button
+            type="button"
+            variant="danger"
+            onClick={handleDelete}
+            className="w-full"
           >
-            <Button
-              type="button"
-              variant="danger"
-              onClick={handleDelete}
-              className="w-full"
-            >
-              <Trash size={16} weight="bold" />
-              この試飲セッションを削除する
-            </Button>
-          </motion.div>
-        </motion.div>
+            <Trash size={16} weight="bold" />
+            試飲感想を削除する
+          </Button>
+        </div>
       )}
     </motion.form>
   );

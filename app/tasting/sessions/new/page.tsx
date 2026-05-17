@@ -7,10 +7,8 @@ import { useAppData } from '@/hooks/useAppData';
 import { TastingSessionForm } from '@/components/TastingSessionForm';
 import { Loading } from '@/components/Loading';
 import type { TastingSession } from '@/types';
-import { HiPlusCircle } from 'react-icons/hi';
 import { useToastContext } from '@/components/Toast';
-import { motion } from 'framer-motion';
-import { BackLink } from '@/components/ui';
+import { FloatingNav } from '@/components/ui';
 
 export default function NewTastingSessionPage() {
   const { user, loading: authLoading } = useAuth();
@@ -69,36 +67,10 @@ export default function NewTastingSessionPage() {
   };
 
   return (
-    <div
-      className="min-h-screen py-6 sm:py-8 px-4 sm:px-6 bg-page"
-    >
-      <div className="max-w-lg mx-auto space-y-6">
-        <motion.header
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative flex flex-col items-center text-center pt-6"
-        >
-          <BackLink
-            href="/tasting"
-            variant="icon-only"
-            className="absolute left-0 top-0"
-          />
-
-          <div className="flex flex-col items-center space-y-2">
-            <div className="p-3 rounded-2xl shadow-sm mb-2 relative bg-surface border border-edge">
-              <div className="absolute inset-0 rounded-2xl scale-110 blur-xl opacity-30 -z-10 bg-spot-surface" />
-              <HiPlusCircle size={32} className="text-spot" />
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-ink">
-              新規セッション作成
-            </h1>
-            <p className="text-sm font-medium text-ink-muted">
-              新しい試飲の記録を開始しましょう
-            </p>
-          </div>
-        </motion.header>
-
-        <main>
+    <div className="min-h-screen px-4 sm:px-6 bg-page">
+      <FloatingNav backHref="/tasting" />
+      <div className="min-h-screen max-w-lg mx-auto flex items-center py-16">
+        <main className="w-full">
           <TastingSessionForm
             session={null}
             onSave={handleSave}

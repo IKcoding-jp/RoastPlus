@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Coffee,
@@ -8,10 +9,12 @@ import {
   CalendarBlank,
   CaretRight,
   Notepad,
+  X,
 } from 'phosphor-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import type { TastingSession } from '@/types';
 import type { AverageScores } from '@/lib/tastingUtils';
-import { IconButton, Card } from '@/components/ui';
+import { IconButton, Card, Button } from '@/components/ui';
 
 interface TastingSessionCardDesktopProps {
   session: TastingSession;
@@ -35,6 +38,7 @@ export function TastingSessionCardDesktop({
   formatDate,
 }: TastingSessionCardDesktopProps) {
   const router = useRouter();
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const roastStyle = getRoastBadgeStyle(session.roastLevel);
   const hasAnalysis = !!session.aiAnalysis;
 
@@ -43,23 +47,22 @@ export function TastingSessionCardDesktop({
   const textSecondaryClass = 'text-ink-sub';
   const textMutedClass = 'text-ink-muted';
   const bgMutedClass = 'bg-ground';
-  const bgSectionClass = 'bg-ground';
   const borderSectionClass = 'border-edge';
   const iconAccentClass = 'text-spot';
   const spinnerClass = 'border-spot';
 
   return (
-    <div>
-      <Link href={`/tasting?sessionId=${session.id}`} className="block group relative">
-        <Card variant="hoverable" className="p-0 overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500">
-          <div className="relative z-10">
+    <div className="h-full py-3">
+      <Link href={`/tasting?sessionId=${session.id}`} className="block group relative h-full">
+        <Card variant="hoverable" className="p-0 h-full overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500">
+          <div className="relative z-10 h-full">
             <div className="h-full flex flex-col">
               {/* ヘッダー */}
-              <div className={`px-8 pt-8 pb-6 border-b border-dashed ${cardBorderClass} flex items-center justify-between`}>
+              <div className={`px-8 pt-6 pb-5 border-b border-dashed ${cardBorderClass} flex items-center justify-between flex-shrink-0`}>
                 <div className="flex items-center gap-6 flex-1 min-w-0">
                   <div>
                     <div className="flex items-center gap-4 mb-1">
-                      <h3 className={`text-4xl font-serif font-bold ${textPrimaryClass} tracking-tight leading-tight truncate`}>
+                      <h3 className={`text-3xl font-serif font-bold ${textPrimaryClass} tracking-tight leading-tight truncate`}>
                         {session.beanName}
                       </h3>
                       <div className="flex items-center gap-2">
@@ -91,11 +94,11 @@ export function TastingSessionCardDesktop({
               </div>
 
               {/* メインコンテンツ */}
-              <div className={`flex items-stretch border-b border-dashed ${cardBorderClass}`}>
+              <div className={`flex items-stretch border-b border-dashed ${cardBorderClass} flex-1 min-h-0`}>
                 {/* 感想 (左) */}
-                <div className={`flex-1 p-8 border-r border-dashed ${cardBorderClass} relative`}>
+                <div className={`flex-1 p-6 border-r border-dashed ${cardBorderClass} relative min-w-0`}>
                   <div className="relative z-10 flex flex-col h-full">
-                    <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center justify-between mb-4 flex-shrink-0">
                       <div className={`flex items-center gap-2 ${textPrimaryClass}`}>
                         <Quotes size={20} weight="fill" />
                         <h4 className="text-base font-bold">感想</h4>
@@ -107,7 +110,8 @@ export function TastingSessionCardDesktop({
                         </span>
                       </div>
                     </div>
-                    <div className="flex-1 min-h-[160px] max-h-[300px] overflow-y-auto pr-2">
+                    <div className="relative flex-1 min-h-0">
+                      <div className="h-full overflow-y-auto pr-3 pb-6 [scrollbar-width:thin] [scrollbar-color:var(--edge-strong)_var(--ground)] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-ground [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-edge-strong">
                       {comments.length > 0 ? (
                         <ul className="space-y-4">
                           {comments.map((comment, commentIndex) => (
@@ -120,17 +124,19 @@ export function TastingSessionCardDesktop({
                           ))}
                         </ul>
                       ) : (
-                        <div className="flex flex-col items-center justify-center h-full opacity-40 py-4">
-                          <Coffee size={40} weight="thin" className={textMutedClass} />
-                          <p className={`text-xs ${textMutedClass} italic`}>まだ感想がありません...</p>
+                        <div className={`flex flex-col items-center justify-center h-full rounded-lg border border-dashed ${cardBorderClass} py-6 px-4`}>
+                          <Coffee size={32} weight="duotone" className={textMutedClass} />
+                          <p className={`mt-2 text-sm font-bold ${textSecondaryClass}`}>感想はまだありません</p>
+                          <p className={`mt-1 text-xs ${textMutedClass}`}>右下の「記録を追加する」から入力できます</p>
                         </div>
                       )}
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* チャート (右) */}
-                <div className="w-80 flex-shrink-0 p-8 flex flex-col justify-center relative overflow-hidden">
+                <div className="w-80 flex-shrink-0 p-6 flex flex-col justify-center relative overflow-hidden">
                   {recordCount > 0 ? (
                     <div className="space-y-5 w-full relative z-10">
                       {[
@@ -141,11 +147,11 @@ export function TastingSessionCardDesktop({
                         { label: '香り', value: averageScores.aroma, color: '#00897b' },
                       ].map((item) => (
                         <div key={item.label} className="space-y-1">
-                          <div className={`flex justify-between items-center text-xs font-bold ${textSecondaryClass}`}>
+                          <div className={`flex justify-between items-center text-sm font-bold ${textSecondaryClass}`}>
                             <span>{item.label}</span>
                             <span>{item.value.toFixed(1)}</span>
                           </div>
-                          <div className={`w-full ${bgMutedClass} h-1.5 rounded overflow-hidden`}>
+                          <div className={`w-full ${bgMutedClass} h-2 rounded overflow-hidden`}>
                             <div
                               className="h-full transition-all duration-700"
                               style={{
@@ -158,10 +164,10 @@ export function TastingSessionCardDesktop({
                       ))}
                     </div>
                   ) : (
-                    <div className={`flex flex-col items-center justify-center w-full h-full border-2 border-dashed ${cardBorderClass} rounded-xl p-8 opacity-60`}>
-                      <Coffee size={40} weight="thin" className={textMutedClass} />
-                      <p className={`text-xs font-bold ${textMutedClass} tracking-widest text-center`}>
-                        データなし
+                    <div className={`flex flex-col items-center justify-center w-full h-full border border-dashed ${cardBorderClass} rounded-lg p-8`}>
+                      <Coffee size={32} weight="duotone" className={textMutedClass} />
+                      <p className={`mt-2 text-xs font-bold ${textSecondaryClass} text-center`}>
+                        評価データなし
                       </p>
                     </div>
                   )}
@@ -169,10 +175,10 @@ export function TastingSessionCardDesktop({
               </div>
 
               {/* AI分析レポート (下) */}
-              <div className="p-8 relative min-h-[120px] transition-all duration-500">
+              <div className="px-5 py-3 relative flex-shrink-0">
                 <div className="relative z-10">
                   {!hasAnalysis && !isAnalyzing && recordCount === 0 && (
-                    <div className="flex items-center justify-center py-2">
+                    <div className="flex items-center justify-center py-1">
                       <p className={`text-xs ${textSecondaryClass} italic`}>
                         記録が追加されるとAI分析が開始されます
                       </p>
@@ -180,8 +186,8 @@ export function TastingSessionCardDesktop({
                   )}
 
                   {isAnalyzing && (
-                    <div className="flex flex-col items-center justify-center py-6 gap-3">
-                      <div className={`animate-spin rounded-full h-8 w-8 border-b-2 ${spinnerClass}`}></div>
+                    <div className="flex items-center justify-center py-2 gap-2">
+                      <div className={`animate-spin rounded-full h-4 w-4 border-b-2 ${spinnerClass}`}></div>
                       <p className={`text-xs ${textSecondaryClass} animate-pulse`}>
                         コーヒーの香りを分析中...
                       </p>
@@ -189,23 +195,32 @@ export function TastingSessionCardDesktop({
                   )}
 
                   {hasAnalysis && (
-                    <div className={`${bgSectionClass} rounded-xl p-6 border ${borderSectionClass}`}>
-                      <div className="flex items-center gap-2 mb-4">
-                        <Notepad size={20} weight="fill" className={iconAccentClass} />
+                    <Button
+                      type="button"
+                      variant="surface"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setIsAiModalOpen(true);
+                      }}
+                      className="w-full !justify-between !px-4 !py-3 !rounded-lg !shadow-sm hover:!shadow-card"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Notepad size={18} weight="fill" className={iconAccentClass} />
                         <h4 className={`text-sm font-bold tracking-wide ${textPrimaryClass}`}>
                           AIコーヒーマイスターのコメント
                         </h4>
                       </div>
-                      <p className={`text-sm leading-relaxed ${textPrimaryClass} whitespace-pre-wrap`}>
-                        {session.aiAnalysis}
-                      </p>
-                    </div>
+                      <span className={`flex items-center gap-1 text-xs font-bold ${textSecondaryClass}`}>
+                        開く <CaretRight size={14} weight="bold" />
+                      </span>
+                    </Button>
                   )}
                 </div>
               </div>
 
               {/* フッター */}
-              <div className={`px-8 py-4 ${bgSectionClass} border-t ${borderSectionClass} flex justify-between items-center`}>
+              <div className={`px-8 py-2.5 bg-surface border-t ${borderSectionClass} flex justify-between items-center flex-shrink-0`}>
                 <div className={`flex items-center gap-1.5 text-xs ${textMutedClass}`}>
                   <CalendarBlank size={14} weight="fill" />
                   <span>{formatDate(session.createdAt)}</span>
@@ -218,6 +233,50 @@ export function TastingSessionCardDesktop({
           </div>
         </Card>
       </Link>
+
+      <AnimatePresence>
+        {isAiModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsAiModalOpen(false)}
+              className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, y: 16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 16, scale: 0.98 }}
+              className="relative w-full max-w-2xl max-h-[78vh] bg-overlay rounded-xl shadow-2xl border border-edge overflow-hidden flex flex-col"
+            >
+              <div className={`px-5 py-4 border-b ${borderSectionClass} flex items-center justify-between gap-4`}>
+                <div className="flex items-center gap-2 min-w-0">
+                  <Notepad size={20} weight="fill" className={iconAccentClass} />
+                  <div className="min-w-0">
+                    <h3 className={`text-base font-bold ${textPrimaryClass}`}>AIコーヒーマイスターのコメント</h3>
+                    <p className={`text-xs ${textMutedClass} truncate`}>{session.beanName}</p>
+                  </div>
+                </div>
+                <IconButton
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsAiModalOpen(false)}
+                  aria-label="閉じる"
+                >
+                  <X size={18} weight="bold" />
+                </IconButton>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-5">
+                <p className={`text-sm leading-relaxed ${textPrimaryClass} whitespace-pre-wrap`}>
+                  {session.aiAnalysis}
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -20,8 +20,8 @@ const getRoastBadgeStyle = (level: string) => {
   switch (level) {
     case '浅煎り':
       return {
-        bg: '#C8A882',
-        text: '#3E2723',
+        bg: '#B9824F',
+        text: '#FFFFFF',
         label: level,
       };
     case '中煎り':
@@ -66,7 +66,8 @@ export function TastingSessionCarousel({
   router: _router,
   onUpdateSession,
 }: TastingSessionCarouselProps) {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const desktopScrollContainerRef = useRef<HTMLDivElement>(null);
+  const mobileScrollContainerRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
   // セッションカードの共通データを準備
@@ -93,33 +94,39 @@ export function TastingSessionCarousel({
     onUpdateSession,
   });
 
-  // 横スクロールの追跡（モバイル用）
+  // 横スクロールの追跡
   useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
+    const containers = [
+      desktopScrollContainerRef.current,
+      mobileScrollContainerRef.current,
+    ].filter((container): container is HTMLDivElement => container !== null);
 
-    const mediaQuery = window.matchMedia('(min-width: 768px)');
-    if (mediaQuery.matches) return;
+    const cleanups = containers.map((container) => {
+      const handleScroll = () => {
+        if (container.clientWidth === 0) return;
+        const index = Math.round(container.scrollLeft / container.clientWidth);
+        if (index !== activeIndex) {
+          setActiveIndex(index);
+        }
+      };
 
-    const handleScroll = () => {
-      const index = Math.round(container.scrollLeft / container.clientWidth);
-      if (index !== activeIndex) {
-        setActiveIndex(index);
-      }
-    };
+      const handleWheel = (e: WheelEvent) => {
+        if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+        e.preventDefault();
+        container.scrollLeft += e.deltaY;
+      };
 
-    const handleWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-      e.preventDefault();
-      container.scrollLeft += e.deltaY;
-    };
+      container.addEventListener('scroll', handleScroll, { passive: true });
+      container.addEventListener('wheel', handleWheel, { passive: false });
 
-    container.addEventListener('scroll', handleScroll, { passive: true });
-    container.addEventListener('wheel', handleWheel, { passive: false });
+      return () => {
+        container.removeEventListener('scroll', handleScroll);
+        container.removeEventListener('wheel', handleWheel);
+      };
+    });
 
     return () => {
-      container.removeEventListener('scroll', handleScroll);
-      container.removeEventListener('wheel', handleWheel);
+      cleanups.forEach((cleanup) => cleanup());
     };
   }, [activeIndex]);
 
@@ -136,19 +143,47 @@ export function TastingSessionCarousel({
   return (
     <>
       {/* デスクトップ向けレイアウト (md以上で表示) */}
-      <div className="hidden md:block w-full px-4 md:px-8 lg:px-12 py-8">
-        <div className="flex flex-col gap-10 max-w-5xl mx-auto">
+      <div className="hidden md:flex relative w-full h-[calc(100dvh-112px)] min-h-[520px] overflow-hidden flex-col">
+        <div
+          ref={desktopScrollContainerRef}
+          className="flex flex-row gap-6 px-8 lg:px-12 pb-3 h-full overflow-x-auto overflow-y-hidden snap-x snap-mandatory
+                     [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:mx-24 [&::-webkit-scrollbar-track]:rounded-full
+                     [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-ground [&::-webkit-scrollbar-thumb]:bg-spot"
+          style={{
+            WebkitOverflowScrolling: 'touch',
+          }}
+        >
           {sessionData.map(({ session, recordCount, averageScores, comments }) => (
-            <TastingSessionCardDesktop
+            <div
               key={session.id}
-              session={session}
-              recordCount={recordCount}
-              averageScores={averageScores}
-              comments={comments}
-              activeMemberCount={activeMemberCount}
-              isAnalyzing={!!isAnalyzing[session.id]}
-              getRoastBadgeStyle={getRoastBadgeStyle}
-              formatDate={formatDate}
+              className="flex-shrink-0 w-full h-full snap-center flex justify-center"
+              style={{ scrollSnapStop: 'always' }}
+            >
+              <div className="w-full max-w-5xl h-full">
+                <TastingSessionCardDesktop
+                  session={session}
+                  recordCount={recordCount}
+                  averageScores={averageScores}
+                  comments={comments}
+                  activeMemberCount={activeMemberCount}
+                  isAnalyzing={!!isAnalyzing[session.id]}
+                  getRoastBadgeStyle={getRoastBadgeStyle}
+                  formatDate={formatDate}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex-shrink-0 flex justify-center gap-1.5 py-2">
+          {sessionData.map((_, index) => (
+            <div
+              key={index}
+              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
+                index === activeIndex
+                  ? 'bg-spot scale-125'
+                  : 'bg-spot/30'
+              }`}
             />
           ))}
         </div>
@@ -158,7 +193,7 @@ export function TastingSessionCarousel({
       <div className="md:hidden relative w-full h-[calc(100dvh-130px)] overflow-hidden flex flex-col">
         {/* 横スクロールコンテナ */}
         <div
-          ref={scrollContainerRef}
+          ref={mobileScrollContainerRef}
           className="flex flex-row gap-4 px-4 pb-3 h-full overflow-x-auto overflow-y-hidden snap-x snap-mandatory
                      [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:mx-8 [&::-webkit-scrollbar-track]:rounded-full
                      [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-track]:bg-ground [&::-webkit-scrollbar-thumb]:bg-spot"

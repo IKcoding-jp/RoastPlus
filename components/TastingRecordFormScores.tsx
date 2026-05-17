@@ -29,14 +29,14 @@ export function TastingRecordFormScores({
   readOnly = false,
 }: TastingRecordFormScoresProps) {
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col gap-1.5 px-1">
+    <div className="space-y-3">
+      <div className="flex flex-col gap-1 px-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-1 h-5 rounded-full bg-spot" />
-            <h3 className="text-base font-bold text-ink">評価項目</h3>
+            <div className="w-1 h-4 rounded-full bg-spot" />
+            <h3 className="text-sm font-bold text-ink">評価項目</h3>
           </div>
-          <div className="text-[10px] font-bold tracking-wider text-spot">
+          <div className="text-[10px] font-bold text-spot">
             1.0 - 5.0 スケール
           </div>
         </div>
@@ -45,14 +45,14 @@ export function TastingRecordFormScores({
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-3">
+      <div className="grid grid-cols-1 gap-2.5">
         <SliderInput
           label="苦味"
           value={bitterness}
           onChange={onBitternessChange}
           description="コーヒーの苦みの強さ"
           readOnly={readOnly}
-          icon={<Coffee size={24} weight="fill" className="text-stone-700" />}
+          icon={<Coffee size={18} weight="fill" className="text-stone-700" />}
           colorClass="bg-stone-100"
           accentColor="text-stone-800"
         />
@@ -62,7 +62,7 @@ export function TastingRecordFormScores({
           onChange={onAcidityChange}
           description="コーヒーの酸っぱさや爽やかさ"
           readOnly={readOnly}
-          icon={<Sun size={24} weight="fill" className="text-orange-600" />}
+          icon={<Sun size={18} weight="fill" className="text-orange-600" />}
           colorClass="bg-orange-50"
           accentColor="text-orange-600"
         />
@@ -72,7 +72,7 @@ export function TastingRecordFormScores({
           onChange={onBodyChange}
           description="コーヒーの口当たりや重厚感"
           readOnly={readOnly}
-          icon={<Drop size={24} weight="fill" className="text-amber-800" />}
+          icon={<Drop size={18} weight="fill" className="text-amber-800" />}
           colorClass="bg-amber-50"
           accentColor="text-amber-800"
         />
@@ -82,7 +82,7 @@ export function TastingRecordFormScores({
           onChange={onSweetnessChange}
           description="コーヒーに感じられる甘さ"
           readOnly={readOnly}
-          icon={<Cookie size={24} weight="fill" className="text-rose-600" />}
+          icon={<Cookie size={18} weight="fill" className="text-rose-600" />}
           colorClass="bg-rose-50"
           accentColor="text-rose-600"
         />
@@ -92,7 +92,7 @@ export function TastingRecordFormScores({
           onChange={onAromaChange}
           description="コーヒーの香りの強さや豊かさ"
           readOnly={readOnly}
-          icon={<Wind size={24} weight="fill" className="text-emerald-600" />}
+          icon={<Wind size={18} weight="fill" className="text-emerald-600" />}
           colorClass="bg-emerald-50"
           accentColor="text-emerald-600"
         />
