@@ -52,7 +52,7 @@ export function LevelDisplay({ level, compact = false }: LevelDisplayProps) {
           <div className="w-14 h-14 rounded-full bg-spot flex items-center justify-center">
             <span className="text-white font-bold text-xl">{level.level}</span>
           </div>
-          <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 bg-spot-subtle text-ink-sub text-[10px] font-medium px-2 py-0.5 rounded-full">
+          <span className="absolute -bottom-0.5 left-1/2 -translate-x-1/2 text-ink-sub text-[10px] font-medium">
             Lv.
           </span>
         </div>

@@ -78,7 +78,7 @@ export const StartHintDialog: React.FC<StartHintDialogProps> = ({
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="flex items-start gap-3 px-5 pt-5">
-                                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-spot-subtle text-spot">
+                                <div className="flex h-11 w-11 items-center justify-center text-spot">
                                     <Coffee size={24} weight="duotone" />
                                 </div>
                                 <div className="flex-1">
@@ -96,7 +96,7 @@ export const StartHintDialog: React.FC<StartHintDialogProps> = ({
 
                             <div className="px-5 py-4 space-y-3 text-sm text-ink-sub">
                                 <div className="flex gap-3">
-                                    <div className="mt-1 flex h-9 w-9 items-center justify-center rounded-lg bg-spot-subtle text-spot">
+                                    <div className="mt-1 flex h-9 w-9 items-center justify-center text-spot">
                                         <GiCoffeePot size={18} />
                                     </div>
                                     <div className="flex-1">
@@ -111,7 +111,7 @@ export const StartHintDialog: React.FC<StartHintDialogProps> = ({
                                 </div>
 
                                 <div className="flex gap-3">
-                                    <div className="mt-1 flex h-9 w-9 items-center justify-center rounded-lg bg-spot-subtle text-spot">
+                                    <div className="mt-1 flex h-9 w-9 items-center justify-center text-spot">
                                         <Timer size={18} weight="duotone" />
                                     </div>
                                     <div className="flex-1">
@@ -124,7 +124,7 @@ export const StartHintDialog: React.FC<StartHintDialogProps> = ({
 
                                 {isManualMode && (
                                     <div className="flex gap-3">
-                                        <div className="mt-1 flex h-9 w-9 items-center justify-center rounded-lg bg-spot-subtle text-spot">
+                                        <div className="mt-1 flex h-9 w-9 items-center justify-center text-spot">
                                             <HandPointing size={18} weight="duotone" />
                                         </div>
                                         <div className="flex-1">

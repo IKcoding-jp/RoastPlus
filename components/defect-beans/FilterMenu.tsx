@@ -129,7 +129,7 @@ export function FilterMenu({
                   onClick={() => onSortChange(option)}
                   className={`!min-h-0 w-full !justify-start !px-3 !py-2 !text-sm !rounded-lg gap-2 ${
                     sortOption === option
-                      ? 'bg-spot-subtle !text-spot !font-medium'
+                      ? 'bg-surface !text-spot !font-medium'
                       : '!text-ink-sub hover:bg-ground'
                   }`}
                 >

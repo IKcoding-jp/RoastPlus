@@ -6,7 +6,7 @@ import { Coffee } from 'phosphor-react';
 export const Dialog46Header: React.FC = () => {
     return (
         <div className="flex items-start gap-3 px-5 pt-5">
-            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-spot-subtle text-spot">
+            <div className="flex h-11 w-11 items-center justify-center text-spot">
                 <Coffee size={24} weight="duotone" />
             </div>
             <div className="flex-1">

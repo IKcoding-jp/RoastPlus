@@ -115,5 +115,10 @@ describe('Switch', () => {
       render(<Switch label="通知設定" id="notification-switch" />);
       expect(screen.getByRole('switch')).toHaveAttribute('aria-labelledby', 'notification-switch-label');
     });
+
+    it('aria-labelをスイッチ本体に設定できる', () => {
+      render(<Switch aria-label="ホームに表示" checked={false} onChange={() => {}} />);
+      expect(screen.getByRole('switch', { name: 'ホームに表示' })).toBeInTheDocument();
+    });
   });
 });

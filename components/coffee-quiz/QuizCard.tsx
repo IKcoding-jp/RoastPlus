@@ -160,10 +160,10 @@ export function QuizCard({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-              className="mt-5 p-4 bg-spot-subtle rounded-xl border border-spot/20"
+              className="mt-5 p-4 bg-surface rounded-xl border border-edge"
             >
               <h3 className="font-bold text-ink mb-2 flex items-center gap-2 text-sm">
-                <span className="w-7 h-7 rounded-lg bg-spot/10 flex items-center justify-center text-spot">
+                <span className="w-7 h-7 flex items-center justify-center text-spot">
                   <LightbulbIcon />
                 </span>
                 解説

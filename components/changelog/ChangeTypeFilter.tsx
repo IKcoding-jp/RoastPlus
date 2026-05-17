@@ -28,10 +28,10 @@ export const ChangeTypeFilter: React.FC<ChangeTypeFilterProps> = ({
             onClick={() => onToggle(type)}
             variant="ghost"
             size="sm"
-            className={`!rounded-full !px-3 !py-1.5 !min-h-0 text-sm font-medium ${
+            className={`!rounded-md !px-2 !py-1 !min-h-0 text-sm font-medium !bg-transparent hover:!bg-transparent ${
               isSelected
-                ? `${config.bgColor} ${config.color} ring-2 ring-offset-1 ring-current`
-                : 'bg-ground text-ink-muted hover:opacity-80'
+                ? `${config.color} underline decoration-current underline-offset-4`
+                : 'text-ink-muted hover:text-ink-sub'
             }`}
           >
             {config.label}

@@ -59,7 +59,7 @@ export const AssignmentTable: React.FC<Props> = (props) => {
             {teams.length === 0 && taskLabels.length === 0 && (
                 <Card variant="guide" className="w-full max-w-md">
                     <div className="flex justify-center mb-4">
-                        <div className="p-3 rounded-full bg-spot-subtle text-spot">
+                        <div className="p-3 text-spot">
                             <MdInfoOutline size={32} />
                         </div>
                     </div>
@@ -70,7 +70,7 @@ export const AssignmentTable: React.FC<Props> = (props) => {
                     </p>
 
                     <div className="grid grid-cols-3 gap-2 text-xs text-ink-muted">
-                        <div className="flex flex-col items-center gap-2 p-2 rounded border bg-spot-subtle border-spot/20">
+                        <div className="flex flex-col items-center gap-2 p-2 rounded border bg-surface border-edge">
                             <span className="font-bold text-spot">STEP 1</span>
                             <span>班を追加</span>
                         </div>

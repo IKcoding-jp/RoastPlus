@@ -61,7 +61,7 @@ export const StepMiniMap: React.FC<StepMiniMapProps> = ({
                                 className={clsx(
                                     'flex-shrink-0 rounded-lg px-3 py-2 sm:px-3 sm:py-2 min-w-[120px] sm:min-w-[120px] border-2 transition-all',
                                     isCurrent
-                                        ? 'bg-spot-subtle border-spot shadow-md'
+                                        ? 'bg-surface border-spot shadow-md'
                                         : isStepCompleted
                                         ? 'bg-ground border-edge'
                                         : 'bg-ground/50 border-edge opacity-60'

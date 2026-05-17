@@ -33,6 +33,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
   ({ label, size = 'md', className = '', id, disabled, checked, ...props }, ref) => {
     const generatedId = useId();
     const switchId = id || generatedId;
+    const ariaLabel = props['aria-label'];
 
     // サイズ設定
     const sizeStyles = {
@@ -56,6 +57,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
           type="button"
           role="switch"
           aria-checked={checked}
+          aria-label={label ? undefined : ariaLabel}
           aria-labelledby={label ? `${switchId}-label` : undefined}
           onClick={() => {
             if (!disabled && props.onChange) {

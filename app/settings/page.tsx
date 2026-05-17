@@ -11,7 +11,7 @@ import { Loading } from '@/components/Loading';
 import { useToastContext } from '@/components/Toast';
 import { PasswordModal } from '@/components/settings/PasswordModal';
 import { HiDocumentText, HiShieldCheck, HiLogout, HiMail, HiColorSwatch } from 'react-icons/hi';
-import { MdHistory } from 'react-icons/md';
+import { MdHistory, MdHome } from 'react-icons/md';
 import LoginPage from '@/app/login/page';
 import { Button, Switch, FloatingNav, Card } from '@/components/ui';
 import { VERSION_HISTORY } from '@/data/dev-stories/version-history';
@@ -91,9 +91,27 @@ export default function SettingsPage() {
         <div className="min-h-screen bg-page pt-14 pb-4 sm:pb-6 lg:pb-8 px-4 sm:px-6 lg:px-8 transition-colors">
             <FloatingNav backHref="/" />
             <div className="max-w-4xl mx-auto">
-                <main className="space-y-6">
+                <main className="flex flex-col gap-4">
+                    {/* ホーム表示設定 */}
+                    <Link href="/settings/home" className="block">
+                      <Card variant="hoverable" className="p-6">
+                        <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                                <h2 className="text-xl font-semibold text-ink mb-2 flex items-center gap-2">
+                                    <MdHome className="h-5 w-5 text-spot" />
+                                    ホーム表示設定
+                                </h2>
+                                <p className="text-sm text-ink-sub">
+                                    ホームに表示する機能を選ぶ
+                                </p>
+                            </div>
+                            <span className="text-ink-muted text-xl">&gt;</span>
+                        </div>
+                      </Card>
+                    </Link>
+
                     {/* テーマ設定 */}
-                    <Link href="/settings/theme">
+                    <Link href="/settings/theme" className="block">
                       <Card variant="hoverable" className="p-6">
                         <div className="flex items-center justify-between">
                             <div className="flex-1">
@@ -133,7 +151,7 @@ export default function SettingsPage() {
 
                     {/* Developer Design Lab（開発者モード有効時のみ表示） */}
                     {isEnabled && (
-                        <Link href="/dev/design-lab">
+                        <Link href="/dev/design-lab" className="block">
                           <Card variant="hoverable" className="p-6">
                             <div className="flex items-center justify-between">
                                 <div className="flex-1">
@@ -166,7 +184,7 @@ export default function SettingsPage() {
                                 </div>
                                 {isUpdateAvailable && (
                                     <div className="ml-4">
-                                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-spot/10 text-spot">
+                                        <span className="inline-flex items-center text-sm font-semibold text-spot">
                                             更新あり
                                         </span>
                                     </div>
@@ -199,7 +217,7 @@ export default function SettingsPage() {
                     </Card>
 
                     {/* 更新履歴セクション */}
-                    <Link href="/changelog">
+                    <Link href="/changelog" className="block">
                       <Card variant="hoverable" className="p-6">
                         <div className="flex items-center justify-between">
                             <div className="flex-1">
