@@ -5,8 +5,8 @@ service firebase.storage {
     match /defect-beans/{userId}/{defectBeanId}/{fileName=**} {
       // 認証済みユーザーのみアップロード・削除可能
       allow create, update, delete: if request.auth != null && request.auth.uid == userId;
-      // 全ユーザーが読み取り可能
-      allow read: if request.auth != null;
+      // 本人のみ読み取り可能
+      allow read: if request.auth != null && request.auth.uid == userId;
     }
     
     // マスターデータの画像（クライアントから編集不可）

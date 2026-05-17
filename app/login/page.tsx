@@ -6,6 +6,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'fire
 import { auth } from '@/lib/firebase';
 import { Loading } from '@/components/Loading';
 import { Input, Button } from '@/components/ui';
+import { getSafeReturnUrl } from '@/lib/returnUrl';
 
 type TabType = 'login' | 'signup';
 
@@ -40,8 +41,7 @@ function LoginForm() {
         await createUserWithEmailAndPassword(auth, email, password);
       }
       // returnUrlがあればそのURLに、なければホームにリダイレクト
-      const returnUrl = searchParams.get('returnUrl');
-      const redirectUrl = returnUrl && returnUrl.startsWith('/') ? returnUrl : '/';
+      const redirectUrl = getSafeReturnUrl(searchParams.get('returnUrl'), '/');
       router.push(redirectUrl);
     } catch (err: unknown) {
       const errorObj = err as { code?: string; message?: string };
