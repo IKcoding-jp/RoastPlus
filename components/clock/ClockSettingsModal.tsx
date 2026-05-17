@@ -1,6 +1,7 @@
 'use client';
 
 import { HiXMark } from 'react-icons/hi2';
+import { MdVolumeUp } from 'react-icons/md';
 import { Modal, IconButton, Switch, Button } from '@/components/ui';
 import {
   type ClockSettings,
@@ -11,11 +12,16 @@ import {
   getThemeColors,
   getFontFamily,
 } from '@/lib/clockSettings';
+import type { WorkChimeSettings } from '@/lib/workChime';
 
 interface ClockSettingsModalProps {
   show: boolean;
   settings: ClockSettings;
+  workChimeSettings: WorkChimeSettings;
+  isWorkChimeAudioEnabled: boolean;
   onUpdate: (patch: Partial<ClockSettings>) => void;
+  onWorkChimeUpdate: (patch: Partial<WorkChimeSettings>) => void;
+  onEnableWorkChimeAudio: () => void;
   onReset: () => void;
   onClose: () => void;
 }
@@ -23,7 +29,17 @@ interface ClockSettingsModalProps {
 const THEME_KEYS: ClockTheme[] = ['light', 'dark', 'coffee', 'green', 'lightblue'];
 const FONT_KEYS: ClockFontKey[] = ['inter', 'robotoMono', 'oswald', 'orbitron', 'notoSansJP'];
 
-export function ClockSettingsModal({ show, settings, onUpdate, onReset, onClose }: ClockSettingsModalProps) {
+export function ClockSettingsModal({
+  show,
+  settings,
+  workChimeSettings,
+  isWorkChimeAudioEnabled,
+  onUpdate,
+  onWorkChimeUpdate,
+  onEnableWorkChimeAudio,
+  onReset,
+  onClose,
+}: ClockSettingsModalProps) {
   const themeColors = getThemeColors(settings.theme);
 
   const contentClassName = 'w-full max-w-md max-h-[85vh] overflow-y-auto rounded-2xl shadow-2xl border border-edge';
@@ -212,6 +228,107 @@ export function ClockSettingsModal({ show, settings, onUpdate, onReset, onClose 
                   onChange={(e) => onUpdate({ showDate: e.target.checked })}
                 />
               </div>
+            </div>
+          </section>
+
+          {/* ─── 作業チャイム ─── */}
+          <section>
+            <SectionLabel color={themeColors.uiText}>作業チャイム</SectionLabel>
+            <div className="mt-2 space-y-1">
+              <div className="flex items-center justify-between py-3 px-1 min-h-[44px]">
+                <div>
+                  <span className="text-sm font-medium block" style={{ color: themeColors.text }}>
+                    作業チャイム
+                  </span>
+                  <span className="text-xs" style={{ color: themeColors.uiText }}>
+                    休憩開始・作業開始を音と画面で知らせます
+                  </span>
+                </div>
+                <Switch
+                  checked={workChimeSettings.enabled}
+                  onChange={(e) => onWorkChimeUpdate({ enabled: e.target.checked })}
+                />
+              </div>
+
+              {workChimeSettings.enabled && (
+                <>
+                  <div className="flex items-center justify-between py-3 px-1 min-h-[44px]">
+                    <span className="text-sm font-medium" style={{ color: themeColors.text }}>
+                      音を鳴らす
+                    </span>
+                    <Switch
+                      checked={workChimeSettings.soundEnabled}
+                      onChange={(e) => {
+                        onWorkChimeUpdate({ soundEnabled: e.target.checked });
+                        if (e.target.checked) onEnableWorkChimeAudio();
+                      }}
+                    />
+                  </div>
+
+                  {workChimeSettings.soundEnabled && (
+                    <div className="flex items-center justify-between py-3 px-1 min-h-[44px]">
+                      <span className="text-sm font-medium" style={{ color: themeColors.text }}>
+                        チャイム音
+                      </span>
+                      {isWorkChimeAudioEnabled ? (
+                        <span className="text-sm font-medium" style={{ color: themeColors.accent }}>
+                          有効
+                        </span>
+                      ) : (
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          onClick={onEnableWorkChimeAudio}
+                        >
+                          <MdVolumeUp className="mr-1.5 h-4 w-4" />
+                          音を有効化
+                        </Button>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between py-3 px-1 min-h-[44px]">
+                    <div>
+                      <span className="text-sm font-medium block" style={{ color: themeColors.text }}>
+                        音声アナウンス
+                      </span>
+                      <span className="text-xs" style={{ color: themeColors.uiText }}>
+                        初期値はOFFです
+                      </span>
+                    </div>
+                    <Switch
+                      checked={workChimeSettings.voiceAnnouncementEnabled}
+                      onChange={(e) => onWorkChimeUpdate({ voiceAnnouncementEnabled: e.target.checked })}
+                    />
+                  </div>
+
+                  <div className="py-3 px-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium" style={{ color: themeColors.text }}>
+                        音量
+                      </span>
+                      <span className="text-sm font-mono" style={{ color: themeColors.uiText }}>
+                        {Math.round(workChimeSettings.volume * 100)}%
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.05"
+                      value={workChimeSettings.volume}
+                      onChange={(e) => onWorkChimeUpdate({ volume: parseFloat(e.target.value) })}
+                      className="mt-2 w-full h-2 rounded-full appearance-none cursor-pointer"
+                      style={{
+                        background: `linear-gradient(to right, ${themeColors.accent} 0%, ${themeColors.accent} ${workChimeSettings.volume * 100}%, ${themeColors.uiBg} ${workChimeSettings.volume * 100}%, ${themeColors.uiBg} 100%)`,
+                        accentColor: themeColors.accent,
+                      }}
+                      aria-label="作業チャイムの音量"
+                    />
+                  </div>
+                </>
+              )}
             </div>
           </section>
 
