@@ -32,7 +32,14 @@ jobs:
       - name: Detect deploy targets
         id: filter
         run: |
-          changed_files="$(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}")"
+          base_sha="${{ github.event.pull_request.base.sha }}"
+          target_sha="${{ github.event.pull_request.merge_commit_sha }}"
+
+          if [ -z "$target_sha" ] || ! git cat-file -e "$target_sha^{commit}" 2>/dev/null; then
+            target_sha="$(git rev-parse HEAD)"
+          fi
+
+          changed_files="$(git diff --name-only "$base_sha" "$target_sha")"
           echo "$changed_files"
 
           if echo "$changed_files" | grep -Eq '^(app|components|hooks|lib|types|public|data|scripts)/|^(package-lock\.json|package\.json|next\.config\.ts|postcss\.config\.mjs|tsconfig\.json|firebase\.json)$'; then
