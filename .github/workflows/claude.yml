@@ -11,7 +11,7 @@ on:
     types: [submitted]
 
 jobs:
-  claude:
+  authorize:
     if: |
       (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
       (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
@@ -20,9 +20,37 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    outputs:
+      trusted: ${{ steps.permission.outputs.trusted }}
+    steps:
+      - name: Check actor repository permission
+        id: permission
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          set -euo pipefail
+
+          permission=$(gh api "repos/${REPOSITORY}/collaborators/${ACTOR}/permission" --jq '.permission' 2>/dev/null || echo none)
+
+          case "$permission" in
+            admin|maintain|write)
+              echo "trusted=true" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "trusted=false" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
+
+  claude:
+    needs: authorize
+    if: needs.authorize.outputs.trusted == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
       pull-requests: read
       issues: read
-      id-token: write
       actions: read # Required for Claude to read CI results on PRs
     steps:
       - name: Checkout repository
