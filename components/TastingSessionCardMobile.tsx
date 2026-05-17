@@ -71,44 +71,11 @@ export function TastingSessionCardMobile({
                   </div>
                 </div>
 
-                {/* 横バーチャート（スコア表示） */}
-                {recordCount > 0 && (
-                  <div className={`flex-shrink-0 px-4 py-3 border-b border-dashed ${cardBorderClass}`}>
-                    <div className="space-y-2.5">
-                      {[
-                        { label: '苦味', value: averageScores.bitterness, color: '#3e2723' },
-                        { label: '酸味', value: averageScores.acidity, color: '#ff7043' },
-                        { label: 'ボディ', value: averageScores.body, color: '#8d6e63' },
-                        { label: '甘み', value: averageScores.sweetness, color: '#d81b60' },
-                        { label: '香り', value: averageScores.aroma, color: '#00897b' },
-                      ].map((item) => (
-                        <div key={item.label} className="flex items-center gap-2">
-                          <span className={`text-[10px] font-bold ${textSecondaryClass} w-10 flex-shrink-0`}>
-                            {item.label}
-                          </span>
-                          <div className={`flex-1 h-1.5 ${bgMutedClass} rounded overflow-hidden`}>
-                            <div
-                              className="h-full transition-all duration-500"
-                              style={{
-                                width: `${((item.value - 1) / 4) * 100}%`,
-                                backgroundColor: item.color,
-                              }}
-                            />
-                          </div>
-                          <span className={`text-[10px] font-bold ${textSecondaryClass} w-6 text-right`}>
-                            {item.value.toFixed(1)}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
                 {/* 感想 + AIコメント */}
                 <div className="flex-1 flex flex-col min-h-0 p-4">
                   {/* 感想セクション */}
                   <div className="flex-1 min-h-0 overflow-hidden">
-                    <div className="flex items-center gap-2 mb-3">
+                    <div className="flex items-center gap-2 mb-2">
                       <Quotes size={16} weight="fill" className={textPrimaryClass} />
                       <h4 className={`text-sm font-bold ${textPrimaryClass}`}>感想</h4>
                       <span className={`text-[10px] font-bold ${textMutedClass} ml-auto`}>
@@ -116,13 +83,14 @@ export function TastingSessionCardMobile({
                       </span>
                     </div>
 
-                    <div className="h-[calc(100%-28px)] overflow-y-auto pr-1">
+                    <div className="relative h-[calc(100%-28px)]">
+                      <div className="h-full overflow-y-auto pr-2 pb-3 [scrollbar-width:thin] [scrollbar-color:var(--edge-strong)_var(--ground)] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-ground [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-edge-strong">
                       {comments.length > 0 ? (
-                        <ul className="space-y-3">
+                        <ul className="space-y-2">
                           {comments.map((comment, commentIndex) => (
                             <li
                               key={commentIndex}
-                              className={`text-sm italic ${textSecondaryClass} leading-relaxed pl-3 border-l-2 ${cardBorderClass}`}
+                              className={`text-[13px] italic ${textSecondaryClass} leading-snug pl-3 border-l-2 ${cardBorderClass}`}
                             >
                               {comment}
                             </li>
@@ -134,11 +102,45 @@ export function TastingSessionCardMobile({
                           <p className={`text-xs ${textMutedClass} italic`}>まだ感想がありません</p>
                         </div>
                       )}
+                      </div>
                     </div>
                   </div>
 
+                  {/* 横バーチャート（スコア表示） */}
+                  {recordCount > 0 && (
+                    <div className={`flex-shrink-0 border-t border-dashed ${cardBorderClass} pt-2 mt-2`}>
+                      <div className="space-y-1.5">
+                        {[
+                          { label: '苦味', value: averageScores.bitterness, color: '#3e2723' },
+                          { label: '酸味', value: averageScores.acidity, color: '#ff7043' },
+                          { label: 'ボディ', value: averageScores.body, color: '#8d6e63' },
+                          { label: '甘み', value: averageScores.sweetness, color: '#d81b60' },
+                          { label: '香り', value: averageScores.aroma, color: '#00897b' },
+                        ].map((item) => (
+                          <div key={item.label} className="flex items-center gap-2">
+                            <span className={`text-[9px] font-bold ${textSecondaryClass} w-9 flex-shrink-0`}>
+                              {item.label}
+                            </span>
+                            <div className={`flex-1 h-1 ${bgMutedClass} rounded overflow-hidden`}>
+                              <div
+                                className="h-full transition-all duration-500"
+                                style={{
+                                  width: `${((item.value - 1) / 4) * 100}%`,
+                                  backgroundColor: item.color,
+                                }}
+                              />
+                            </div>
+                            <span className={`text-[9px] font-bold ${textSecondaryClass} w-6 text-right`}>
+                              {item.value.toFixed(1)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {/* AI分析ボタン */}
-                  <div className={`flex-shrink-0 border-t border-dashed ${cardBorderClass} pt-3 mt-3`}>
+                  <div className={`flex-shrink-0 border-t border-dashed ${cardBorderClass} pt-2 mt-2`}>
                     {!hasAnalysis && !isAnalyzing && recordCount === 0 && (
                       <p className={`text-center text-xs ${textSecondaryClass} italic py-2`}>
                         記録が追加されるとAI分析が開始されます
@@ -161,7 +163,7 @@ export function TastingSessionCardMobile({
                           setAiModalSession(session);
                         }}
                         fullWidth
-                        className="justify-between !p-3"
+                        className="justify-between !px-3 !py-2"
                       >
                         <div className="flex items-center gap-2">
                           <Notepad size={16} weight="fill" className={iconAccentClass} />

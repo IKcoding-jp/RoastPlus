@@ -122,7 +122,7 @@ export const MobileListView: React.FC<MobileListViewProps> = ({
                                 班を作成してください
                             </div>
                         ) : (
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-2 gap-2 rounded-lg border border-edge-subtle bg-ground p-2">
                                 {teams.map(team => {
                                     const assignment = assignments.find(a => a.teamId === team.id && a.taskLabelId === label.id);
                                     const member = members.find(m => m.id === assignment?.memberId);
@@ -132,7 +132,7 @@ export const MobileListView: React.FC<MobileListViewProps> = ({
                                         <div key={team.id} className="flex flex-col gap-1">
                                             <div className="text-[10px] font-bold px-1 text-ink-muted">{formatTeamTitle(team.name)}</div>
                                             <Button
-                                                variant={isSelected ? (member ? 'primary' : 'outline') : 'surface'}
+                                                variant="surface"
                                                 size="sm"
                                                 fullWidth
                                                 onMouseDown={(e) => handleCellTouchStart(team.id, label.id, member?.id || null, e)}
@@ -143,10 +143,12 @@ export const MobileListView: React.FC<MobileListViewProps> = ({
                                                 onTouchEnd={handleCellTouchEnd}
                                                 onTouchMove={handleCellTouchMove}
                                                 onClick={() => handleCellClick(team.id, label.id)}
-                                                className={`!min-h-0 !py-3 !px-2 truncate select-none ${
-                                                    member && isSelected ? 'shadow-md scale-105' : ''
+                                                className={`!min-h-0 !rounded-md !px-2 !py-3 !shadow-none truncate select-none ${
+                                                    member && isSelected ? '!border-spot !bg-spot !text-on-spot ring-2 ring-spot/20'
+                                                        : member ? '!border-edge !bg-surface hover:!bg-spot-surface'
+                                                            : ''
                                                 } ${!member && isSelected ? '!bg-surface !border-spot' : ''
-                                                } ${!member && !isSelected ? '!border-dashed !border-edge-strong !text-ink-muted' : ''}`}
+                                                } ${!member && !isSelected ? '!border-dashed !border-edge-strong !bg-surface !text-ink-muted' : ''}`}
                                             >
                                                 {member ? member.name : '未割当'}
                                             </Button>

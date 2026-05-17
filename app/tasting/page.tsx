@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, Suspense } from 'react';
+import { useEffect, useRef, Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
@@ -21,6 +21,7 @@ function TastingPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const hasRedirected = useRef(false);
+  const [isRedirectingAfterDelete, setIsRedirectingAfterDelete] = useState(false);
   const { showToast } = useToastContext();
 
   // クエリパラメータからIDを取得
@@ -56,6 +57,10 @@ function TastingPageContent() {
   if (sessionId && isEditSession) {
     const session = tastingSessions.find((s) => s.id === sessionId);
     if (!session) {
+      if (isRedirectingAfterDelete) {
+        return <Loading />;
+      }
+
       return (
         <div className="min-h-screen py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8 bg-page">
           <div className="max-w-2xl mx-auto">
@@ -92,6 +97,7 @@ function TastingPageContent() {
       if (!confirmDelete) return;
 
       try {
+        setIsRedirectingAfterDelete(true);
         // セッションに関連する記録も削除
         const updatedRecords = tastingRecords.filter((r) => r.sessionId !== id);
         const updatedSessions = tastingSessions.filter((s) => s.id !== id);
@@ -103,6 +109,7 @@ function TastingPageContent() {
         router.push('/tasting');
       } catch (error) {
         console.error('Failed to delete session:', error);
+        setIsRedirectingAfterDelete(false);
         showToast('セッションの削除に失敗しました', 'error');
       }
     };
@@ -132,6 +139,10 @@ function TastingPageContent() {
   if (recordId) {
     const record = tastingRecords.find((r) => r.id === recordId);
     if (!record) {
+      if (isRedirectingAfterDelete) {
+        return <Loading />;
+      }
+
       return (
         <div className="min-h-screen py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8 bg-page">
           <div className="max-w-2xl mx-auto">
@@ -168,6 +179,7 @@ function TastingPageContent() {
       if (!confirmDelete) return;
 
       try {
+        setIsRedirectingAfterDelete(true);
         const updatedRecords = tastingRecords.filter((r) => r.id !== id);
         await updateData({
           ...data,
@@ -177,6 +189,7 @@ function TastingPageContent() {
         router.push('/tasting');
       } catch (error) {
         console.error('Failed to delete record:', error);
+        setIsRedirectingAfterDelete(false);
         showToast('記録の削除に失敗しました', 'error');
       }
     };
@@ -207,6 +220,10 @@ function TastingPageContent() {
   if (sessionId) {
     const session = tastingSessions.find((s) => s.id === sessionId);
     if (!session) {
+      if (isRedirectingAfterDelete) {
+        return <Loading />;
+      }
+
       return (
         <div className="min-h-screen py-4 sm:py-6 lg:py-8 px-4 sm:px-6 lg:px-8 bg-page">
           <div className="max-w-4xl mx-auto">
@@ -243,17 +260,19 @@ function TastingPageContent() {
         right={
           !isEmpty ? (
             <>
+              <div id="sample-data-button-container" className="hidden sm:block min-w-[1px]"></div>
               <div id="filter-button-container" className="hidden sm:block min-w-[1px]"></div>
               <div id="filter-button-container-mobile" className="sm:hidden min-w-[1px]"></div>
               <div className="hidden sm:block">
                 <Button
                   variant="primary"
+                  size="sm"
                   onClick={() => router.push('/tasting/sessions/new')}
                   aria-label="新規セッション作成"
-                  className="flex items-center gap-2 shadow-md"
+                  className="!px-3 !py-2 gap-1.5 shadow-md"
                 >
                   <HiPlus size={20} />
-                  <span className="whitespace-nowrap">セッションを作成</span>
+                  <span className="text-xs sm:text-sm whitespace-nowrap">セッションを作成</span>
                 </Button>
               </div>
               <div className="sm:hidden">
@@ -275,6 +294,7 @@ function TastingPageContent() {
           <TastingSessionList
             data={data}
             onUpdate={updateData}
+            sampleButtonContainerId="sample-data-button-container"
             filterButtonContainerId="filter-button-container"
             filterButtonContainerIdMobile="filter-button-container-mobile"
           />
