@@ -2,6 +2,7 @@
 
 import { formatTime } from '@/lib/roastTimerUtils';
 import type { RoastTimerState } from '@/types';
+import { Button } from '@/components/ui';
 
 interface TimerControlsProps {
   state: RoastTimerState | null;
@@ -105,7 +106,8 @@ export function TimerControls({
 
         {/* ボタン */}
         <div className="flex gap-[10px] mt-[10px]">
-          <button
+          <Button
+            variant="surface"
             type="button"
             onClick={isPaused ? onResume : onPause}
             className="flex-1 h-[52px] rounded-[14px] flex items-center justify-center gap-[7px] cursor-pointer"
@@ -130,9 +132,10 @@ export function TimerControls({
             <span className="text-[13px] font-bold" style={{ color: 'var(--ink)' }}>
               {isPaused ? '再開' : '一時停止'}
             </span>
-          </button>
+          </Button>
 
-          <button
+          <Button
+            variant="surface"
             type="button"
             onClick={onSkip}
             className="h-[52px] rounded-[14px] flex items-center justify-center gap-[7px] cursor-pointer px-5"
@@ -151,7 +154,7 @@ export function TimerControls({
             <span className="text-[13px] font-semibold" style={{ color: 'var(--ink-sub)' }}>
               スキップ
             </span>
-          </button>
+          </Button>
         </div>
       </div>
     );
@@ -211,7 +214,8 @@ export function TimerControls({
         </div>
 
         {/* リセットボタン */}
-        <button
+        <Button
+          variant="surface"
           type="button"
           onClick={onReset}
           className="w-full h-[52px] rounded-[14px] flex items-center justify-center gap-2 cursor-pointer mt-auto"
@@ -240,7 +244,7 @@ export function TimerControls({
           <span className="text-[13px] font-semibold" style={{ color: 'var(--ink-sub)' }}>
             リセット
           </span>
-        </button>
+        </Button>
       </div>
     );
   }

@@ -12,6 +12,10 @@ export const ocrScheduleFromImage = onCall(
     cors: [
       'https://roastplus-72fa6.web.app',
       'https://roastplus-72fa6.firebaseapp.com',
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001',
     ],
     maxInstances: 10,
     timeoutSeconds: 300, // 5分
@@ -226,7 +230,7 @@ JSONのみを返してください。説明文は不要です。`;
   try {
     const completion = await openai.chat.completions.create(
       {
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -374,6 +378,8 @@ JSONのみを返してください。説明文は不要です。`;
         const statusText = openAiError.response?.statusText;
         if (httpStatus === 401) {
           errorMessage = 'OpenAI APIキーが無効です。APIキーを確認してください。';
+        } else if (httpStatus === 429 && code === 'insufficient_quota') {
+          errorMessage = 'OpenAI APIの利用枠が不足しています。OpenAIの課金設定またはAPI利用上限を確認してください。';
         } else if (httpStatus === 429) {
           errorMessage = 'OpenAI APIのレート制限に達しました。しばらく待ってから再度お試しください。';
         } else if (httpStatus === 500 || httpStatus === 502 || httpStatus === 503) {

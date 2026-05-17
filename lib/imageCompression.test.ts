@@ -10,7 +10,7 @@ function createMockCanvas(width: number, height: number) {
     width,
     height,
     getContext: vi.fn(() => context),
-    toBlob: vi.fn((callback: BlobCallback, type?: string, quality?: number) => {
+    toBlob: vi.fn((callback: BlobCallback, type?: string) => {
       // Blobを生成してコールバック
       const blob = new Blob(['compressed'], { type: type || 'image/jpeg' });
       callback(blob);
