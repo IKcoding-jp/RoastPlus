@@ -13,6 +13,7 @@ import { useQuizSession } from '@/hooks/useQuizSession';
 import { useQuizData } from '@/hooks/useQuizData';
 import { useQuizSound } from '@/hooks/useQuizSound';
 import type { QuizCategory } from '@/lib/coffee-quiz/types';
+import { getSafeReturnUrl } from '@/lib/returnUrl';
 
 const InboxIcon = () => (
   <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -31,7 +32,7 @@ function QuizPageContent() {
   // 問題IDリストを解析
   const questionIds = questionIdsParam ? questionIdsParam.split(',').filter(Boolean) : undefined;
   // 戻り先URL（デコード）
-  const returnUrl = returnUrlParam ? decodeURIComponent(returnUrlParam) : '/coffee-trivia';
+  const returnUrl = getSafeReturnUrl(returnUrlParam, '/coffee-trivia');
 
   const { isAuthenticated, loading: authLoading, progress } = useQuizData();
 
