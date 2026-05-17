@@ -137,6 +137,7 @@ describe('normalizeAppData', () => {
       userSettings: {
         selectedMemberId: 'member-1',
         taskLabelHeaderTextLeft: '  左ヘッダー  ',
+        homeHiddenFeatureKeys: ['dev-stories', 'settings', 'dev-stories', 'unknown'],
         roastTimerSettings: {
 
           timerSoundEnabled: false,
@@ -150,6 +151,7 @@ describe('normalizeAppData', () => {
     } as never);
     expect(result.userSettings?.selectedMemberId).toBe('member-1');
     expect(result.userSettings?.taskLabelHeaderTextLeft).toBe('左ヘッダー');
+    expect(result.userSettings?.homeHiddenFeatureKeys).toEqual(['dev-stories']);
     expect(result.userSettings?.roastTimerSettings?.timerSoundEnabled).toBe(false);
   });
 
