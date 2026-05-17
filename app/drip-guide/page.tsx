@@ -15,7 +15,7 @@ export default function DripGuidePage() {
     }
 
     return (
-        <div className="h-dvh overflow-y-hidden flex flex-col px-3 sm:px-6 lg:px-8 pt-14 pb-2 sm:pb-3 lg:pb-4 bg-page transition-colors duration-1000">
+        <div className="h-dvh overflow-y-hidden flex flex-col px-3 sm:px-6 lg:px-8 pt-20 pb-2 sm:pb-3 lg:pb-4 bg-page transition-colors duration-1000">
             <FloatingNav
                 backHref="/"
                 right={

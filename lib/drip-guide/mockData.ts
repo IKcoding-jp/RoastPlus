@@ -1,6 +1,5 @@
 import { DripRecipe } from './types';
 import { RECIPE46_PURPOSE } from './recipe46Content';
-import { RECIPE_HOFFMANN_PURPOSE } from './recipeHoffmannContent';
 
 export const MOCK_RECIPES: DripRecipe[] = [
     // BYSN Standard Drip (細く中心に注ぐスタイル) - 1人前基準
@@ -23,7 +22,7 @@ export const MOCK_RECIPES: DripRecipe[] = [
                 startTimeSec: 0,
                 title: '蒸らし',
                 description: '粉全体にまんべんなくお湯を注いで均一に湿らせます。20秒蒸らします。',
-                targetTotalWater: 20,
+                targetTotalWater: 10,
                 note: '粉全体が均一に膨らむのを確認',
             },
             {
@@ -161,122 +160,4 @@ export const MOCK_RECIPES: DripRecipe[] = [
         ],
     },
 
-    // James Hoffmann Ultimate V60 Technique - 1人前基準（15g/250g）
-    {
-        id: 'recipe-hoffmann',
-        name: 'James Hoffmann V60',
-        beanName: 'お好みの豆',
-        beanAmountGram: 15,
-        totalWaterGram: 250,
-        totalDurationSec: 210,
-        purpose: RECIPE_HOFFMANN_PURPOSE,
-        description: '2007年世界バリスタチャンピオンJames Hoffmann氏が考案。ゆすりとかき混ぜでクリアな味わいを引き出します。',
-        createdAt: '2024-01-15T00:00:00Z',
-        updatedAt: '2024-01-15T00:00:00Z',
-        isDefault: true,
-        isManualMode: false,
-        steps: [
-            {
-                id: 'step-1',
-                startTimeSec: 0,
-                title: '蒸らし',
-                description: '中心から外側へ螺旋状に注ぎ、ゆすって均一に湿らせます。',
-                targetTotalWater: 30,
-                note: '豆の2倍の湯量→ゆすり→45秒待機',
-            },
-            {
-                id: 'step-2',
-                startTimeSec: 45,
-                title: '第1注湯（60%）',
-                description: '総湯量の60%まで中心から外側へ注ぎます。',
-                targetTotalWater: 150,
-                note: '30秒かけて注ぐ',
-            },
-            {
-                id: 'step-3',
-                startTimeSec: 75,
-                title: '第2注湯（100%）',
-                description: '残りの40%を少しゆっくり注ぎます。',
-                targetTotalWater: 250,
-                note: '水位を維持しながら注ぐ',
-            },
-            {
-                id: 'step-4',
-                startTimeSec: 105,
-                title: 'かき混ぜ＆ゆすり',
-                description: 'スプーンで両方向に軽くかき混ぜ→ドリッパーを回してゆすり。',
-                note: '壁の粉を落とし平らな粉面を作る',
-            },
-            {
-                id: 'step-5',
-                startTimeSec: 120,
-                title: '落ち切り待ち',
-                description: '全てのお湯が落ち切るのを待ちます。',
-                note: '目標: 約3:30で完了',
-            },
-        ],
-    },
-
-    // ドリップパック（7〜10g）- 手動モード
-    {
-        id: 'recipe-drip-bag',
-        name: 'ドリップパック（7〜10g）',
-        beanName: 'BYSNドリップパック',
-        beanAmountGram: 7,
-        totalWaterGram: 155,
-        totalDurationSec: 150,
-        purpose: '市販ドリップパック用。3投で丁寧に、雑味なくクリアに抽出',
-        description: 'ドリップパック（7〜10g）向けレシピ。仕上がり140ml、総湯量155ml。一気に注がず細く注ぐことで雑味を防ぎます。引き上げが遅いと雑味が出るので2:10〜2:30を目安に取り出してください。',
-        createdAt: '2026-02-24T00:00:00Z',
-        updatedAt: '2026-02-24T00:00:00Z',
-        isDefault: true,
-        isManualMode: true,
-        steps: [
-            {
-                id: 'step-0',
-                startTimeSec: 0,
-                title: 'カップ温め',
-                description: 'カップにお湯を注いで30秒待ち、捨てる。',
-                note: 'カップを温めることで温度が下がりにくくなる',
-            },
-            {
-                id: 'step-1',
-                startTimeSec: 0,
-                title: 'パックのセット',
-                description: '開封前にパックを振って粉を均してからカップにセットする。',
-                note: '粉が均一に広がると抽出がムラなくなる',
-            },
-            {
-                id: 'step-2',
-                startTimeSec: 0,
-                title: '蒸らし（1投目）',
-                description: '25〜30ml注ぐ。1分待つ。2投目は落ちきる前に注ぎ始める。',
-                targetTotalWater: 30,
-                note: '少量で全体を湿らせる',
-            },
-            {
-                id: 'step-3',
-                startTimeSec: 60,
-                title: '2投目',
-                description: '60〜65ml。30秒かけて中心から細く注ぐ。',
-                targetTotalWater: 93,
-                note: '細く一定のスピードで注ぐ',
-            },
-            {
-                id: 'step-4',
-                startTimeSec: 100,
-                title: '3投目',
-                description: '60〜65ml。表面が沈んだら30秒かけて注ぐ。',
-                targetTotalWater: 155,
-                note: '最後まで細く丁寧に',
-            },
-            {
-                id: 'step-5',
-                startTimeSec: 130,
-                title: '引き上げ',
-                description: '2:10〜2:30を目安に取り出す。つけ置きしない。',
-                note: '引き上げが遅いと雑味が出る',
-            },
-        ],
-    },
 ];
