@@ -9,7 +9,6 @@ import { clsx } from 'clsx';
 import { Dialog, Card, Button, IconButton, Select } from '@/components/ui';
 import { StartHintDialog } from './StartHintDialog';
 import { Start46Dialog } from './Start46Dialog';
-import { StartHoffmannDialog } from './StartHoffmannDialog';
 import { calculateRecipeForServings } from '@/lib/drip-guide/recipeCalculator';
 
 interface RecipeListProps {
@@ -74,9 +73,9 @@ export const RecipeList: React.FC<RecipeListProps> = ({ recipes, onDelete }) => 
         setStartTargetId(null);
     };
 
-    // デフォルトレシピの表示順序を明示的に指定（BYSN → 井崎 → 粕谷 → Hoffmann → ドリップパック）
+    // デフォルトレシピの表示順序を明示的に指定（BYSN → 井崎 → 粕谷）
     const sortedRecipes = useMemo(() => {
-        const defaultOrder = ['recipe-001', 'recipe-003', 'recipe-046', 'recipe-hoffmann', 'recipe-drip-bag'];
+        const defaultOrder = ['recipe-001', 'recipe-003', 'recipe-046'];
         return [...recipes].sort((a, b) => {
             const indexA = defaultOrder.indexOf(a.id);
             const indexB = defaultOrder.indexOf(b.id);
@@ -115,7 +114,7 @@ export const RecipeList: React.FC<RecipeListProps> = ({ recipes, onDelete }) => 
                                     {recipe.name}
                                 </h3>
                                 <div className="flex gap-1">
-                                    {recipe.id !== 'recipe-046' && recipe.id !== 'recipe-hoffmann' && (
+                                    {recipe.id !== 'recipe-046' && (
                                         <Link
                                             href={`/drip-guide/edit?id=${recipe.id}`}
                                             className="p-3 sm:p-2 text-ink-muted hover:text-info hover:bg-info/10 rounded-full transition-colors"
@@ -210,12 +209,6 @@ export const RecipeList: React.FC<RecipeListProps> = ({ recipes, onDelete }) => 
 
             {startTargetRecipe?.id === 'recipe-046' ? (
                 <Start46Dialog
-                    isOpen={startTargetId !== null}
-                    onClose={handleCloseStart}
-                    initialServings={startTargetRecipe ? getServingsForRecipe(startTargetRecipe.id) : 1}
-                />
-            ) : startTargetRecipe?.id === 'recipe-hoffmann' ? (
-                <StartHoffmannDialog
                     isOpen={startTargetId !== null}
                     onClose={handleCloseStart}
                     initialServings={startTargetRecipe ? getServingsForRecipe(startTargetRecipe.id) : 1}
