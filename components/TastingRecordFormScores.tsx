@@ -36,7 +36,7 @@ export function TastingRecordFormScores({
             <div className="w-1 h-5 rounded-full bg-spot" />
             <h3 className="text-base font-bold text-ink">評価項目</h3>
           </div>
-          <div className="px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wider bg-spot-subtle text-spot">
+          <div className="text-[10px] font-bold tracking-wider text-spot">
             1.0 - 5.0 スケール
           </div>
         </div>

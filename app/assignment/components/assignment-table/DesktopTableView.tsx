@@ -308,7 +308,7 @@ export const DesktopTableView: React.FC<DesktopTableViewProps> = ({
                                             className={`
                                                 !min-h-0 w-full py-2 md:py-3 px-1 !rounded-lg text-sm md:text-base !font-bold text-center transition-all truncate select-none
                                                 ${member && isSelected ? 'shadow-md scale-105' : ''
-                                                } ${!member && isSelected ? '!bg-spot/20' : ''
+                                                } ${!member && isSelected ? '!bg-surface !border-spot' : ''
                                                 } ${!member && !isSelected ? '!text-ink-muted !bg-ground !border-dashed !border-edge-strong hover:!bg-ground/80 !shadow-none' : ''}
                                             `}
                                         >

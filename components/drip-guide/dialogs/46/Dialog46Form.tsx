@@ -30,7 +30,7 @@ export const Dialog46Form: React.FC<Dialog46FormProps> = ({
                 variant="ghost"
                 type="button"
                 onClick={onDescriptionClick}
-                className="!min-h-0 w-full !rounded-lg bg-spot-subtle border border-spot/20 !p-3 !text-left hover:bg-spot-surface !justify-between"
+                className="!min-h-0 w-full !rounded-lg bg-surface border border-edge !p-3 !text-left hover:bg-ground !justify-between"
             >
                 <span className="text-sm font-semibold text-spot-hover">
                     4:6メソッドのポイント（必読）

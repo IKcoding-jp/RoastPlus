@@ -182,7 +182,7 @@ export function OCRConfirmModal({
             onClick={() => setActiveTab('timeLabels')}
             className={`flex-1 !rounded-none !min-h-[44px] flex items-center justify-center gap-2 ${
               activeTab === 'timeLabels'
-                ? 'bg-spot-subtle text-spot border-b-2 border-spot'
+                ? 'bg-surface text-spot border-b-2 border-spot'
                 : 'bg-surface text-ink-sub hover:bg-ground'
             }`}
           >
@@ -198,7 +198,7 @@ export function OCRConfirmModal({
             onClick={() => setActiveTab('roastSchedules')}
             className={`flex-1 !rounded-none !min-h-[44px] flex items-center justify-center gap-2 ${
               activeTab === 'roastSchedules'
-                ? 'bg-spot-subtle text-spot border-b-2 border-spot'
+                ? 'bg-surface text-spot border-b-2 border-spot'
                 : 'bg-surface text-ink-sub hover:bg-ground'
             }`}
           >

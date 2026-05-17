@@ -129,7 +129,7 @@ export default function StatsPage() {
                   </span>
                   <p className="text-ink-muted text-sm mt-1">総回答数</p>
                 </div>
-                <div className="bg-spot-subtle rounded-xl p-4 text-center border border-spot/20">
+                <div className="bg-surface rounded-xl p-4 text-center border border-edge">
                   <span className="text-3xl font-bold text-spot">
                     {stats?.averageAccuracy ?? 0}%
                   </span>

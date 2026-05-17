@@ -99,7 +99,7 @@ export function StreakCounter({ streak, compact = false }: StreakCounterProps) {
             <motion.div
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-1.5 px-2.5 py-1 bg-spot/10 rounded-md inline-block"
+              className="mt-1.5 inline-block"
             >
               <span className="text-spot-hover font-medium text-xs">
                 今日クイズをしないとストリークが切れます

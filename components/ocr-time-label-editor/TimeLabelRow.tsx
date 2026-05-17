@@ -239,7 +239,7 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
               )}
               {/* 継続終了時間 */}
               {label.continuesUntil && (
-                <span className="text-xs px-2 py-0.5 rounded-full text-spot bg-spot-subtle">
+                <span className="text-xs font-medium text-spot">
                   〜{label.continuesUntil}まで
                 </span>
               )}

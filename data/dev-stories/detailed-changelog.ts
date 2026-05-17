@@ -1,14 +1,14 @@
 import type { ChangelogEntry, ChangelogEntryType } from '@/types';
 
 // 変更タイプの日本語ラベルと色定義
-export const CHANGE_TYPE_CONFIG: Record<ChangelogEntryType, { label: string; color: string; bgColor: string }> = {
-  feature: { label: '機能追加', color: 'text-emerald-700', bgColor: 'bg-emerald-100' },
-  bugfix: { label: '修正', color: 'text-red-700', bgColor: 'bg-red-100' },
-  improvement: { label: '改善', color: 'text-blue-700', bgColor: 'bg-blue-100' },
-  docs: { label: 'ドキュメント', color: 'text-purple-700', bgColor: 'bg-purple-100' },
-  style: { label: 'デザイン', color: 'text-pink-700', bgColor: 'bg-pink-100' },
-  update: { label: '更新', color: 'text-gray-700', bgColor: 'bg-gray-100' },
-  story: { label: '開発秘話', color: 'text-amber-700', bgColor: 'bg-amber-100' },
+export const CHANGE_TYPE_CONFIG: Record<ChangelogEntryType, { label: string; color: string }> = {
+  feature: { label: '機能追加', color: 'text-emerald-700' },
+  bugfix: { label: '修正', color: 'text-red-700' },
+  improvement: { label: '改善', color: 'text-blue-700' },
+  docs: { label: 'ドキュメント', color: 'text-purple-700' },
+  style: { label: 'デザイン', color: 'text-pink-700' },
+  update: { label: '更新', color: 'text-gray-700' },
+  story: { label: '開発秘話', color: 'text-amber-700' },
 };
 
 // 詳細な更新履歴データ

@@ -69,7 +69,7 @@ export const HoffmannStepDetailModal: React.FC<HoffmannStepDetailModalProps> = (
                         >
                             <div className="flex items-center justify-between px-6 py-4 border-b border-edge">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-spot-subtle text-spot flex items-center justify-center">
+                                    <div className="w-10 h-10 text-spot flex items-center justify-center">
                                         {getIcon(detail.icon)}
                                     </div>
                                     <div>
@@ -94,7 +94,7 @@ export const HoffmannStepDetailModal: React.FC<HoffmannStepDetailModalProps> = (
                             <div className="px-6 py-5 space-y-4">
                                 <p className="text-ink-sub leading-relaxed">{detail.description}</p>
 
-                                <div className="bg-spot-subtle rounded-lg p-4">
+                                <div className="bg-surface rounded-lg p-4 border border-edge">
                                     <h4 className="font-semibold text-spot-hover mb-2 text-sm">ポイント</h4>
                                     <ul className="space-y-2">
                                         {detail.tips.map((tip, idx) => (

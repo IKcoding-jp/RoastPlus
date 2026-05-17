@@ -38,7 +38,10 @@ export function TastingSessionCardMobile({
 
   return (
     <>
-      <div className="flex-shrink-0 w-[calc(100vw-2rem)] h-full snap-center">
+      <div
+        className="flex-shrink-0 w-[calc(100vw-2rem)] h-full snap-center"
+        style={{ scrollSnapStop: 'always' }}
+      >
         <Link href={`/tasting?sessionId=${session.id}`} className="block h-full">
           <Card variant="hoverable" className="p-0 flex flex-col h-full overflow-hidden shadow-lg">
             <div className="relative z-10 flex flex-col h-full">
