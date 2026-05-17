@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 // TEMPORARY: Google Fonts disabled for build - will re-enable after deployment
 // import { Geist, Geist_Mono, Noto_Serif_JP, Playfair_Display, Nunito } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import { SplashScreenWrapper } from "@/components/SplashScreenWrapper";
@@ -95,10 +94,6 @@ export default function RootLayout({
         className={`${zenOldMincho.variable} ${inter.variable} ${robotoMono.variable} ${oswald.variable} ${orbitron.variable} ${notoSansJP.variable} ${raleway.variable} ${playfairDisplay.variable} antialiased font-serif bg-page`}
         suppressHydrationWarning
       >
-        <Script
-          src="https://cdn.jsdelivr.net/npm/twemoji@latest/dist/twemoji.min.js"
-          strategy="afterInteractive"
-        />
         <SplashScreenWrapper />
         <ServiceWorkerRegistration />
         <ThemeProvider>
