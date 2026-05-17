@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import type { AppData, TodaySchedule as TodayScheduleType, TimeLabel } from '@/types';
-import { HiUser, HiArrowDown } from 'react-icons/hi';
+import { HiUser } from 'react-icons/hi';
 import { useTodayScheduleSync } from '@/hooks/useTodayScheduleSync';
 import { TimeInputRow } from '@/components/today-schedule/TimeInputRow';
 import { TimeEditDialog } from '@/components/today-schedule/TimeEditDialog';
@@ -104,6 +104,12 @@ function TodayScheduleInner({ data, onUpdate, selectedDate, currentSchedule, onC
     });
   };
 
+  const getContentInputStyle = (label: TimeLabel): CSSProperties | undefined => {
+    if (!label.subTasks || label.subTasks.length === 0) return undefined;
+    const contentLength = Math.max(label.content?.length ?? 0, 4);
+    return { width: `${contentLength + 0.5}em` };
+  };
+
   if (!data) {
     return (
       <div className="rounded-lg p-6 shadow-card bg-surface border border-edge">
@@ -145,7 +151,7 @@ function TodayScheduleInner({ data, onUpdate, selectedDate, currentSchedule, onC
             {groupedTimeLabels.map((group) => (
               <div
                 key={group.time}
-                className="group flex items-baseline gap-3 md:gap-4 py-2.5 md:py-2 px-3 md:px-2.5 rounded-lg border transition-all duration-200 bg-ground hover:bg-header-bg/[0.04] border-edge hover:border-header-bg/30"
+                className="group flex items-baseline gap-3 py-2.5 px-3 rounded-lg border transition-all duration-200 bg-surface hover:bg-ground border-edge hover:border-header-bg/30"
               >
                 {/* 時間表示 */}
                 <div
@@ -158,7 +164,7 @@ function TodayScheduleInner({ data, onUpdate, selectedDate, currentSchedule, onC
                 {/* 内容入力（複数） */}
                 <div className="flex-1 min-w-0 flex flex-col gap-2">
                   {group.labels.map((label) => (
-                    <div key={label.id} className={`w-full ${label.continuesUntil ? 'border-l-2 border-dashed border-amber-400 pl-3' : ''}`}>
+                    <div key={label.id} className="w-full">
                       <div className="flex items-center gap-2 min-w-0">
                         <input
                           type="text"
@@ -166,13 +172,28 @@ function TodayScheduleInner({ data, onUpdate, selectedDate, currentSchedule, onC
                           onChange={(e) => updateTimeLabel(label.id, { content: e.target.value })}
                           onCompositionStart={handleCompositionStart}
                           onCompositionEnd={handleCompositionEnd}
-                          className="flex-1 min-w-0 bg-transparent border-0 border-b border-transparent focus:outline-none transition-colors py-1 text-base md:text-base text-ink focus:border-spot placeholder:text-ink-muted"
+                          className={`${label.subTasks && label.subTasks.length > 0 ? 'w-auto flex-none' : 'flex-1'} min-w-0 max-w-full bg-transparent border-0 border-b border-transparent focus:outline-none transition-colors py-1 text-base md:text-base text-ink focus:border-spot placeholder:text-ink-muted`}
+                          style={getContentInputStyle(label)}
                           placeholder="内容を入力"
                         />
-                        {label.continuesUntil && (
-                          <span className="text-xs font-medium whitespace-nowrap text-spot">
-                            〜{label.continuesUntil}まで
-                          </span>
+                        {label.subTasks && label.subTasks.length > 0 && (
+                          <div className="flex min-w-0 flex-none items-center gap-1 overflow-hidden">
+                            {label.subTasks
+                              .sort((a, b) => a.order - b.order)
+                              .map((subTask) => (
+                                <span
+                                  key={subTask.id}
+                                  className="min-w-0 truncate text-base text-ink-sub"
+                                >
+                                  {subTask.content}
+                                  {subTask.assignee && (
+                                    <span className="ml-1 text-sm text-ink-muted">
+                                      {subTask.assignee}
+                                    </span>
+                                  )}
+                                </span>
+                              ))}
+                          </div>
                         )}
                       </div>
 
@@ -185,25 +206,6 @@ function TodayScheduleInner({ data, onUpdate, selectedDate, currentSchedule, onC
                         </div>
                       )}
 
-                      {label.subTasks && label.subTasks.length > 0 && (
-                        <div className="mt-2 ml-4 space-y-1.5">
-                          {label.subTasks
-                            .sort((a, b) => a.order - b.order)
-                            .map((subTask) => (
-                              <div key={subTask.id} className="flex items-start gap-2">
-                                <HiArrowDown className="h-4 w-4 flex-shrink-0 mt-0.5 text-ink-muted" />
-                                <div className="flex-1">
-                                  <span className="text-sm text-ink-sub">{subTask.content}</span>
-                                  {subTask.assignee && (
-                                    <span className="ml-2 text-xs px-1.5 py-0.5 rounded-full text-ink-muted bg-ground">
-                                      {subTask.assignee}
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                        </div>
-                      )}
                     </div>
                   ))}
                 </div>
