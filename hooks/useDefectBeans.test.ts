@@ -6,8 +6,6 @@ import type { AppData, User, DefectBean } from '@/types';
 // モック関数（vi.mockファクトリ内で参照可能なようにmockプレフィックスを使用）
 const mockUseAuth = vi.fn();
 const mockGetDefectBeanMasterData = vi.fn();
-const mockUpdateDefectBeanMaster = vi.fn();
-const mockDeleteDefectBeanMaster = vi.fn();
 const mockUploadDefectBeanImage = vi.fn();
 const mockDeleteDefectBeanImage = vi.fn();
 const mockUseAppData = vi.fn();
@@ -20,8 +18,6 @@ vi.mock('@/lib/auth', () => ({
 
 vi.mock('@/lib/firestore', () => ({
   getDefectBeanMasterData: (...args: unknown[]) => mockGetDefectBeanMasterData(...args),
-  updateDefectBeanMaster: (...args: unknown[]) => mockUpdateDefectBeanMaster(...args),
-  deleteDefectBeanMaster: (...args: unknown[]) => mockDeleteDefectBeanMaster(...args),
 }));
 
 vi.mock('@/lib/storage', () => ({
@@ -564,7 +560,6 @@ describe('useDefectBeans - updateDefectBean', () => {
     mockUseAuth.mockReturnValue({ user: mockUser, loading: false });
     mockGetDefectBeanMasterData.mockResolvedValue([MASTER_BEAN]);
     mockUpdateData.mockResolvedValue(undefined);
-    mockUpdateDefectBeanMaster.mockResolvedValue(undefined);
     mockUploadDefectBeanImage.mockResolvedValue('https://example.com/new-image.jpg');
     mockDeleteDefectBeanImage.mockResolvedValue(undefined);
     mockCompressImage.mockImplementation((file: File) => Promise.resolve(file));
@@ -618,7 +613,8 @@ describe('useDefectBeans - updateDefectBean', () => {
     consoleSpy.mockRestore();
   });
 
-  it('マスター豆を画像変更ありで更新する', async () => {
+  it('マスター豆の更新を拒否する', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const { result } = renderHook(() => useDefectBeans());
 
     await waitForMasterDataLoad();
@@ -631,35 +627,23 @@ describe('useDefectBeans - updateDefectBean', () => {
       removalReason: '更新済み理由',
     };
 
-    await act(async () => {
-      await result.current.updateDefectBean(
-        'master-1',
-        updatePayload,
-        imageFile,
-        MASTER_BEAN.imageUrl
-      );
-    });
-
-    // マスター豆の画像アップロードはuserId=''
-    expect(mockUploadDefectBeanImage).toHaveBeenCalledWith('', 'master-1', imageFile);
-
-    // 旧画像を削除
-    expect(mockDeleteDefectBeanImage).toHaveBeenCalledWith(MASTER_BEAN.imageUrl);
-
-    // updateDefectBeanMasterが呼ばれた
-    expect(mockUpdateDefectBeanMaster).toHaveBeenCalledWith(
-      'master-1',
-      expect.objectContaining({
-        id: 'master-1',
-        name: '更新カビ豆',
-        imageUrl: 'https://example.com/new-image.jpg',
-        isMaster: true,
-        updatedAt: '2024-06-15T00:00:00.000Z',
+    await expect(
+      act(async () => {
+        await result.current.updateDefectBean(
+          'master-1',
+          updatePayload,
+          imageFile,
+          MASTER_BEAN.imageUrl
+        );
       })
-    );
+    ).rejects.toThrow('Master defect beans cannot be edited from the client');
 
-    // updateDataは呼ばれない（マスター豆なので）
+    expect(mockCompressImage).not.toHaveBeenCalled();
+    expect(mockUploadDefectBeanImage).not.toHaveBeenCalled();
+    expect(mockDeleteDefectBeanImage).not.toHaveBeenCalled();
     expect(mockUpdateData).not.toHaveBeenCalled();
+
+    consoleSpy.mockRestore();
   });
 
   it('ユーザー豆を画像変更ありで更新する', async () => {
@@ -703,9 +687,6 @@ describe('useDefectBeans - updateDefectBean', () => {
       imageUrl: 'https://example.com/new-image.jpg',
       updatedAt: '2024-06-15T00:00:00.000Z',
     });
-
-    // updateDefectBeanMasterは呼ばれない（ユーザー豆なので）
-    expect(mockUpdateDefectBeanMaster).not.toHaveBeenCalled();
   });
 
   it('画像変更なしで更新する（imageFile=null）', async () => {
@@ -809,12 +790,12 @@ describe('useDefectBeans - updateDefectBean', () => {
     expect(mockDeleteDefectBeanImage).not.toHaveBeenCalled();
   });
 
-  it('マスター豆更新時にローカルstateも更新される', async () => {
+  it('マスター豆の更新拒否時にローカルstateを変更しない', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const { result } = renderHook(() => useDefectBeans());
 
     await waitForMasterDataLoad();
 
-    // 更新前のマスター豆を確認
     expect(result.current.masterDefectBeans).toEqual([MASTER_BEAN]);
 
     const updatePayload = {
@@ -824,13 +805,15 @@ describe('useDefectBeans - updateDefectBean', () => {
       removalReason: '更新理由',
     };
 
-    await act(async () => {
-      await result.current.updateDefectBean('master-1', updatePayload, null);
-    });
+    await expect(
+      act(async () => {
+        await result.current.updateDefectBean('master-1', updatePayload, null);
+      })
+    ).rejects.toThrow('Master defect beans cannot be edited from the client');
 
-    // ローカルstateが更新された
-    expect(result.current.masterDefectBeans[0].name).toBe('更新済みカビ豆');
-    expect(result.current.masterDefectBeans[0].updatedAt).toBe('2024-06-15T00:00:00.000Z');
+    expect(result.current.masterDefectBeans).toEqual([MASTER_BEAN]);
+
+    consoleSpy.mockRestore();
   });
 
   it('oldImageUrlが未指定の場合は旧画像を削除しない', async () => {
@@ -863,7 +846,6 @@ describe('useDefectBeans - removeDefectBean', () => {
     mockUseAuth.mockReturnValue({ user: mockUser, loading: false });
     mockGetDefectBeanMasterData.mockResolvedValue([MASTER_BEAN]);
     mockUpdateData.mockResolvedValue(undefined);
-    mockDeleteDefectBeanMaster.mockResolvedValue(undefined);
     mockDeleteDefectBeanImage.mockResolvedValue(undefined);
     mockUseAppData.mockReturnValue({
       data: { ...INITIAL_APP_DATA, defectBeans: [USER_BEAN] },
@@ -886,7 +868,7 @@ describe('useDefectBeans - removeDefectBean', () => {
 
     await expect(
       act(async () => {
-        await result.current.removeDefectBean('master-1', MASTER_BEAN.imageUrl);
+        await result.current.removeDefectBean(USER_BEAN.id, USER_BEAN.imageUrl);
       })
     ).rejects.toThrow('User not authenticated');
   });
@@ -907,29 +889,25 @@ describe('useDefectBeans - removeDefectBean', () => {
     consoleSpy.mockRestore();
   });
 
-  it('マスター豆を削除する', async () => {
+  it('マスター豆の削除を拒否する', async () => {
+    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const { result } = renderHook(() => useDefectBeans());
 
     await waitForMasterDataLoad();
 
-    // 削除前にマスター豆が存在する
     expect(result.current.masterDefectBeans).toEqual([MASTER_BEAN]);
 
-    await act(async () => {
-      await result.current.removeDefectBean('master-1', MASTER_BEAN.imageUrl);
-    });
+    await expect(
+      act(async () => {
+        await result.current.removeDefectBean('master-1', MASTER_BEAN.imageUrl);
+      })
+    ).rejects.toThrow('Master defect beans cannot be deleted from the client');
 
-    // 画像削除が呼ばれた
-    expect(mockDeleteDefectBeanImage).toHaveBeenCalledWith(MASTER_BEAN.imageUrl);
-
-    // Firestoreからの削除が呼ばれた
-    expect(mockDeleteDefectBeanMaster).toHaveBeenCalledWith('master-1');
-
-    // ローカルstateからも削除された
-    expect(result.current.masterDefectBeans).toEqual([]);
-
-    // updateDataは呼ばれない（マスター豆なので）
+    expect(mockDeleteDefectBeanImage).not.toHaveBeenCalled();
     expect(mockUpdateData).not.toHaveBeenCalled();
+    expect(result.current.masterDefectBeans).toEqual([MASTER_BEAN]);
+
+    consoleSpy.mockRestore();
   });
 
   it('ユーザー豆を削除する', async () => {
@@ -951,9 +929,6 @@ describe('useDefectBeans - removeDefectBean', () => {
     const currentData = { ...INITIAL_APP_DATA, defectBeans: [USER_BEAN] };
     const updatedData = updater(currentData);
     expect(updatedData.defectBeans).toEqual([]);
-
-    // deleteDefectBeanMasterは呼ばれない（ユーザー豆なので）
-    expect(mockDeleteDefectBeanMaster).not.toHaveBeenCalled();
   });
 
   it('画像削除失敗時にエラーをスローする', async () => {
@@ -966,32 +941,9 @@ describe('useDefectBeans - removeDefectBean', () => {
 
     await expect(
       act(async () => {
-        await result.current.removeDefectBean('master-1', MASTER_BEAN.imageUrl);
+        await result.current.removeDefectBean(USER_BEAN.id, USER_BEAN.imageUrl);
       })
     ).rejects.toThrow('Image delete failed');
-
-    // Firestore削除は呼ばれない（画像削除で失敗したため）
-    expect(mockDeleteDefectBeanMaster).not.toHaveBeenCalled();
-
-    consoleSpy.mockRestore();
-  });
-
-  it('Firestore削除失敗時にエラーをスローする', async () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    mockDeleteDefectBeanMaster.mockRejectedValue(new Error('Firestore delete failed'));
-
-    const { result } = renderHook(() => useDefectBeans());
-
-    await waitForMasterDataLoad();
-
-    await expect(
-      act(async () => {
-        await result.current.removeDefectBean('master-1', MASTER_BEAN.imageUrl);
-      })
-    ).rejects.toThrow('Firestore delete failed');
-
-    // 画像削除は呼ばれた
-    expect(mockDeleteDefectBeanImage).toHaveBeenCalledWith(MASTER_BEAN.imageUrl);
 
     consoleSpy.mockRestore();
   });

@@ -164,6 +164,12 @@ export default function DefectBeansPage() {
 
   // 欠点豆編集
   const handleEditDefectBean = (id: string) => {
+    const defectBean = allDefectBeans.find((db) => db.id === id);
+    if (defectBean?.isMaster) {
+      showToast('マスター欠点豆は編集できません。', 'error');
+      return;
+    }
+
     setEditingDefectBeanId(id);
   };
 
@@ -298,7 +304,7 @@ export default function DefectBeansPage() {
                   isSelected={selectedIds.has(defectBean.id)}
                   onSelect={compareMode ? handleSelect : undefined}
                   onToggleSetting={handleToggleSetting}
-                  onEdit={!compareMode ? handleEditDefectBean : undefined}
+                  onEdit={!compareMode && !defectBean.isMaster ? handleEditDefectBean : undefined}
                   compareMode={compareMode}
                   index={index}
                 />
@@ -328,7 +334,7 @@ export default function DefectBeansPage() {
               defectBean={editingBean}
               onSubmit={handleAddDefectBean} // 使用されないが型のため必要
               onUpdate={handleUpdateDefectBean}
-              onDelete={isDeveloperModeEnabled ? handleDeleteDefectBeanFromEdit : undefined}
+              onDelete={isDeveloperModeEnabled && !editingBean.isMaster ? handleDeleteDefectBeanFromEdit : undefined}
               onCancel={() => setEditingDefectBeanId(null)}
   
             />
