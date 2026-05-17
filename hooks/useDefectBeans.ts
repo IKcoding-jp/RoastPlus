@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/lib/auth';
-import { getDefectBeanMasterData, updateDefectBeanMaster, deleteDefectBeanMaster } from '@/lib/firestore';
+import { getDefectBeanMasterData } from '@/lib/firestore';
 import { uploadDefectBeanImage, deleteDefectBeanImage } from '@/lib/storage';
 import { compressImage } from '@/lib/imageCompression';
 import { useAppData } from './useAppData';
@@ -113,18 +113,17 @@ export function useDefectBeans() {
           throw new Error('Defect bean not found');
         }
 
+        if (existingBean.isMaster) {
+          throw new Error('Master defect beans cannot be edited from the client');
+        }
+
         let newImageUrl = existingBean.imageUrl;
 
         // 画像が変更された場合
         if (imageFile) {
           // 画像を圧縮してからアップロード
           const compressedFile = await compressImage(imageFile);
-          if (existingBean.isMaster) {
-            // マスターデータの場合は、userIdとして空文字列を使用（パスを統一するため）
-            newImageUrl = await uploadDefectBeanImage('', defectBeanId, compressedFile);
-          } else {
-            newImageUrl = await uploadDefectBeanImage(user.uid, defectBeanId, compressedFile);
-          }
+          newImageUrl = await uploadDefectBeanImage(user.uid, defectBeanId, compressedFile);
 
           // アップロード成功後、既存画像を削除
           if (oldImageUrl && oldImageUrl !== newImageUrl) {
@@ -145,22 +144,13 @@ export function useDefectBeans() {
           updatedAt: now,
         };
 
-        if (existingBean.isMaster) {
-          // マスターデータの更新
-          await updateDefectBeanMaster(defectBeanId, updatedDefectBean);
-          // ローカル状態も更新
-          setMasterDefectBeans((prev) =>
-            prev.map((db) => (db.id === defectBeanId ? updatedDefectBean : db))
-          );
-        } else {
-          // ユーザーデータの更新
-          await updateData((currentData) => ({
-            ...currentData,
-            defectBeans: (currentData.defectBeans || []).map((db) =>
-              db.id === defectBeanId ? updatedDefectBean : db
-            ),
-          }));
-        }
+        // ユーザーデータの更新
+        await updateData((currentData) => ({
+          ...currentData,
+          defectBeans: (currentData.defectBeans || []).map((db) =>
+            db.id === defectBeanId ? updatedDefectBean : db
+          ),
+        }));
       } catch (error) {
         console.error('Failed to update defect bean:', error);
         throw error;
@@ -185,21 +175,18 @@ export function useDefectBeans() {
           throw new Error('Defect bean not found');
         }
 
+        if (existingBean.isMaster) {
+          throw new Error('Master defect beans cannot be deleted from the client');
+        }
+
         // 画像を削除
         await deleteDefectBeanImage(imageUrl);
 
-        if (existingBean.isMaster) {
-          // マスターデータの削除
-          await deleteDefectBeanMaster(defectBeanId);
-          // ローカル状態も更新
-          setMasterDefectBeans((prev) => prev.filter((db) => db.id !== defectBeanId));
-        } else {
-          // ユーザーデータの削除
-          await updateData((currentData) => ({
-            ...currentData,
-            defectBeans: (currentData.defectBeans || []).filter((db) => db.id !== defectBeanId),
-          }));
-        }
+        // ユーザーデータの削除
+        await updateData((currentData) => ({
+          ...currentData,
+          defectBeans: (currentData.defectBeans || []).filter((db) => db.id !== defectBeanId),
+        }));
       } catch (error) {
         console.error('Failed to remove defect bean:', error);
         throw error;
