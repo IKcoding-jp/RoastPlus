@@ -11,6 +11,10 @@ export const analyzeTastingSession = onCall(
     cors: [
       'https://roastplus-72fa6.web.app',
       'https://roastplus-72fa6.firebaseapp.com',
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001',
     ],
     maxInstances: 10,
     timeoutSeconds: 60,
@@ -74,7 +78,7 @@ ${data.comments.length > 0 ? data.comments.map((c) => `- ${c}`).join('\n') : 'æ„
 `;
 
       const response = await openai.chat.completions.create({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: 'You are a skilled barista and coffee copywriter.' },
           { role: 'user', content: prompt },

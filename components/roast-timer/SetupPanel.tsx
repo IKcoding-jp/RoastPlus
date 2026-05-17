@@ -64,11 +64,12 @@ export function SetupPanel({ onStart, isLoading, onWeightSelect }: SetupPanelPro
         {WEIGHT_OPTIONS.map((option) => {
           const isSelected = selectedWeight === option.weight;
           return (
-            <button
+            <Button
               key={option.weight}
+              variant="surface"
               type="button"
               onClick={() => handleWeightSelect(option.weight)}
-              className="flex flex-col items-center gap-2 rounded-[20px] cursor-pointer min-h-[96px] justify-center"
+              className="w-full flex flex-col items-center gap-2 rounded-[20px] min-h-[96px] justify-center"
               style={{
                 padding: '16px 8px 14px',
                 border: `2px solid ${isSelected ? 'var(--spot)' : 'var(--edge)'}`,
@@ -125,7 +126,7 @@ export function SetupPanel({ onStart, isLoading, onWeightSelect }: SetupPanelPro
               >
                 {option.minutes}:00
               </span>
-            </button>
+            </Button>
           );
         })}
       </div>

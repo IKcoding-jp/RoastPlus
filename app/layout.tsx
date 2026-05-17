@@ -7,57 +7,6 @@ import { SplashScreenWrapper } from "@/components/SplashScreenWrapper";
 import { ToastProvider } from "@/components/Toast";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
-import { Zen_Old_Mincho, Inter, Roboto_Mono, Oswald, Orbitron, Noto_Sans_JP, Raleway, Playfair_Display } from "next/font/google";
-
-const zenOldMincho = Zen_Old_Mincho({
-  weight: ["400", "500", "600", "700", "900"],
-  subsets: ["latin"],
-  variable: "--font-zen-old-mincho",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const robotoMono = Roboto_Mono({
-  subsets: ["latin"],
-  variable: "--font-roboto-mono",
-  display: "swap",
-});
-
-const oswald = Oswald({
-  subsets: ["latin"],
-  variable: "--font-oswald",
-  display: "swap",
-});
-
-const orbitron = Orbitron({
-  subsets: ["latin"],
-  variable: "--font-orbitron",
-  display: "swap",
-});
-
-const notoSansJP = Noto_Sans_JP({
-  subsets: ["latin"],
-  variable: "--font-noto-sans-jp",
-  display: "swap",
-});
-
-const raleway = Raleway({
-  subsets: ["latin"],
-  variable: "--font-raleway",
-  display: "swap",
-});
-
-const playfairDisplay = Playfair_Display({
-  subsets: ["latin"],
-  variable: "--font-playfair",
-  display: "swap",
-});
-
 export const metadata: Metadata = {
   title: 'RoastPlus',
   description: 'コーヒー豆加工業務をサポートするWebアプリ',
@@ -91,7 +40,7 @@ export default function RootLayout({
   return (
     <html lang="ja" suppressHydrationWarning>
       <body
-        className={`${zenOldMincho.variable} ${inter.variable} ${robotoMono.variable} ${oswald.variable} ${orbitron.variable} ${notoSansJP.variable} ${raleway.variable} ${playfairDisplay.variable} antialiased font-serif bg-page`}
+        className="antialiased font-serif bg-page"
         suppressHydrationWarning
       >
         <SplashScreenWrapper />

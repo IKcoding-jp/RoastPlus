@@ -10,6 +10,20 @@
   --dark: #211714;
   --dark-light: #3A2F2B;
   --gold: #FFC107;
+  /* フォント変数（Google Fonts取得不能時の安全なフォールバック） */
+  --font-geist-sans: "Inter", "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  --font-geist-mono: "Roboto Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  --font-nunito: "Nunito", "Inter", "Noto Sans JP", sans-serif;
+  --font-inter: var(--font-geist-sans);
+  --font-roboto-mono: var(--font-geist-mono);
+  --font-oswald: "Arial", "Helvetica Neue", sans-serif;
+  --font-orbitron: "Trebuchet MS", "Verdana", sans-serif;
+  --font-noto-sans-jp: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  --font-raleway: "Arial", "Helvetica Neue", sans-serif;
+  --font-playfair: "Georgia", "Times New Roman", serif;
+  --font-zen-old-mincho: "Times New Roman", "Yu Mincho", "Hiragino Mincho ProN", serif;
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
 }
 
 /*
