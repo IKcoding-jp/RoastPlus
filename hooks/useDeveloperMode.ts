@@ -79,7 +79,8 @@ export function useDeveloperMode() {
   }, [authLoading, refreshPermissions]);
 
   // 開発者モードを有効化
-  const enableDeveloperMode = useCallback((): boolean => {
+  const enableDeveloperMode = useCallback((_password?: string): boolean => {
+    void _password;
     if (!canUseDeveloperMode || typeof window === 'undefined') {
       return false;
     }
