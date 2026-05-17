@@ -15,9 +15,9 @@ const baseProps = {
 
 describe('TastingSessionFilterModal', () => {
   describe('ヘッダー', () => {
-    it('フィルター設定タイトルを表示する', () => {
+    it('フィルタータイトルを表示する', () => {
       render(<TastingSessionFilterModal {...baseProps} />);
-      expect(screen.getByText('フィルター設定')).toBeInTheDocument();
+      expect(screen.getByText('フィルター')).toBeInTheDocument();
     });
 
     it('フィルター未適用時はリセットボタンを表示しない', () => {
@@ -81,26 +81,31 @@ describe('TastingSessionFilterModal', () => {
       );
     });
 
-    it('選択チップは統一された高さと角丸で表示する', () => {
+    it('選択肢は豆図鑑フィルターと同じ角丸で表示する', () => {
       render(<TastingSessionFilterModal {...baseProps} />);
 
       [
-        screen.getByRole('button', { name: '新しい順' }),
-        screen.getByRole('button', { name: '古い順' }),
-        screen.getByRole('button', { name: '名前順' }),
         screen.getByRole('button', { name: '浅煎り' }),
         screen.getByRole('button', { name: '中煎り' }),
         screen.getByRole('button', { name: '中深煎り' }),
         screen.getByRole('button', { name: '深煎り' }),
       ].forEach((chip) => {
         expect(chip).toHaveClass('!min-h-[40px]');
-        expect(chip).toHaveClass('!rounded-xl');
-        expect(chip).toHaveClass('!px-3');
+        expect(chip).toHaveClass('!rounded-lg');
         expect(chip).toHaveClass('!py-2');
+      });
+
+      [
+        screen.getByRole('button', { name: '新しい順' }),
+        screen.getByRole('button', { name: '古い順' }),
+        screen.getByRole('button', { name: '名前順' }),
+      ].forEach((row) => {
+        expect(row).toHaveClass('!rounded-lg');
+        expect(row).toHaveClass('!justify-start');
       });
     });
 
-    it('並び替えと焙煎度合いの選択中チップは同じ色で表示する', () => {
+    it('ソート行と焙煎度合いは共通フィルターの選択表示になる', () => {
       render(
         <TastingSessionFilterModal
           {...baseProps}
@@ -109,7 +114,7 @@ describe('TastingSessionFilterModal', () => {
         />
       );
 
-      expect(screen.getByRole('button', { name: '古い順' })).toHaveClass('!bg-spot', '!text-white', '!border-spot');
+      expect(screen.getByRole('button', { name: '古い順' })).toHaveClass('!text-spot');
       expect(screen.getByRole('button', { name: '中深煎り' })).toHaveClass('!bg-spot', '!text-white', '!border-spot');
     });
   });
@@ -171,14 +176,14 @@ describe('TastingSessionFilterModal', () => {
       render(<TastingSessionFilterModal {...baseProps} />);
 
       const inputs = [
-        screen.getByPlaceholderText('豆の名前を入力...'),
+        screen.getByPlaceholderText('豆の名前で検索...'),
         ...document.querySelectorAll('input[type="date"]'),
       ];
 
       inputs.forEach((input) => {
-        expect(input).toHaveClass('!min-h-[52px]');
-        expect(input).toHaveClass('!rounded-xl');
-        expect(input).toHaveClass('!text-base');
+        expect(input).toHaveClass('!min-h-[40px]');
+        expect(input).toHaveClass('!rounded-lg');
+        expect(input).toHaveClass('!text-sm');
       });
     });
   });

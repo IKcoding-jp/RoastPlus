@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { HiCheckCircle, HiSearch, HiCollection, HiXCircle } from 'react-icons/hi';
+import { HiCheckCircle, HiCollection, HiXCircle } from 'react-icons/hi';
 import { MdFilterList, MdSort, MdArrowUpward, MdArrowDownward } from 'react-icons/md';
-import { Button, Input, Modal } from '@/components/ui';
+import { Button, FilterModal, FilterOptionButton, FilterSearchInput, FilterSection, FilterSortOption } from '@/components/ui';
 
 type FilterOption = 'all' | 'shouldRemove' | 'shouldNotRemove';
 type SortOption = 'default' | 'createdAtDesc' | 'createdAtAsc' | 'nameAsc' | 'nameDesc';
@@ -75,73 +75,11 @@ export function FilterMenu({
         <span className="text-xs sm:text-sm">フィルター</span>
       </Button>
 
-      <Modal
+      <FilterModal
         show={showModal}
         onClose={() => setShowModal(false)}
-        contentClassName="bg-overlay rounded-2xl shadow-xl overflow-hidden w-full max-w-sm border border-edge"
-      >
-        <div className="p-5 flex flex-col gap-5">
-          <h2 className="text-base font-semibold text-ink">フィルター</h2>
-
-          {/* 検索セクション */}
-          <div className="flex flex-col gap-2">
-            <p className="text-xs font-medium text-ink-sub uppercase tracking-wide">検索</p>
-            <div className="relative">
-              <HiSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-ink-muted z-10" />
-              <Input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => onSearchChange(e.target.value)}
-                placeholder="名称や特徴で検索..."
-                className="pl-10 !py-2 !text-sm !min-h-[40px]"
-              />
-            </div>
-          </div>
-
-          {/* 絞り込みセクション */}
-          <div className="flex flex-col gap-2">
-            <p className="text-xs font-medium text-ink-sub uppercase tracking-wide">絞り込み</p>
-            <div className="flex gap-2">
-              {FILTER_OPTIONS.map(({ value, label, icon }) => (
-                <Button
-                  key={value}
-                  variant={filterOption === value ? 'primary' : 'surface'}
-                  size="sm"
-                  onClick={() => onFilterChange(value)}
-                  className="flex-1 !px-3 !py-2 gap-1.5 justify-center"
-                >
-                  {icon}
-                  <span className="text-xs">{label}</span>
-                </Button>
-              ))}
-            </div>
-          </div>
-
-          {/* ソートセクション */}
-          <div className="flex flex-col gap-2">
-            <p className="text-xs font-medium text-ink-sub uppercase tracking-wide">ソート</p>
-            <div className="flex flex-col gap-1">
-              {SORT_OPTIONS.map((option) => (
-                <Button
-                  key={option}
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => onSortChange(option)}
-                  className={`!min-h-0 w-full !justify-start !px-3 !py-2 !text-sm !rounded-lg gap-2 ${
-                    sortOption === option
-                      ? 'bg-surface !text-spot !font-medium'
-                      : '!text-ink-sub hover:bg-ground'
-                  }`}
-                >
-                  {getSortIcon(option)}
-                  <span>{getSortLabel(option)}</span>
-                  {sortOption === option && <HiCheckCircle className="h-4 w-4 text-spot ml-auto" />}
-                </Button>
-              ))}
-            </div>
-          </div>
-
-          {/* 閉じるボタン */}
+        title="フィルター"
+        footer={
           <Button
             variant="surface"
             size="sm"
@@ -150,8 +88,49 @@ export function FilterMenu({
           >
             閉じる
           </Button>
-        </div>
-      </Modal>
+        }
+      >
+        {/* 検索セクション */}
+        <FilterSection label="検索">
+          <FilterSearchInput
+            value={searchQuery}
+            onChange={onSearchChange}
+            placeholder="名称や特徴で検索..."
+          />
+        </FilterSection>
+
+        {/* 絞り込みセクション */}
+        <FilterSection label="絞り込み">
+          <div className="flex gap-2">
+            {FILTER_OPTIONS.map(({ value, label, icon }) => (
+              <FilterOptionButton
+                key={value}
+                selected={filterOption === value}
+                onClick={() => onFilterChange(value)}
+              >
+                {icon}
+                <span className="text-xs">{label}</span>
+              </FilterOptionButton>
+            ))}
+          </div>
+        </FilterSection>
+
+        {/* ソートセクション */}
+        <FilterSection label="ソート">
+          <div className="flex flex-col gap-1">
+            {SORT_OPTIONS.map((option) => (
+              <FilterSortOption
+                key={option}
+                selected={sortOption === option}
+                icon={getSortIcon(option)}
+                onClick={() => onSortChange(option)}
+              >
+                {getSortLabel(option)}
+              </FilterSortOption>
+            ))}
+          </div>
+        </FilterSection>
+      </FilterModal>
     </>
   );
 }

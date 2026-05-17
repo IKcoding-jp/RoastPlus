@@ -6,7 +6,7 @@ import { getRecordsBySessionId } from '@/lib/tastingUtils';
 import { useToastContext } from '@/components/Toast';
 import { useMembers, getActiveMembers } from '@/hooks/useMembers';
 import { useAuth } from '@/lib/auth';
-import { User, Calendar, Thermometer, Smiley, Coffee } from 'phosphor-react';
+import { User, Calendar, Thermometer, Coffee } from 'phosphor-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input, Select, Textarea, Button } from '@/components/ui';
 import { ROAST_LEVELS } from '@/lib/constants';
@@ -181,20 +181,20 @@ export function TastingRecordForm({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       onSubmit={handleSubmit}
-      className="space-y-5 pb-8"
+      className="space-y-4 pb-6"
     >
       {/* 基本情報カード */}
-      <div className="rounded-2xl p-5 shadow-sm space-y-4 bg-surface border border-edge">
+      <div className="rounded-lg p-4 shadow-sm space-y-3 bg-surface border border-edge">
         <div className="flex items-center gap-2">
-          <div className="w-1 h-5 rounded-full bg-spot" />
-          <h3 className="text-base font-bold text-ink">基本情報</h3>
+          <div className="w-1 h-4 rounded-full bg-spot" />
+          <h3 className="text-sm font-bold text-ink">基本情報</h3>
         </div>
 
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-3">
           {/* メンバー選択 */}
           <div>
-            <label className="flex items-center gap-2 text-sm font-bold mb-1.5 ml-1 text-ink-sub">
-              <User size={16} weight="bold" className="text-spot" />
+            <label className="flex items-center gap-1.5 text-xs font-bold mb-1.5 ml-1 text-ink-sub">
+              <User size={14} weight="bold" className="text-spot" />
               メンバー <span className="text-red-500">*</span>
             </label>
             <Select
@@ -210,8 +210,8 @@ export function TastingRecordForm({
           {/* 豆の名前（セッションモードでは非表示） */}
           {!isSessionMode && (
             <div>
-              <label className="flex items-center gap-2 text-sm font-bold mb-1.5 ml-1 text-ink-sub">
-                <Coffee size={16} weight="bold" className="text-spot" />
+              <label className="flex items-center gap-1.5 text-xs font-bold mb-1.5 ml-1 text-ink-sub">
+                <Coffee size={14} weight="bold" className="text-spot" />
                 豆の名前 <span className="text-red-500">*</span>
               </label>
               <Input
@@ -225,12 +225,12 @@ export function TastingRecordForm({
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* 試飲日（セッションモードでは非表示） */}
             {!isSessionMode && (
               <div>
-                <label className="flex items-center gap-2 text-sm font-bold mb-1.5 ml-1 text-ink-sub">
-                  <Calendar size={16} weight="bold" className="text-spot" />
+                <label className="flex items-center gap-1.5 text-xs font-bold mb-1.5 ml-1 text-ink-sub">
+                  <Calendar size={14} weight="bold" className="text-spot" />
                   試飲日 <span className="text-red-500">*</span>
                 </label>
                 <Input
@@ -246,8 +246,8 @@ export function TastingRecordForm({
             {/* 焙煎度合い（セッションモードでは非表示） */}
             {!isSessionMode && (
               <div>
-                <label className="flex items-center gap-2 text-sm font-bold mb-1.5 ml-1 text-ink-sub">
-                  <Thermometer size={16} weight="bold" className="text-spot" />
+                <label className="flex items-center gap-1.5 text-xs font-bold mb-1.5 ml-1 text-ink-sub">
+                  <Thermometer size={14} weight="bold" className="text-spot" />
                   焙煎度合い <span className="text-red-500">*</span>
                 </label>
                 <Select
@@ -281,15 +281,15 @@ export function TastingRecordForm({
       />
 
       {/* コメント */}
-      <div className="rounded-2xl p-5 shadow-sm space-y-4 bg-surface border border-edge">
+      <div className="rounded-lg p-4 shadow-sm space-y-3 bg-surface border border-edge">
         <div className="w-full flex items-center gap-2">
-          <div className="w-1 h-5 rounded-full bg-spot" />
-          <h3 className="text-base font-bold text-ink">全体的な印象</h3>
+          <div className="w-1 h-4 rounded-full bg-spot" />
+          <h3 className="text-sm font-bold text-ink">全体的な印象</h3>
         </div>
         <Textarea
           value={overallImpression}
           onChange={(e) => setOverallImpression(e.target.value)}
-          rows={4}
+          rows={3}
           placeholder="コーヒーの全体的な印象、味の深み、後味などを自由に記録してください..."
           disabled={readOnly}
         />
@@ -301,15 +301,14 @@ export function TastingRecordForm({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="sticky bottom-6 flex gap-4 backdrop-blur-md p-4 rounded-3xl shadow-xl z-20 bg-surface/80 border border-edge"
+            className="flex gap-3 p-3 rounded-xl shadow-sm bg-surface border border-edge"
           >
             {onDelete && record && (
-              <Button type="button" variant="outline" onClick={handleDelete} className="flex-1">
+              <Button type="button" variant="outline" size="md" onClick={handleDelete} className="flex-1">
                 削除
               </Button>
             )}
-            <Button type="submit" variant="primary" size="lg" className="flex-[2]">
-              <Smiley size={24} weight="bold" />
+            <Button type="submit" variant="primary" size="md" className="flex-[2]">
               {existingRecordId || record ? '記録を更新する' : '記録を保存する'}
             </Button>
           </motion.div>

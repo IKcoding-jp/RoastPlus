@@ -18,7 +18,7 @@ export default function ThemeSettingsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-page pt-14 pb-4 sm:pb-6 lg:pb-8 px-4 sm:px-6 lg:px-8 transition-colors">
+        <div className="min-h-screen bg-page pt-20 pb-4 sm:pb-6 lg:pb-8 px-4 sm:px-6 lg:px-8 transition-colors">
             <FloatingNav backHref="/settings" />
             <div className="max-w-5xl mx-auto">
                 <main className="space-y-6">

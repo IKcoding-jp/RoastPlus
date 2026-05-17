@@ -27,23 +27,23 @@ export function SliderInput({
 }: SliderInputProps) {
   const containerClass = readOnly
     ? 'bg-ground border-edge'
-    : 'bg-surface border-edge hover:border-spot hover:shadow-md';
+    : 'bg-surface border-edge hover:border-spot hover:shadow-sm';
 
   return (
     <div
-      className={`p-4 rounded-xl border transition-all duration-200 ${containerClass}`}
+      className={`p-3 rounded-lg border transition-all duration-200 ${containerClass}`}
     >
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex items-center gap-2.5">
-          <div className={`p-2 rounded-lg ${colorClass}`}>{icon}</div>
+      <div className="flex items-start justify-between mb-2.5">
+        <div className="flex items-center gap-2">
+          <div className={`p-1.5 rounded-md ${colorClass}`}>{icon}</div>
           <div>
-            <label className="text-base font-bold block leading-tight text-ink">{label}</label>
+            <label className="text-sm font-bold block leading-tight text-ink">{label}</label>
             {description && <span className="text-[11px] font-medium text-ink-muted">{description}</span>}
           </div>
         </div>
         <div className="flex flex-col items-end">
           <span
-            className={`text-2xl font-black tabular-nums leading-none tracking-tight ${accentColor}`}
+            className={`text-xl font-black tabular-nums leading-none ${accentColor}`}
           >
             {value.toFixed(1)}
           </span>
@@ -58,9 +58,9 @@ export function SliderInput({
           step={step}
           value={value}
           onChange={(e) => onChange(parseFloat(e.target.value))}
-          className={`w-full h-2.5 rounded-full appearance-none cursor-pointer transition-all
-          [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6
-          [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-[3px] [&::-webkit-slider-thumb]:shadow-md
+          className={`w-full h-2 rounded-full appearance-none cursor-pointer transition-all
+          [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5
+          [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:shadow-sm
           [&::-webkit-slider-thumb]:bg-white ${accentColor.replace('text-', '[&::-webkit-slider-thumb]:border-')}
           hover:[&::-webkit-slider-thumb]:scale-110 active:[&::-webkit-slider-thumb]:scale-95
           disabled:cursor-not-allowed`}
@@ -82,7 +82,7 @@ export function SliderInput({
           }}
           disabled={readOnly}
         />
-        <div className="flex justify-between text-[9px] font-bold mt-2 tracking-wider text-ink-muted">
+        <div className="flex justify-between text-[9px] font-bold mt-1.5 text-ink-muted">
           <span>最小</span>
           <div className="flex gap-1.5 items-center">
             {[1, 2, 3, 4, 5].map((v) => (

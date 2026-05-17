@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect } from 'react';
 import { useToast, type Toast as ToastType } from '@/hooks/useToast';
-import { IoCheckmarkCircle, IoCloseCircle, IoInformationCircle, IoWarning } from 'react-icons/io5';
+import { IoCheckmarkCircle, IoClose, IoCloseCircle, IoInformationCircle, IoWarning } from 'react-icons/io5';
 import { IconButton } from '@/components/ui';
 
 const ToastContext = createContext<ReturnType<typeof useToast> | null>(null);
@@ -21,7 +21,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={toast}>
       {children}
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 pointer-events-none">
+      <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 z-50 flex flex-col items-stretch sm:items-end gap-2 pointer-events-none">
         {toast.toasts.map((toastItem) => (
           <ToastItem key={toastItem.id} toast={toastItem} onClose={() => toast.removeToast(toastItem.id)} />
         ))}
@@ -40,26 +40,22 @@ function ToastItem({ toast, onClose }: { toast: ToastType; onClose: () => void }
     }
   }, [toast.duration, onClose]);
 
-  const toastStyleMap: Record<string, { bg: string; border: string; text: string }> = {
+  const toastStyleMap: Record<string, { border: string; icon: string }> = {
     success: {
-      bg: 'var(--color-success-subtle)',
-      border: 'var(--color-success)',
-      text: 'var(--color-success)',
+      border: 'border-l-success',
+      icon: 'text-success',
     },
     error: {
-      bg: 'var(--color-danger-subtle)',
-      border: 'var(--color-danger)',
-      text: 'var(--color-danger)',
+      border: 'border-l-danger',
+      icon: 'text-danger',
     },
     warning: {
-      bg: 'var(--color-warning-subtle)',
-      border: 'var(--color-warning)',
-      text: 'var(--color-warning)',
+      border: 'border-l-warning',
+      icon: 'text-warning',
     },
     info: {
-      bg: 'var(--color-spot-subtle)',
-      border: 'var(--color-spot)',
-      text: 'var(--color-spot)',
+      border: 'border-l-spot',
+      icon: 'text-spot',
     },
   };
 
@@ -80,25 +76,19 @@ function ToastItem({ toast, onClose }: { toast: ToastType; onClose: () => void }
 
   return (
     <div
-      className="border rounded-lg shadow-lg p-4 min-w-[300px] max-w-[500px] flex items-start gap-3 pointer-events-auto animate-in slide-in-from-right-full fade-in duration-300"
-      style={{
-        backgroundColor: styles.bg,
-        borderColor: styles.border,
-        color: styles.text,
-      }}
+      className={`w-full sm:w-auto sm:min-w-[300px] sm:max-w-[420px] rounded-lg border border-edge border-l-4 bg-surface shadow-card px-4 py-3 flex items-start gap-3 pointer-events-auto animate-in slide-in-from-bottom-2 sm:slide-in-from-right-4 fade-in duration-200 ${styles.border}`}
       role="alert"
     >
-      <div className="flex-shrink-0 mt-0.5">{getIcon()}</div>
-      <div className="flex-1 text-sm font-medium">{toast.message}</div>
+      <div className={`flex-shrink-0 mt-0.5 ${styles.icon}`}>{getIcon()}</div>
+      <div className="flex-1 text-sm font-medium leading-relaxed text-ink">{toast.message}</div>
       <IconButton
         onClick={onClose}
         variant="ghost"
         size="sm"
-        className="flex-shrink-0 opacity-60 hover:opacity-100 !min-h-0 !min-w-0 !p-0"
-        style={{ color: styles.text }}
+        className="flex-shrink-0 text-ink-muted hover:text-ink !min-h-0 !min-w-0 !p-0"
         aria-label="閉じる"
       >
-        <IoCloseCircle className="w-5 h-5" />
+        <IoClose className="w-4 h-4" />
       </IconButton>
     </div>
   );
