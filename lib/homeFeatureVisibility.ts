@@ -24,7 +24,7 @@ function isConfigurableHomeFeatureKey(value: unknown): value is HomeFeatureKey {
   return typeof value === 'string' && CONFIGURABLE_HOME_FEATURE_KEY_SET.has(value);
 }
 
-function normalizeHiddenKeys(value: unknown): HomeFeatureKey[] {
+export function normalizeHiddenHomeFeatureKeys(value: unknown): HomeFeatureKey[] {
   if (!Array.isArray(value)) return [];
 
   return Array.from(new Set(value)).filter(
@@ -39,13 +39,13 @@ export function getHiddenHomeFeatureKeys(): HomeFeatureKey[] {
   if (!stored) return [];
 
   const parsed = parseJson<unknown>(stored);
-  return normalizeHiddenKeys(parsed);
+  return normalizeHiddenHomeFeatureKeys(parsed);
 }
 
 export function setHiddenHomeFeatureKeys(keys: HomeFeatureKey[]): void {
   if (typeof window === 'undefined') return;
 
-  const normalizedKeys = normalizeHiddenKeys(keys);
+  const normalizedKeys = normalizeHiddenHomeFeatureKeys(keys);
 
   if (normalizedKeys.length === 0) {
     localStorage.removeItem(HOME_HIDDEN_FEATURES_KEY);

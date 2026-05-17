@@ -13,6 +13,7 @@ export default function HomeVisibilitySettingsPage() {
   const { user, loading: authLoading } = useAuth();
   const {
     hiddenKeys,
+    isLoading,
     updateFeatureHidden,
     resetVisibility,
   } = useHomeFeatureVisibility();
@@ -55,7 +56,7 @@ export default function HomeVisibilitySettingsPage() {
                 variant="outline"
                 size="sm"
                 onClick={resetVisibility}
-                disabled={hiddenCount === 0}
+                disabled={isLoading || hiddenCount === 0}
               >
                 <MdRestartAlt className="mr-2 h-5 w-5" />
                 すべて表示に戻す
@@ -80,6 +81,7 @@ export default function HomeVisibilitySettingsPage() {
                     <Switch
                       aria-label={`${feature.title}をホームに表示`}
                       checked={!isHidden}
+                      disabled={isLoading}
                       onChange={(event) => updateFeatureHidden(feature.key, !event.target.checked)}
                     />
                   </div>

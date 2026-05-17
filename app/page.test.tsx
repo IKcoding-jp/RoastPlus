@@ -39,10 +39,14 @@ vi.mock('@/hooks/useChristmasMode', () => ({
   }),
 }));
 
+vi.mock('@/hooks/useHomeFeatureVisibility', () => ({
+  useHomeFeatureVisibility: () => ({
+    isVisible: (key: string) => key !== 'dev-stories',
+  }),
+}));
+
 describe('HomePage', () => {
   it('非表示設定の機能カードをホームに表示しないが、その他は表示する', () => {
-    localStorage.setItem('roastplus_home_hidden_features', JSON.stringify(['dev-stories', 'settings']));
-
     render(<HomePage />);
 
     expect(screen.queryByRole('button', { name: '開発秘話' })).not.toBeInTheDocument();
