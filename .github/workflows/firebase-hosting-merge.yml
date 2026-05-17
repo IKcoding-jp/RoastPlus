@@ -1,6 +1,18 @@
 name: Deploy to Firebase on merge
 
 on:
+  workflow_dispatch:
+    inputs:
+      deploy_hosting:
+        description: "Deploy Firebase Hosting"
+        required: true
+        type: boolean
+        default: true
+      deploy_functions:
+        description: "Deploy Cloud Functions"
+        required: true
+        type: boolean
+        default: false
   pull_request:
     types: [closed]
     branches:
@@ -20,7 +32,7 @@ permissions:
 
 jobs:
   detect_changes:
-    if: github.event.pull_request.merged == true
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     outputs:
       hosting_changed: ${{ steps.filter.outputs.hosting_changed }}
@@ -32,6 +44,12 @@ jobs:
       - name: Detect deploy targets
         id: filter
         run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "hosting_changed=${{ inputs.deploy_hosting }}" >> "$GITHUB_OUTPUT"
+            echo "functions_changed=${{ inputs.deploy_functions }}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
           base_sha="${{ github.event.pull_request.base.sha }}"
           target_sha="${{ github.event.pull_request.merge_commit_sha }}"
 
