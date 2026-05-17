@@ -78,7 +78,7 @@ ${data.comments.length > 0 ? data.comments.map((c) => `- ${c}`).join('\n') : 'æ„
 `;
 
       const response = await openai.chat.completions.create({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: 'You are a skilled barista and coffee copywriter.' },
           { role: 'user', content: prompt },

@@ -70,15 +70,16 @@ export function useDeveloperMode() {
     }
 
     if (authLoading) {
-      setIsLoading(true);
       return;
     }
 
-    void refreshPermissions();
+    queueMicrotask(() => {
+      void refreshPermissions();
+    });
   }, [authLoading, refreshPermissions]);
 
   // 開発者モードを有効化
-  const enableDeveloperMode = useCallback((_password: string): boolean => {
+  const enableDeveloperMode = useCallback((): boolean => {
     if (!canUseDeveloperMode || typeof window === 'undefined') {
       return false;
     }

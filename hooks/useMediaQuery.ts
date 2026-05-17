@@ -1,4 +1,4 @@
-import { useState, useEffect, useSyncExternalStore, useCallback } from 'react';
+import { useSyncExternalStore, useCallback } from 'react';
 
 /**
  * window.matchMediaベースのメディアクエリフック
