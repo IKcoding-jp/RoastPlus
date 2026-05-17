@@ -54,25 +54,25 @@ const CATEGORY_CONFIG: Record<QuizCategory, {
     icon: CoffeeIcon,
     bg: 'bg-surface',
     hoverBg: 'hover:bg-edge-subtle',
-    iconBg: 'bg-edge-subtle',
+    iconBg: '',
   },
   roasting: {
     icon: BeanIcon,
     bg: 'bg-surface',
-    hoverBg: 'hover:bg-spot-subtle',
-    iconBg: 'bg-spot-subtle',
+    hoverBg: 'hover:bg-edge-subtle',
+    iconBg: '',
   },
   brewing: {
     icon: DropletIcon,
     bg: 'bg-surface',
-    hoverBg: 'hover:bg-sky-500/10',
-    iconBg: 'bg-sky-500/10',
+    hoverBg: 'hover:bg-edge-subtle',
+    iconBg: '',
   },
   history: {
     icon: BookIcon,
     bg: 'bg-surface',
     hoverBg: 'hover:bg-edge-subtle',
-    iconBg: 'bg-edge-subtle',
+    iconBg: '',
   },
 };
 
@@ -104,7 +104,7 @@ export function CategorySelector({
           >
             <div className="flex items-start gap-2.5">
               {/* アイコン */}
-              <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${config.iconBg}`}>
+              <div className={`w-9 h-9 flex items-center justify-center flex-shrink-0 ${config.iconBg}`}>
                 <span className="text-ink-sub">
                   <Icon />
                 </span>

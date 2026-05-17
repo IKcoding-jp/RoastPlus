@@ -55,7 +55,7 @@ export const WorkProgressCard: React.FC<WorkProgressCardProps> = ({
                         e.stopPropagation();
                         onEdit(wp.id);
                     }}
-                    className="text-xs bg-spot-subtle"
+                    className="text-xs"
                 >
                     <HiPlus className="h-3.5 w-3.5 mr-1.5" />
                     <span>作業を追加</span>
@@ -90,7 +90,7 @@ export const WorkProgressCard: React.FC<WorkProgressCardProps> = ({
                             className={`px-2 py-1 text-xs font-medium rounded border focus:outline-none focus:ring-2 focus:ring-spot min-h-[32px] cursor-pointer ${wp.status === 'completed'
                                     ? 'bg-success/10 text-success border-success/30'
                                     : wp.status === 'in_progress'
-                                        ? 'bg-spot-subtle text-spot border-spot'
+                                        ? 'bg-surface text-spot border-spot'
                                         : 'bg-ground text-ink-sub border-edge'
                                 }`}
                         >

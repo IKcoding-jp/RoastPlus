@@ -26,11 +26,11 @@ export const VersionCard: React.FC<VersionCardProps> = ({ entry }) => {
       {/* ヘッダー部分 */}
       <div className="flex flex-wrap items-center gap-2 mb-3">
         {entry.version && (
-          <span className="px-2.5 py-1 bg-spot-subtle text-spot text-sm font-semibold rounded">
+          <span className="text-sm font-semibold text-ink-sub">
             v{entry.version}
           </span>
         )}
-        <span className={`px-2.5 py-1 ${typeConfig.bgColor} ${typeConfig.color} text-sm font-medium rounded`}>
+        <span className={`${typeConfig.color} text-sm font-medium`}>
           {typeConfig.label}
         </span>
         <span className="text-sm text-ink-muted ml-auto">
@@ -54,7 +54,7 @@ export const VersionCard: React.FC<VersionCardProps> = ({ entry }) => {
           {entry.tags.map((tag) => (
             <span
               key={tag}
-              className="px-2 py-0.5 text-xs rounded bg-ground text-ink-muted"
+              className="text-xs text-ink-muted"
             >
               #{tag}
             </span>

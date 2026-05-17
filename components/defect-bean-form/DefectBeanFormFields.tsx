@@ -83,13 +83,13 @@ export function DefectBeanFormFields({
             <Button
               variant="ghost"
               onClick={onShowCamera}
-              className="!w-full !px-4 !py-12 !border-2 !border-dashed !rounded-lg flex-col !min-h-[200px] !border-edge-strong hover:!border-spot hover:!bg-spot-subtle"
+              className="!w-full !px-4 !py-12 !border-2 !border-dashed !rounded-lg flex-col !min-h-[200px] !border-edge-strong hover:!border-spot hover:!bg-ground"
             >
               <HiCamera className="h-12 w-12 text-ink-muted" />
               <span className="font-medium text-ink-sub">カメラで撮影</span>
             </Button>
             <div className="text-center text-sm text-ink-muted">または</div>
-            <label className="block w-full px-4 py-3 border-2 rounded-lg transition-colors cursor-pointer text-center min-h-[44px] flex items-center justify-center border-edge-strong hover:border-spot hover:bg-spot-subtle text-ink-sub">
+            <label className="block w-full px-4 py-3 border-2 rounded-lg transition-colors cursor-pointer text-center min-h-[44px] flex items-center justify-center border-edge-strong hover:border-spot hover:bg-ground text-ink-sub">
               <span className="font-medium">ファイルを選択</span>
               <input
                 type="file"

@@ -14,8 +14,7 @@ export function EmptyState({ hasSearchOrFilter, onAddClick }: EmptyStateProps) {
       <div className="flex flex-col items-center justify-center space-y-4 sm:space-y-6">
         {/* アイコン */}
         <div className="relative">
-          <div className="absolute inset-0 rounded-full blur-xl opacity-50 bg-spot-subtle"></div>
-          <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center bg-spot-subtle">
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center">
             {hasSearchOrFilter ? (
               <HiSearch className="w-10 h-10 sm:w-12 sm:h-12 text-spot" />
             ) : (

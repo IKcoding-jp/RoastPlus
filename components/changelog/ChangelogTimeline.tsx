@@ -14,7 +14,7 @@ export const ChangelogTimeline: React.FC<ChangelogTimelineProps> = ({ entries })
     return (
       <div className="text-center py-12">
         <div className="flex justify-center mb-4">
-          <div className="p-4 bg-ground rounded-full">
+          <div className="p-4">
             <MdHistory className="h-12 w-12 text-ink-muted" />
           </div>
         </div>

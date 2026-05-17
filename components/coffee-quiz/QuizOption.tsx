@@ -46,9 +46,9 @@ export function QuizOption({
     if (!showFeedback) {
       // フィードバック前
       if (isSelected) {
-        return 'bg-spot/10 border-spot text-ink';
+        return 'bg-surface border-spot text-ink';
       }
-      return 'border-edge text-ink hover:bg-spot-subtle hover:border-spot/40';
+      return 'border-edge text-ink hover:bg-ground hover:border-spot/40';
     }
 
     // フィードバック後

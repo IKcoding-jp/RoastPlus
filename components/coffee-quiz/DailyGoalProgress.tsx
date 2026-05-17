@@ -50,7 +50,7 @@ export function DailyGoalProgress({
           <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${
             isComplete
               ? 'bg-emerald-600 text-white'
-              : 'bg-spot-subtle text-spot'
+              : 'text-spot'
           }`}>
             {isComplete ? <CheckIcon /> : <TargetIcon />}
           </div>

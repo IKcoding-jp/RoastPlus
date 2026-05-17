@@ -71,7 +71,7 @@ function MasteryBadge() {
           transition={{ delay: 0.2 + i * 0.1, type: 'spring', stiffness: 280, damping: 18 }}
           className={`flex flex-col items-center gap-1 flex-1 py-2 rounded-xl border ${
             item.active
-              ? 'bg-spot/10 border-spot/30'
+              ? 'bg-surface border-spot/30'
               : 'bg-surface border-edge'
           }`}
         >
@@ -254,7 +254,7 @@ export function HelpGuideModal({ show, onClose }: HelpGuideModalProps) {
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.05, type: 'spring', stiffness: 300, damping: 20 }}
-                className="w-16 h-16 flex items-center justify-center rounded-full bg-spot/10 text-4xl"
+                className="w-16 h-16 flex items-center justify-center text-4xl"
               >
                 {current.icon}
               </motion.div>
@@ -264,7 +264,7 @@ export function HelpGuideModal({ show, onClose }: HelpGuideModalProps) {
                 initial={{ opacity: 0, y: 4 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="px-3 py-0.5 rounded-full bg-spot-subtle text-spot text-xs font-semibold border border-spot/20"
+                className="text-spot text-xs font-semibold"
               >
                 {current.label}
               </motion.span>

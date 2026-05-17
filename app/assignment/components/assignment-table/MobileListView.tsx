@@ -145,7 +145,7 @@ export const MobileListView: React.FC<MobileListViewProps> = ({
                                                 onClick={() => handleCellClick(team.id, label.id)}
                                                 className={`!min-h-0 !py-3 !px-2 truncate select-none ${
                                                     member && isSelected ? 'shadow-md scale-105' : ''
-                                                } ${!member && isSelected ? '!bg-spot/20' : ''
+                                                } ${!member && isSelected ? '!bg-surface !border-spot' : ''
                                                 } ${!member && !isSelected ? '!border-dashed !border-edge-strong !text-ink-muted' : ''}`}
                                             >
                                                 {member ? member.name : '未割当'}

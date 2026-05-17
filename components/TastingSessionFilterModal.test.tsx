@@ -80,6 +80,38 @@ describe('TastingSessionFilterModal', () => {
         expect.objectContaining({ sortOption: 'oldest' })
       );
     });
+
+    it('選択チップは統一された高さと角丸で表示する', () => {
+      render(<TastingSessionFilterModal {...baseProps} />);
+
+      [
+        screen.getByRole('button', { name: '新しい順' }),
+        screen.getByRole('button', { name: '古い順' }),
+        screen.getByRole('button', { name: '名前順' }),
+        screen.getByRole('button', { name: '浅煎り' }),
+        screen.getByRole('button', { name: '中煎り' }),
+        screen.getByRole('button', { name: '中深煎り' }),
+        screen.getByRole('button', { name: '深煎り' }),
+      ].forEach((chip) => {
+        expect(chip).toHaveClass('!min-h-[40px]');
+        expect(chip).toHaveClass('!rounded-xl');
+        expect(chip).toHaveClass('!px-3');
+        expect(chip).toHaveClass('!py-2');
+      });
+    });
+
+    it('並び替えと焙煎度合いの選択中チップは同じ色で表示する', () => {
+      render(
+        <TastingSessionFilterModal
+          {...baseProps}
+          sortOption="oldest"
+          selectedRoastLevels={['中深煎り']}
+        />
+      );
+
+      expect(screen.getByRole('button', { name: '古い順' })).toHaveClass('!bg-spot', '!text-white', '!border-spot');
+      expect(screen.getByRole('button', { name: '中深煎り' })).toHaveClass('!bg-spot', '!text-white', '!border-spot');
+    });
   });
 
   describe('焙煎度合いチップ', () => {
@@ -131,6 +163,23 @@ describe('TastingSessionFilterModal', () => {
       fireEvent.click(screen.getByText('適用'));
       expect(onApply).toHaveBeenCalledTimes(1);
       expect(onClose).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('入力欄レイアウト', () => {
+    it('検索入力と日付入力は統一された高さと角丸で表示する', () => {
+      render(<TastingSessionFilterModal {...baseProps} />);
+
+      const inputs = [
+        screen.getByPlaceholderText('豆の名前を入力...'),
+        ...document.querySelectorAll('input[type="date"]'),
+      ];
+
+      inputs.forEach((input) => {
+        expect(input).toHaveClass('!min-h-[52px]');
+        expect(input).toHaveClass('!rounded-xl');
+        expect(input).toHaveClass('!text-base');
+      });
     });
   });
 });

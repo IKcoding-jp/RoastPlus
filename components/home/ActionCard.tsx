@@ -51,9 +51,7 @@ export function ActionCard({
         </div>
       )}
 
-      <span
-        className="relative flex h-14 w-14 items-center justify-center rounded-full transition-all duration-300 icon-circle-bg text-spot"
-      >
+      <span className="relative flex h-14 w-14 items-center justify-center transition-all duration-300 text-spot">
         <Icon className="h-11 w-11 relative z-10" />
       </span>
       <div className="space-y-1 text-center relative z-10">

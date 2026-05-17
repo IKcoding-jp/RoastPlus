@@ -201,7 +201,7 @@ export function CategoryQuestionList({
               className={`
                 !text-xs !px-2 !py-1 !rounded-md !min-h-0 !font-normal
                 ${sortBy === option.value
-                  ? 'bg-spot/20 text-spot'
+                  ? 'bg-surface text-spot border border-spot/30'
                   : 'bg-edge-subtle text-ink-muted hover:text-ink-sub'
                 }
               `}

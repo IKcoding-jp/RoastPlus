@@ -170,7 +170,7 @@ function TodayScheduleInner({ data, onUpdate, selectedDate, currentSchedule, onC
                           placeholder="内容を入力"
                         />
                         {label.continuesUntil && (
-                          <span className="text-xs px-2 py-0.5 rounded-full whitespace-nowrap text-spot bg-spot-subtle">
+                          <span className="text-xs font-medium whitespace-nowrap text-spot">
                             〜{label.continuesUntil}まで
                           </span>
                         )}

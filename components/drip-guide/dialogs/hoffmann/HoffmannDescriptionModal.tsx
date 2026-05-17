@@ -81,7 +81,7 @@ export const HoffmannDescriptionModal: React.FC<HoffmannDescriptionModalProps> =
                             <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
                                 {RECIPE_HOFFMANN_DESCRIPTION_SECTIONS.map((section, idx) => (
                                     <div key={idx} className="flex gap-4">
-                                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-spot-subtle text-spot flex items-center justify-center">
+                                        <div className="flex-shrink-0 w-10 h-10 text-spot flex items-center justify-center">
                                             {getIcon(section.icon)}
                                         </div>
                                         <div className="flex-1 border-b border-edge/30 pb-4">
