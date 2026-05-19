@@ -5,7 +5,7 @@ import { DripRecipe, DripStep } from '@/lib/drip-guide/types';
 import { StepEditor } from './StepEditor';
 import { FloppyDisk, ArrowClockwise } from 'phosphor-react';
 import { MOCK_RECIPES } from '@/lib/drip-guide/mockData';
-import { Input, Textarea, Button, BackLink } from '@/components/ui';
+import { Input, Textarea, Button } from '@/components/ui';
 
 interface RecipeFormProps {
     initialRecipe?: DripRecipe;
@@ -87,20 +87,19 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSubmit 
     };
 
     return (
-        <form onSubmit={handleSubmit} className="max-w-3xl mx-auto pb-20">
-            <div className="mb-6 flex items-center justify-between">
-                <BackLink href="/drip-guide">一覧に戻る</BackLink>
-                <h1 className="text-2xl font-bold text-ink">
+        <form onSubmit={handleSubmit} className="max-w-3xl mx-auto pb-28 sm:pb-24">
+            <div className="mb-5 sm:mb-6">
+                <h1 className="text-center text-xl sm:text-2xl font-bold text-ink">
                     {initialRecipe ? 'レシピを編集' : '新しいレシピを作成'}
                 </h1>
             </div>
 
-            <div className="bg-surface rounded-xl shadow-card border border-edge p-6 mb-6 space-y-6">
+            <div className="bg-surface rounded-xl shadow-card border border-edge p-4 sm:p-6 mb-6 space-y-6">
                 {/* Basic Info Section */}
                 <div>
                     <h2 className="text-lg font-bold text-ink-sub mb-4 border-b border-edge pb-2">基本情報</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="col-span-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                        <div className="sm:col-span-2">
                             <label className="block text-sm font-medium text-ink-sub mb-1">レシピ名 <span className="text-danger">*</span></label>
                             <Input
                                 type="text"
@@ -154,44 +153,38 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSubmit 
 
                         <div>
                             <label className="block text-sm font-medium text-ink-sub mb-1">総時間</label>
-                            <div className="flex gap-2 items-center">
-                                <div>
-                                    <div className="flex items-center gap-2">
-                                        <Input
-                                            type="number"
-                                            value={Math.floor(totalDurationSec / 60)}
-                                            onChange={(e) => {
-                                                const minutes = parseInt(e.target.value) || 0;
-                                                const seconds = totalDurationSec % 60;
-                                                setTotalDurationSec(minutes * 60 + seconds);
-                                            }}
-                                            className="w-20 text-right"
-                                            min={0}
-                                        />
-                                        <span className="text-ink-sub text-sm whitespace-nowrap font-medium">分</span>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div className="flex items-center gap-2">
-                                        <Input
-                                            type="number"
-                                            value={totalDurationSec % 60}
-                                            onChange={(e) => {
-                                                const minutes = Math.floor(totalDurationSec / 60);
-                                                const seconds = parseInt(e.target.value) || 0;
-                                                setTotalDurationSec(minutes * 60 + seconds);
-                                            }}
-                                            className="w-20 text-right"
-                                            min={0}
-                                            max={59}
-                                        />
-                                        <span className="text-ink-sub text-sm whitespace-nowrap font-medium">秒</span>
-                                    </div>
-                                </div>
+                            <div className="grid grid-cols-[1fr_auto_1fr_auto] items-center gap-2">
+                                <Input
+                                    type="number"
+                                    value={Math.floor(totalDurationSec / 60)}
+                                    onChange={(e) => {
+                                        const minutes = parseInt(e.target.value) || 0;
+                                        const seconds = totalDurationSec % 60;
+                                        setTotalDurationSec(minutes * 60 + seconds);
+                                    }}
+                                    className="w-full text-right"
+                                    min={0}
+                                    aria-label="総時間の分"
+                                />
+                                <span className="text-sm font-medium text-ink-sub">分</span>
+                                <Input
+                                    type="number"
+                                    value={totalDurationSec % 60}
+                                    onChange={(e) => {
+                                        const minutes = Math.floor(totalDurationSec / 60);
+                                        const seconds = parseInt(e.target.value) || 0;
+                                        setTotalDurationSec(minutes * 60 + seconds);
+                                    }}
+                                    className="w-full text-right"
+                                    min={0}
+                                    max={59}
+                                    aria-label="総時間の秒"
+                                />
+                                <span className="text-sm font-medium text-ink-sub">秒</span>
                             </div>
                         </div>
 
-                        <div className="col-span-2">
+                        <div className="sm:col-span-2">
                             <label className="block text-sm font-medium text-ink-sub mb-1">説明・メモ</label>
                             <Textarea
                                 value={description}
@@ -209,26 +202,26 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSubmit 
                     <div className="space-y-4">
                         <div className="bg-ground rounded-lg p-4 border border-edge">
                             <div className="space-y-3">
-                                <label className="flex items-center gap-3 cursor-pointer">
+                                <label className="flex items-start gap-3 cursor-pointer">
                                     <input
                                         type="radio"
                                         name="guideMode"
                                         checked={!isManualMode}
                                         onChange={() => setIsManualMode(false)}
-                                        className="w-5 h-5 text-spot focus:ring-2 focus:ring-spot"
+                                        className="mt-0.5 w-5 h-5 text-spot focus:ring-2 focus:ring-spot"
                                     />
                                     <div className="flex-1">
                                         <div className="font-semibold text-ink">自動モード</div>
                                         <div className="text-sm text-ink-sub">タイマーに基づいて自動的にステップが進行します。時間が確定しているレシピに適しています。</div>
                                     </div>
                                 </label>
-                                <label className="flex items-center gap-3 cursor-pointer">
+                                <label className="flex items-start gap-3 cursor-pointer">
                                     <input
                                         type="radio"
                                         name="guideMode"
                                         checked={isManualMode}
                                         onChange={() => setIsManualMode(true)}
-                                        className="w-5 h-5 text-spot focus:ring-2 focus:ring-spot"
+                                        className="mt-0.5 w-5 h-5 text-spot focus:ring-2 focus:ring-spot"
                                     />
                                     <div className="flex-1">
                                         <div className="font-semibold text-ink">手動モード</div>
@@ -247,13 +240,14 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSubmit 
             </div>
 
             {/* Submit Button */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-overlay border-t border-edge z-10">
-                <div className="max-w-3xl mx-auto flex flex-row gap-3 justify-center">
+            <div className="fixed bottom-0 left-0 right-0 px-4 py-3 bg-overlay border-t border-edge z-10">
+                <div className="max-w-3xl mx-auto grid grid-cols-1 gap-3 sm:flex sm:flex-row sm:justify-center">
                     {initialRecipe?.isDefault && (
                         <Button
                             type="button"
                             variant="secondary"
                             onClick={handleResetToDefault}
+                            className="w-full sm:w-auto"
                         >
                             <ArrowClockwise size={20} />
                             デフォルトに戻す
@@ -263,6 +257,7 @@ export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSubmit 
                         type="submit"
                         variant="primary"
                         size="lg"
+                        className="w-full sm:w-auto"
                     >
                         <FloppyDisk size={24} />
                         レシピを保存
