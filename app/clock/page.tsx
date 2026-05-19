@@ -99,6 +99,7 @@ export default function ClockPage() {
     activeChime,
     isAudioEnabled,
     enableAudio,
+    testWorkChime,
     updateSettings: updateWorkChimeSettings,
     dismissActiveChime,
   } = useWorkChime(now);
@@ -113,6 +114,11 @@ export default function ClockPage() {
     return () => window.clearTimeout(timer);
   }, [previewChime]);
   const displayedChime = previewChime ?? activeChime;
+
+  const handleTestWorkChime = useCallback((kind: WorkChimeKind) => {
+    setShowSettings(false);
+    testWorkChime(kind);
+  }, [testWorkChime]);
 
   const colors = getThemeColors(settings.theme);
   const fontFamily = getFontFamily(settings.fontKey);
@@ -256,6 +262,7 @@ export default function ClockPage() {
         onUpdate={updateSettings}
         onWorkChimeUpdate={updateWorkChimeSettings}
         onEnableWorkChimeAudio={enableAudio}
+        onTestWorkChime={handleTestWorkChime}
         onReset={resetSettings}
         onClose={() => setShowSettings(false)}
       />
