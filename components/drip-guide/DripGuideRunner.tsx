@@ -6,9 +6,8 @@ import { playNotificationSound } from '@/lib/sounds';
 import { useRunnerTimer } from '@/hooks/drip-guide/useRunnerTimer';
 import { CompletionScreen } from './runner/CompletionScreen';
 import { RunnerHeader } from './runner/RunnerHeader';
-import { TimerDisplay } from './runner/TimerDisplay';
-import { StepInfo } from './runner/StepInfo';
 import { FooterControls } from './runner/FooterControls';
+import { FocusGuideDisplay } from './runner/FocusGuideDisplay';
 
 interface DripGuideRunnerProps {
     recipe: DripRecipe;
@@ -45,9 +44,6 @@ export const DripGuideRunner: React.FC<DripGuideRunnerProps> = ({ recipe }) => {
             setIsCompleted(true);
         },
     });
-
-    // Remaining steps count (after next step)
-    const remainingStepsAfterNext = steps.length - currentStepIndex - 2;
 
     // Play countdown sound 3 seconds before next step starts
     useEffect(() => {
@@ -111,19 +107,11 @@ export const DripGuideRunner: React.FC<DripGuideRunnerProps> = ({ recipe }) => {
                 totalSteps={steps.length}
             />
 
-            <div className="flex-1 flex flex-col items-center justify-center px-5 pb-3 overflow-y-auto">
-                <TimerDisplay
+            <div className="flex-1 flex items-center px-5 sm:px-6 lg:px-12 pb-4 lg:pb-6 overflow-y-auto">
+                <FocusGuideDisplay
                     currentTime={currentTime}
                     recipeName={recipe.name}
-                    totalDurationSec={recipe.totalDurationSec}
-                    isManualMode={isManualMode}
-                />
-                <StepInfo
                     currentStep={currentStep}
-                    nextStep={nextStep}
-                    currentTime={currentTime}
-                    isManualMode={isManualMode}
-                    remainingStepsAfterNext={remainingStepsAfterNext}
                 />
             </div>
 

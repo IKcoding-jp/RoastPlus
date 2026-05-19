@@ -34,10 +34,10 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
     onComplete,
 }) => {
     return (
-        <div className="flex-none bg-surface border-t border-edge pb-8 pt-4 px-6 safe-area-bottom">
+        <div className="flex-none bg-surface border-t border-edge pb-8 pt-4 lg:py-5 px-6 safe-area-bottom">
             {isManualMode ? (
                 // Manual mode controls
-                <div className="flex items-center justify-center gap-4 sm:gap-6">
+                <div className="flex items-center justify-center gap-4 sm:gap-6 lg:gap-10">
                     <IconButton
                         variant="ghost"
                         onClick={onResetTimer}
@@ -73,7 +73,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
                         rounded
                         onClick={onToggleTimer}
                         className={clsx(
-                            'w-16 h-16 sm:w-20 sm:h-20 !p-0 shadow-xl active:scale-95 touch-manipulation',
+                            'w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 !p-0 shadow-xl active:scale-95 touch-manipulation',
                             isRunning
                                 ? 'bg-surface border-2 border-spot/20 text-spot'
                                 : 'bg-spot text-white shadow-spot/30'
@@ -81,9 +81,9 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
                         aria-label={isRunning ? '一時停止' : '再生'}
                     >
                         {isRunning ? (
-                            <Pause size={28} weight="fill" className="sm:w-9 sm:h-9" />
+                            <Pause size={28} weight="fill" className="sm:w-9 sm:h-9 lg:w-11 lg:h-11" />
                         ) : (
-                            <Play size={28} weight="fill" className="ml-1 sm:w-9 sm:h-9" />
+                            <Play size={28} weight="fill" className="ml-1 sm:w-9 sm:h-9 lg:w-11 lg:h-11" />
                         )}
                     </IconButton>
 
@@ -125,7 +125,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
                 </div>
             ) : (
                 // Auto mode controls
-                <div className="flex items-center justify-center gap-10">
+                <div className="flex items-center justify-center gap-10 lg:gap-12">
                     <IconButton
                         variant="ghost"
                         onClick={onResetTimer}
@@ -143,7 +143,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
                         rounded
                         onClick={onToggleTimer}
                         className={clsx(
-                            'w-20 h-20 !p-0 shadow-xl active:scale-95 touch-manipulation',
+                            'w-20 h-20 lg:w-24 lg:h-24 !p-0 shadow-xl active:scale-95 touch-manipulation',
                             isRunning
                                 ? 'bg-surface border-2 border-spot/20 text-spot'
                                 : 'bg-spot text-white shadow-spot/30'
@@ -151,9 +151,9 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
                         aria-label={isRunning ? '一時停止' : '再生'}
                     >
                         {isRunning ? (
-                            <Pause size={36} weight="fill" />
+                            <Pause size={36} weight="fill" className="lg:w-11 lg:h-11" />
                         ) : (
-                            <Play size={36} weight="fill" className="ml-1" />
+                            <Play size={36} weight="fill" className="ml-1 lg:w-11 lg:h-11" />
                         )}
                     </IconButton>
 
