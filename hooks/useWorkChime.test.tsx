@@ -104,4 +104,33 @@ describe('useWorkChime', () => {
 
     expect(result.current.activeChime).toBeNull();
   });
+
+  it('テスト用チャイムは通知を表示して音を鳴らす', () => {
+    const { result } = renderHook(() => useWorkChime(localDate(10, 40)));
+
+    act(() => {
+      result.current.testWorkChime('work-start');
+    });
+
+    expect(playWorkChimeMock).toHaveBeenCalledWith('work-start', { volume: 0.8 });
+    expect(result.current.isAudioEnabled).toBe(true);
+    expect(result.current.activeChime?.label).toBe('作業開始');
+    expect(result.current.activeChime?.message).toBe('作業開始です');
+  });
+
+  it('テスト用チャイムも5秒後に通知を消す', () => {
+    const { result } = renderHook(() => useWorkChime(localDate(10, 40)));
+
+    act(() => {
+      result.current.testWorkChime('break');
+    });
+
+    expect(result.current.activeChime).not.toBeNull();
+
+    act(() => {
+      vi.advanceTimersByTime(5000);
+    });
+
+    expect(result.current.activeChime).toBeNull();
+  });
 });

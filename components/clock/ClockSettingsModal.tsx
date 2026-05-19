@@ -12,7 +12,7 @@ import {
   getThemeColors,
   getFontFamily,
 } from '@/lib/clockSettings';
-import type { WorkChimeSettings } from '@/lib/workChime';
+import type { WorkChimeKind, WorkChimeSettings } from '@/lib/workChime';
 
 interface ClockSettingsModalProps {
   show: boolean;
@@ -22,6 +22,7 @@ interface ClockSettingsModalProps {
   onUpdate: (patch: Partial<ClockSettings>) => void;
   onWorkChimeUpdate: (patch: Partial<WorkChimeSettings>) => void;
   onEnableWorkChimeAudio: () => void;
+  onTestWorkChime: (kind: WorkChimeKind) => void;
   onReset: () => void;
   onClose: () => void;
 }
@@ -37,6 +38,7 @@ export function ClockSettingsModal({
   onUpdate,
   onWorkChimeUpdate,
   onEnableWorkChimeAudio,
+  onTestWorkChime,
   onReset,
   onClose,
 }: ClockSettingsModalProps) {
@@ -288,10 +290,55 @@ export function ClockSettingsModal({
                     </div>
                   )}
 
+                  <div className="py-3 px-1">
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <span className="text-sm font-medium block" style={{ color: themeColors.text }}>
+                          テスト再生
+                        </span>
+                        <span className="text-xs" style={{ color: themeColors.uiText }}>
+                          画面表示と音を確認します
+                        </span>
+                      </div>
+                    </div>
+                    <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => onTestWorkChime('break')}
+                        aria-label="休憩開始をテスト"
+                        className="w-full !px-3"
+                      >
+                        休憩開始
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => onTestWorkChime('work-start')}
+                        aria-label="作業開始をテスト"
+                        className="w-full !px-3"
+                      >
+                        作業開始
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => onTestWorkChime('cleanup-start')}
+                        aria-label="掃除開始をテスト"
+                        className="w-full !px-3"
+                      >
+                        掃除開始
+                      </Button>
+                    </div>
+                  </div>
+
                   <div className="flex items-center justify-between py-3 px-1 min-h-[44px]">
                     <div>
                       <span className="text-sm font-medium block" style={{ color: themeColors.text }}>
-                        音声アナウンス
+                        音声アナウンス（未実装）
                       </span>
                       <span className="text-xs" style={{ color: themeColors.uiText }}>
                         初期値はOFFです
