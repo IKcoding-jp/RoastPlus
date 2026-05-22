@@ -6,6 +6,7 @@ import { RouletteOverlay } from './components/RouletteOverlay';
 import { ManagerDialog } from './components/ManagerDialog';
 import { AssignmentSettingsModal } from './components/AssignmentSettingsModal';
 import { Loading } from '@/components/Loading';
+import LoginPage from '@/app/login/page';
 import { useDeveloperMode } from '@/hooks/useDeveloperMode';
 import { useAuth } from '@/lib/auth';
 import { setManager, deleteManager, addPairExclusion, deletePairExclusion, updateShuffleSettings } from './lib/firebase';
@@ -49,6 +50,10 @@ export default function AssignmentPage() {
         setTeams: data.setTeams,
         setTaskLabels: data.setTaskLabels,
     });
+
+    if (!authLoading && !user) {
+        return <LoginPage />;
+    }
 
     if (data.isLoading) {
         return <Loading />;

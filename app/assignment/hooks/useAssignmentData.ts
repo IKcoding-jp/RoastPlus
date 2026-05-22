@@ -14,6 +14,8 @@ import {
     DEFAULT_SHUFFLE_SETTINGS,
 } from '../lib/firebase';
 
+const getLocalTodayDate = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tokyo' }).format(new Date());
+
 export function useAssignmentData(userId: string | null, authLoading: boolean) {
     // マスタデータ
     const [teams, setTeams] = useState<Team[]>([]);
@@ -53,23 +55,36 @@ export function useAssignmentData(userId: string | null, authLoading: boolean) {
         let cancelled = false;
 
         const bootstrap = async () => {
-            const date = await getServerTodayDate();
+            let date = getLocalTodayDate();
+            try {
+                date = await getServerTodayDate();
+            } catch (error) {
+                console.error('Failed to get server today date:', error);
+            }
+
             if (!cancelled) {
                 setTodayDate(date);
             }
 
-            const [t, m, l] = await Promise.all([
-                fetchTeams(userId),
-                fetchMembers(userId),
-                fetchTaskLabels(userId)
-            ]);
+            try {
+                const [t, m, l] = await Promise.all([
+                    fetchTeams(userId),
+                    fetchMembers(userId),
+                    fetchTaskLabels(userId)
+                ]);
 
-            if (cancelled) return;
+                if (cancelled) return;
 
-            setTeams(t);
-            setMembers(m);
-            setTaskLabels(l);
-            setIsMasterLoaded(true);
+                setTeams(t);
+                setMembers(m);
+                setTaskLabels(l);
+            } catch (error) {
+                console.error('Failed to load assignment master data:', error);
+            } finally {
+                if (!cancelled) {
+                    setIsMasterLoaded(true);
+                }
+            }
         };
 
         bootstrap();
