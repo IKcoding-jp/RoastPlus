@@ -1,13 +1,10 @@
 import {
     doc,
-    getDoc,
     getDocs,
     onSnapshot,
     query,
     orderBy,
-    setDoc,
     serverTimestamp,
-    Timestamp,
     where,
     limit,
     runTransaction
@@ -25,19 +22,7 @@ import {
 } from './helpers';
 
 export const getServerTodayDate = async (timeZone: string = "Asia/Tokyo"): Promise<string> => {
-    // Use a dedicated meta document to fetch server-resolved timestamp
-    const auth = (await import('firebase/auth')).getAuth();
-    const userId = auth.currentUser?.uid;
-    if (!userId) {
-        return new Intl.DateTimeFormat('en-CA', { timeZone }).format(new Date());
-    }
-
-    const metaRef = doc(db, 'users', userId, '_meta', 'serverTime');
-    await setDoc(metaRef, { now: serverTimestamp() }, { merge: true });
-    const snap = await getDoc(metaRef);
-    const ts = snap.data()?.now as Timestamp | undefined;
-    const date = ts?.toDate() ?? new Date();
-    return new Intl.DateTimeFormat('en-CA', { timeZone }).format(date);
+    return new Intl.DateTimeFormat('en-CA', { timeZone }).format(new Date());
 };
 
 export const mutateAssignmentDay = async (
