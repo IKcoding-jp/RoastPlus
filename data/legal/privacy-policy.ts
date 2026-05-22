@@ -28,7 +28,7 @@ export const PRIVACY_POLICY_SECTIONS: PrivacyPolicySection[] = [
       '・スケジュール（日時、作業内容など）',
       '・試飲感想記録（評価スコア、感想コメント、豆名など）',
       '・ローストタイマー（焙煎時間、豆名、焙煎レベルなど）',
-      '・コーヒー豆図鑑（欠点豆の名前、特徴など）',
+      '・欠点豆図鑑（欠点豆の名前、特徴など）',
       '・作業進捗（タスク名、進捗状況、完了日時など）',
       '・ドリップガイド（レシピ名、抽出手順など）',
       '',
@@ -38,6 +38,14 @@ export const PRIVACY_POLICY_SECTIONS: PrivacyPolicySection[] = [
       '',
       '【画像データ】',
       '・欠点豆の画像（Firebase Storageに保存）',
+      '・OCR対象画像（スケジュール読み取り機能でユーザーが選択した画像）',
+      '',
+      '【AI分析に利用する情報】',
+      '・試飲分析に使う豆名、焙煎度、評価スコア、試飲コメント',
+      '・OCRにより読み取るスケジュール画像と、読み取り結果として生成される予定・作業内容',
+      '',
+      '【問い合わせ情報】',
+      '・問い合わせフォームに入力した名前、メールアドレス、お問い合わせ種別、本文',
       '',
       '【デバイス情報】',
       '・デバイスID（焙煎タイマーの同期用）',
@@ -53,12 +61,13 @@ export const PRIVACY_POLICY_SECTIONS: PrivacyPolicySection[] = [
       '・サービスの改善・新機能の開発',
       '・技術的な問題の解決',
       '・利用規約に違反する行為への対応',
+      '・AI分析、OCR、問い合わせ対応など、ユーザーが選択して利用する機能の提供',
     ],
   },
   {
     title: '4. 第三者サービスの利用',
     content: [
-      '本サービスは、以下の第三者サービス（Google LLC提供）を利用しています。',
+      '本サービスは、以下の第三者サービスを利用しています。',
       '',
       '【Firebase Authentication】',
       '・ユーザー認証のために利用',
@@ -72,7 +81,18 @@ export const PRIVACY_POLICY_SECTIONS: PrivacyPolicySection[] = [
       '・画像データの保存',
       '・データは暗号化されて保存',
       '',
-      'これらのサービスのプライバシーポリシーについては、Google のプライバシーポリシー（https://policies.google.com/privacy）をご参照ください。',
+      '上記のFirebase関連サービスは Google LLC が提供しています。これらのサービスのプライバシーポリシーについては、Google のプライバシーポリシー（https://policies.google.com/privacy）をご参照ください。',
+      '',
+      '【OpenAI API】',
+      '・スケジュール読み取り（OCR）や試飲AI分析のために、Cloud Functions経由で利用',
+      '・OCR対象画像、画像から読み取るスケジュール内容、豆名、焙煎度、評価スコア、試飲コメントなどが、処理に必要な範囲でOpenAIに送信される可能性があります',
+      '・OpenAI APIキーやシークレットはサーバー側で管理し、クライアント画面には表示しません',
+      '',
+      '【EmailJS】',
+      '・問い合わせフォームから運営者へ連絡内容を送信するために利用',
+      '・問い合わせフォームに入力した名前、メールアドレス、お問い合わせ種別、本文がEmailJSに送信される可能性があります',
+      '',
+      'AI分析、OCR、問い合わせフォームを利用する場合、ユーザーが入力・選択した内容が外部サービスに送信される可能性があります。不要な個人情報や機密情報は入力・送信しないでください。',
     ],
   },
   {
@@ -92,6 +112,7 @@ export const PRIVACY_POLICY_SECTIONS: PrivacyPolicySection[] = [
       '・通信の暗号化（HTTPS/TLS）',
       '・データベースの暗号化（Firebase のセキュリティ機能）',
       '・アクセス制御（Firebase Security Rules）',
+      '・APIキーやシークレットをクライアントに表示しない構成',
       '・定期的なセキュリティ評価',
     ],
   },
@@ -144,5 +165,5 @@ export const PRIVACY_POLICY_SECTIONS: PrivacyPolicySection[] = [
   },
 ];
 
-export const PRIVACY_POLICY_LAST_UPDATED = '2025年1月24日';
-export const PRIVACY_POLICY_EFFECTIVE_DATE = '2025年1月24日';
+export const PRIVACY_POLICY_LAST_UPDATED = '2026年5月23日';
+export const PRIVACY_POLICY_EFFECTIVE_DATE = '2026年5月23日';
