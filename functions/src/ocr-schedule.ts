@@ -24,6 +24,7 @@ export const ocrScheduleFromImage = onCall(
     timeoutSeconds: 300, // 5分
     memory: '512MiB',
     secrets: ['OPENAI_API_KEY'], // Google Vision API Keyは不要になったため削除
+    enforceAppCheck: true,
   },
   async (request) => {
     // 認証チェック
