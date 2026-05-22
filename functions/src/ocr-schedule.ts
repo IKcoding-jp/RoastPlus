@@ -4,8 +4,11 @@
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import OpenAI from 'openai';
 import type { TimeLabel, RoastSchedule } from './types';
-import { logDetailedError, MAX_BASE64_LENGTH } from './helpers';
+import { logDetailedError, normalizeOCRImageBase64 } from './helpers';
 import type { OCRScheduleResponse } from './helpers';
+import { assertDailyUsageLimit, DailyUsageLimitExceededError } from './rate-limit';
+
+const DAILY_OCR_LIMIT = 30;
 
 export const ocrScheduleFromImage = onCall(
   {
@@ -28,34 +31,29 @@ export const ocrScheduleFromImage = onCall(
       throw new HttpsError('unauthenticated', '認証が必要です');
     }
 
-    const { imageBase64 } = request.data;
-
-    // バリデーション: imageBase64の存在と型チェック
-    if (!imageBase64) {
-      throw new HttpsError('invalid-argument', '画像データが必要です');
-    }
-    if (typeof imageBase64 !== 'string') {
-      throw new HttpsError('invalid-argument', '画像データはBase64文字列である必要があります');
-    }
-
-    // バリデーション: 画像サイズチェック（Base64長さで判定）
-    if (imageBase64.length > MAX_BASE64_LENGTH) {
-      console.warn(
-        `[SIZE_VALIDATION] 画像サイズが上限を超過: ${imageBase64.length} 文字 (上限: ${MAX_BASE64_LENGTH} 文字)`
-      );
-      throw new HttpsError(
-        'invalid-argument',
-        '画像サイズが大きすぎます。20MB以下の画像をアップロードしてください。'
-      );
+    let formattedImage: string;
+    try {
+      formattedImage = normalizeOCRImageBase64(request.data);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '画像データの形式が正しくありません';
+      throw new HttpsError('invalid-argument', message);
     }
 
     try {
-      // Base64プレフィックスを含んでいるか確認し、正規化
-      let formattedImage = imageBase64;
-      if (!imageBase64.startsWith('data:image/')) {
-        formattedImage = `data:image/jpeg;base64,${imageBase64}`;
+      await assertDailyUsageLimit({
+        uid: request.auth.uid,
+        functionName: 'ocrScheduleFromImage',
+        limit: DAILY_OCR_LIMIT,
+      });
+    } catch (error) {
+      if (error instanceof DailyUsageLimitExceededError) {
+        throw new HttpsError('resource-exhausted', error.message);
       }
+      logDetailedError('[OCR_RATE_LIMIT_ERROR]', error, { uid: request.auth.uid });
+      throw new HttpsError('internal', 'OCRの利用回数確認中にエラーが発生しました');
+    }
 
+    try {
       // GPT-4o Visionでスケジュール形式に整形
       const scheduleData = await formatScheduleWithGPT(formattedImage);
 
@@ -70,8 +68,7 @@ export const ocrScheduleFromImage = onCall(
       }
 
       // その他のエラー
-      const message = error instanceof Error ? error.message : String(error);
-      throw new HttpsError('internal', `スケジュール解析中にエラーが発生しました: ${message}`);
+      throw new HttpsError('internal', 'スケジュール解析中にエラーが発生しました');
     }
   }
 );
@@ -286,10 +283,9 @@ JSONのみを返してください。説明文・注釈・前文は不要です�
     // OpenAI APIのエラーを詳細に処理
     let errorMessage = 'スケジュール解析中にエラーが発生しました';
     if (error instanceof Error) {
-      const openAiError = error as { status?: number; response?: { status?: number; statusText?: string }; message?: string };
+      const openAiError = error as { status?: number; response?: { status?: number }; message?: string };
       if (openAiError.status || openAiError.response) {
         const httpStatus = openAiError.status ?? openAiError.response?.status;
-        const statusText = openAiError.response?.statusText;
         if (httpStatus === 401) {
           errorMessage = 'OpenAI APIキーが無効です。APIキーを確認してください。';
         } else if (httpStatus === 429 && code === 'insufficient_quota') {
@@ -303,10 +299,10 @@ JSONのみを返してください。説明文・注釈・前文は不要です�
         } else if (openAiError.message?.includes('timeout') || openAiError.message?.includes('TIMEOUT')) {
           errorMessage = 'OpenAI APIへのリクエストがタイムアウトしました。しばらく待ってから再度お試しください。';
         } else {
-          errorMessage = `OpenAI APIエラー: ${openAiError.message || statusText || '不明なエラー'}`;
+          errorMessage = 'OpenAI APIエラーが発生しました。しばらく待ってから再度お試しください。';
         }
       } else {
-        errorMessage = error.message || errorMessage;
+        errorMessage = 'スケジュール解析中にエラーが発生しました';
       }
     }
 

@@ -12,6 +12,22 @@ function getStorageInstance(): FirebaseStorage {
 }
 
 const UPLOAD_TIMEOUT_MS = 30_000;
+const MAX_IMAGE_SIZE_BYTES = 5 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
+
+function validateDefectBeanImage(file: File): void {
+  if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+    throw new Error('アップロードできる画像形式は JPEG、PNG、WebP のみです');
+  }
+  if (file.size > MAX_IMAGE_SIZE_BYTES) {
+    throw new Error('画像サイズは5MB以下にしてください');
+  }
+}
+
+function sanitizeFileName(fileName: string): string {
+  const sanitized = fileName.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 80);
+  return sanitized || 'image';
+}
 
 /**
  * 欠点豆の画像をFirebase Storageにアップロード
@@ -40,11 +56,12 @@ export async function uploadDefectBeanImage(
     if (!userId) {
       throw new Error('User ID is required to upload defect bean images');
     }
+    validateDefectBeanImage(file);
 
-    const storagePath = `defect-beans/${userId}/${defectBeanId}/${Date.now()}_${file.name}`;
+    const storagePath = `defect-beans/${userId}/${defectBeanId}/${Date.now()}_${sanitizeFileName(file.name)}`;
 
     const storageRef = ref(storageInstance, storagePath);
-    await uploadBytes(storageRef, file);
+    await uploadBytes(storageRef, file, { contentType: file.type });
     return getDownloadURL(storageRef);
   };
 

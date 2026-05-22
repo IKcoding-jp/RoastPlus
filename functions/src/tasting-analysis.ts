@@ -3,8 +3,11 @@
  */
 import { onCall, HttpsError } from 'firebase-functions/v2/https';
 import OpenAI from 'openai';
-import { logDetailedError } from './helpers';
+import { logDetailedError, validateTastingAnalysisRequest } from './helpers';
+import { assertDailyUsageLimit, DailyUsageLimitExceededError } from './rate-limit';
 import type { TastingAnalysisRequest, TastingAnalysisResponse } from './helpers';
+
+const DAILY_ANALYSIS_LIMIT = 80;
 
 export const analyzeTastingSession = onCall(
   {
@@ -27,11 +30,26 @@ export const analyzeTastingSession = onCall(
       throw new HttpsError('unauthenticated', '認証が必要です');
     }
 
-    const data = request.data as TastingAnalysisRequest;
+    let data: TastingAnalysisRequest;
+    try {
+      data = validateTastingAnalysisRequest(request.data);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'リクエストデータの形式が正しくありません';
+      throw new HttpsError('invalid-argument', message);
+    }
 
-    // バリデーション
-    if (!data.beanName || !data.roastLevel || !data.averageScores) {
-      throw new HttpsError('invalid-argument', '必要なデータが不足しています');
+    try {
+      await assertDailyUsageLimit({
+        uid: request.auth.uid,
+        functionName: 'analyzeTastingSession',
+        limit: DAILY_ANALYSIS_LIMIT,
+      });
+    } catch (error) {
+      if (error instanceof DailyUsageLimitExceededError) {
+        throw new HttpsError('resource-exhausted', error.message);
+      }
+      logDetailedError('[ANALYZE_RATE_LIMIT_ERROR]', error, { uid: request.auth.uid });
+      throw new HttpsError('internal', 'AI分析の利用回数確認中にエラーが発生しました');
     }
 
     const apiKey = process.env.OPENAI_API_KEY?.trim();
