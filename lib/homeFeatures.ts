@@ -21,7 +21,7 @@ export const HOME_FEATURES = [
   },
   {
     key: 'defect-beans',
-    title: 'コーヒー豆図鑑',
+    title: '欠点豆図鑑',
     description: '欠点豆の知識を共有',
   },
   {
