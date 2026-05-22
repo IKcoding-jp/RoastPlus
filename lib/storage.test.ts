@@ -63,6 +63,26 @@ describe('uploadDefectBeanImage', () => {
     expect(mockUploadBytes).not.toHaveBeenCalled();
   });
 
+  it('画像以外のファイルはアップロードを拒否する', async () => {
+    const mockFile = new File(['hello'], 'memo.txt', { type: 'text/plain' });
+
+    await expect(uploadDefectBeanImage('uid123', 'beanId123', mockFile)).rejects.toThrow(
+      'アップロードできる画像形式'
+    );
+    expect(mockUploadBytes).not.toHaveBeenCalled();
+  });
+
+  it('5MBを超える画像はアップロードを拒否する', async () => {
+    const mockFile = new File([new Uint8Array(5 * 1024 * 1024 + 1)], 'large.jpg', {
+      type: 'image/jpeg',
+    });
+
+    await expect(uploadDefectBeanImage('uid123', 'beanId123', mockFile)).rejects.toThrow(
+      '5MB以下'
+    );
+    expect(mockUploadBytes).not.toHaveBeenCalled();
+  });
+
   it('uploadBytes がエラーをthrowした場合はそのエラーを再throwする', async () => {
     const uploadError = new Error('Storage permission denied');
     mockUploadBytes.mockRejectedValue(uploadError);

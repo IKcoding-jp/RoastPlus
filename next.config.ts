@@ -18,9 +18,6 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_APP_VERSION: packageJson.version,
   },
-  experimental: {
-    turbopackUseSystemTlsCerts: true,
-  },
 };
 
 export default nextConfig;
