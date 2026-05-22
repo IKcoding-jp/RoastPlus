@@ -88,13 +88,20 @@ export const updateAssignmentDay = async (userId: string, date: string, assignme
 export const subscribeAssignmentDay = (userId: string, date: string, callback: (data: AssignmentDay | null) => void) => {
     const assignmentDaysCol = getAssignmentDaysCollection(userId);
     const docRef = doc(assignmentDaysCol, date);
-    return onSnapshot(docRef, (snap) => {
-        if (snap.exists()) {
-            callback({ ...snap.data(), date: snap.id } as AssignmentDay);
-        } else {
+    return onSnapshot(
+        docRef,
+        (snap) => {
+            if (snap.exists()) {
+                callback({ ...snap.data(), date: snap.id } as AssignmentDay);
+            } else {
+                callback(null);
+            }
+        },
+        (error) => {
+            console.error('Failed to subscribe assignment day:', error);
             callback(null);
         }
-    });
+    );
 };
 
 export const subscribeLatestAssignmentDay = (
@@ -106,26 +113,33 @@ export const subscribeLatestAssignmentDay = (
     const latestQuery = query(assignmentDaysCol, orderBy('updatedAt', 'desc'), limit(1));
     let initializing = false;
 
-    return onSnapshot(latestQuery, async (snap) => {
-        if (!snap.empty) {
-            const docSnap = snap.docs[0];
-            callback({ ...docSnap.data(), date: docSnap.id } as AssignmentDay);
-            return;
-        }
-
-        callback(null);
-
-        if (options?.onEmpty && !initializing) {
-            initializing = true;
-            try {
-                await options.onEmpty();
-            } catch (error) {
-                console.error('Failed to initialize first assignment day:', error);
-            } finally {
-                initializing = false;
+    return onSnapshot(
+        latestQuery,
+        async (snap) => {
+            if (!snap.empty) {
+                const docSnap = snap.docs[0];
+                callback({ ...docSnap.data(), date: docSnap.id } as AssignmentDay);
+                return;
             }
+
+            callback(null);
+
+            if (options?.onEmpty && !initializing) {
+                initializing = true;
+                try {
+                    await options.onEmpty();
+                } catch (error) {
+                    console.error('Failed to initialize first assignment day:', error);
+                } finally {
+                    initializing = false;
+                }
+            }
+        },
+        (error) => {
+            console.error('Failed to subscribe latest assignment day:', error);
+            callback(null);
         }
-    });
+    );
 };
 
 export const fetchRecentAssignments = async (userId: string, endDate: string, days: number): Promise<AssignmentDay[]> => {
