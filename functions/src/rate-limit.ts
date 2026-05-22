@@ -1,6 +1,6 @@
-import { getApps, initializeApp } from 'firebase-admin/app';
+import { getApp, initializeApp } from 'firebase-admin/app';
 import { FieldValue, getFirestore } from 'firebase-admin/firestore';
-import { getUsageDocId, getUsageWindowId } from './rate-limit-helpers';
+import { getDefaultAdminApp, getUsageDocId, getUsageWindowId } from './rate-limit-helpers';
 
 interface DailyUsageLimitOptions {
   uid: string;
@@ -20,10 +20,7 @@ export class DailyUsageLimitExceededError extends Error {
 }
 
 function getAdminDb() {
-  if (getApps().length === 0) {
-    initializeApp();
-  }
-  return getFirestore();
+  return getFirestore(getDefaultAdminApp({ getApp, initializeApp }));
 }
 
 export async function assertDailyUsageLimit({
