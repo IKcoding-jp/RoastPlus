@@ -1,6 +1,6 @@
 // Service Worker for PWA
-const CACHE_NAME = 'roast-plus-v4';
-const RUNTIME_CACHE = 'roast-plus-runtime-v4';
+const CACHE_NAME = 'roast-plus-v5';
+const RUNTIME_CACHE = 'roast-plus-runtime-v5';
 
 // キャッシュするリソース
 const PRECACHE_URLS = [
@@ -32,6 +32,31 @@ function getHtmlPath(url) {
   
   // その他のルートパスはindex.htmlを追加
   return `${pathname}/index.html`;
+}
+
+function putInRuntimeCache(requests, response) {
+  if (!response || response.status !== 200) {
+    return Promise.resolve();
+  }
+
+  const cacheEntries = requests.map((request) => ({
+    request,
+    response: response.clone(),
+  }));
+
+  return caches.open(RUNTIME_CACHE)
+    .then((cache) => Promise.all(
+      cacheEntries.map(({ request, response }) => cache.put(request, response))
+    ))
+    .catch((error) => {
+      console.error('Service Worker cache put failed:', error);
+    });
+}
+
+function getNavigationFallback() {
+  return caches.match('/index.html')
+    .then((cachedResponse) => cachedResponse || caches.match('/'))
+    .then((cachedResponse) => cachedResponse || Response.error());
 }
 
 // インストール時の処理
@@ -111,21 +136,13 @@ self.addEventListener('fetch', (event) => {
           .then((response) => {
             // レスポンスが有効な場合、元のリクエストとHTMLファイルパスの両方をキャッシュに保存
             if (response && response.status === 200) {
-              const responseToCache = response.clone();
-              caches.open(RUNTIME_CACHE).then((cache) => {
-                cache.put(event.request, responseToCache.clone());
-                cache.put(htmlRequest, responseToCache);
-              });
+              putInRuntimeCache([event.request, htmlRequest], response);
               return response;
             }
             // 404の場合は、元のリクエストを試す（Firebase Hostingのrewritesが適用される可能性がある）
             return fetch(event.request).then((originalResponse) => {
               if (originalResponse && originalResponse.status === 200) {
-                const responseToCache = originalResponse.clone();
-                caches.open(RUNTIME_CACHE).then((cache) => {
-                  cache.put(event.request, responseToCache);
-                  cache.put(htmlRequest, responseToCache.clone());
-                });
+                putInRuntimeCache([event.request, htmlRequest], originalResponse);
               }
               return originalResponse;
             });
@@ -142,7 +159,7 @@ self.addEventListener('fetch', (event) => {
                   return originalCached;
                 }
                 // それでも見つからない場合は、index.htmlを返す（SPAフォールバック）
-                return caches.match('/index.html') || caches.match('/');
+                return getNavigationFallback();
               });
             });
           })
@@ -157,10 +174,7 @@ self.addEventListener('fetch', (event) => {
       .then((response) => {
         // レスポンスが有効な場合、キャッシュに保存
         if (response && response.status === 200) {
-          const responseToCache = response.clone();
-          caches.open(RUNTIME_CACHE).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
+          putInRuntimeCache([event.request], response);
         }
         return response;
       })
@@ -180,14 +194,14 @@ self.addEventListener('fetch', (event) => {
                   return htmlCachedResponse;
                 }
                 // それでも見つからない場合は、index.htmlを返す（SPAフォールバック）
-                return caches.match('/index.html') || caches.match('/');
+                return getNavigationFallback();
               });
             }
             // HTMLファイルパスが同じ場合は、index.htmlを返す（SPAフォールバック）
-            return caches.match('/index.html') || caches.match('/');
+            return getNavigationFallback();
           }
           
-          return null;
+          return Response.error();
         });
       })
   );
