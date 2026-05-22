@@ -2,6 +2,7 @@ import { initializeApp, getApps } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
 import { getFirestore } from 'firebase/firestore';
+import { initializeRoastPlusAppCheck } from './appCheck';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -22,6 +23,8 @@ declare global {
 }
 
 const functionsInstance = getFunctions(app);
+
+initializeRoastPlusAppCheck(app);
 
 if (
   typeof window !== 'undefined' &&

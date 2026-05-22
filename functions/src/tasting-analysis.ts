@@ -23,6 +23,7 @@ export const analyzeTastingSession = onCall(
     timeoutSeconds: 60,
     memory: '256MiB',
     secrets: ['OPENAI_API_KEY'],
+    enforceAppCheck: true,
   },
   async (request): Promise<TastingAnalysisResponse> => {
     // 認証チェック
