@@ -2,19 +2,15 @@
 
 import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { Loading } from '@/components/Loading';
 import { Input, Button } from '@/components/ui';
 import { getSafeReturnUrl } from '@/lib/returnUrl';
 
-type TabType = 'login' | 'signup';
-
 function LoginForm() {
-  const [activeTab, setActiveTab] = useState<TabType>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -24,22 +20,10 @@ function LoginForm() {
     e.preventDefault();
     setError(null);
 
-    // 新規登録時はパスワード確認
-    if (activeTab === 'signup') {
-      if (password !== confirmPassword) {
-        setError('パスワードが一致しません');
-        return;
-      }
-    }
-
     setLoading(true);
 
     try {
-      if (activeTab === 'login') {
-        await signInWithEmailAndPassword(auth, email, password);
-      } else {
-        await createUserWithEmailAndPassword(auth, email, password);
-      }
+      await signInWithEmailAndPassword(auth, email, password);
       // returnUrlがあればそのURLに、なければホームにリダイレクト
       const redirectUrl = getSafeReturnUrl(searchParams.get('returnUrl'), '/');
       router.push(redirectUrl);
@@ -64,12 +48,6 @@ function LoginForm() {
         case 'auth/invalid-credential':
           errorMessage = 'メールアドレスもしくはパスワードが違います';
           break;
-        case 'auth/email-already-in-use':
-          errorMessage = 'このメールアドレスは既に使用されています';
-          break;
-        case 'auth/weak-password':
-          errorMessage = 'パスワードが弱すぎます（6文字以上）';
-          break;
         case 'auth/network-request-failed':
           errorMessage = 'ネットワークエラーが発生しました';
           break;
@@ -92,40 +70,9 @@ function LoginForm() {
           </h1>
         </div>
 
-        {/* タブ */}
-        <div className="mb-6 flex rounded-lg bg-ground p-1">
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setActiveTab('signup');
-              setError(null);
-            }}
-            className={`flex-1 !rounded-lg !py-2.5 text-center !text-sm !min-h-0 ${activeTab === 'signup'
-              ? '!bg-spot !text-white'
-              : '!text-ink-sub hover:!text-ink'
-              }`}
-          >
-            新規登録
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              setActiveTab('login');
-              setError(null);
-              setConfirmPassword('');
-            }}
-            className={`flex-1 !rounded-lg !py-2.5 text-center !text-sm !min-h-0 ${activeTab === 'login'
-              ? '!bg-spot !text-white'
-              : '!text-ink-sub hover:!text-ink'
-              }`}
-          >
-            ログイン
-          </Button>
-        </div>
+        <p className="mb-6 text-center text-sm text-ink-sub">
+          共有アカウントでログインしてください。
+        </p>
 
         {/* フォーム */}
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -151,20 +98,6 @@ function LoginForm() {
             showPasswordToggle
           />
 
-          {/* パスワード確認（新規登録時のみ） */}
-          {activeTab === 'signup' && (
-            <Input
-              label="パスワード（確認）"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="6文字以上"
-              required
-              minLength={6}
-              showPasswordToggle
-            />
-          )}
-
           {error && (
             <p className="text-sm text-red-600">{error}</p>
           )}
@@ -176,7 +109,7 @@ function LoginForm() {
             loading={loading}
             fullWidth
           >
-            {activeTab === 'login' ? 'ログイン' : '新規登録'}
+            ログイン
           </Button>
         </form>
       </div>
