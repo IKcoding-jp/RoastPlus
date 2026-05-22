@@ -26,7 +26,13 @@ import {
 
 export const getServerTodayDate = async (timeZone: string = "Asia/Tokyo"): Promise<string> => {
     // Use a dedicated meta document to fetch server-resolved timestamp
-    const metaRef = doc(db, '_meta', 'serverTime');
+    const auth = (await import('firebase/auth')).getAuth();
+    const userId = auth.currentUser?.uid;
+    if (!userId) {
+        return new Intl.DateTimeFormat('en-CA', { timeZone }).format(new Date());
+    }
+
+    const metaRef = doc(db, 'users', userId, '_meta', 'serverTime');
     await setDoc(metaRef, { now: serverTimestamp() }, { merge: true });
     const snap = await getDoc(metaRef);
     const ts = snap.data()?.now as Timestamp | undefined;

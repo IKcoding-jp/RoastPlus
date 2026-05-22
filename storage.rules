@@ -1,12 +1,24 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function isAllowedImageUpload() {
+      return request.resource != null
+        && request.resource.size <= 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/(jpeg|png|webp)');
+    }
+
     // 欠点豆画像（ユーザー追加）
     match /defect-beans/{userId}/{defectBeanId}/{fileName=**} {
-      // 認証済みユーザーのみアップロード・削除可能
-      allow create, update, delete: if request.auth != null && request.auth.uid == userId;
+      // 認証済み本人のみ、画像ファイルだけアップロード可能
+      allow create, update: if isOwner(userId) && isAllowedImageUpload();
+      // 認証済み本人のみ削除可能
+      allow delete: if isOwner(userId);
       // 本人のみ読み取り可能
-      allow read: if request.auth != null && request.auth.uid == userId;
+      allow read: if isOwner(userId);
     }
     
     // マスターデータの画像（クライアントから編集不可）
