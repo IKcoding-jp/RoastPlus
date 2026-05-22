@@ -15,7 +15,7 @@ describe('consent', () => {
     });
 
     it('PRIVACY_POLICY_VERSIONが定義されている', () => {
-      expect(PRIVACY_POLICY_VERSION).toBe('1.0.0');
+      expect(PRIVACY_POLICY_VERSION).toBe('1.1.0');
     });
   });
 
