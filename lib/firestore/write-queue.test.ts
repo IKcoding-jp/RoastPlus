@@ -119,8 +119,8 @@ describe('saveUserData workProgresses split writes', () => {
   });
 
   afterEach(async () => {
-    const { writeQueues } = await import('./userData/write-queue');
-    writeQueues.clear();
+    const { clearWriteQueueStateForTests } = await import('./userData/write-queue');
+    clearWriteQueueStateForTests();
     vi.useRealTimers();
   });
 
