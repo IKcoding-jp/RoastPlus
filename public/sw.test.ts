@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import vm from 'node:vm';
 
@@ -45,6 +45,19 @@ globalThis.__PRECACHE_URLS = PRECACHE_URLS;`,
   return context as typeof context & ServiceWorkerContext;
 }
 
+function resolvePrecachePath(url: string): string {
+  if (url === '/' || url === '/index.html') {
+    return join(process.cwd(), 'app', 'page.tsx');
+  }
+
+  if (url.endsWith('/index.html')) {
+    const routePath = url.replace(/^\//, '').replace(/\/index\.html$/, '');
+    return join(process.cwd(), 'app', routePath, 'page.tsx');
+  }
+
+  return join(process.cwd(), 'public', url.replace(/^\//, ''));
+}
+
 describe('PWA Service Worker navigation paths', () => {
   it('静的エクスポートされたページのindex.htmlへ変換する', () => {
     const { __getHtmlPath } = loadServiceWorkerContext();
@@ -59,6 +72,31 @@ describe('PWA Service Worker navigation paths', () => {
 
     expect(__PRECACHE_URLS).toContain('/settings/index.html');
     expect(__PRECACHE_URLS).not.toContain('/settings.html');
+  });
+
+  it('事前キャッシュURLは実在するNext.jsページまたはpublicファイルを指す', () => {
+    const { __PRECACHE_URLS } = loadServiceWorkerContext();
+
+    const missingPaths = __PRECACHE_URLS
+      .map((url) => ({ url, filePath: resolvePrecachePath(url) }))
+      .filter(({ filePath }) => !existsSync(filePath));
+
+    expect(missingPaths).toEqual([]);
+  });
+
+  it('manifestのicon参照はpublic配下の実ファイルを指す', () => {
+    const manifest = JSON.parse(
+      readFileSync(join(process.cwd(), 'public', 'site.webmanifest'), 'utf8')
+    ) as { icons: Array<{ src: string }> };
+
+    const missingIcons = manifest.icons
+      .map((icon) => ({
+        src: icon.src,
+        filePath: join(process.cwd(), 'public', icon.src.replace(/^\//, '')),
+      }))
+      .filter(({ filePath }) => !existsSync(filePath));
+
+    expect(missingIcons).toEqual([]);
   });
 });
 
