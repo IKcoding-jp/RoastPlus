@@ -1,6 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
 
 const CLOCK_URL = `${process.env.E2E_BASE_URL ?? 'http://localhost:3000'}/clock`;
+const CHIME_ALERT_COLORS = {
+  break: 'rgb(8, 145, 178)',
+  work: 'rgb(217, 119, 6)',
+  cleanup: 'rgb(75, 85, 99)',
+} as const;
 
 async function freezeTime(page: Page, iso: string) {
   await page.addInitScript((fixedIso) => {
@@ -97,17 +102,19 @@ test.describe('時計 作業チャイム', () => {
     const breakLabel = page.getByText('10:45 休憩開始');
     await expect(breakLabel).toBeVisible();
     await expect(page.getByText('休憩時間です')).toBeVisible();
-    await expect(breakLabel).toHaveCSS('color', 'rgb(22, 163, 74)');
+    await expect(breakLabel).toHaveCSS('color', CHIME_ALERT_COLORS.break);
 
     await page.goto(`${CLOCK_URL}?previewChime=work`);
     const workLabel = page.getByText('10:00 作業開始');
     await expect(workLabel).toBeVisible();
     await expect(page.getByText('作業開始です')).toBeVisible();
-    await expect(workLabel).toHaveCSS('color', 'rgb(217, 119, 6)');
+    await expect(workLabel).toHaveCSS('color', CHIME_ALERT_COLORS.work);
 
     await page.goto(`${CLOCK_URL}?previewChime=cleanup`);
-    await expect(page.getByText('16:35 掃除開始')).toBeVisible();
+    const cleanupLabel = page.getByText('16:35 掃除開始');
+    await expect(cleanupLabel).toBeVisible();
     await expect(page.getByText('掃除開始です')).toBeVisible();
+    await expect(cleanupLabel).toHaveCSS('color', CHIME_ALERT_COLORS.cleanup);
   });
 
   test('previewChimeの中央表示は約5秒で自動的に閉じる', async ({ page }) => {
