@@ -17,31 +17,40 @@ export interface ContactFormValidationResult {
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+export function normalizeContactFormData(
+  formData: ContactFormData
+): ContactFormData {
+  return {
+    ...formData,
+    name: formData.name.trim(),
+    email: formData.email.trim(),
+    message: formData.message.trim(),
+  };
+}
+
 export function validateContactForm(
   formData: ContactFormData
 ): ContactFormValidationResult {
   const errors: Partial<Record<keyof ContactFormData, string>> = {};
-  const trimmedName = formData.name.trim();
-  const trimmedEmail = formData.email.trim();
-  const trimmedMessage = formData.message.trim();
+  const normalizedFormData = normalizeContactFormData(formData);
 
-  if (trimmedName.length > CONTACT_FORM_LIMITS.name) {
+  if (normalizedFormData.name.length > CONTACT_FORM_LIMITS.name) {
     errors.name = `お名前は${CONTACT_FORM_LIMITS.name}文字以内で入力してください`;
   }
 
-  if (!trimmedEmail) {
+  if (!normalizedFormData.email) {
     errors.email = 'メールアドレスを入力してください';
-  } else if (trimmedEmail.length > CONTACT_FORM_LIMITS.email) {
+  } else if (normalizedFormData.email.length > CONTACT_FORM_LIMITS.email) {
     errors.email = `メールアドレスは${CONTACT_FORM_LIMITS.email}文字以内で入力してください`;
-  } else if (!EMAIL_PATTERN.test(trimmedEmail)) {
+  } else if (!EMAIL_PATTERN.test(normalizedFormData.email)) {
     errors.email = '有効なメールアドレスを入力してください';
   }
 
-  if (!trimmedMessage) {
+  if (!normalizedFormData.message) {
     errors.message = 'お問い合わせ内容を入力してください';
-  } else if (trimmedMessage.length < CONTACT_FORM_LIMITS.messageMin) {
+  } else if (normalizedFormData.message.length < CONTACT_FORM_LIMITS.messageMin) {
     errors.message = `お問い合わせ内容は${CONTACT_FORM_LIMITS.messageMin}文字以上で入力してください`;
-  } else if (trimmedMessage.length > CONTACT_FORM_LIMITS.messageMax) {
+  } else if (normalizedFormData.message.length > CONTACT_FORM_LIMITS.messageMax) {
     errors.message = `お問い合わせ内容は${CONTACT_FORM_LIMITS.messageMax}文字以内で入力してください`;
   }
 

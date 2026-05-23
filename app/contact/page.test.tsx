@@ -86,6 +86,26 @@ describe('ContactPage', () => {
     expect(screen.getByRole('button', { name: '送信中...' })).toBeDisabled();
   });
 
+  it('trim済みの内容を送信する', async () => {
+    render(<ContactPage />);
+
+    fillContactForm({
+      name: '   ',
+      email: '  test@example.com  ',
+      message: '  お問い合わせ内容の詳細です。  ',
+    });
+    fireEvent.click(screen.getByRole('button', { name: '送信する' }));
+
+    await waitFor(() => {
+      expect(mocks.sendContactEmail).toHaveBeenCalledWith({
+        name: '',
+        email: 'test@example.com',
+        type: 'question',
+        message: 'お問い合わせ内容の詳細です。',
+      });
+    });
+  });
+
   it('cooldown中の再送信を拒否する', async () => {
     localStorage.setItem(CONTACT_FORM_COOLDOWN_STORAGE_KEY, String(Date.now()));
     render(<ContactPage />);

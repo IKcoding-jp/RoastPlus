@@ -7,6 +7,7 @@ import { ContactFormFields } from '@/components/contact/ContactFormFields';
 import { Button, Card, FloatingNav } from '@/components/ui';
 import {
   getStoredContactCooldownWaitSeconds,
+  normalizeContactFormData,
   storeContactSuccessTimestamp,
   validateContactForm,
 } from '@/lib/contactForm';
@@ -32,8 +33,8 @@ export default function ContactPage() {
     Partial<Record<keyof ContactFormData, string>>
   >({});
 
-  const validateForm = (): boolean => {
-    const result = validateContactForm(formData);
+  const validateForm = (data: ContactFormData): boolean => {
+    const result = validateContactForm(data);
     setValidationErrors(result.errors);
     return result.isValid;
   };
@@ -59,7 +60,9 @@ export default function ContactPage() {
 
     setErrorMessage('');
 
-    if (!validateForm()) {
+    const normalizedFormData = normalizeContactFormData(formData);
+
+    if (!validateForm(normalizedFormData)) {
       return;
     }
 
@@ -82,7 +85,7 @@ export default function ContactPage() {
     setStatus('sending');
 
     try {
-      await sendContactEmail(formData);
+      await sendContactEmail(normalizedFormData);
       storeContactSuccessTimestamp(getCooldownStorage());
       setStatus('success');
       setFormData({
