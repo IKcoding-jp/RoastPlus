@@ -6,6 +6,7 @@ import {
   CONTACT_FORM_LIMITS,
   getContactCooldownWaitSeconds,
   getStoredContactCooldownWaitSeconds,
+  normalizeContactFormData,
   storeContactSuccessTimestamp,
   validateContactForm,
 } from './contactForm';
@@ -81,6 +82,30 @@ describe('validateContactForm', () => {
 
     expect(result.isValid).toBe(true);
     expect(result.errors).toEqual({});
+  });
+});
+
+describe('normalizeContactFormData', () => {
+  it('name、email、messageの前後空白だけを取り除き、typeは変更しない', () => {
+    expect(
+      normalizeContactFormData(
+        createValidFormData({
+          name: '  山田 太郎  ',
+          email: '  test@example.com  ',
+          type: 'bug',
+          message: '  お問い合わせ内容の詳細です。  ',
+        })
+      )
+    ).toEqual({
+      name: '山田 太郎',
+      email: 'test@example.com',
+      type: 'bug',
+      message: 'お問い合わせ内容の詳細です。',
+    });
+  });
+
+  it('空白だけの名前は空文字へ正規化する', () => {
+    expect(normalizeContactFormData(createValidFormData({ name: '   ' })).name).toBe('');
   });
 });
 
