@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { uploadDefectBeanImage } from './storage';
 
 // モック関数（vi.mockファクトリ内で参照可能なようにmockプレフィックスを使用）
-const mockRef = vi.fn(() => ({}));
+const mockRef = vi.fn((...args: unknown[]): Record<string, unknown> => ({ path: args[1] }));
 const mockUploadBytes = vi.fn();
 const mockGetDownloadURL = vi.fn();
 

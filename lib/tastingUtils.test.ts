@@ -23,6 +23,7 @@ function createRecord(overrides: Partial<TastingRecord> = {}): TastingRecord {
     updatedAt: '2026-02-11T00:00:00Z',
     userId: 'user-1',
     ...overrides,
+    memberId: overrides.memberId ?? 'member-1',
   };
 }
 

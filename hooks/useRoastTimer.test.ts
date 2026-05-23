@@ -3,7 +3,7 @@ import { renderHook, act } from '@testing-library/react';
 import { useRoastTimer } from './useRoastTimer';
 import type { UseTimerPersistenceArgs } from './roast-timer/useTimerPersistence';
 import type { UseTimerControlsArgs } from './roast-timer/useTimerControls';
-import type { AppData, User } from '@/types';
+import type { AppData } from '@/types';
 
 // モック関数
 const mockUseAuth = vi.fn();
@@ -18,33 +18,22 @@ const mockUseTimerPersistence = vi.fn();
 const mockUseTimerControls = vi.fn();
 
 // モックデータ
-const mockUser: User = {
+const mockUser = {
   uid: 'test-user-id',
   email: 'test@example.com',
   displayName: 'Test User',
 };
 
 const mockAppData: AppData = {
-  roastRecords: [],
-  extractionRecords: [],
-  beanInventory: [],
+  todaySchedules: [],
   roastSchedules: [],
-  roastSettings: {
-    notifications: {
-      enabled: false,
-      timings: [],
-    },
-  },
-  extractionSettings: {
-    notifications: {
-      enabled: false,
-    },
-  },
-  clockSettings: {
-    theme: 'dark',
-    font: 'digital',
-  },
-  consent: {
+  tastingSessions: [],
+  tastingRecords: [],
+  notifications: [],
+  encouragementCount: 0,
+  roastTimerRecords: [],
+  workProgresses: [],
+  userConsent: {
     hasAgreed: true,
     agreedAt: '2024-01-01T00:00:00.000Z',
     agreedTermsVersion: '1.0.0',
@@ -368,7 +357,7 @@ describe('useRoastTimer', () => {
       const initialCallCount = mockEnsureServerTimeSync.mock.calls.length;
 
       // ユーザーを変更
-      const newUser: User = {
+      const newUser = {
         uid: 'new-user-id',
         email: 'new@example.com',
         displayName: 'New User',

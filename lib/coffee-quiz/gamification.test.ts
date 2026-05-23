@@ -69,7 +69,7 @@ describe('calculateXP', () => {
   it('速い回答にはスピードボーナスがつく', () => {
     const params = {
       isCorrect: true,
-      difficulty: 'beginner',
+      difficulty: 'beginner' as const,
       isFirstTime: false,
       consecutiveCorrect: 0,
     };

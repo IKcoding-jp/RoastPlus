@@ -37,6 +37,67 @@ const createLocalStorageMock = () => {
   };
 };
 
+const createRoastTimerState = (
+  overrides: Partial<RoastTimerState> = {}
+): RoastTimerState => ({
+  status: 'idle',
+  duration: 180,
+  elapsed: 0,
+  remaining: 180,
+  startedAt: '2024-01-01T00:00:00.000Z',
+  lastUpdatedAt: '2024-01-01T00:00:00.000Z',
+  ...overrides,
+});
+
+const createQuizProgress = (
+  overrides: Partial<QuizProgress> = {}
+): QuizProgress => ({
+  userId: 'user-123',
+  cards: [],
+  checkmarks: [],
+  streak: {
+    currentStreak: 0,
+    longestStreak: 0,
+    lastActiveDate: '2024-01-01',
+  },
+  level: {
+    level: 1,
+    currentXP: 0,
+    totalXP: 0,
+    xpToNextLevel: 50,
+  },
+  earnedBadges: [],
+  dailyGoals: [],
+  settings: {
+    dailyGoal: 10,
+    enabledCategories: ['basics', 'roasting', 'brewing', 'history'],
+    soundEnabled: true,
+    vibrationEnabled: true,
+    showExplanation: true,
+  },
+  stats: {
+    totalQuestions: 0,
+    totalCorrect: 0,
+    totalIncorrect: 0,
+    averageAccuracy: 0,
+    categoryStats: {
+      basics: { total: 0, correct: 0, accuracy: 0, masteredCount: 0 },
+      roasting: { total: 0, correct: 0, accuracy: 0, masteredCount: 0 },
+      brewing: { total: 0, correct: 0, accuracy: 0, masteredCount: 0 },
+      history: { total: 0, correct: 0, accuracy: 0, masteredCount: 0 },
+    },
+    difficultyStats: {
+      beginner: { total: 0, correct: 0, accuracy: 0 },
+      intermediate: { total: 0, correct: 0, accuracy: 0 },
+      advanced: { total: 0, correct: 0, accuracy: 0 },
+    },
+    weeklyActivity: [],
+  },
+  createdAt: '2024-01-01T00:00:00.000Z',
+  updatedAt: '2024-01-01T00:00:00.000Z',
+  ...overrides,
+});
+
 describe('localStorage', () => {
   let localStorageMock: ReturnType<typeof createLocalStorageMock>;
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
@@ -85,11 +146,11 @@ describe('localStorage', () => {
 
   describe('ローストタイマー状態', () => {
     it('タイマー状態を保存できる（バージョニング付き）', () => {
-      const state: RoastTimerState = {
-        isRunning: true,
-        startTime: 1234567890,
-        elapsedSeconds: 60,
-      };
+      const state = createRoastTimerState({
+        status: 'running',
+        elapsed: 60,
+        remaining: 120,
+      });
 
       setRoastTimerState(state);
 
@@ -100,11 +161,11 @@ describe('localStorage', () => {
     });
 
     it('バージョニング付きタイマー状態を取得できる', () => {
-      const state: RoastTimerState = {
-        isRunning: false,
-        startTime: 9876543210,
-        elapsedSeconds: 120,
-      };
+      const state = createRoastTimerState({
+        status: 'paused',
+        elapsed: 120,
+        remaining: 60,
+      });
 
       localStorageMock.setItem(
         'roastplus_roast_timer_state',
@@ -116,11 +177,11 @@ describe('localStorage', () => {
     });
 
     it('レガシーデータ（version未設定）を取得できる', () => {
-      const state: RoastTimerState = {
-        isRunning: false,
-        startTime: 9876543210,
-        elapsedSeconds: 120,
-      };
+      const state = createRoastTimerState({
+        status: 'paused',
+        elapsed: 120,
+        remaining: 60,
+      });
 
       localStorageMock.setItem(
         'roastplus_roast_timer_state',
@@ -333,19 +394,20 @@ describe('localStorage', () => {
 
   describe('クイズ進捗 - 基本操作', () => {
     it('クイズ進捗を保存できる', () => {
-      const progress: QuizProgress = {
+      const progress = createQuizProgress({
         userId: 'user-123',
-        totalXP: 1000,
-        level: 5,
-        xpForNextLevel: 500,
-        answeredQuestions: {
-          basics: ['q1', 'q2'],
+        level: {
+          level: 5,
+          currentXP: 500,
+          totalXP: 1000,
+          xpToNextLevel: 500,
         },
-        dailyGoals: [],
-        achievements: [],
-        streakDays: 3,
-        lastActivityDate: '2024-01-15',
-      };
+        streak: {
+          currentStreak: 3,
+          longestStreak: 3,
+          lastActiveDate: '2024-01-15',
+        },
+      });
 
       setQuizProgress(progress);
 
@@ -358,19 +420,20 @@ describe('localStorage', () => {
     });
 
     it('クイズ進捗を取得できる', () => {
-      const progress: QuizProgress = {
+      const progress = createQuizProgress({
         userId: 'user-456',
-        totalXP: 2000,
-        level: 10,
-        xpForNextLevel: 800,
-        answeredQuestions: {
-          intermediate: ['q3', 'q4'],
+        level: {
+          level: 10,
+          currentXP: 1200,
+          totalXP: 2000,
+          xpToNextLevel: 800,
         },
-        dailyGoals: [],
-        achievements: [],
-        streakDays: 7,
-        lastActivityDate: '2024-01-20',
-      };
+        streak: {
+          currentStreak: 7,
+          longestStreak: 7,
+          lastActiveDate: '2024-01-20',
+        },
+      });
 
       const stored = {
         version: 1,
@@ -419,19 +482,24 @@ describe('localStorage', () => {
 
   describe('クイズ進捗 - エクスポート', () => {
     it('クイズ進捗をエクスポートできる', () => {
-      const progress: QuizProgress = {
+      const progress = createQuizProgress({
         userId: 'user-789',
-        totalXP: 3000,
-        level: 15,
-        xpForNextLevel: 1000,
-        answeredQuestions: {
-          advanced: ['q5', 'q6'],
+        level: {
+          level: 15,
+          currentXP: 2000,
+          totalXP: 3000,
+          xpToNextLevel: 1000,
         },
-        dailyGoals: [],
-        achievements: ['first_quiz', 'streak_7'],
-        streakDays: 14,
-        lastActivityDate: '2024-01-25',
-      };
+        earnedBadges: [
+          { type: 'first-quiz', earnedAt: '2024-01-10T00:00:00.000Z' },
+          { type: 'streak-7', earnedAt: '2024-01-20T00:00:00.000Z' },
+        ],
+        streak: {
+          currentStreak: 14,
+          longestStreak: 14,
+          lastActiveDate: '2024-01-25',
+        },
+      });
 
       setQuizProgress(progress);
 
@@ -450,17 +518,15 @@ describe('localStorage', () => {
     });
 
     it('エクスポートされたJSONは整形されている（インデント付き）', () => {
-      const progress: QuizProgress = {
+      const progress = createQuizProgress({
         userId: 'user-test',
-        totalXP: 100,
-        level: 1,
-        xpForNextLevel: 50,
-        answeredQuestions: {},
-        dailyGoals: [],
-        achievements: [],
-        streakDays: 0,
-        lastActivityDate: '2024-01-01',
-      };
+        level: {
+          level: 1,
+          currentXP: 50,
+          totalXP: 100,
+          xpToNextLevel: 50,
+        },
+      });
 
       setQuizProgress(progress);
 
@@ -472,20 +538,21 @@ describe('localStorage', () => {
 
   describe('クイズ進捗 - インポート', () => {
     it('有効なJSONをインポートできる', () => {
-      const progress: QuizProgress = {
+      const progress = createQuizProgress({
         userId: 'user-import',
-        totalXP: 5000,
-        level: 20,
-        xpForNextLevel: 1500,
-        answeredQuestions: {
-          basics: ['q1', 'q2'],
-          intermediate: ['q3'],
+        level: {
+          level: 20,
+          currentXP: 3500,
+          totalXP: 5000,
+          xpToNextLevel: 1500,
         },
-        dailyGoals: [],
-        achievements: ['master'],
-        streakDays: 30,
-        lastActivityDate: '2024-02-01',
-      };
+        earnedBadges: [{ type: 'master-basics', earnedAt: '2024-02-01T00:00:00.000Z' }],
+        streak: {
+          currentStreak: 30,
+          longestStreak: 30,
+          lastActiveDate: '2024-02-01',
+        },
+      });
 
       const exportedData = {
         exportedAt: new Date().toISOString(),
@@ -562,36 +629,35 @@ describe('localStorage', () => {
     });
 
     it('タイマーを開始して状態を保存（バージョニング経由）', () => {
-      const state: RoastTimerState = {
-        isRunning: true,
-        startTime: Date.now(),
-        elapsedSeconds: 0,
-      };
+      const state = createRoastTimerState({
+        status: 'running',
+        startedAt: new Date().toISOString(),
+      });
 
       setRoastTimerState(state);
       const retrieved = getRoastTimerState();
 
-      expect(retrieved?.isRunning).toBe(true);
-      expect(retrieved?.elapsedSeconds).toBe(0);
+      expect(retrieved?.status).toBe('running');
+      expect(retrieved?.elapsed).toBe(0);
     });
 
     it('クイズ進捗をエクスポートして別端末でインポート', () => {
       // 端末Aでエクスポート
-      const progressA: QuizProgress = {
+      const progressA = createQuizProgress({
         userId: 'user-cross-device',
-        totalXP: 10000,
-        level: 50,
-        xpForNextLevel: 5000,
-        answeredQuestions: {
-          basics: ['q1', 'q2', 'q3'],
-          intermediate: ['q4', 'q5'],
-          advanced: ['q6'],
+        level: {
+          level: 50,
+          currentXP: 5000,
+          totalXP: 10000,
+          xpToNextLevel: 5000,
         },
-        dailyGoals: [],
-        achievements: ['legend'],
-        streakDays: 100,
-        lastActivityDate: '2024-02-05',
-      };
+        earnedBadges: [{ type: 'streak-100', earnedAt: '2024-02-05T00:00:00.000Z' }],
+        streak: {
+          currentStreak: 100,
+          longestStreak: 100,
+          lastActiveDate: '2024-02-05',
+        },
+      });
 
       setQuizProgress(progressA);
       const exported = exportQuizProgress();
