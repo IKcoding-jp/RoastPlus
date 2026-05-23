@@ -66,6 +66,7 @@ remotion/
 
 # Firebase
 .firebase/
+firestore-debug.log
 
 # Temp files from PR creation
 .tmp-pr-body.md
