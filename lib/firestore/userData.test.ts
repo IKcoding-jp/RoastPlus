@@ -137,16 +137,39 @@ describe('getUserData workProgresses split compatibility', () => {
 
     expect(result.workProgresses).toEqual([]);
   });
+
+  it('分離状態の読み込みに失敗した場合はroot workProgressesへfallbackする', async () => {
+    const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    firestoreMocks.getDoc
+      .mockResolvedValueOnce(docSnapshot(baseAppData({ workProgresses: [rootWorkProgress] }) as unknown as Record<string, unknown>))
+      .mockResolvedValueOnce(docSnapshot(undefined));
+    firestoreMocks.getDocs.mockRejectedValueOnce(new Error('permission denied'));
+
+    const { getUserData } = await import('./userData/crud');
+
+    const result = await getUserData('user-1');
+
+    expect(result.workProgresses).toEqual([rootWorkProgress]);
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      'Failed to load split workProgresses. Falling back to root workProgresses:',
+      expect.any(Error)
+    );
+
+    consoleWarnSpy.mockRestore();
+  });
 });
 
 describe('subscribeUserData workProgresses split merge', () => {
   const snapshotHandlers = new Map<string, (snapshot: unknown) => void>();
+  const errorHandlers = new Map<string, (error: Error) => void>();
 
   beforeEach(() => {
     vi.clearAllMocks();
     snapshotHandlers.clear();
-    firestoreMocks.onSnapshot.mockImplementation((ref, next) => {
+    errorHandlers.clear();
+    firestoreMocks.onSnapshot.mockImplementation((ref, next, error) => {
       snapshotHandlers.set(ref.path, next);
+      errorHandlers.set(ref.path, error);
       return firestoreMocks.unsubscribe;
     });
   });
@@ -198,5 +221,27 @@ describe('subscribeUserData workProgresses split merge', () => {
     snapshotHandlers.get('users/user-1/workProgresses')?.(querySnapshot([]));
 
     expect(received.at(-1)?.workProgresses).toEqual([]);
+  });
+
+  it('workProgresses購読が失敗してもroot docの購読結果をemitする', async () => {
+    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const received: AppData[] = [];
+    const { subscribeUserData } = await import('./userData/crud');
+
+    subscribeUserData('user-1', (data) => received.push(data));
+
+    snapshotHandlers.get('users/user-1')?.(
+      docSnapshot(baseAppData({
+        encouragementCount: 4,
+        workProgresses: [rootWorkProgress],
+      }) as unknown as Record<string, unknown>)
+    );
+    snapshotHandlers.get('users/user-1/_meta/dataSplits')?.(docSnapshot(undefined));
+    errorHandlers.get('users/user-1/workProgresses')?.(new Error('permission denied'));
+
+    expect(received.at(-1)?.encouragementCount).toBe(4);
+    expect(received.at(-1)?.workProgresses).toEqual([rootWorkProgress]);
+
+    consoleErrorSpy.mockRestore();
   });
 });

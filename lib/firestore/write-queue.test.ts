@@ -105,7 +105,7 @@ function rootWritePayloads() {
 }
 
 async function flushSaveTimers(debounceMs: number) {
-  await vi.advanceTimersByTimeAsync(debounceMs + 1_000);
+  await vi.advanceTimersByTimeAsync(debounceMs + 10_000);
 }
 
 describe('saveUserData workProgresses split writes', () => {
@@ -130,7 +130,7 @@ describe('saveUserData workProgresses split writes', () => {
     const savePromise = saveUserData('user-1', appData({
       encouragementCount: 3,
       workProgresses: [keepProgress],
-    }));
+    }), { syncWorkProgresses: true });
 
     await flushSaveTimers(SAVE_USER_DATA_DEBOUNCE_MS);
     await savePromise;
@@ -141,8 +141,7 @@ describe('saveUserData workProgresses split writes', () => {
 
     expect(firestoreMocks.batch.set).toHaveBeenCalledWith(
       expect.objectContaining({ path: 'users/user-1/workProgresses/wp-keep' }),
-      expect.objectContaining({ id: 'wp-keep', taskName: '残す進捗' }),
-      { merge: true }
+      expect.objectContaining({ id: 'wp-keep', taskName: '残す進捗' })
     );
     expect(firestoreMocks.batch.set).toHaveBeenCalledWith(
       expect.objectContaining({ path: 'users/user-1/_meta/dataSplits' }),
@@ -154,7 +153,7 @@ describe('saveUserData workProgresses split writes', () => {
   it('既存root workProgressesを意図せず削除する書き込みをrootへ送らない', async () => {
     const { saveUserData, SAVE_USER_DATA_DEBOUNCE_MS } = await import('./userData');
 
-    const savePromise = saveUserData('user-1', appData({ workProgresses: [] }));
+    const savePromise = saveUserData('user-1', appData({ workProgresses: [] }), { syncWorkProgresses: true });
 
     await flushSaveTimers(SAVE_USER_DATA_DEBOUNCE_MS);
     await savePromise;
@@ -168,7 +167,7 @@ describe('saveUserData workProgresses split writes', () => {
 
     const { saveUserData, SAVE_USER_DATA_DEBOUNCE_MS } = await import('./userData');
 
-    const savePromise = saveUserData('user-1', appData({ workProgresses: [keepProgress] }));
+    const savePromise = saveUserData('user-1', appData({ workProgresses: [keepProgress] }), { syncWorkProgresses: true });
 
     await flushSaveTimers(SAVE_USER_DATA_DEBOUNCE_MS);
     await savePromise;
@@ -195,5 +194,67 @@ describe('saveUserData workProgresses split writes', () => {
     expect(rootWritePayloads()[0]).toMatchObject({
       todaySchedules: [{ id: 'today-1', date: '2026-05-24', timeLabels: [] }],
     });
+  });
+
+  it('workProgresses未変更の保存ではサブコレクションを読み書きしない', async () => {
+    const { saveUserData, SAVE_USER_DATA_DEBOUNCE_MS } = await import('./userData');
+
+    const savePromise = saveUserData('user-1', appData({
+      encouragementCount: 8,
+      workProgresses: [keepProgress],
+    }));
+
+    await flushSaveTimers(SAVE_USER_DATA_DEBOUNCE_MS);
+    await savePromise;
+
+    expect(rootWritePayloads()[0]).toMatchObject({ encouragementCount: 8 });
+    expect(rootWritePayloads()[0]).not.toHaveProperty('workProgresses');
+    expect(firestoreMocks.getDocs).not.toHaveBeenCalled();
+    expect(firestoreMocks.batch.set).not.toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'users/user-1/workProgresses/wp-keep' }),
+      expect.anything(),
+      expect.anything()
+    );
+  });
+
+  it('既存サブコレクションdocと同じworkProgressは再setしない', async () => {
+    firestoreMocks.getDocs.mockResolvedValueOnce(querySnapshot([keepProgress]));
+    const { saveUserData, SAVE_USER_DATA_DEBOUNCE_MS } = await import('./userData');
+
+    const savePromise = saveUserData('user-1', appData({ workProgresses: [keepProgress] }), { syncWorkProgresses: true });
+
+    await flushSaveTimers(SAVE_USER_DATA_DEBOUNCE_MS);
+    await savePromise;
+
+    expect(firestoreMocks.batch.set).not.toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'users/user-1/workProgresses/wp-keep' }),
+      expect.anything(),
+      expect.anything()
+    );
+  });
+
+  it('workProgress docはmergeではなく置換し、消えたフィールドを残さない', async () => {
+    const existingProgress: WorkProgress = {
+      ...keepProgress,
+      targetAmount: 10,
+      currentAmount: 4,
+      progressHistory: [{ id: 'history-1', date: '2026-05-21T00:00:00.000Z', amount: 4 }],
+    };
+    firestoreMocks.getDocs.mockResolvedValueOnce(querySnapshot([existingProgress]));
+    const { saveUserData, SAVE_USER_DATA_DEBOUNCE_MS } = await import('./userData');
+
+    const savePromise = saveUserData('user-1', appData({ workProgresses: [keepProgress] }), { syncWorkProgresses: true });
+
+    await flushSaveTimers(SAVE_USER_DATA_DEBOUNCE_MS);
+    await savePromise;
+
+    expect(firestoreMocks.batch.set).toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'users/user-1/workProgresses/wp-keep' }),
+      expect.not.objectContaining({
+        targetAmount: expect.anything(),
+        currentAmount: expect.anything(),
+        progressHistory: expect.anything(),
+      })
+    );
   });
 });

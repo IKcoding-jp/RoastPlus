@@ -7,6 +7,7 @@ import {
   getDocs,
   writeBatch,
   type FieldValue,
+  type WriteBatch,
 } from 'firebase/firestore';
 import { getDb, getUserDocRef, removeUndefinedFields } from '../common';
 import {
@@ -21,11 +22,16 @@ export const SAVE_USER_DATA_DEBOUNCE_MS = 300;
 // ユーザーごとの書き込みキューとリトライ管理
 export const writeQueues = new Map<string, {
   pendingData: AppData | null;
+  pendingOptions: SaveUserDataOptions | null;
   timeoutId: ReturnType<typeof setTimeout> | null;
   isWriting: boolean;
   retryCount: number;
   pendingPromise: { resolve: () => void; reject: (error: unknown) => void } | null;
 }>();
+
+export interface SaveUserDataOptions {
+  syncWorkProgresses?: boolean;
+}
 
 // 最大リトライ回数
 const MAX_RETRY_COUNT = 3;
@@ -43,6 +49,8 @@ const MAX_QUEUE_SIZE = 20;
 // 書き込み間隔の最小時間（ミリ秒）
 const MIN_WRITE_INTERVAL = 200;
 let lastWriteTime = 0;
+
+const MAX_BATCH_OPERATIONS = 450;
 
 /**
  * 書き込みスロットを取得する。利用可能なスロットがない場合は待機キューに追加する。
@@ -80,38 +88,95 @@ function removeRootWorkProgresses(data: Record<string, unknown>): Record<string,
   return rootData;
 }
 
+function stableStringify(value: unknown): string {
+  if (Array.isArray(value)) {
+    return `[${value.map((item) => stableStringify(item)).join(',')}]`;
+  }
+
+  if (value && typeof value === 'object') {
+    const entries = Object.entries(value as Record<string, unknown>)
+      .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
+      .map(([key, entryValue]) => `${JSON.stringify(key)}:${stableStringify(entryValue)}`);
+    return `{${entries.join(',')}}`;
+  }
+
+  return JSON.stringify(value);
+}
+
+function areFirestorePayloadsEqual(a: Record<string, unknown>, b: Record<string, unknown>): boolean {
+  return stableStringify(a) === stableStringify(b);
+}
+
+function createBatchWriter(): {
+  add: (operation: (batch: WriteBatch) => void) => void;
+  commit: () => Promise<void>;
+} {
+  const batches: WriteBatch[] = [writeBatch(getDb())];
+  let operationCount = 0;
+
+  return {
+    add: (operation) => {
+      if (operationCount >= MAX_BATCH_OPERATIONS) {
+        batches.push(writeBatch(getDb()));
+        operationCount = 0;
+      }
+      operation(batches[batches.length - 1]);
+      operationCount += 1;
+    },
+    commit: async () => {
+      for (const batch of batches) {
+        await batch.commit();
+      }
+    },
+  };
+}
+
 async function applyWorkProgressSplitWrites(
   userId: string,
-  batch: ReturnType<typeof writeBatch>,
+  batchWriter: ReturnType<typeof createBatchWriter>,
   workProgresses: WorkProgress[]
 ): Promise<void> {
   const workProgressesCollectionRef = getWorkProgressesCollectionRef(userId);
   const existingSnapshot = await getDocs(workProgressesCollectionRef);
   const nextIds = new Set(workProgresses.map((workProgress) => workProgress.id));
+  const existingById = new Map(
+    existingSnapshot.docs.map((docSnapshot) => [
+      docSnapshot.id,
+      removeUndefinedFields({
+        ...docSnapshot.data(),
+        id: typeof docSnapshot.data().id === 'string' ? docSnapshot.data().id : docSnapshot.id,
+      }) as Record<string, unknown>,
+    ])
+  );
 
   existingSnapshot.docs.forEach((docSnapshot) => {
     if (!nextIds.has(docSnapshot.id)) {
-      batch.delete(docSnapshot.ref);
+      batchWriter.add((batch) => batch.delete(docSnapshot.ref));
     }
   });
 
   workProgresses.forEach((workProgress) => {
     const cleanedWorkProgress = removeUndefinedFields(workProgress) as unknown as Record<string, unknown>;
-    batch.set(doc(workProgressesCollectionRef, workProgress.id), cleanedWorkProgress, { merge: true });
+    const existingWorkProgress = existingById.get(workProgress.id);
+    if (!existingWorkProgress || !areFirestorePayloadsEqual(existingWorkProgress, cleanedWorkProgress)) {
+      batchWriter.add((batch) => batch.set(doc(workProgressesCollectionRef, workProgress.id), cleanedWorkProgress));
+    }
   });
 
-  batch.set(
-    getDataSplitsDocRef(userId),
-    {
-      workProgressesMigrated: true,
-      workProgressesMigratedAt: new Date().toISOString(),
-    },
-    { merge: true }
+  batchWriter.add((batch) =>
+    batch.set(
+      getDataSplitsDocRef(userId),
+      {
+        workProgressesMigrated: true,
+        workProgressesMigratedAt: new Date().toISOString(),
+      },
+      { merge: true }
+    )
   );
 }
 
 // 実際の書き込み処理を行う関数
-async function performWrite(userId: string, data: AppData): Promise<void> {
+async function performWrite(userId: string, data: AppData, options: SaveUserDataOptions): Promise<void> {
   await acquireWriteSlot();
 
   try {
@@ -162,17 +227,24 @@ async function performWrite(userId: string, data: AppData): Promise<void> {
       cleanedData.roastTimerState = deleteField();
     }
 
-    const batch = writeBatch(getDb());
-    batch.set(userDocRef, removeRootWorkProgresses(cleanedData), { merge: true });
-    await applyWorkProgressSplitWrites(userId, batch, data.workProgresses);
-    await batch.commit();
+    const batchWriter = createBatchWriter();
+    batchWriter.add((batch) => batch.set(userDocRef, removeRootWorkProgresses(cleanedData), { merge: true }));
+    if (options.syncWorkProgresses === true) {
+      await applyWorkProgressSplitWrites(userId, batchWriter, data.workProgresses);
+    }
+    await batchWriter.commit();
   } finally {
     releaseWriteSlot();
   }
 }
 
 // 書き込みキューを実行し、リトライ処理を行う
-export async function executeWrite(userId: string, data: AppData, hasWaitedForQueue = false): Promise<void> {
+export async function executeWrite(
+  userId: string,
+  data: AppData,
+  options: SaveUserDataOptions = {},
+  hasWaitedForQueue = false
+): Promise<void> {
   const queue = writeQueues.get(userId);
   if (!queue) {
     throw new Error('Write queue not found');
@@ -186,7 +258,7 @@ export async function executeWrite(userId: string, data: AppData, hasWaitedForQu
       const refreshedQueuedWrites = writeWaitQueue.length + activeWriteCount;
       if (refreshedQueuedWrites >= MAX_QUEUE_SIZE) {
         console.warn(`Firestore write queue still saturated (${refreshedQueuedWrites}/${MAX_QUEUE_SIZE}) after extended wait, retrying once...`);
-        await executeWrite(userId, data, true);
+        await executeWrite(userId, data, options, true);
         return;
       }
     } else {
@@ -200,7 +272,7 @@ export async function executeWrite(userId: string, data: AppData, hasWaitedForQu
 
   while (queue.retryCount <= MAX_RETRY_COUNT) {
     try {
-      await performWrite(userId, data);
+      await performWrite(userId, data, options);
       queue.isWriting = false;
       queue.retryCount = 0;
 
@@ -210,10 +282,13 @@ export async function executeWrite(userId: string, data: AppData, hasWaitedForQu
 
       if (queue.pendingData) {
         const nextData = queue.pendingData;
+        const nextOptions = queue.pendingOptions ?? {};
         queue.pendingData = null;
-        await executeWrite(userId, nextData);
+        queue.pendingOptions = null;
+        await executeWrite(userId, nextData, nextOptions);
       } else {
         queue.pendingData = null;
+        queue.pendingOptions = null;
         queue.pendingPromise = null;
       }
 
