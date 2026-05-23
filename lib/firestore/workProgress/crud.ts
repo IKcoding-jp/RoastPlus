@@ -50,6 +50,8 @@ export async function addWorkProgress(
   await saveUserData(userId, {
     ...appData,
     workProgresses: updatedWorkProgresses,
+  }, {
+    syncWorkProgresses: true,
   });
 }
 
@@ -113,6 +115,8 @@ export async function updateWorkProgress(
   await saveUserData(userId, {
     ...appData,
     workProgresses: updatedWorkProgresses,
+  }, {
+    syncWorkProgresses: true,
   });
 }
 
@@ -181,6 +185,8 @@ export async function updateWorkProgresses(
     await saveUserData(userId, {
       ...appData,
       workProgresses: updatedWorkProgresses,
+    }, {
+      syncWorkProgresses: true,
     });
   }
 }
@@ -203,5 +209,7 @@ export async function deleteWorkProgress(
   await saveUserData(userId, {
     ...appData,
     workProgresses: updatedWorkProgresses,
+  }, {
+    syncWorkProgresses: true,
   });
 }

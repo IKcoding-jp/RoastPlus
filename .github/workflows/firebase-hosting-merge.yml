@@ -13,6 +13,11 @@ on:
         required: true
         type: boolean
         default: false
+      deploy_firestore_rules:
+        description: "Deploy Firestore Rules"
+        required: true
+        type: boolean
+        default: false
   pull_request:
     types: [closed]
     branches:
@@ -37,6 +42,7 @@ jobs:
     outputs:
       hosting_changed: ${{ steps.filter.outputs.hosting_changed }}
       functions_changed: ${{ steps.filter.outputs.functions_changed }}
+      firestore_rules_changed: ${{ steps.filter.outputs.firestore_rules_changed }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -47,6 +53,7 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "hosting_changed=${{ inputs.deploy_hosting }}" >> "$GITHUB_OUTPUT"
             echo "functions_changed=${{ inputs.deploy_functions }}" >> "$GITHUB_OUTPUT"
+            echo "firestore_rules_changed=${{ inputs.deploy_firestore_rules }}" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -72,10 +79,34 @@ jobs:
             echo "functions_changed=false" >> "$GITHUB_OUTPUT"
           fi
 
-  build_and_deploy:
-    if: needs.detect_changes.outputs.hosting_changed == 'true'
+          if echo "$changed_files" | grep -Eq '^firestore\.rules$'; then
+            echo "firestore_rules_changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "firestore_rules_changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  deploy_firestore_rules:
+    name: Deploy Firestore Rules
+    if: needs.detect_changes.outputs.firestore_rules_changed == 'true'
     runs-on: ubuntu-latest
     needs: detect_changes
+    steps:
+      - uses: actions/checkout@v6
+      - name: Deploy Firestore Rules
+        uses: w9jds/firebase-action@v15.10.0
+        with:
+          args: deploy --only firestore:rules
+        env:
+          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ROASTPLUS_72FA6 }}
+          PROJECT_ID: roastplus-72fa6
+
+  build_and_deploy:
+    if: >
+      always() &&
+      needs.detect_changes.outputs.hosting_changed == 'true' &&
+      (needs.deploy_firestore_rules.result == 'success' || needs.deploy_firestore_rules.result == 'skipped')
+    runs-on: ubuntu-latest
+    needs: [detect_changes, deploy_firestore_rules]
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6

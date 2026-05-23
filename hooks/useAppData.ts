@@ -281,7 +281,9 @@ export function useAppData() {
       let saveError: unknown = null;
 
       try {
-        await saveUserData(user.uid, normalizedData);
+        await saveUserData(user.uid, normalizedData, {
+          syncWorkProgresses: mutatedKeys.includes('workProgresses'),
+        });
       } catch (error) {
         saveError = error;
         console.error('Failed to save data:', error);
