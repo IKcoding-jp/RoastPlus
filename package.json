@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
+    "test:rules": "tsx scripts/run-rules-tests.ts",
     "test:coverage": "vitest run --coverage",
     "generate:sound-list": "tsx scripts/generate-sound-list.ts",
     "prepare": "husky",
@@ -51,6 +52,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.1",
+    "@firebase/rules-unit-testing": "^5.0.1",
     "@playwright/test": "^1.58.2",
     "@remotion/cli": "^4.0.435",
     "@remotion/google-fonts": "^4.0.435",
