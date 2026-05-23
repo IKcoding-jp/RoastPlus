@@ -13,65 +13,103 @@ import {
 } from './questions';
 import type { QuizQuestion, QuizCard } from './types';
 
+interface QuizQuestionFixture extends Omit<QuizQuestion, 'options' | 'explanation'> {
+  options: string[];
+  correctAnswer: number;
+  explanation?: string;
+}
+
+function createQuestion({
+  options,
+  correctAnswer,
+  explanation = 'テスト解説',
+  ...question
+}: QuizQuestionFixture): QuizQuestion {
+  return {
+    ...question,
+    explanation,
+    options: options.map((text, index) => ({
+      id: `${question.id}-option-${index}`,
+      text,
+      isCorrect: index === correctAnswer,
+    })),
+  };
+}
+
+function createQuizCardFixture(questionId: string, stability = 30): QuizCard {
+  return {
+    questionId,
+    stability,
+    due: new Date(),
+    difficulty: 0,
+    elapsed_days: 0,
+    scheduled_days: 0,
+    learning_steps: 0,
+    reps: 1,
+    lapses: 0,
+    state: 2,
+  };
+}
+
 // モックデータ
 const mockBasicsQuestions: QuizQuestion[] = [
-  {
+  createQuestion({
     id: 'b1',
     question: 'コーヒーの原産国は？',
     options: ['エチオピア', 'ブラジル', 'コロンビア', 'ベトナム'],
     correctAnswer: 0,
     category: 'basics',
     difficulty: 'beginner',
-  },
-  {
+  }),
+  createQuestion({
     id: 'b2',
     question: 'アラビカ種の特徴は？',
     options: ['酸味が強い', '苦味が強い', 'カフェインが多い', '病害虫に強い'],
     correctAnswer: 0,
     category: 'basics',
     difficulty: 'intermediate',
-  },
+  }),
 ];
 
 const mockRoastingQuestions: QuizQuestion[] = [
-  {
+  createQuestion({
     id: 'r1',
     question: '1ハゼが起こる温度は？',
     options: ['約150℃', '約180℃', '約200℃', '約220℃'],
     correctAnswer: 2,
     category: 'roasting',
     difficulty: 'intermediate',
-  },
-  {
+  }),
+  createQuestion({
     id: 'r2',
     question: 'シナモンローストの焙煎度は？',
     options: ['浅煎り', '中煎り', '中深煎り', '深煎り'],
     correctAnswer: 0,
     category: 'roasting',
     difficulty: 'beginner',
-  },
+  }),
 ];
 
 const mockBrewingQuestions: QuizQuestion[] = [
-  {
+  createQuestion({
     id: 'br1',
     question: '適正なドリップ温度は？',
     options: ['70-80℃', '80-90℃', '90-96℃', '100℃'],
     correctAnswer: 2,
     category: 'brewing',
     difficulty: 'beginner',
-  },
+  }),
 ];
 
 const mockHistoryQuestions: QuizQuestion[] = [
-  {
+  createQuestion({
     id: 'h1',
     question: 'コーヒーが発見された世紀は？',
     options: ['6世紀', '9世紀', '12世紀', '15世紀'],
     correctAnswer: 1,
     category: 'history',
     difficulty: 'advanced',
-  },
+  }),
 ];
 
 // fetchのモック設定
@@ -390,17 +428,7 @@ describe('questions', () => {
 
     it('マスター済み問題よりも未マスター問題を優先する', async () => {
       const mockCards: QuizCard[] = [
-        {
-          questionId: 'b1',
-          stability: 25, // mastery = 83% (>= 67%)
-          due: new Date(),
-          difficulty: 0,
-          elapsedDays: 0,
-          scheduledDays: 0,
-          reps: 1,
-          lapses: 0,
-          state: 2,
-        },
+        createQuizCardFixture('b1', 25), // mastery = 83% (>= 67%)
       ];
 
       // 3問だけ取得（b1以外が優先されるべき）
@@ -413,12 +441,12 @@ describe('questions', () => {
     it('未マスター問題が不足する場合はマスター問題から補充', async () => {
       // 全問題をマスター済みに
       const mockCards: QuizCard[] = [
-        { questionId: 'b1', stability: 30, due: new Date(), difficulty: 0, elapsedDays: 0, scheduledDays: 0, reps: 1, lapses: 0, state: 2 },
-        { questionId: 'b2', stability: 30, due: new Date(), difficulty: 0, elapsedDays: 0, scheduledDays: 0, reps: 1, lapses: 0, state: 2 },
-        { questionId: 'r1', stability: 30, due: new Date(), difficulty: 0, elapsedDays: 0, scheduledDays: 0, reps: 1, lapses: 0, state: 2 },
-        { questionId: 'r2', stability: 30, due: new Date(), difficulty: 0, elapsedDays: 0, scheduledDays: 0, reps: 1, lapses: 0, state: 2 },
-        { questionId: 'br1', stability: 30, due: new Date(), difficulty: 0, elapsedDays: 0, scheduledDays: 0, reps: 1, lapses: 0, state: 2 },
-        { questionId: 'h1', stability: 30, due: new Date(), difficulty: 0, elapsedDays: 0, scheduledDays: 0, reps: 1, lapses: 0, state: 2 },
+        createQuizCardFixture('b1'),
+        createQuizCardFixture('b2'),
+        createQuizCardFixture('r1'),
+        createQuizCardFixture('r2'),
+        createQuizCardFixture('br1'),
+        createQuizCardFixture('h1'),
       ];
 
       const questions = await getDailyQuestions(3, undefined, mockCards);
@@ -433,14 +461,14 @@ describe('questions', () => {
   // ========================================
   describe('shuffleOptions', () => {
     it('選択肢の数は変わらない', () => {
-      const question: QuizQuestion = {
+      const question = createQuestion({
         id: 'test',
         question: 'Test?',
         options: ['A', 'B', 'C', 'D'],
         correctAnswer: 0,
         category: 'basics',
         difficulty: 'beginner',
-      };
+      });
 
       const shuffled = shuffleOptions(question);
 
@@ -448,14 +476,14 @@ describe('questions', () => {
     });
 
     it('元の問題オブジェクトを変更しない', () => {
-      const question: QuizQuestion = {
+      const question = createQuestion({
         id: 'test',
         question: 'Test?',
         options: ['A', 'B', 'C', 'D'],
         correctAnswer: 0,
         category: 'basics',
         difficulty: 'beginner',
-      };
+      });
 
       const originalOptions = [...question.options];
       shuffleOptions(question);
@@ -464,32 +492,33 @@ describe('questions', () => {
     });
 
     it('すべての選択肢が含まれる', () => {
-      const question: QuizQuestion = {
+      const question = createQuestion({
         id: 'test',
         question: 'Test?',
         options: ['A', 'B', 'C', 'D'],
         correctAnswer: 0,
         category: 'basics',
         difficulty: 'beginner',
-      };
+      });
 
       const shuffled = shuffleOptions(question);
+      const shuffledOptionTexts = shuffled.options.map((option) => option.text);
 
-      expect(shuffled.options).toContain('A');
-      expect(shuffled.options).toContain('B');
-      expect(shuffled.options).toContain('C');
-      expect(shuffled.options).toContain('D');
+      expect(shuffledOptionTexts).toContain('A');
+      expect(shuffledOptionTexts).toContain('B');
+      expect(shuffledOptionTexts).toContain('C');
+      expect(shuffledOptionTexts).toContain('D');
     });
 
     it('他のプロパティは変更されない', () => {
-      const question: QuizQuestion = {
+      const question = createQuestion({
         id: 'test',
         question: 'Test?',
         options: ['A', 'B', 'C', 'D'],
         correctAnswer: 0,
         category: 'basics',
         difficulty: 'beginner',
-      };
+      });
 
       const shuffled = shuffleOptions(question);
 

@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
+import { State } from 'ts-fsrs';
 import { useQuizData } from './useQuizData';
 import type { AnswerResult } from './useQuizData';
-import type { QuizProgress, QuizCard, QuizQuestion } from '@/types';
+import type { QuizProgress, QuizCard, QuizQuestion } from '@/lib/coffee-quiz/types';
 
 // モックデータを定義
 const mockQuestions: QuizQuestion[] = [
@@ -15,6 +16,7 @@ const mockQuestions: QuizQuestion[] = [
       { id: 'opt1', text: '正解', isCorrect: true },
       { id: 'opt2', text: '不正解', isCorrect: false },
     ],
+    explanation: 'テスト解説1',
   },
   {
     id: 'q2',
@@ -25,72 +27,97 @@ const mockQuestions: QuizQuestion[] = [
       { id: 'opt3', text: '正解', isCorrect: true },
       { id: 'opt4', text: '不正解', isCorrect: false },
     ],
+    explanation: 'テスト解説2',
   },
 ];
 
-const mockInitialProgress: QuizProgress = {
+const createMockProgress = (
+  overrides: Partial<QuizProgress> = {}
+): QuizProgress => ({
   userId: 'local',
   cards: [],
   checkmarks: [],
   streak: {
     currentStreak: 0,
     longestStreak: 0,
-    lastStudyDate: null,
+    lastActiveDate: '',
   },
   level: {
-    currentLevel: 1,
+    level: 1,
     currentXP: 0,
-    xpToNextLevel: 100,
+    totalXP: 0,
+    xpToNextLevel: 50,
   },
   earnedBadges: [],
   dailyGoals: [],
   settings: {
     dailyGoal: 10,
-    notificationsEnabled: false,
+    enabledCategories: ['basics', 'roasting', 'brewing', 'history'],
+    soundEnabled: true,
+    vibrationEnabled: true,
+    showExplanation: true,
   },
   stats: {
-    totalAnswered: 0,
+    totalQuestions: 0,
     totalCorrect: 0,
     totalIncorrect: 0,
-    masteredQuestions: 0,
+    averageAccuracy: 0,
     categoryStats: {
-      basics: { answered: 0, correct: 0, incorrect: 0 },
-      roasting: { answered: 0, correct: 0, incorrect: 0 },
-      brewing: { answered: 0, correct: 0, incorrect: 0 },
-      history: { answered: 0, correct: 0, incorrect: 0 },
+      basics: { total: 0, correct: 0, accuracy: 0, masteredCount: 0 },
+      roasting: { total: 0, correct: 0, accuracy: 0, masteredCount: 0 },
+      brewing: { total: 0, correct: 0, accuracy: 0, masteredCount: 0 },
+      history: { total: 0, correct: 0, accuracy: 0, masteredCount: 0 },
     },
     difficultyStats: {
-      beginner: { answered: 0, correct: 0, incorrect: 0 },
-      intermediate: { answered: 0, correct: 0, incorrect: 0 },
-      advanced: { answered: 0, correct: 0, incorrect: 0 },
+      beginner: { total: 0, correct: 0, accuracy: 0 },
+      intermediate: { total: 0, correct: 0, accuracy: 0 },
+      advanced: { total: 0, correct: 0, accuracy: 0 },
     },
     weeklyActivity: [],
-    byCategory: {
-      basics: { answered: 0, correct: 0, incorrect: 0 },
-      roasting: { answered: 0, correct: 0, incorrect: 0 },
-      brewing: { answered: 0, correct: 0, incorrect: 0 },
-      history: { answered: 0, correct: 0, incorrect: 0 },
-    },
-    byDifficulty: {
-      beginner: { answered: 0, correct: 0, incorrect: 0 },
-      intermediate: { answered: 0, correct: 0, incorrect: 0 },
-      advanced: { answered: 0, correct: 0, incorrect: 0 },
-    },
   },
   createdAt: '2024-02-05T00:00:00.000Z',
   updatedAt: '2024-02-05T00:00:00.000Z',
-};
+  ...overrides,
+});
+
+const mockInitialProgress: QuizProgress = createMockProgress();
 
 const mockCard: QuizCard = {
   questionId: 'q1',
-  state: {
-    stability: 1,
-    difficulty: 5,
-  },
-  due: new Date('2024-02-06T00:00:00.000Z').toISOString(),
-  lastReview: new Date('2024-02-05T00:00:00.000Z').toISOString(),
+  due: new Date('2024-02-06T00:00:00.000Z'),
+  stability: 1,
+  difficulty: 5,
+  elapsed_days: 0,
+  scheduled_days: 0,
+  learning_steps: 0,
+  reps: 0,
+  lapses: 0,
+  state: State.New,
+  last_review: new Date('2024-02-05T00:00:00.000Z'),
+  lastReviewedAt: '2024-02-05T00:00:00.000Z',
   hasAnsweredCorrectly: false,
 };
+
+function expectAnswerResult(result: AnswerResult | null): asserts result is AnswerResult {
+  expect(result).not.toBeNull();
+}
+
+async function recordAnswerInAct(
+  recordAnswer: (
+    questionId: string,
+    selectedOptionId: string,
+    responseTimeMs: number
+  ) => Promise<AnswerResult | null>,
+  questionId: string,
+  selectedOptionId: string,
+  responseTimeMs: number
+): Promise<AnswerResult | null> {
+  let recordResult: AnswerResult | null = null;
+  await act(async () => {
+    recordResult = await recordAnswer(questionId, selectedOptionId, responseTimeMs);
+  });
+  return recordResult;
+}
 
 // localStorage モック
 const mockGetQuizProgress = vi.fn();
@@ -126,51 +153,44 @@ const mockEarnBadges = vi.fn();
 const _MOCK_INITIAL_STREAK_INFO = {
   currentStreak: 0,
   longestStreak: 0,
-  lastStudyDate: null,
+  lastActiveDate: '',
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const _MOCK_INITIAL_LEVEL_INFO = {
-  currentLevel: 1,
+  level: 1,
   currentXP: 0,
-  xpToNextLevel: 100,
+  totalXP: 0,
+  xpToNextLevel: 50,
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const _MOCK_DEFAULT_QUIZ_SETTINGS = {
   dailyGoal: 10,
-  notificationsEnabled: false,
+  enabledCategories: ['basics', 'roasting', 'brewing', 'history'],
+  soundEnabled: true,
+  vibrationEnabled: true,
+  showExplanation: true,
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const _MOCK_INITIAL_QUIZ_STATS = {
-  totalAnswered: 0,
+  totalQuestions: 0,
   totalCorrect: 0,
   totalIncorrect: 0,
-  masteredQuestions: 0,
+  averageAccuracy: 0,
   categoryStats: {
-    basics: { answered: 0, correct: 0, incorrect: 0 },
-    roasting: { answered: 0, correct: 0, incorrect: 0 },
-    brewing: { answered: 0, correct: 0, incorrect: 0 },
-    history: { answered: 0, correct: 0, incorrect: 0 },
+    basics: { total: 0, correct: 0, accuracy: 0, masteredCount: 0 },
+    roasting: { total: 0, correct: 0, accuracy: 0, masteredCount: 0 },
+    brewing: { total: 0, correct: 0, accuracy: 0, masteredCount: 0 },
+    history: { total: 0, correct: 0, accuracy: 0, masteredCount: 0 },
   },
   difficultyStats: {
-    beginner: { answered: 0, correct: 0, incorrect: 0 },
-    intermediate: { answered: 0, correct: 0, incorrect: 0 },
-    advanced: { answered: 0, correct: 0, incorrect: 0 },
+    beginner: { total: 0, correct: 0, accuracy: 0 },
+    intermediate: { total: 0, correct: 0, accuracy: 0 },
+    advanced: { total: 0, correct: 0, accuracy: 0 },
   },
   weeklyActivity: [],
-  byCategory: {
-    basics: { answered: 0, correct: 0, incorrect: 0 },
-    roasting: { answered: 0, correct: 0, incorrect: 0 },
-    brewing: { answered: 0, correct: 0, incorrect: 0 },
-    history: { answered: 0, correct: 0, incorrect: 0 },
-  },
-  byDifficulty: {
-    beginner: { answered: 0, correct: 0, incorrect: 0 },
-    intermediate: { answered: 0, correct: 0, incorrect: 0 },
-    advanced: { answered: 0, correct: 0, incorrect: 0 },
-  },
 };
 
 vi.mock('@/lib/localStorage', () => ({
@@ -214,45 +234,38 @@ vi.mock('@/lib/coffee-quiz/types', () => ({
   INITIAL_STREAK_INFO: {
     currentStreak: 0,
     longestStreak: 0,
-    lastStudyDate: null,
+    lastActiveDate: '',
   },
   INITIAL_LEVEL_INFO: {
-    currentLevel: 1,
+    level: 1,
     currentXP: 0,
-    xpToNextLevel: 100,
+    totalXP: 0,
+    xpToNextLevel: 50,
   },
   DEFAULT_QUIZ_SETTINGS: {
     dailyGoal: 10,
-    notificationsEnabled: false,
+    enabledCategories: ['basics', 'roasting', 'brewing', 'history'],
+    soundEnabled: true,
+    vibrationEnabled: true,
+    showExplanation: true,
   },
   INITIAL_QUIZ_STATS: {
-    totalAnswered: 0,
+    totalQuestions: 0,
     totalCorrect: 0,
     totalIncorrect: 0,
-    masteredQuestions: 0,
+    averageAccuracy: 0,
     categoryStats: {
-      basics: { answered: 0, correct: 0, incorrect: 0 },
-      roasting: { answered: 0, correct: 0, incorrect: 0 },
-      brewing: { answered: 0, correct: 0, incorrect: 0 },
-      history: { answered: 0, correct: 0, incorrect: 0 },
+      basics: { total: 0, correct: 0, accuracy: 0, masteredCount: 0 },
+      roasting: { total: 0, correct: 0, accuracy: 0, masteredCount: 0 },
+      brewing: { total: 0, correct: 0, accuracy: 0, masteredCount: 0 },
+      history: { total: 0, correct: 0, accuracy: 0, masteredCount: 0 },
     },
     difficultyStats: {
-      beginner: { answered: 0, correct: 0, incorrect: 0 },
-      intermediate: { answered: 0, correct: 0, incorrect: 0 },
-      advanced: { answered: 0, correct: 0, incorrect: 0 },
+      beginner: { total: 0, correct: 0, accuracy: 0 },
+      intermediate: { total: 0, correct: 0, accuracy: 0 },
+      advanced: { total: 0, correct: 0, accuracy: 0 },
     },
     weeklyActivity: [],
-    byCategory: {
-      basics: { answered: 0, correct: 0, incorrect: 0 },
-      roasting: { answered: 0, correct: 0, incorrect: 0 },
-      brewing: { answered: 0, correct: 0, incorrect: 0 },
-      history: { answered: 0, correct: 0, incorrect: 0 },
-    },
-    byDifficulty: {
-      beginner: { answered: 0, correct: 0, incorrect: 0 },
-      intermediate: { answered: 0, correct: 0, incorrect: 0 },
-      advanced: { answered: 0, correct: 0, incorrect: 0 },
-    },
   },
 }));
 
@@ -279,7 +292,7 @@ describe('useQuizData', () => {
       ...mockCard,
       questionId,
     }));
-    mockReviewCard.mockReturnValue({ card: { ...mockCard, state: { stability: 2, difficulty: 4 } } });
+    mockReviewCard.mockReturnValue({ card: { ...mockCard, stability: 2, difficulty: 4 } });
     mockDetermineRating.mockReturnValue(4);
     mockGetDueCards.mockReturnValue([]);
     mockSortCardsByPriority.mockImplementation((cards) => cards);
@@ -288,14 +301,14 @@ describe('useQuizData', () => {
 
     mockCalculateXP.mockReturnValue(10);
     mockAddXP.mockReturnValue({
-      newLevelInfo: { currentLevel: 1, currentXP: 10, xpToNextLevel: 100 },
+      newLevelInfo: { level: 1, currentXP: 10, totalXP: 10, xpToNextLevel: 40 },
       leveledUp: false,
       newLevel: 1,
     });
     mockUpdateStreak.mockReturnValue({
       currentStreak: 1,
       longestStreak: 1,
-      lastStudyDate: '2024-02-05',
+      lastActiveDate: '2024-02-05',
     });
     mockUpdateStats.mockReturnValue(mockInitialProgress.stats);
     mockUpdateDailyGoal.mockReturnValue([]);
@@ -366,11 +379,14 @@ describe('useQuizData', () => {
         await vi.runAllTimersAsync();
       });
 
-      let recordResult: AnswerResult;
-      await act(async () => {
-        recordResult = await result.current.recordAnswer('q1', 'opt1', 5000);
-      });
+      const recordResult = await recordAnswerInAct(
+        result.current.recordAnswer,
+        'q1',
+        'opt1',
+        5000
+      );
 
+      expectAnswerResult(recordResult);
       expect(recordResult.isCorrect).toBe(true);
       expect(mockCreateQuizCard).toHaveBeenCalledWith('q1');
       expect(mockDetermineRating).toHaveBeenCalledWith(true, 5000);
@@ -384,11 +400,14 @@ describe('useQuizData', () => {
         await vi.runAllTimersAsync();
       });
 
-      let recordResult: AnswerResult;
-      await act(async () => {
-        recordResult = await result.current.recordAnswer('q1', 'opt2', 3000);
-      });
+      const recordResult = await recordAnswerInAct(
+        result.current.recordAnswer,
+        'q1',
+        'opt2',
+        3000
+      );
 
+      expectAnswerResult(recordResult);
       expect(recordResult.isCorrect).toBe(false);
       expect(mockDetermineRating).toHaveBeenCalledWith(false, 3000);
     });
@@ -402,11 +421,14 @@ describe('useQuizData', () => {
 
       mockCalculateXP.mockReturnValue(15);
 
-      let recordResult: AnswerResult;
-      await act(async () => {
-        recordResult = await result.current.recordAnswer('q1', 'opt1', 5000);
-      });
+      const recordResult = await recordAnswerInAct(
+        result.current.recordAnswer,
+        'q1',
+        'opt1',
+        5000
+      );
 
+      expectAnswerResult(recordResult);
       expect(mockCalculateXP).toHaveBeenCalledWith({
         isCorrect: true,
         difficulty: 'beginner',
@@ -425,16 +447,19 @@ describe('useQuizData', () => {
       });
 
       mockAddXP.mockReturnValue({
-        newLevelInfo: { currentLevel: 2, currentXP: 0, xpToNextLevel: 200 },
+        newLevelInfo: { level: 2, currentXP: 0, totalXP: 50, xpToNextLevel: 200 },
         leveledUp: true,
         newLevel: 2,
       });
 
-      let recordResult: AnswerResult;
-      await act(async () => {
-        recordResult = await result.current.recordAnswer('q1', 'opt1', 5000);
-      });
+      const recordResult = await recordAnswerInAct(
+        result.current.recordAnswer,
+        'q1',
+        'opt1',
+        5000
+      );
 
+      expectAnswerResult(recordResult);
       expect(recordResult.leveledUp).toBe(true);
       expect(recordResult.newLevel).toBe(2);
     });
@@ -446,18 +471,21 @@ describe('useQuizData', () => {
         await vi.runAllTimersAsync();
       });
 
-      mockCheckNewBadges.mockReturnValue(['first_correct']);
+      mockCheckNewBadges.mockReturnValue(['first-quiz']);
       mockEarnBadges.mockReturnValue([
-        { type: 'first_correct', earnedAt: '2024-02-05T12:00:00.000Z' },
+        { type: 'first-quiz', earnedAt: '2024-02-05T12:00:00.000Z' },
       ]);
 
-      let recordResult: AnswerResult;
-      await act(async () => {
-        recordResult = await result.current.recordAnswer('q1', 'opt1', 5000);
-      });
+      const recordResult = await recordAnswerInAct(
+        result.current.recordAnswer,
+        'q1',
+        'opt1',
+        5000
+      );
 
+      expectAnswerResult(recordResult);
       expect(recordResult.newBadges).toHaveLength(1);
-      expect(recordResult.newBadges[0].type).toBe('first_correct');
+      expect(recordResult.newBadges[0].type).toBe('first-quiz');
     });
 
     it('ストリーク更新を検出する', async () => {
@@ -470,14 +498,17 @@ describe('useQuizData', () => {
       mockUpdateStreak.mockReturnValue({
         currentStreak: 2,
         longestStreak: 2,
-        lastStudyDate: '2024-02-05',
+        lastActiveDate: '2024-02-05',
       });
 
-      let recordResult: AnswerResult;
-      await act(async () => {
-        recordResult = await result.current.recordAnswer('q1', 'opt1', 5000);
-      });
+      const recordResult = await recordAnswerInAct(
+        result.current.recordAnswer,
+        'q1',
+        'opt1',
+        5000
+      );
 
+      expectAnswerResult(recordResult);
       expect(recordResult.streakUpdated).toBe(true);
     });
 
@@ -763,7 +794,7 @@ describe('useQuizData', () => {
         ...mockInitialProgress,
         stats: {
           ...mockInitialProgress.stats,
-          totalAnswered: 10,
+          totalQuestions: 10,
         },
       };
       mockGetQuizProgress.mockReturnValue(updatedProgress);
@@ -772,7 +803,7 @@ describe('useQuizData', () => {
         result.current.refreshProgress();
       });
 
-      expect(result.current.progress?.stats.totalAnswered).toBe(10);
+      expect(result.current.progress?.stats.totalQuestions).toBe(10);
     });
 
     it('エラー時にコンソールエラーを出力する', async () => {
@@ -877,7 +908,7 @@ describe('useQuizData', () => {
 
       // reviewCardモックでhasAnsweredCorrectlyをfalseにする（フック内で上書きされるべき）
       mockReviewCard.mockReturnValue({
-        card: { ...cardWithCorrectFlag, hasAnsweredCorrectly: false, state: { stability: 2, difficulty: 4 } },
+        card: { ...cardWithCorrectFlag, hasAnsweredCorrectly: false, stability: 2, difficulty: 4 },
       });
 
       const { result } = renderHook(() => useQuizData());
@@ -887,11 +918,14 @@ describe('useQuizData', () => {
       });
 
       // 不正解を送信
-      let recordResult: AnswerResult;
-      await act(async () => {
-        recordResult = await result.current.recordAnswer('q1', 'opt2', 3000);
-      });
+      const recordResult = await recordAnswerInAct(
+        result.current.recordAnswer,
+        'q1',
+        'opt2',
+        3000
+      );
 
+      expectAnswerResult(recordResult);
       expect(recordResult.isCorrect).toBe(false);
 
       // progressのカードを確認: hasAnsweredCorrectlyはtrueのまま維持されるべき
@@ -913,7 +947,7 @@ describe('useQuizData', () => {
       mockGetQuizProgress.mockReturnValue(progressWithCard);
 
       mockReviewCard.mockReturnValue({
-        card: { ...cardWithoutCorrectFlag, hasAnsweredCorrectly: false, state: { stability: 2, difficulty: 4 } },
+        card: { ...cardWithoutCorrectFlag, hasAnsweredCorrectly: false, stability: 2, difficulty: 4 },
       });
 
       const { result } = renderHook(() => useQuizData());
@@ -923,11 +957,14 @@ describe('useQuizData', () => {
       });
 
       // 正解を送信
-      let recordResult: AnswerResult;
-      await act(async () => {
-        recordResult = await result.current.recordAnswer('q1', 'opt1', 5000);
-      });
+      const recordResult = await recordAnswerInAct(
+        result.current.recordAnswer,
+        'q1',
+        'opt1',
+        5000
+      );
 
+      expectAnswerResult(recordResult);
       expect(recordResult.isCorrect).toBe(true);
 
       // progressのカードを確認: hasAnsweredCorrectlyがtrueに更新される
@@ -944,10 +981,12 @@ describe('useQuizData', () => {
         await vi.runAllTimersAsync();
       });
 
-      let recordResult: AnswerResult | null;
-      await act(async () => {
-        recordResult = await result.current.recordAnswer('nonexistent', 'opt1', 5000);
-      });
+      const recordResult = await recordAnswerInAct(
+        result.current.recordAnswer,
+        'nonexistent',
+        'opt1',
+        5000
+      );
 
       expect(recordResult).toBeNull();
     });
@@ -968,16 +1007,19 @@ describe('useQuizData', () => {
 
       // 2問目: 正解でレベルアップ
       mockAddXP.mockReturnValue({
-        newLevelInfo: { currentLevel: 2, currentXP: 0, xpToNextLevel: 200 },
+        newLevelInfo: { level: 2, currentXP: 0, totalXP: 50, xpToNextLevel: 200 },
         leveledUp: true,
         newLevel: 2,
       });
 
-      let result2: AnswerResult;
-      await act(async () => {
-        result2 = await result.current.recordAnswer('q2', 'opt3', 4000);
-      });
+      const result2 = await recordAnswerInAct(
+        result.current.recordAnswer,
+        'q2',
+        'opt3',
+        4000
+      );
 
+      expectAnswerResult(result2);
       expect(result2.leveledUp).toBe(true);
     });
 

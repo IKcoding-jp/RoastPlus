@@ -2,44 +2,55 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { playWorkChime } from './workChimeAudio';
 
+type AudioContextMock = NonNullable<Parameters<typeof playWorkChime>[1]['audioContext']>;
+
 function createAudioContextMock() {
   const events: Array<{ frequency: number; start: number; stop: number; type: OscillatorType }> = [];
   const gainValues: number[] = [];
 
-  const destination = {};
+  const destination = {} as AudioDestinationNode;
 
-  return {
-    ctx: {
-      currentTime: 10,
-      destination,
-      createOscillator: vi.fn(() => {
-        const oscillator = {
-          type: 'sine' as OscillatorType,
-          frequency: {
-            setValueAtTime: vi.fn((frequency: number) => {
-              events.push({ frequency, start: 0, stop: 0, type: oscillator.type });
-            }),
-          },
-          detune: { setValueAtTime: vi.fn() },
-          connect: vi.fn(),
-          start: vi.fn((start: number) => {
-            events[events.length - 1].start = start;
-          }),
-          stop: vi.fn((stop: number) => {
-            events[events.length - 1].stop = stop;
-          }),
-        };
-
-        return oscillator;
+  const createOscillator = vi.fn(() => {
+    const oscillator = {
+      type: 'sine' as OscillatorType,
+      frequency: {
+        setValueAtTime: vi.fn((frequency: number) => {
+          events.push({ frequency, start: 0, stop: 0, type: oscillator.type });
+        }),
+      },
+      detune: { setValueAtTime: vi.fn() },
+      connect: vi.fn(),
+      start: vi.fn((start: number) => {
+        events[events.length - 1].start = start;
       }),
-      createGain: vi.fn(() => ({
+      stop: vi.fn((stop: number) => {
+        events[events.length - 1].stop = stop;
+      }),
+    } as unknown as OscillatorNode;
+
+    return oscillator;
+  });
+
+  const createGain = vi.fn(
+    () =>
+      ({
         gain: {
           setValueAtTime: vi.fn((value: number) => gainValues.push(value)),
           exponentialRampToValueAtTime: vi.fn((value: number) => gainValues.push(value)),
         },
         connect: vi.fn(),
-      })),
-    },
+      }) as unknown as GainNode
+  );
+
+  const ctx: AudioContextMock = {
+    currentTime: 10,
+    destination,
+    createOscillator,
+    createGain,
+  };
+
+  return {
+    ctx,
     events,
     gainValues,
   };
