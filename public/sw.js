@@ -1,6 +1,6 @@
 // Service Worker for PWA
-const CACHE_NAME = 'roast-plus-v5';
-const RUNTIME_CACHE = 'roast-plus-runtime-v5';
+const CACHE_NAME = 'roast-plus-v6';
+const RUNTIME_CACHE = 'roast-plus-runtime-v6';
 
 // キャッシュするリソース
 const PRECACHE_URLS = [
@@ -11,7 +11,6 @@ const PRECACHE_URLS = [
   '/login/index.html',
   '/notifications/index.html',
   '/android-chrome-192x192.png',
-  '/android-chrome-512x512.png',
 ];
 
 // Next.jsの静的エクスポートでは、ルートパス（/assignment）は実際には/assignment/index.htmlとして生成される
