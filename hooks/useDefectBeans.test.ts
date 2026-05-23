@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useDefectBeans } from './useDefectBeans';
-import type { AppData, User, DefectBean } from '@/types';
+import type { AppData, DefectBean } from '@/types';
 
 // モック関数（vi.mockファクトリ内で参照可能なようにmockプレフィックスを使用）
 const mockUseAuth = vi.fn();
@@ -84,7 +84,7 @@ const INITIAL_APP_DATA: AppData = {
   workProgresses: [],
 };
 
-const mockUser: User = {
+const mockUser = {
   uid: 'test-user-id',
   email: 'test@example.com',
   displayName: 'Test User',

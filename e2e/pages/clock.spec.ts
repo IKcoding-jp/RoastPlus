@@ -7,14 +7,32 @@ async function freezeTime(page: Page, iso: string) {
     const RealDate = Date;
     const fixedTime = new RealDate(fixedIso).getTime();
 
+    type DateConstructorArgs =
+      | []
+      | [value: string | number | Date]
+      | [
+          year: number,
+          monthIndex: number,
+          date?: number,
+          hours?: number,
+          minutes?: number,
+          seconds?: number,
+          ms?: number,
+        ];
+
     class MockDate extends RealDate {
-      constructor(...args: ConstructorParameters<DateConstructor>) {
+      constructor(...args: DateConstructorArgs) {
         if (args.length === 0) {
           super(fixedTime);
           return;
         }
 
-        super(...args);
+        if (args.length === 1) {
+          super(args[0]);
+          return;
+        }
+
+        super(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
       }
 
       static now() {

@@ -20,6 +20,7 @@ const defaultProps = {
     body: 3,
     sweetness: 4,
     aroma: 5,
+    overallRating: 4,
   },
   comments: ['明るい酸味で余韻が長い'],
   isAnalyzing: false,
