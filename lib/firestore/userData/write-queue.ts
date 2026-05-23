@@ -28,6 +28,12 @@ export const writeQueues = new Map<string, {
   retryCount: number;
   pendingPromise: { resolve: () => void; reject: (error: unknown) => void } | null;
 }>();
+const workProgressesSyncSignatures = new Map<string, string>();
+
+export function clearWriteQueueStateForTests(): void {
+  writeQueues.clear();
+  workProgressesSyncSignatures.clear();
+}
 
 export interface SaveUserDataOptions {
   syncWorkProgresses?: boolean;
@@ -229,10 +235,19 @@ async function performWrite(userId: string, data: AppData, options: SaveUserData
 
     const batchWriter = createBatchWriter();
     batchWriter.add((batch) => batch.set(userDocRef, removeRootWorkProgresses(cleanedData), { merge: true }));
+    let syncedWorkProgressesSignature: string | null = null;
     if (options.syncWorkProgresses === true) {
-      await applyWorkProgressSplitWrites(userId, batchWriter, data.workProgresses);
+      const nextSyncSignature = stableStringify(data.workProgresses);
+      const previousSyncSignature = workProgressesSyncSignatures.get(userId);
+      if (previousSyncSignature !== nextSyncSignature) {
+        await applyWorkProgressSplitWrites(userId, batchWriter, data.workProgresses);
+        syncedWorkProgressesSignature = nextSyncSignature;
+      }
     }
     await batchWriter.commit();
+    if (syncedWorkProgressesSignature !== null) {
+      workProgressesSyncSignatures.set(userId, syncedWorkProgressesSignature);
+    }
   } finally {
     releaseWriteSlot();
   }
