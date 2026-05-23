@@ -1,11 +1,12 @@
 'use client';
 
+import { CONTACT_FORM_LIMITS } from '@/lib/contactForm';
 import { CONTACT_TYPES, ContactFormData } from '@/lib/emailjs';
 import { Input, Select, Textarea } from '@/components/ui';
 
 interface ContactFormFieldsProps {
   formData: ContactFormData;
-  validationErrors: Record<string, string>;
+  validationErrors: Partial<Record<keyof ContactFormData, string>>;
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
 }
 
@@ -14,6 +15,8 @@ export function ContactFormFields({
   validationErrors,
   onInputChange,
 }: ContactFormFieldsProps) {
+  const isMessageAtLimit = formData.message.length >= CONTACT_FORM_LIMITS.messageMax;
+
   return (
     <>
       {/* お名前 */}
@@ -25,6 +28,8 @@ export function ContactFormFields({
         value={formData.name}
         onChange={onInputChange}
         placeholder="山田 太郎"
+        maxLength={CONTACT_FORM_LIMITS.name}
+        error={validationErrors.name}
       />
 
       {/* メールアドレス */}
@@ -36,6 +41,7 @@ export function ContactFormFields({
         value={formData.email}
         onChange={onInputChange}
         placeholder="example@email.com"
+        maxLength={CONTACT_FORM_LIMITS.email}
         error={validationErrors.email}
       />
 
@@ -53,16 +59,27 @@ export function ContactFormFields({
       />
 
       {/* お問い合わせ内容 */}
-      <Textarea
-        label="お問い合わせ内容（必須）"
-        id="message"
-        name="message"
-        value={formData.message}
-        onChange={onInputChange}
-        rows={6}
-        placeholder="お問い合わせ内容をご記入ください"
-        error={validationErrors.message}
-      />
+      <div>
+        <Textarea
+          label="お問い合わせ内容（必須）"
+          id="message"
+          name="message"
+          value={formData.message}
+          onChange={onInputChange}
+          rows={6}
+          placeholder="お問い合わせ内容をご記入ください"
+          maxLength={CONTACT_FORM_LIMITS.messageMax}
+          error={validationErrors.message}
+        />
+        <p
+          className={`mt-1 text-right text-sm ${
+            isMessageAtLimit ? 'text-warning' : 'text-ink-muted'
+          }`}
+          aria-live="polite"
+        >
+          {formData.message.length} / {CONTACT_FORM_LIMITS.messageMax}文字
+        </p>
+      </div>
     </>
   );
 }
