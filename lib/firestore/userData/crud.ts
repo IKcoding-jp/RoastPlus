@@ -7,6 +7,14 @@ import {
 } from 'firebase/firestore';
 import { getUserDocRef, removeUndefinedFields, normalizeAppData, defaultData } from '../common';
 import type { AppData } from '@/types';
+import {
+  getDataSplitsDocRef,
+  getWorkProgressesCollectionRef,
+  isWorkProgressesMigrated,
+  loadWorkProgressSplitState,
+  normalizeWorkProgressQuerySnapshot,
+  resolveWorkProgresses,
+} from '../workProgress/subcollection';
 import { writeQueues, SAVE_USER_DATA_DEBOUNCE_MS, executeWrite } from './write-queue';
 
 export async function getUserData(userId: string): Promise<AppData> {
@@ -17,11 +25,21 @@ export async function getUserData(userId: string): Promise<AppData> {
     if (userDoc.exists()) {
       const data = userDoc.data();
       const normalizedData = normalizeAppData(data);
-      return normalizedData;
+      const splitState = await loadWorkProgressSplitState(userId);
+
+      return {
+        ...normalizedData,
+        workProgresses: resolveWorkProgresses(
+          normalizedData.workProgresses,
+          splitState.workProgresses,
+          splitState.isMigrated
+        ),
+      };
     }
 
     // ドキュメントが存在しない場合はデフォルトデータを作成
-    const cleanedDefaultData = removeUndefinedFields(defaultData);
+    const cleanedDefaultData = removeUndefinedFields(defaultData) as unknown as Record<string, unknown>;
+    delete cleanedDefaultData.workProgresses;
     await setDoc(userDocRef, cleanedDefaultData);
     return defaultData;
   } catch (error) {
@@ -84,21 +102,76 @@ export function subscribeUserData(
   callback: (data: AppData) => void
 ): () => void {
   const userDocRef = getUserDocRef(userId);
+  const workProgressesCollectionRef = getWorkProgressesCollectionRef(userId);
+  const dataSplitsDocRef = getDataSplitsDocRef(userId);
 
-  return onSnapshot(
+  let rootData: AppData = defaultData;
+  let splitWorkProgresses = defaultData.workProgresses;
+  let isWorkProgressesSplitMigrated = false;
+  let hasRootSnapshot = false;
+  let hasWorkProgressesSnapshot = false;
+  let hasDataSplitsSnapshot = false;
+
+  const emitMergedData = () => {
+    if (!hasRootSnapshot || !hasWorkProgressesSnapshot || !hasDataSplitsSnapshot) {
+      return;
+    }
+
+    callback({
+      ...rootData,
+      workProgresses: resolveWorkProgresses(
+        rootData.workProgresses,
+        splitWorkProgresses,
+        isWorkProgressesSplitMigrated
+      ),
+    });
+  };
+
+  const unsubscribeRoot = onSnapshot(
     userDocRef,
     (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.data();
-        const normalizedData = normalizeAppData(data);
-        callback(normalizedData);
+        rootData = normalizeAppData(data);
       } else {
-        callback(defaultData);
+        rootData = defaultData;
       }
+      hasRootSnapshot = true;
+      emitMergedData();
     },
     (error) => {
       console.error('Error in Firestore subscription:', error);
       // エラー時はcallbackを呼ばない（既存データを保持する）
     }
   );
+
+  const unsubscribeWorkProgresses = onSnapshot(
+    workProgressesCollectionRef,
+    (snapshot) => {
+      splitWorkProgresses = normalizeWorkProgressQuerySnapshot(snapshot);
+      hasWorkProgressesSnapshot = true;
+      emitMergedData();
+    },
+    (error) => {
+      console.error('Error in workProgresses subscription:', error);
+    }
+  );
+
+  const unsubscribeDataSplits = onSnapshot(
+    dataSplitsDocRef,
+    (snapshot) => {
+      isWorkProgressesSplitMigrated = snapshot.exists() && isWorkProgressesMigrated(snapshot.data());
+      hasDataSplitsSnapshot = true;
+      emitMergedData();
+    },
+    (error) => {
+      console.error('Error in dataSplits subscription:', error);
+    }
+  );
+
+  return () => {
+    unsubscribeRoot();
+    unsubscribeWorkProgresses();
+    unsubscribeDataSplits();
+  };
 }

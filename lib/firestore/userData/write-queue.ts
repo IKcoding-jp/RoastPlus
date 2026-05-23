@@ -2,12 +2,18 @@
 // Write stream exhausted対策として同時書き込み数を制限する
 
 import {
-  setDoc,
   deleteField,
+  doc,
+  getDocs,
+  writeBatch,
   type FieldValue,
 } from 'firebase/firestore';
-import { getUserDocRef, removeUndefinedFields } from '../common';
-import type { AppData } from '@/types';
+import { getDb, getUserDocRef, removeUndefinedFields } from '../common';
+import {
+  getDataSplitsDocRef,
+  getWorkProgressesCollectionRef,
+} from '../workProgress/subcollection';
+import type { AppData, WorkProgress } from '@/types';
 
 // デバウンス待機時間（ミリ秒）
 export const SAVE_USER_DATA_DEBOUNCE_MS = 300;
@@ -68,6 +74,42 @@ function releaseWriteSlot(): void {
   }
 }
 
+function removeRootWorkProgresses(data: Record<string, unknown>): Record<string, unknown> {
+  const rootData = { ...data };
+  delete rootData.workProgresses;
+  return rootData;
+}
+
+async function applyWorkProgressSplitWrites(
+  userId: string,
+  batch: ReturnType<typeof writeBatch>,
+  workProgresses: WorkProgress[]
+): Promise<void> {
+  const workProgressesCollectionRef = getWorkProgressesCollectionRef(userId);
+  const existingSnapshot = await getDocs(workProgressesCollectionRef);
+  const nextIds = new Set(workProgresses.map((workProgress) => workProgress.id));
+
+  existingSnapshot.docs.forEach((docSnapshot) => {
+    if (!nextIds.has(docSnapshot.id)) {
+      batch.delete(docSnapshot.ref);
+    }
+  });
+
+  workProgresses.forEach((workProgress) => {
+    const cleanedWorkProgress = removeUndefinedFields(workProgress) as unknown as Record<string, unknown>;
+    batch.set(doc(workProgressesCollectionRef, workProgress.id), cleanedWorkProgress, { merge: true });
+  });
+
+  batch.set(
+    getDataSplitsDocRef(userId),
+    {
+      workProgressesMigrated: true,
+      workProgressesMigratedAt: new Date().toISOString(),
+    },
+    { merge: true }
+  );
+}
+
 // 実際の書き込み処理を行う関数
 async function performWrite(userId: string, data: AppData): Promise<void> {
   await acquireWriteSlot();
@@ -120,7 +162,10 @@ async function performWrite(userId: string, data: AppData): Promise<void> {
       cleanedData.roastTimerState = deleteField();
     }
 
-    await setDoc(userDocRef, cleanedData, { merge: true });
+    const batch = writeBatch(getDb());
+    batch.set(userDocRef, removeRootWorkProgresses(cleanedData), { merge: true });
+    await applyWorkProgressSplitWrites(userId, batch, data.workProgresses);
+    await batch.commit();
   } finally {
     releaseWriteSlot();
   }
