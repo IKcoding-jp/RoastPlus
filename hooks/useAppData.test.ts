@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useAppData } from './useAppData';
-import type { AppData, User } from '@/types';
+import type { AppData } from '@/types';
 
 // モック関数
 const mockUseAuth = vi.fn();
@@ -21,7 +21,7 @@ const INITIAL_APP_DATA: AppData = {
   dripRecipes: [],
 };
 
-const mockUser: User = {
+const mockUser = {
   uid: 'test-user-id',
   email: 'test@example.com',
   displayName: 'Test User',
@@ -33,10 +33,8 @@ const mockUserData: AppData = {
     {
       id: 'schedule-1',
       beanName: 'テスト豆',
-      targetDate: '2024-02-05',
-      status: 'pending',
-      createdAt: '2024-02-01T00:00:00.000Z',
-      updatedAt: '2024-02-01T00:00:00.000Z',
+      date: '2024-02-05',
+      time: '09:00',
     },
   ],
 };
@@ -180,10 +178,8 @@ describe('useAppData', () => {
           {
             id: 'schedule-2',
             beanName: '新しい豆',
-            targetDate: '2024-02-10',
-            status: 'pending',
-            createdAt: '2024-02-05T12:00:00.000Z',
-            updatedAt: '2024-02-05T12:00:00.000Z',
+            date: '2024-02-10',
+            time: '10:00',
           },
         ],
       };
@@ -230,7 +226,7 @@ describe('useAppData', () => {
       await act(async () => {
         await result.current.updateData((currentData) => ({
           ...currentData,
-          encouragementCount: currentData.encouragementCount + 1,
+          encouragementCount: (currentData.encouragementCount ?? 0) + 1,
         }));
         await vi.runAllTimersAsync();
       });
@@ -414,10 +410,8 @@ describe('useAppData', () => {
           {
             id: 'schedule-new-from-server',
             beanName: 'サーバー豆',
-            targetDate: '2024-02-10',
-            status: 'pending',
-            createdAt: '2024-02-05T12:00:00.000Z',
-            updatedAt: '2024-02-05T12:00:00.000Z',
+            date: '2024-02-10',
+            time: '10:00',
           },
         ],
       };
@@ -522,10 +516,8 @@ describe('useAppData', () => {
             {
               id: 'schedule-new',
               beanName: '追加された豆',
-              targetDate: '2024-02-10',
-              status: 'pending',
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
+              date: '2024-02-10',
+              time: '10:00',
             },
           ],
         }));
@@ -540,7 +532,7 @@ describe('useAppData', () => {
           ...current,
           roastSchedules: current.roastSchedules.map((schedule) =>
             schedule.id === 'schedule-new'
-              ? { ...schedule, status: 'completed' as const }
+              ? { ...schedule, beanName: '更新された豆' }
               : schedule
           ),
         }));
@@ -550,7 +542,7 @@ describe('useAppData', () => {
       const updatedSchedule = result.current.data.roastSchedules.find(
         (s) => s.id === 'schedule-new'
       );
-      expect(updatedSchedule?.status).toBe('completed');
+      expect(updatedSchedule?.beanName).toBe('更新された豆');
 
       // 4. データ削除
       await act(async () => {
@@ -576,7 +568,7 @@ describe('useAppData', () => {
       expect(mockGetUserData).toHaveBeenCalledWith('test-user-id');
 
       // ユーザーを切り替え
-      const newUser: User = {
+      const newUser = {
         uid: 'new-user-id',
         email: 'new@example.com',
         displayName: 'New User',

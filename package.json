@@ -8,6 +8,7 @@
     "start": "next start",
     "deploy:prod": "firebase use default && npm run build && firebase deploy",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",

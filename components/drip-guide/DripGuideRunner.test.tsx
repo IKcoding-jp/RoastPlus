@@ -19,10 +19,8 @@ const recipe: DripRecipe = {
   id: 'recipe-test',
   name: 'BYSN Standard Drip',
   beanName: 'BYSNドリップパック',
-  servings: 1,
-  beanAmount: 12,
-  waterAmount: 150,
-  grindSize: '中挽き',
+  beanAmountGram: 12,
+  totalWaterGram: 150,
   totalDurationSec: 120,
   isManualMode: true,
   steps: [
