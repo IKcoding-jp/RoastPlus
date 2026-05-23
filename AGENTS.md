@@ -9,8 +9,16 @@
 - ユーザーはプログラミング学習中のため、専門用語は初出時に短く補足する。
 - まず結論を短く述べ、その後に理由、変更点、確認方法を説明する。
 - 非自明な作業では、いきなり編集せず関連ファイルを調査してから短い作業計画を示す。
+- 実装前に目的、前提、成功条件、検証方法を短く確認する。
 - 変更は小さく、元に戻しやすい差分にする。
 - ユーザーから明示依頼がない限り、コミット、push、PR作成はしない。
+
+## Issue単位の作業ルール
+
+- 原則として `1 Issue = 1 PR = 1 Codexスレッド` で進める。
+- Issue作業では、Issue本文と `docs/working/*_{Issue番号}_*` を優先して確認する。
+- Issue外の改善、隣接コードの整理、無関係なリファクタリング、ついでの整形やコメント変更はしない。
+- 不明点が作業結果に影響する場合は、推測で実装せず、調査して選択肢とおすすめを示す。
 
 ## プロジェクト概要
 
@@ -30,6 +38,7 @@ RoastPlus は、コーヒー焙煎・抽出業務を支援する現場向けPWA�
 ## 重要なアーキテクチャ制約
 
 - 本番ビルドは静的エクスポートです。`next.config.ts` の production では `output: 'export'` が有効になります。
+- Firebase Hosting は `out/` を配信する。`public/` 配下は本番配信対象の素材置き場であり、test、script、private、debug 用ファイルを置かない。
 - Next.js API Routes は使用しない。サーバー処理が必要な場合は Firebase Cloud Functions を使う。
 - AI処理は必ず Cloud Functions 経由にする。クライアントに API キーや秘密情報を持たせない。
 - Firebase の `NEXT_PUBLIC_*` 値は公開情報として扱い、保護は Firestore Security Rules 側で行う。
@@ -87,6 +96,8 @@ RoastPlus は、コーヒー焙煎・抽出業務を支援する現場向けPWA�
 - 大きな設計変更や新しい依存関係の追加は、事前に理由を説明する。
 - タスク目的から外れたついで修正や大規模リファクタリングは行わない。
 - `.env`、秘密鍵、APIキー、トークン、認証情報を表示、コピー、コミットしない。
+- OpenAI APIキー、Firebase Secret、認証情報をクライアントコード、公開ファイル、ログに出さない。
+- テストを削る、skipする、期待値を弱める、TypeScript strictやrulesを緩めることでエラーを隠さない。
 
 ## テストと検証
 
@@ -105,13 +116,17 @@ npm run test:e2e
 実装完了時の基本検証:
 
 ```powershell
-npm run build
+npm run typecheck
 npm run test:run
+npm run build
+npm run lint
 ```
 
 補足:
 
 - `npm run dev` と `npm run build` は `scripts/generate-sound-list.ts` を自動実行する。
+- UI/E2E変更では必要に応じて `npm run test:e2e` を実行する。
+- `functions/` を変更した場合は、Functions側の build/test も確認する。
 - Lint は Husky pre-commit でも実行されるが、必要に応じて `npm run lint` を手動実行する。
 - ロジック変更では、既存テストを優先して更新・追加する。
 - `lib/`, `hooks/`, `components/` のロジック変更はTDDを基本とする。
@@ -133,6 +148,9 @@ npm run test:run
 - Cloud Functions は `functions/` 配下にある。
 - フロントエンドからAI機能を呼ぶ場合は `httpsCallable` を使う。
 - Cloud Functions のシークレットは Firebase Secret Manager で管理する。
+- Firestore / Storage 変更では、認証済み本人だけが自分のデータへアクセスできる owner isolation を守る。
+- root `users/{uid}` を肥大化させない。増え続ける機能データは原則サブコレクションに分ける。
+- データ構造変更や移行が絡む場合は、実装前に移行計画、互換方針、ロールバック方針を出す。
 - Firestore Security Rules や Storage Rules を変更する場合は、認証・ユーザースコープ・本番影響を慎重に確認する。
 - デプロイ系コマンドは本番環境に影響するため、ユーザーの明示依頼なしに実行しない。
 
