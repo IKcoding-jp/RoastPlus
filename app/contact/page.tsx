@@ -1,10 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { HiMail, HiExclamationCircle } from 'react-icons/hi';
 import { ContactSuccessScreen } from '@/components/contact/ContactSuccessScreen';
 import { ContactFormFields } from '@/components/contact/ContactFormFields';
 import { Button, Card, FloatingNav } from '@/components/ui';
+import {
+  getStoredContactCooldownWaitSeconds,
+  storeContactSuccessTimestamp,
+  validateContactForm,
+} from '@/lib/contactForm';
 import {
   sendContactEmail,
   isEmailJSConfigured,
@@ -14,6 +19,7 @@ import {
 type FormStatus = 'idle' | 'sending' | 'success' | 'error';
 
 export default function ContactPage() {
+  const isSubmittingRef = useRef(false);
   const [formData, setFormData] = useState<ContactFormData>({
     name: '',
     email: '',
@@ -22,34 +28,47 @@ export default function ContactPage() {
   });
   const [status, setStatus] = useState<FormStatus>('idle');
   const [errorMessage, setErrorMessage] = useState('');
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [validationErrors, setValidationErrors] = useState<
+    Partial<Record<keyof ContactFormData, string>>
+  >({});
 
   const validateForm = (): boolean => {
-    const errors: Record<string, string> = {};
+    const result = validateContactForm(formData);
+    setValidationErrors(result.errors);
+    return result.isValid;
+  };
 
-    // メールアドレスの検証
-    if (!formData.email.trim()) {
-      errors.email = 'メールアドレスを入力してください';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      errors.email = '有効なメールアドレスを入力してください';
+  const getCooldownStorage = (): Storage | null => {
+    if (typeof window === 'undefined') {
+      return null;
     }
 
-    // お問い合わせ内容の検証
-    if (!formData.message.trim()) {
-      errors.message = 'お問い合わせ内容を入力してください';
-    } else if (formData.message.trim().length < 10) {
-      errors.message = 'お問い合わせ内容は10文字以上で入力してください';
+    try {
+      return window.localStorage;
+    } catch {
+      return null;
     }
-
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (isSubmittingRef.current) {
+      return;
+    }
+
     setErrorMessage('');
 
     if (!validateForm()) {
+      return;
+    }
+
+    const waitSeconds = getStoredContactCooldownWaitSeconds(getCooldownStorage());
+    if (waitSeconds > 0) {
+      setStatus('error');
+      setErrorMessage(
+        `送信が続いています。少し時間をおいて再度お試しください（約${waitSeconds}秒後に送信できます）。`
+      );
       return;
     }
 
@@ -59,10 +78,12 @@ export default function ContactPage() {
       return;
     }
 
+    isSubmittingRef.current = true;
     setStatus('sending');
 
     try {
       await sendContactEmail(formData);
+      storeContactSuccessTimestamp(getCooldownStorage());
       setStatus('success');
       setFormData({
         name: '',
@@ -73,6 +94,8 @@ export default function ContactPage() {
     } catch (error) {
       setStatus('error');
       setErrorMessage(error instanceof Error ? error.message : '送信に失敗しました');
+    } finally {
+      isSubmittingRef.current = false;
     }
   };
 
@@ -80,12 +103,13 @@ export default function ContactPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
+    const fieldName = name as keyof ContactFormData;
     setFormData((prev) => ({ ...prev, [name]: value }));
     // 入力時にそのフィールドのエラーをクリア
-    if (validationErrors[name]) {
+    if (validationErrors[fieldName]) {
       setValidationErrors((prev) => {
         const newErrors = { ...prev };
-        delete newErrors[name];
+        delete newErrors[fieldName];
         return newErrors;
       });
     }
@@ -121,7 +145,7 @@ export default function ContactPage() {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
               <ContactFormFields
                 formData={formData}
                 validationErrors={validationErrors}
