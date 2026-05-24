@@ -19,10 +19,7 @@ interface ServiceWorkerContext {
     match?: () => Promise<Response | undefined>;
   };
   __listeners: {
-    fetch?: (event: {
-      request: Request;
-      respondWith: (response: Promise<Response>) => void;
-    }) => void;
+    fetch?: (event: { request: Request; respondWith: (response: Promise<Response>) => void }) => void;
   };
 }
 
