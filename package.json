@@ -17,6 +17,8 @@
     "test:coverage": "vitest run --coverage",
     "generate:sound-list": "tsx scripts/generate-sound-list.ts",
     "prepare": "husky",
+    "secrets:scan": "gitleaks git --redact --no-banner --log-opts=\"origin/main..HEAD\"",
+    "secrets:scan:staged": "gitleaks git --staged --redact --no-banner",
     "security": "npm audit --audit-level=high",
     "complexity": "lizard ./app ./components ./hooks ./lib ./types ./scripts -C 15 -L 50 -w",
     "deadcode": "knip",
