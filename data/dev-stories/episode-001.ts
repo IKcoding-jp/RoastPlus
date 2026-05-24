@@ -34,7 +34,8 @@ export const EPISODE_001: DevStoryEpisode = {
     {
       id: 'msg-001-6',
       characterId: 'fukairi',
-      content: 'そうそう！3日経つと元の組み合わせに戻っちゃうんだよね。\n周期的なパターンになって、特定の人に偏りがちだった。',
+      content:
+        'そうそう！3日経つと元の組み合わせに戻っちゃうんだよね。\n周期的なパターンになって、特定の人に偏りがちだった。',
     },
     {
       id: 'msg-001-7',
@@ -44,7 +45,8 @@ export const EPISODE_001: DevStoryEpisode = {
     {
       id: 'msg-001-8',
       characterId: 'fukairi',
-      content: 'うん。ランダムだけじゃなくて、公平性も大事でね。\n誰かに偏らず、みんなが平等に担当できるアプリを作りたかったんだ。',
+      content:
+        'うん。ランダムだけじゃなくて、公平性も大事でね。\n誰かに偏らず、みんなが平等に担当できるアプリを作りたかったんだ。',
     },
   ],
   detailContent: `ローストプラスは、担当表運用の課題を解決するために生まれました。

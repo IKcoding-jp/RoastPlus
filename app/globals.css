@@ -1,27 +1,27 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
-  --background: #FDF8F0;
+  --background: #fdf8f0;
   --foreground: #171717;
   /* メインカラー */
-  --primary: #EF8A00;
-  --primary-dark: #D67A00;
-  --primary-light: #FF9A1A;
+  --primary: #ef8a00;
+  --primary-dark: #d67a00;
+  --primary-light: #ff9a1a;
   --dark: #211714;
-  --dark-light: #3A2F2B;
-  --gold: #FFC107;
+  --dark-light: #3a2f2b;
+  --gold: #ffc107;
   /* フォント変数（Google Fonts取得不能時の安全なフォールバック） */
-  --font-geist-sans: "Inter", "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
-  --font-geist-mono: "Roboto Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-  --font-nunito: "Nunito", "Inter", "Noto Sans JP", sans-serif;
+  --font-geist-sans: 'Inter', 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+  --font-geist-mono: 'Roboto Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  --font-nunito: 'Nunito', 'Inter', 'Noto Sans JP', sans-serif;
   --font-inter: var(--font-geist-sans);
   --font-roboto-mono: var(--font-geist-mono);
-  --font-oswald: "Arial", "Helvetica Neue", sans-serif;
-  --font-orbitron: "Trebuchet MS", "Verdana", sans-serif;
-  --font-noto-sans-jp: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
-  --font-raleway: "Arial", "Helvetica Neue", sans-serif;
-  --font-playfair: "Georgia", "Times New Roman", serif;
-  --font-zen-old-mincho: "Times New Roman", "Yu Mincho", "Hiragino Mincho ProN", serif;
+  --font-oswald: 'Arial', 'Helvetica Neue', sans-serif;
+  --font-orbitron: 'Trebuchet MS', 'Verdana', sans-serif;
+  --font-noto-sans-jp: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif;
+  --font-raleway: 'Arial', 'Helvetica Neue', sans-serif;
+  --font-playfair: 'Georgia', 'Times New Roman', serif;
+  --font-zen-old-mincho: 'Times New Roman', 'Yu Mincho', 'Hiragino Mincho ProN', serif;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -34,11 +34,11 @@
 @layer theme {
   :root {
     /* 背景 */
-    --page: #F7F7F5;
-    --surface: #FFFFFF;
-    --overlay: #FFFFFF;
-    --ground: #F5F5F5;
-    --field: #FFFFFF;
+    --page: #f7f7f5;
+    --surface: #ffffff;
+    --overlay: #ffffff;
+    --ground: #f5f5f5;
+    --field: #ffffff;
     /* テキスト */
     --ink: #1f2937;
     --ink-sub: #4b5563;
@@ -52,7 +52,7 @@
     --spot-hover: #b45309;
     --spot-subtle: #f0f0f0;
     --spot-surface: #f7f7f7;
-    --on-spot: #FFFFFF;
+    --on-spot: #ffffff;
     /* ボタン */
     --btn-primary: #d97706;
     --btn-primary-hover: #b45309;
@@ -70,23 +70,23 @@
     --error-ring: #fee2e2;
     /* カードヘッダーグラデーション */
     --card-header-from: #211714;
-    --card-header-via: #3A2F2B;
+    --card-header-via: #3a2f2b;
     --card-header-to: #211714;
     /* フィードバックテキスト */
     --feedback-correct: #065f46;
     --feedback-incorrect: #9f1239;
     /* シャドウ */
-    --card-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.1);
-    --card-shadow-hover: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
-    --card-glow: 0 10px 30px rgba(0,0,0,0.04);
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    --card-shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    --card-glow: 0 10px 30px rgba(0, 0, 0, 0.04);
     /* ヘッダー */
     --header-bg: #261a14;
-    --header-text: #FFFFFF;
-    --header-accent: #EF8A00;
+    --header-text: #ffffff;
+    --header-accent: #ef8a00;
     --header-btn-hover: rgba(255, 255, 255, 0.1);
   }
 
-  [data-theme="christmas"] {
+  [data-theme='christmas'] {
     /* ヘッダー */
     --header-bg: #4a0e0e;
     --header-text: #f8f1e7;
@@ -111,22 +111,22 @@
     --spot-hover: #e8c65f;
     --spot-subtle: rgba(212, 175, 55, 0.15);
     --spot-surface: rgba(212, 175, 55, 0.05);
-    --on-spot: #FFFFFF;
+    --on-spot: #ffffff;
     /* ボタン */
     --btn-primary: #6d1a1a;
     --btn-primary-hover: #8b2323;
     /* ステータスカラー */
     --danger: #991b1b;
-    --danger-subtle: rgba(127,29,29,0.5);
+    --danger-subtle: rgba(127, 29, 29, 0.5);
     --success: #166534;
-    --success-subtle: rgba(20,83,45,0.5);
+    --success-subtle: rgba(20, 83, 45, 0.5);
     --warning: #d4af37;
-    --warning-subtle: rgba(113,63,18,0.5);
+    --warning-subtle: rgba(113, 63, 18, 0.5);
     --info: #0097a7;
     --info-hover: #00838f;
     /* エラー */
     --error: #f87171;
-    --error-ring: rgba(248,113,113,0.2);
+    --error-ring: rgba(248, 113, 113, 0.2);
     /* カードヘッダー（ソリッド） */
     --card-header-from: #143a22;
     --card-header-via: #143a22;
@@ -135,12 +135,12 @@
     --feedback-correct: #4ade80;
     --feedback-incorrect: #fb7185;
     /* シャドウ */
-    --card-shadow: 0 0 15px rgba(212,175,55,0.1);
-    --card-shadow-hover: 0 0 20px rgba(212,175,55,0.15);
-    --card-glow: 0 20px 50px rgba(0,0,0,0.3);
+    --card-shadow: 0 0 15px rgba(212, 175, 55, 0.1);
+    --card-shadow-hover: 0 0 20px rgba(212, 175, 55, 0.15);
+    --card-glow: 0 20px 50px rgba(0, 0, 0, 0.3);
   }
 
-  [data-theme="dark-roast"] {
+  [data-theme='dark-roast'] {
     /* ヘッダー */
     --header-bg: #0d0b09;
     --header-text: #f5f0e8;
@@ -165,7 +165,7 @@
     --spot-hover: #dab86c;
     --spot-subtle: rgba(200, 160, 80, 0.15);
     --spot-surface: rgba(200, 160, 80, 0.05);
-    --on-spot: #FFFFFF;
+    --on-spot: #ffffff;
     /* ボタン */
     --btn-primary: #c8a050;
     --btn-primary-hover: #dab86c;
@@ -194,7 +194,7 @@
     --card-glow: 0 20px 50px rgba(0, 0, 0, 0.3);
   }
 
-  [data-theme="light-roast"] {
+  [data-theme='light-roast'] {
     /* ヘッダー */
     --header-bg: #6b5d4f;
     --header-text: #fff9f0;
@@ -219,7 +219,7 @@
     --spot-hover: #a87b15;
     --spot-subtle: rgba(214, 165, 53, 0.15);
     --spot-surface: rgba(214, 165, 53, 0.06);
-    --on-spot: #FFFFFF;
+    --on-spot: #ffffff;
     /* ボタン */
     --btn-primary: #c69320;
     --btn-primary-hover: #a87b15;
@@ -248,7 +248,7 @@
     --card-glow: 0 10px 30px rgba(61, 50, 41, 0.04);
   }
 
-  [data-theme="matcha"] {
+  [data-theme='matcha'] {
     /* ヘッダー */
     --header-bg: #0f1f15;
     --header-text: #f0ebe0;
@@ -273,7 +273,7 @@
     --spot-hover: #95c774;
     --spot-subtle: rgba(125, 179, 88, 0.15);
     --spot-surface: rgba(125, 179, 88, 0.05);
-    --on-spot: #FFFFFF;
+    --on-spot: #ffffff;
     /* ボタン */
     --btn-primary: #7db358;
     --btn-primary-hover: #95c774;
@@ -302,7 +302,7 @@
     --card-glow: 0 20px 50px rgba(0, 0, 0, 0.3);
   }
 
-  [data-theme="caramel"] {
+  [data-theme='caramel'] {
     /* ヘッダー */
     --header-bg: #1a120d;
     --header-text: #f5ebe0;
@@ -327,7 +327,7 @@
     --spot-hover: #e5a54d;
     --spot-subtle: rgba(212, 146, 58, 0.15);
     --spot-surface: rgba(212, 146, 58, 0.05);
-    --on-spot: #FFFFFF;
+    --on-spot: #ffffff;
     /* ボタン */
     --btn-primary: #d4923a;
     --btn-primary-hover: #e5a54d;
@@ -356,7 +356,7 @@
     --card-glow: 0 20px 50px rgba(0, 0, 0, 0.3);
   }
 
-  [data-theme="dark"] {
+  [data-theme='dark'] {
     /* ヘッダー */
     --header-bg: #0f0f0f;
     --header-text: #e8e8e8;
@@ -373,7 +373,7 @@
     --ink-sub: #a0a0a0;
     --ink-muted: rgba(160, 160, 160, 0.6);
     /* ボーダー */
-    --edge: rgba(255, 255, 255, 0.10);
+    --edge: rgba(255, 255, 255, 0.1);
     --edge-strong: rgba(255, 255, 255, 0.18);
     --edge-subtle: rgba(255, 255, 255, 0.06);
     /* アクセント（既存オレンジ維持） */
@@ -381,7 +381,7 @@
     --spot-hover: #b45309;
     --spot-subtle: rgba(217, 119, 6, 0.15);
     --spot-surface: rgba(217, 119, 6, 0.05);
-    --on-spot: #FFFFFF;
+    --on-spot: #ffffff;
     /* ボタン */
     --btn-primary: #d97706;
     --btn-primary-hover: #b45309;
@@ -479,13 +479,29 @@
 
 /* テーマ対応カスタムユーティリティ */
 @layer utilities {
-  .shadow-card { box-shadow: var(--card-shadow); }
-  .shadow-card-hover { box-shadow: var(--card-shadow-hover); }
-  .shadow-card-glow { box-shadow: var(--card-glow); }
-  .tab-active { background-color: var(--surface); color: var(--ink); }
-  [data-theme="christmas"] .tab-active { background-color: var(--spot-subtle); color: var(--spot); }
-  .select-icon { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); }
-  [data-theme="christmas"] .select-icon { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23d4af37'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); }
+  .shadow-card {
+    box-shadow: var(--card-shadow);
+  }
+  .shadow-card-hover {
+    box-shadow: var(--card-shadow-hover);
+  }
+  .shadow-card-glow {
+    box-shadow: var(--card-glow);
+  }
+  .tab-active {
+    background-color: var(--surface);
+    color: var(--ink);
+  }
+  [data-theme='christmas'] .tab-active {
+    background-color: var(--spot-subtle);
+    color: var(--spot);
+  }
+  .select-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  }
+  [data-theme='christmas'] .select-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23d4af37'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  }
   /* ホームアイコン: テーマに関係なく背景なしで表示 */
 }
 
@@ -504,7 +520,10 @@ body {
 
 /* 絵文字フォントのフォールバック */
 .emoji {
-  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", "Android Emoji", "EmojiSymbols", "EmojiOne Mozilla", "Twemoji Mozilla", "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", "EmojiSymbols", "EmojiOne Mozilla", "Twemoji Mozilla", sans-serif;
+  font-family:
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', 'Android Emoji', 'EmojiSymbols',
+    'EmojiOne Mozilla', 'Twemoji Mozilla', 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', 'EmojiSymbols',
+    'EmojiOne Mozilla', 'Twemoji Mozilla', sans-serif;
   font-style: normal;
   font-weight: normal;
   line-height: 1;
@@ -524,7 +543,8 @@ select option {
 
 /* スプラッシュ画面: Scale Breatheパターンで使用 */
 @keyframes breathe {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
 
@@ -535,7 +555,6 @@ select option {
 
 /* New!ラベルのアニメーション */
 @keyframes pulse-scale {
-
   0%,
   100% {
     transform: scale(1);
@@ -571,7 +590,7 @@ select option {
 }
 
 .completed-label-gradient {
-  background: linear-gradient(90deg, #B45309, #D97706, #F59E0B, #D97706, #B45309);
+  background: linear-gradient(90deg, #b45309, #d97706, #f59e0b, #d97706, #b45309);
   background-size: 200% 100%;
   animation: gradient-shift 3s ease infinite;
 }
@@ -612,7 +631,6 @@ select option {
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   .animate-home-page,
   .animate-home-card {
     animation: none;
@@ -644,7 +662,6 @@ select option {
 }
 
 @keyframes walk-bounce {
-
   0%,
   100% {
     transform: translateY(0);
@@ -656,12 +673,13 @@ select option {
 }
 
 .animate-walk-characters {
-  animation: walk-characters 12s linear infinite, walk-bounce 0.4s ease-in-out infinite;
+  animation:
+    walk-characters 12s linear infinite,
+    walk-bounce 0.4s ease-in-out infinite;
 }
 
 /* キャラクターゆらゆらアニメーション（歩行風） */
 @keyframes wobble-left {
-
   0%,
   100% {
     transform: rotate(-3deg) translateY(0);
@@ -681,7 +699,6 @@ select option {
 }
 
 @keyframes wobble-right {
-
   0%,
   100% {
     transform: rotate(3deg) translateY(-2px);

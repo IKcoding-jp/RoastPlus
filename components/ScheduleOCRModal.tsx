@@ -107,32 +107,16 @@ export function ScheduleOCRModal({ selectedDate, onSuccess, onCancel }: Schedule
             </IconButton>
           </div>
           <div className="space-y-3">
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={() => setShowCamera(true)}
-              className="w-full"
-            >
+            <Button variant="primary" size="lg" onClick={() => setShowCamera(true)} className="w-full">
               <HiCamera className="h-5 w-5 mr-2" />
               <span>カメラで撮影</span>
             </Button>
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={() => fileInputRef.current?.click()}
-              className="w-full"
-            >
+            <Button variant="secondary" size="lg" onClick={() => fileInputRef.current?.click()} className="w-full">
               <HiPhotograph className="h-5 w-5 mr-2" />
               <span>ファイルから選択</span>
             </Button>
           </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFileSelect}
-            className="hidden"
-          />
+          <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileSelect} className="hidden" />
         </div>
       </div>
     );
@@ -176,12 +160,8 @@ export function ScheduleOCRModal({ selectedDate, onSuccess, onCancel }: Schedule
             </div>
 
             {/* メッセージ */}
-            <p className="text-lg font-medium mb-1 text-ink">
-              画像を解析中...
-            </p>
-            <p className="text-sm text-ink-muted">
-              しばらくお待ちください
-            </p>
+            <p className="text-lg font-medium mb-1 text-ink">画像を解析中...</p>
+            <p className="text-sm text-ink-muted">しばらくお待ちください</p>
           </div>
         </div>
       </div>
@@ -238,4 +218,3 @@ export function ScheduleOCRModal({ selectedDate, onSuccess, onCancel }: Schedule
 
   return null;
 }
-

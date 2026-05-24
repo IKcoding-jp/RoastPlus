@@ -41,18 +41,14 @@ const CHARACTER_EMOJI: Record<CharacterId, string> = {
   siphon: '🔬',
 };
 
-export const CharacterAvatar: React.FC<CharacterAvatarProps> = ({
-  characterId,
-  size = 'md',
-  className = '',
-}) => {
+export const CharacterAvatar: React.FC<CharacterAvatarProps> = ({ characterId, size = 'md', className = '' }) => {
   const character = CHARACTERS[characterId];
   const sizeConfig = SIZE_CONFIG[size];
   const avatarPath = AVATAR_PATHS[characterId];
   const emoji = CHARACTER_EMOJI[characterId];
 
   // フカイリとドリは画像が小さいので少し拡大
-  const scale = (characterId === 'fukairi' || characterId === 'dori') ? 'scale-125' : '';
+  const scale = characterId === 'fukairi' || characterId === 'dori' ? 'scale-125' : '';
 
   // 全キャラクターに画像あり
   const hasImage = true;
@@ -83,11 +79,7 @@ export const CharacterAvatar: React.FC<CharacterAvatarProps> = ({
       title={character.name}
       aria-label={character.name}
     >
-      <span
-        className={`${size === 'lg' ? 'text-4xl' : size === 'md' ? 'text-3xl' : 'text-2xl'}`}
-      >
-        {emoji}
-      </span>
+      <span className={`${size === 'lg' ? 'text-4xl' : size === 'md' ? 'text-3xl' : 'text-2xl'}`}>{emoji}</span>
     </div>
   );
 };

@@ -8,10 +8,7 @@ import { LEVEL_CONFIG, INITIAL_LEVEL_INFO } from './types';
 export function calculateXPForNextLevel(level: number): number {
   if (level >= LEVEL_CONFIG.maxLevel) return Infinity;
 
-  return Math.floor(
-    LEVEL_CONFIG.baseXP * Math.pow(level, LEVEL_CONFIG.exponent) +
-      LEVEL_CONFIG.baseXP * level
-  );
+  return Math.floor(LEVEL_CONFIG.baseXP * Math.pow(level, LEVEL_CONFIG.exponent) + LEVEL_CONFIG.baseXP * level);
 }
 
 /**
@@ -44,7 +41,10 @@ export function calculateLevelFromTotalXP(totalXP: number): LevelInfo {
 /**
  * XPを追加してレベル情報を更新
  */
-export function addXP(levelInfo: LevelInfo, xpGained: number): {
+export function addXP(
+  levelInfo: LevelInfo,
+  xpGained: number
+): {
   newLevelInfo: LevelInfo;
   leveledUp: boolean;
   newLevel?: number;

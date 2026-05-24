@@ -42,10 +42,9 @@ describe('useWorkChime', () => {
   });
 
   it('アンロック後に該当時刻で音を鳴らして通知を表示する', () => {
-    const { result, rerender } = renderHook(
-      ({ now }) => useWorkChime(now),
-      { initialProps: { now: localDate(10, 44, 59) } }
-    );
+    const { result, rerender } = renderHook(({ now }) => useWorkChime(now), {
+      initialProps: { now: localDate(10, 44, 59) },
+    });
 
     act(() => {
       result.current.enableAudio();
@@ -68,10 +67,9 @@ describe('useWorkChime', () => {
   });
 
   it('同じ分では重複再生しない', () => {
-    const { result, rerender } = renderHook(
-      ({ now }) => useWorkChime(now),
-      { initialProps: { now: localDate(10, 44, 59) } }
-    );
+    const { result, rerender } = renderHook(({ now }) => useWorkChime(now), {
+      initialProps: { now: localDate(10, 44, 59) },
+    });
 
     act(() => {
       result.current.enableAudio();
@@ -86,10 +84,9 @@ describe('useWorkChime', () => {
   });
 
   it('5秒後に通知を消す', () => {
-    const { result, rerender } = renderHook(
-      ({ now }) => useWorkChime(now),
-      { initialProps: { now: localDate(10, 44, 59) } }
-    );
+    const { result, rerender } = renderHook(({ now }) => useWorkChime(now), {
+      initialProps: { now: localDate(10, 44, 59) },
+    });
 
     act(() => {
       result.current.enableAudio();

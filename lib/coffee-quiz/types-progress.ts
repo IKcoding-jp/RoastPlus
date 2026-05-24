@@ -30,9 +30,9 @@ export const DEFAULT_QUIZ_SETTINGS: QuizSettings = {
 
 export interface QuestionCheckmark {
   questionId: string;
-  blueCheck: number;  // 0-3: 正解履歴
-  redCheck: number;   // 0-3: 不正解履歴
-  updatedAt: string;  // ISO 8601
+  blueCheck: number; // 0-3: 正解履歴
+  redCheck: number; // 0-3: 不正解履歴
+  updatedAt: string; // ISO 8601
 }
 
 // ========================================
@@ -42,7 +42,7 @@ export interface QuestionCheckmark {
 export interface QuizProgress {
   userId: string;
   cards: QuizCard[];
-  checkmarks?: QuestionCheckmark[];  // 正解/間違いチェックマーク（廃止予定）
+  checkmarks?: QuestionCheckmark[]; // 正解/間違いチェックマーク（廃止予定）
   streak: StreakInfo;
   level: LevelInfo;
   earnedBadges: EarnedBadge[];

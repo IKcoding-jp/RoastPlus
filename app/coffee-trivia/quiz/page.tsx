@@ -16,21 +16,48 @@ import { getSafeReturnUrl } from '@/lib/returnUrl';
 
 // アイコン
 const ArrowLeftIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="m12 19-7-7 7-7" />
     <path d="M19 12H5" />
   </svg>
 );
 
 const ArrowRightIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M5 12h14" />
     <path d="m12 5 7 7-7 7" />
   </svg>
 );
 
 const InboxIcon = () => (
-  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="40"
+    height="40"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
     <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
   </svg>
@@ -162,7 +189,17 @@ function QuizPageContent() {
         }
       }
     }
-  }, [answerFeedback, playCorrect, playIncorrect, playXP, playLevelUpSound, isSequentialMode, currentIndex, totalQuestions, nextQuestion]);
+  }, [
+    answerFeedback,
+    playCorrect,
+    playIncorrect,
+    playXP,
+    playLevelUpSound,
+    isSequentialMode,
+    currentIndex,
+    totalQuestions,
+    nextQuestion,
+  ]);
 
   // 次の問題へ
   const handleNext = () => {
@@ -210,19 +247,12 @@ function QuizPageContent() {
       {/* ヘッダー */}
       <header className="sticky top-0 z-10 bg-surface border-b border-edge px-4 py-3">
         <div className="flex items-center justify-between max-w-lg mx-auto">
-          <Link
-            href={returnUrl}
-            className="flex items-center gap-1.5 text-ink-sub hover:text-spot transition-colors"
-          >
+          <Link href={returnUrl} className="flex items-center gap-1.5 text-ink-sub hover:text-spot transition-colors">
             <ArrowLeftIcon />
             <span className="text-sm font-medium">戻る</span>
           </Link>
           <h1 className="font-semibold text-ink">
-            {modeParam === 'single'
-              ? '問題'
-              : categoryParam
-              ? CATEGORY_LABELS[categoryParam]
-              : 'デイリークイズ'}
+            {modeParam === 'single' ? '問題' : categoryParam ? CATEGORY_LABELS[categoryParam] : 'デイリークイズ'}
           </h1>
           <div className="w-14" />
         </div>
@@ -239,17 +269,15 @@ function QuizPageContent() {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-surface rounded-2xl p-6 text-center shadow-sm border border-edge"
               >
-                <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
-                  sessionStats.correct > 0 ? 'bg-success-subtle text-emerald-600' : 'bg-danger-subtle text-rose-600'
-                }`}>
+                <div
+                  className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
+                    sessionStats.correct > 0 ? 'bg-success-subtle text-emerald-600' : 'bg-danger-subtle text-rose-600'
+                  }`}
+                >
                   {sessionStats.correct > 0 ? '✓' : '✗'}
                 </div>
-                <h2 className="text-lg font-bold text-ink mb-2">
-                  {sessionStats.correct > 0 ? '正解！' : '不正解'}
-                </h2>
-                <p className="text-ink-muted text-sm mb-4">
-                  +{sessionStats.totalXP} XP獲得
-                </p>
+                <h2 className="text-lg font-bold text-ink mb-2">{sessionStats.correct > 0 ? '正解！' : '不正解'}</h2>
+                <p className="text-ink-muted text-sm mb-4">+{sessionStats.totalXP} XP獲得</p>
                 <Link
                   href={returnUrl}
                   className="inline-block bg-spot hover:bg-spot-hover text-white py-2.5 px-6 rounded-xl font-semibold transition-colors"
@@ -274,15 +302,15 @@ function QuizPageContent() {
                 currentIndex={currentIndex}
                 totalQuestions={totalQuestions}
                 selectedOptionId={selectedOptionId}
-                correctOptionId={showFeedback ? answerFeedback?.correctOptionId ?? null : null}
+                correctOptionId={showFeedback ? (answerFeedback?.correctOptionId ?? null) : null}
                 showFeedback={showFeedback}
                 onSelectOption={handleSelectOption}
                 xpEarned={answerFeedback?.xpEarned}
               />
 
               {/* 次へボタン */}
-              {showFeedback && (
-                isSingleMode ? (
+              {showFeedback &&
+                (isSingleMode ? (
                   // Singleモード: 直接一覧に戻るボタン
                   <Link
                     href={returnUrl}
@@ -293,11 +321,7 @@ function QuizPageContent() {
                   </Link>
                 ) : isSequentialMode ? (
                   // Sequentialモード: 正解で自動遷移、不正解は手動で次へ
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="mt-4 space-y-2"
-                  >
+                  <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-4 space-y-2">
                     {answerFeedback?.isCorrect ? (
                       // 正解時
                       currentIndex + 1 >= totalQuestions ? (
@@ -367,8 +391,7 @@ function QuizPageContent() {
                       </>
                     )}
                   </motion.button>
-                )
-              )}
+                ))}
             </>
           ) : (
             <div className="text-center py-12">
@@ -382,11 +405,7 @@ function QuizPageContent() {
       </main>
 
       {/* レベルアップモーダル */}
-      <LevelUpModal
-        show={showLevelUp}
-        newLevel={newLevel}
-        onClose={() => setShowLevelUp(false)}
-      />
+      <LevelUpModal show={showLevelUp} newLevel={newLevel} onClose={() => setShowLevelUp(false)} />
     </div>
   );
 }

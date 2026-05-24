@@ -47,19 +47,9 @@ export function useTimerControls({
   notifications,
   currentDeviceId,
 }: UseTimerControlsArgs): UseTimerControlsReturn {
-  const {
-    localState,
-    setLocalState,
-    lastUpdateRef,
-    pausedElapsedRef,
-    hasResetRef,
-  } = stateManager;
+  const { localState, setLocalState, lastUpdateRef, pausedElapsedRef, hasResetRef } = stateManager;
 
-  const {
-    soundAudioRef,
-    prepareTimerSound,
-    prepareNotificationSound,
-  } = notifications;
+  const { soundAudioRef, prepareTimerSound, prepareNotificationSound } = notifications;
 
   // タイマー更新処理（定期更新・バックグラウンド復帰・完了処理）
   const { completeTimer } = useTimerUpdater({
@@ -130,7 +120,17 @@ export function useTimerControls({
         throw error; // Firestoreへの保存に失敗した場合はエラーを投げる
       }
     },
-    [user, updateData, currentDeviceId, isLoading, prepareTimerSound, prepareNotificationSound, pausedElapsedRef, setLocalState, lastUpdateRef]
+    [
+      user,
+      updateData,
+      currentDeviceId,
+      isLoading,
+      prepareTimerSound,
+      prepareNotificationSound,
+      pausedElapsedRef,
+      setLocalState,
+      lastUpdateRef,
+    ]
   );
 
   // タイマーを一時停止
@@ -140,12 +140,7 @@ export function useTimerControls({
     const pausedElapsed = localState.pausedElapsed ?? pausedElapsedRef.current ?? 0;
     pausedElapsedRef.current = pausedElapsed;
     // 現在の経過時間を計算
-    const elapsed = calculateElapsedTime(
-      localState.startedAt,
-      localState.pausedAt,
-      pausedElapsed,
-      localState.status
-    );
+    const elapsed = calculateElapsedTime(localState.startedAt, localState.pausedAt, pausedElapsed, localState.status);
 
     const pausedAt = new Date(await getSyncedTimestamp()).toISOString();
     const updatedState: RoastTimerState = {
@@ -218,7 +213,18 @@ export function useTimerControls({
     } catch (error) {
       console.error('Failed to save roast timer state to Firestore:', error);
     }
-  }, [localState, user, updateData, currentDeviceId, isLoading, prepareTimerSound, prepareNotificationSound, pausedElapsedRef, setLocalState, lastUpdateRef]);
+  }, [
+    localState,
+    user,
+    updateData,
+    currentDeviceId,
+    isLoading,
+    prepareTimerSound,
+    prepareNotificationSound,
+    pausedElapsedRef,
+    setLocalState,
+    lastUpdateRef,
+  ]);
 
   // タイマーをスキップ(即座に完了)
   const skipTimer = useCallback(async () => {

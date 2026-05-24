@@ -44,9 +44,7 @@ test.describe('テイスティングフロー', () => {
     test.skip(isLogin, '認証が必要なためスキップ');
 
     // 新規セッション作成ボタンを探す
-    const createButton = page
-      .locator('[aria-label="新規セッション作成"]')
-      .or(page.getByText('セッションを作成'));
+    const createButton = page.locator('[aria-label="新規セッション作成"]').or(page.getByText('セッションを作成'));
     await expect(createButton.first()).toBeVisible({ timeout: 10000 });
   });
 

@@ -31,7 +31,9 @@ export function HomeHeader() {
                     R
                   </span>
                   <span className="text-[#f8f1e7] drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">oast</span>
-                  <span className="text-[#d4af37] ml-1 font-bold drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]">Plus</span>
+                  <span className="text-[#d4af37] ml-1 font-bold drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]">
+                    Plus
+                  </span>
                 </span>
                 <div className="w-full h-[1.5px] mt-0.5 bg-gradient-to-r from-transparent via-[#d4af37]/60 to-transparent shadow-[0_1px_8px_rgba(212,175,55,0.4)]"></div>
               </div>

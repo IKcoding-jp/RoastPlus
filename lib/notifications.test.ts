@@ -65,9 +65,7 @@ describe('notifications', () => {
       const result = await requestNotificationPermission();
 
       expect(result).toBe(false);
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Notification permission has been denied'
-      );
+      expect(consoleWarnSpy).toHaveBeenCalledWith('Notification permission has been denied');
     });
 
     it('権限をリクエストして許可された場合はtrueを返す', async () => {
@@ -137,9 +135,7 @@ describe('notifications', () => {
 
       await showNotification('テスト通知');
 
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Notification permission has been denied'
-      );
+      expect(consoleWarnSpy).toHaveBeenCalledWith('Notification permission has been denied');
     });
 
     it('デフォルトオプションが適用される', async () => {

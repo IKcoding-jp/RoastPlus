@@ -27,9 +27,7 @@ export default function BrewingPage() {
           <div className="space-y-6">
             {/* 開発予定セクション */}
             <section>
-              <h2 className="text-xl sm:text-2xl font-bold text-ink mb-4 pb-2 border-b border-edge">
-                開発予定
-              </h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-ink mb-4 pb-2 border-b border-edge">開発予定</h2>
               <div className="space-y-4 text-ink">
                 <p className="text-base sm:text-lg leading-relaxed">
                   コーヒーを淹れる手順をサポートする機能を開発予定です。
@@ -51,9 +49,7 @@ export default function BrewingPage() {
                     </li>
                   </ul>
                 </div>
-                <p className="text-sm sm:text-base text-ink-sub italic">
-                  ※ 詳細な機能要件は今後追加予定です。
-                </p>
+                <p className="text-sm sm:text-base text-ink-sub italic">※ 詳細な機能要件は今後追加予定です。</p>
               </div>
             </section>
           </div>
@@ -62,4 +58,3 @@ export default function BrewingPage() {
     </div>
   );
 }
-

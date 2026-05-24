@@ -50,17 +50,12 @@ export function NotificationModal({ notification, onSave, onCancel }: Notificati
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6 text-gray-900">
-          <h3 className="text-xl font-semibold text-gray-900 mb-6">
-            {notification ? '通知を編集' : '通知を追加'}
-          </h3>
+          <h3 className="text-xl font-semibold text-gray-900 mb-6">{notification ? '通知を編集' : '通知を追加'}</h3>
           <form onSubmit={handleSubmit}>
             <div className="space-y-4">
               {/* タイトル */}
               <div>
-                <label
-                  htmlFor="title"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
+                <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
                   タイトル <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -69,24 +64,19 @@ export function NotificationModal({ notification, onSave, onCancel }: Notificati
                   value={title}
                   onChange={(e) => {
                     setTitle(e.target.value);
-                    if (errors.title) setErrors(prev => ({ ...prev, title: undefined }));
+                    if (errors.title) setErrors((prev) => ({ ...prev, title: undefined }));
                   }}
                   className={`w-full px-4 py-2 border rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 ${
                     errors.title ? 'border-red-500' : 'border-gray-300'
                   }`}
                   placeholder="通知のタイトルを入力"
                 />
-                {errors.title && (
-                  <p className="mt-1 text-sm text-red-600">{errors.title}</p>
-                )}
+                {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
               </div>
 
               {/* 内容 */}
               <div>
-                <label
-                  htmlFor="content"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
+                <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
                   内容 <span className="text-red-500">*</span>
                 </label>
                 <textarea
@@ -94,7 +84,7 @@ export function NotificationModal({ notification, onSave, onCancel }: Notificati
                   value={content}
                   onChange={(e) => {
                     setContent(e.target.value);
-                    if (errors.content) setErrors(prev => ({ ...prev, content: undefined }));
+                    if (errors.content) setErrors((prev) => ({ ...prev, content: undefined }));
                   }}
                   rows={6}
                   className={`w-full px-4 py-2 border rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 ${
@@ -102,17 +92,12 @@ export function NotificationModal({ notification, onSave, onCancel }: Notificati
                   }`}
                   placeholder="通知の内容を入力"
                 />
-                {errors.content && (
-                  <p className="mt-1 text-sm text-red-600">{errors.content}</p>
-                )}
+                {errors.content && <p className="mt-1 text-sm text-red-600">{errors.content}</p>}
               </div>
 
               {/* 日付 */}
               <div>
-                <label
-                  htmlFor="date"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
+                <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-2">
                   日付 <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -121,15 +106,13 @@ export function NotificationModal({ notification, onSave, onCancel }: Notificati
                   value={date}
                   onChange={(e) => {
                     setDate(e.target.value);
-                    if (errors.date) setErrors(prev => ({ ...prev, date: undefined }));
+                    if (errors.date) setErrors((prev) => ({ ...prev, date: undefined }));
                   }}
                   className={`w-full px-4 py-2 border rounded-lg text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-orange-500 ${
                     errors.date ? 'border-red-500' : 'border-gray-300'
                   }`}
                 />
-                {errors.date && (
-                  <p className="mt-1 text-sm text-red-600">{errors.date}</p>
-                )}
+                {errors.date && <p className="mt-1 text-sm text-red-600">{errors.date}</p>}
               </div>
 
               {/* 種類 */}
@@ -150,20 +133,10 @@ export function NotificationModal({ notification, onSave, onCancel }: Notificati
             </div>
 
             <div className="flex gap-3 justify-end mt-6">
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={onCancel}
-              >
+              <Button type="button" variant="secondary" size="sm" onClick={onCancel}>
                 キャンセル
               </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                size="sm"
-                className="bg-orange-500 hover:bg-orange-600"
-              >
+              <Button type="submit" variant="primary" size="sm" className="bg-orange-500 hover:bg-orange-600">
                 {notification ? '更新' : '追加'}
               </Button>
             </div>

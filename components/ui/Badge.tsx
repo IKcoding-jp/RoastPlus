@@ -50,7 +50,9 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
       sizeStyles[size],
       variantStyles[variant],
       className,
-    ].filter(Boolean).join(' ');
+    ]
+      .filter(Boolean)
+      .join(' ');
 
     return (
       <span ref={ref} className={badgeStyles} {...props}>

@@ -51,9 +51,7 @@ test.describe('設定ページフロー', () => {
     test.skip(isLogin, '認証が必要なためスキップ');
 
     // テーマ設定へのリンクを探してクリック
-    const themeLink = page
-      .getByText('テーマ')
-      .or(page.locator('a[href*="theme"]'));
+    const themeLink = page.getByText('テーマ').or(page.locator('a[href*="theme"]'));
     const isThemeLinkVisible = await themeLink
       .first()
       .isVisible({ timeout: 10000 })

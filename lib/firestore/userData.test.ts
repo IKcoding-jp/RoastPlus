@@ -10,17 +10,13 @@ const firestoreMocks = vi.hoisted(() => {
     getFirestore: vi.fn(() => ({ app: 'mock-firestore' })),
     doc: vi.fn((first: { path?: string } | unknown, ...segments: string[]) => {
       const basePath =
-        first && typeof first === 'object' && 'path' in first && typeof first.path === 'string'
-          ? first.path
-          : '';
+        first && typeof first === 'object' && 'path' in first && typeof first.path === 'string' ? first.path : '';
       const path = basePath ? [basePath, ...segments].join('/') : segments.join('/');
       return { id: segments.at(-1), path };
     }),
     collection: vi.fn((first: { path?: string } | unknown, ...segments: string[]) => {
       const basePath =
-        first && typeof first === 'object' && 'path' in first && typeof first.path === 'string'
-          ? first.path
-          : '';
+        first && typeof first === 'object' && 'path' in first && typeof first.path === 'string' ? first.path : '';
       const path = basePath ? [basePath, ...segments].join('/') : segments.join('/');
       return { path };
     }),
@@ -101,7 +97,9 @@ describe('getUserData workProgresses split compatibility', () => {
 
   it('新形式がない場合は旧root workProgressesから読み込む', async () => {
     firestoreMocks.getDoc
-      .mockResolvedValueOnce(docSnapshot(baseAppData({ workProgresses: [rootWorkProgress] }) as unknown as Record<string, unknown>))
+      .mockResolvedValueOnce(
+        docSnapshot(baseAppData({ workProgresses: [rootWorkProgress] }) as unknown as Record<string, unknown>)
+      )
       .mockResolvedValueOnce(docSnapshot(undefined));
     firestoreMocks.getDocs.mockResolvedValueOnce(querySnapshot([]));
 
@@ -114,7 +112,9 @@ describe('getUserData workProgresses split compatibility', () => {
 
   it('新形式がある場合は旧rootより users/{uid}/workProgresses を優先する', async () => {
     firestoreMocks.getDoc
-      .mockResolvedValueOnce(docSnapshot(baseAppData({ workProgresses: [rootWorkProgress] }) as unknown as Record<string, unknown>))
+      .mockResolvedValueOnce(
+        docSnapshot(baseAppData({ workProgresses: [rootWorkProgress] }) as unknown as Record<string, unknown>)
+      )
       .mockResolvedValueOnce(docSnapshot(undefined));
     firestoreMocks.getDocs.mockResolvedValueOnce(querySnapshot([splitWorkProgress]));
 
@@ -127,7 +127,9 @@ describe('getUserData workProgresses split compatibility', () => {
 
   it('移行済み判定がある場合は空サブコレクションでも旧rootへfallbackしない', async () => {
     firestoreMocks.getDoc
-      .mockResolvedValueOnce(docSnapshot(baseAppData({ workProgresses: [rootWorkProgress] }) as unknown as Record<string, unknown>))
+      .mockResolvedValueOnce(
+        docSnapshot(baseAppData({ workProgresses: [rootWorkProgress] }) as unknown as Record<string, unknown>)
+      )
       .mockResolvedValueOnce(docSnapshot({ workProgressesMigrated: true }));
     firestoreMocks.getDocs.mockResolvedValueOnce(querySnapshot([]));
 
@@ -141,7 +143,9 @@ describe('getUserData workProgresses split compatibility', () => {
   it('分離状態の読み込みに失敗した場合はroot workProgressesへfallbackする', async () => {
     const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     firestoreMocks.getDoc
-      .mockResolvedValueOnce(docSnapshot(baseAppData({ workProgresses: [rootWorkProgress] }) as unknown as Record<string, unknown>))
+      .mockResolvedValueOnce(
+        docSnapshot(baseAppData({ workProgresses: [rootWorkProgress] }) as unknown as Record<string, unknown>)
+      )
       .mockResolvedValueOnce(docSnapshot(undefined));
     firestoreMocks.getDocs.mockRejectedValueOnce(new Error('permission denied'));
 
@@ -181,10 +185,12 @@ describe('subscribeUserData workProgresses split merge', () => {
     const unsubscribe = subscribeUserData('user-1', (data) => received.push(data));
 
     snapshotHandlers.get('users/user-1')?.(
-      docSnapshot(baseAppData({
-        encouragementCount: 1,
-        workProgresses: [rootWorkProgress],
-      }) as unknown as Record<string, unknown>)
+      docSnapshot(
+        baseAppData({
+          encouragementCount: 1,
+          workProgresses: [rootWorkProgress],
+        }) as unknown as Record<string, unknown>
+      )
     );
     snapshotHandlers.get('users/user-1/_meta/dataSplits')?.(docSnapshot(undefined));
     snapshotHandlers.get('users/user-1/workProgresses')?.(querySnapshot([splitWorkProgress]));
@@ -193,10 +199,12 @@ describe('subscribeUserData workProgresses split merge', () => {
     expect(received.at(-1)?.workProgresses).toEqual([splitWorkProgress]);
 
     snapshotHandlers.get('users/user-1')?.(
-      docSnapshot(baseAppData({
-        encouragementCount: 2,
-        workProgresses: [rootWorkProgress],
-      }) as unknown as Record<string, unknown>)
+      docSnapshot(
+        baseAppData({
+          encouragementCount: 2,
+          workProgresses: [rootWorkProgress],
+        }) as unknown as Record<string, unknown>
+      )
     );
 
     expect(received.at(-1)?.encouragementCount).toBe(2);
@@ -215,9 +223,7 @@ describe('subscribeUserData workProgresses split merge', () => {
     snapshotHandlers.get('users/user-1')?.(
       docSnapshot(baseAppData({ workProgresses: [rootWorkProgress] }) as unknown as Record<string, unknown>)
     );
-    snapshotHandlers.get('users/user-1/_meta/dataSplits')?.(
-      docSnapshot({ workProgressesMigrated: true })
-    );
+    snapshotHandlers.get('users/user-1/_meta/dataSplits')?.(docSnapshot({ workProgressesMigrated: true }));
     snapshotHandlers.get('users/user-1/workProgresses')?.(querySnapshot([]));
 
     expect(received.at(-1)?.workProgresses).toEqual([]);
@@ -231,10 +237,12 @@ describe('subscribeUserData workProgresses split merge', () => {
     subscribeUserData('user-1', (data) => received.push(data));
 
     snapshotHandlers.get('users/user-1')?.(
-      docSnapshot(baseAppData({
-        encouragementCount: 4,
-        workProgresses: [rootWorkProgress],
-      }) as unknown as Record<string, unknown>)
+      docSnapshot(
+        baseAppData({
+          encouragementCount: 4,
+          workProgresses: [rootWorkProgress],
+        }) as unknown as Record<string, unknown>
+      )
     );
     snapshotHandlers.get('users/user-1/_meta/dataSplits')?.(docSnapshot(undefined));
     errorHandlers.get('users/user-1/workProgresses')?.(new Error('permission denied'));

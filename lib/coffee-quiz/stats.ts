@@ -28,9 +28,7 @@ export function updateStats(
 
   // 正解率を計算
   newStats.averageAccuracy =
-    newStats.totalQuestions > 0
-      ? Math.round((newStats.totalCorrect / newStats.totalQuestions) * 100)
-      : 0;
+    newStats.totalQuestions > 0 ? Math.round((newStats.totalCorrect / newStats.totalQuestions) * 100) : 0;
 
   // カテゴリ統計
   const catStat = newStats.categoryStats[category];
@@ -38,9 +36,7 @@ export function updateStats(
     total: catStat.total + 1,
     correct: catStat.correct + (isCorrect ? 1 : 0),
     accuracy:
-      catStat.total + 1 > 0
-        ? Math.round(((catStat.correct + (isCorrect ? 1 : 0)) / (catStat.total + 1)) * 100)
-        : 0,
+      catStat.total + 1 > 0 ? Math.round(((catStat.correct + (isCorrect ? 1 : 0)) / (catStat.total + 1)) * 100) : 0,
     masteredCount: catStat.masteredCount + (isMastered ? 1 : 0),
   };
 
@@ -50,9 +46,7 @@ export function updateStats(
     total: diffStat.total + 1,
     correct: diffStat.correct + (isCorrect ? 1 : 0),
     accuracy:
-      diffStat.total + 1 > 0
-        ? Math.round(((diffStat.correct + (isCorrect ? 1 : 0)) / (diffStat.total + 1)) * 100)
-        : 0,
+      diffStat.total + 1 > 0 ? Math.round(((diffStat.correct + (isCorrect ? 1 : 0)) / (diffStat.total + 1)) * 100) : 0,
   };
 
   // 週間アクティビティ
@@ -61,8 +55,7 @@ export function updateStats(
     newStats.weeklyActivity[todayActivityIndex] = {
       ...newStats.weeklyActivity[todayActivityIndex],
       questionsAnswered: newStats.weeklyActivity[todayActivityIndex].questionsAnswered + 1,
-      correctAnswers:
-        newStats.weeklyActivity[todayActivityIndex].correctAnswers + (isCorrect ? 1 : 0),
+      correctAnswers: newStats.weeklyActivity[todayActivityIndex].correctAnswers + (isCorrect ? 1 : 0),
     };
   } else {
     // 最新7日間のみ保持

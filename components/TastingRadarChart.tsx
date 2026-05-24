@@ -32,10 +32,7 @@ export function TastingRadarChart({ record, size }: TastingRadarChartProps) {
         const containerHeight = containerRef.current.offsetHeight;
         const sizeBasedOnWidth = containerWidth * 0.85;
         const sizeBasedOnHeight = containerHeight * 0.85;
-        const calculatedSize = Math.min(
-          500,
-          Math.max(60, Math.min(sizeBasedOnWidth, sizeBasedOnHeight))
-        );
+        const calculatedSize = Math.min(500, Math.max(60, Math.min(sizeBasedOnWidth, sizeBasedOnHeight)));
         setChartSize(calculatedSize);
       }
     };
@@ -99,11 +96,11 @@ export function TastingRadarChart({ record, size }: TastingRadarChartProps) {
     { label: '甘み', value: record.sweetness },
     { label: '香り', value: record.aroma },
   ];
-  
+
   // 上から時計回りに等間隔で配置（-90度から開始、72度ずつ）
   const axes = axisLabels.map((item, index) => ({
     ...item,
-    angle: -Math.PI / 2 + (2 * Math.PI / 5) * index,
+    angle: -Math.PI / 2 + ((2 * Math.PI) / 5) * index,
   }));
 
   // 値の範囲は1.0〜5.0
@@ -120,25 +117,23 @@ export function TastingRadarChart({ record, size }: TastingRadarChartProps) {
   });
 
   // パス文字列を生成
-  const pathData = points.map((point, index) => {
-    return `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`;
-  }).join(' ') + ' Z';
+  const pathData =
+    points
+      .map((point, index) => {
+        return `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`;
+      })
+      .join(' ') + ' Z';
 
   return (
-    <div 
-      ref={containerRef} 
+    <div
+      ref={containerRef}
       className="flex flex-col items-center justify-center w-full h-full"
       style={{
         opacity: isVisible ? 1 : 0,
         transition: 'opacity 0.2s ease-in',
       }}
     >
-      <svg 
-        ref={svgRef}
-        width={effectiveSize} 
-        height={effectiveSize} 
-        className="overflow-visible"
-      >
+      <svg ref={svgRef} width={effectiveSize} height={effectiveSize} className="overflow-visible">
         {/* グリッド線（同心円） */}
         {[0.25, 0.5, 0.75, 1.0].map((scale) => (
           <circle
@@ -156,17 +151,7 @@ export function TastingRadarChart({ record, size }: TastingRadarChartProps) {
         {axes.map((axis, index) => {
           const x = centerX + radius * Math.cos(axis.angle);
           const y = centerY + radius * Math.sin(axis.angle);
-          return (
-            <line
-              key={index}
-              x1={centerX}
-              y1={centerY}
-              x2={x}
-              y2={y}
-              stroke="#E5E7EB"
-              strokeWidth="1"
-            />
-          );
+          return <line key={index} x1={centerX} y1={centerY} x2={x} y2={y} stroke="#E5E7EB" strokeWidth="1" />;
         })}
 
         {/* データエリア */}
@@ -181,8 +166,8 @@ export function TastingRadarChart({ record, size }: TastingRadarChartProps) {
           strokeDasharray={pathLength > 0 ? pathLength : 0}
           strokeDashoffset={isVisible ? 0 : pathLength}
           style={{
-            transition: isVisible 
-              ? 'stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1), fill-opacity 0.4s ease-out 0.8s' 
+            transition: isVisible
+              ? 'stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1), fill-opacity 0.4s ease-out 0.8s'
               : 'none',
           }}
         />
@@ -226,9 +211,13 @@ export function TastingRadarChart({ record, size }: TastingRadarChartProps) {
           const axis = axes[index];
           const labelX = centerX + (radius + 28) * Math.cos(axis.angle);
           const labelY = centerY + (radius + 28) * Math.sin(axis.angle);
-          
+
           return (
-            <g key={index} className="transition-opacity duration-300" style={{ opacity: isVisible ? 1 : 0, transitionDelay: `${1.2 + index * 0.05}s` }}>
+            <g
+              key={index}
+              className="transition-opacity duration-300"
+              style={{ opacity: isVisible ? 1 : 0, transitionDelay: `${1.2 + index * 0.05}s` }}
+            >
               <text
                 x={labelX}
                 y={labelY - 2}
@@ -254,4 +243,3 @@ export function TastingRadarChart({ record, size }: TastingRadarChartProps) {
     </div>
   );
 }
-

@@ -1,8 +1,4 @@
-import {
-  MAX_BASE64_LENGTH,
-  normalizeOCRImageBase64,
-  validateTastingAnalysisRequest,
-} from './helpers';
+import { MAX_BASE64_LENGTH, normalizeOCRImageBase64, validateTastingAnalysisRequest } from './helpers';
 
 describe('validateTastingAnalysisRequest', () => {
   it('有効な分析リクエストを正規化する', () => {
@@ -66,20 +62,18 @@ describe('normalizeOCRImageBase64', () => {
   });
 
   it('生のBase64文字列はJPEGのdata URLに変換する', () => {
-    expect(normalizeOCRImageBase64({ imageBase64: 'abcd' })).toBe(
-      'data:image/jpeg;base64,abcd'
-    );
+    expect(normalizeOCRImageBase64({ imageBase64: 'abcd' })).toBe('data:image/jpeg;base64,abcd');
   });
 
   it('画像以外のdata URLは拒否する', () => {
-    expect(() =>
-      normalizeOCRImageBase64({ imageBase64: 'data:text/html;base64,abcd' })
-    ).toThrow('画像データの形式が正しくありません');
+    expect(() => normalizeOCRImageBase64({ imageBase64: 'data:text/html;base64,abcd' })).toThrow(
+      '画像データの形式が正しくありません'
+    );
   });
 
   it('上限を超える画像は拒否する', () => {
-    expect(() =>
-      normalizeOCRImageBase64({ imageBase64: 'a'.repeat(MAX_BASE64_LENGTH + 1) })
-    ).toThrow('画像サイズが大きすぎます');
+    expect(() => normalizeOCRImageBase64({ imageBase64: 'a'.repeat(MAX_BASE64_LENGTH + 1) })).toThrow(
+      '画像サイズが大きすぎます'
+    );
   });
 });

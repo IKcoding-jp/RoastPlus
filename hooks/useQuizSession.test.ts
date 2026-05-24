@@ -8,9 +8,7 @@ const mockRecordAnswer = vi.fn().mockResolvedValue({
   leveledUp: false,
 });
 
-const mockGetDueCardsForReview = vi.fn().mockReturnValue([
-  { questionId: 'q1', due: new Date() },
-]);
+const mockGetDueCardsForReview = vi.fn().mockReturnValue([{ questionId: 'q1', due: new Date() }]);
 
 // useQuizDataのモック
 vi.mock('./useQuizData', () => ({
@@ -204,9 +202,7 @@ describe('useQuizSession', () => {
     });
 
     it('categoryモードでセッションを開始できる', async () => {
-      const { result } = renderHook(() =>
-        useQuizSession({ mode: 'category', category: 'basics', count: 2 })
-      );
+      const { result } = renderHook(() => useQuizSession({ mode: 'category', category: 'basics', count: 2 }));
 
       await act(async () => {
         await result.current.startSession();
@@ -236,9 +232,7 @@ describe('useQuizSession', () => {
     });
 
     it('questionIdsを指定してセッションを開始できる', async () => {
-      const { result } = renderHook(() =>
-        useQuizSession({ mode: 'category', questionIds: ['q1', 'q2'] })
-      );
+      const { result } = renderHook(() => useQuizSession({ mode: 'category', questionIds: ['q1', 'q2'] }));
 
       await act(async () => {
         await result.current.startSession();
@@ -446,9 +440,7 @@ describe('useQuizSession', () => {
 
   describe('startSession - 追加モード', () => {
     it('singleモードでquestionIdsを指定してセッションを開始できる', async () => {
-      const { result } = renderHook(() =>
-        useQuizSession({ mode: 'single', questionIds: ['q1', 'q2'] })
-      );
+      const { result } = renderHook(() => useQuizSession({ mode: 'single', questionIds: ['q1', 'q2'] }));
 
       await act(async () => {
         await result.current.startSession();
@@ -463,9 +455,7 @@ describe('useQuizSession', () => {
     });
 
     it('shuffleモードでquestionIdsを指定してセッションを開始できる', async () => {
-      const { result } = renderHook(() =>
-        useQuizSession({ mode: 'shuffle', questionIds: ['q1'] })
-      );
+      const { result } = renderHook(() => useQuizSession({ mode: 'shuffle', questionIds: ['q1'] }));
 
       await act(async () => {
         await result.current.startSession();
@@ -479,9 +469,7 @@ describe('useQuizSession', () => {
     });
 
     it('sequentialモードでquestionIdsを指定してセッションを開始できる', async () => {
-      const { result } = renderHook(() =>
-        useQuizSession({ mode: 'sequential', questionIds: ['q1', 'q2'] })
-      );
+      const { result } = renderHook(() => useQuizSession({ mode: 'sequential', questionIds: ['q1', 'q2'] }));
 
       await act(async () => {
         await result.current.startSession();
@@ -496,9 +484,7 @@ describe('useQuizSession', () => {
     });
 
     it('single/shuffle/sequentialモードでquestionIdsが空の場合はセッションが空で開始', async () => {
-      const { result } = renderHook(() =>
-        useQuizSession({ mode: 'single', questionIds: [] })
-      );
+      const { result } = renderHook(() => useQuizSession({ mode: 'single', questionIds: [] }));
 
       await act(async () => {
         await result.current.startSession();
@@ -531,10 +517,7 @@ describe('useQuizSession', () => {
       });
 
       expect(result.current.session).toBeNull();
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Failed to start quiz session:',
-        expect.any(Error)
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to start quiz session:', expect.any(Error));
 
       consoleErrorSpy.mockRestore();
     });

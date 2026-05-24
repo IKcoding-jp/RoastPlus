@@ -76,9 +76,7 @@ function ButtonDemo() {
     <div className="space-y-6">
       {/* Variants */}
       <div>
-        <h3 className="text-sm font-semibold mb-2 text-ink">
-          Variants
-        </h3>
+        <h3 className="text-sm font-semibold mb-2 text-ink">Variants</h3>
         <div className="flex flex-wrap gap-3">
           <Button variant="primary">Primary</Button>
           <Button variant="secondary">Secondary</Button>
@@ -93,9 +91,7 @@ function ButtonDemo() {
 
       {/* Sizes */}
       <div>
-        <h3 className="text-sm font-semibold mb-2 text-ink">
-          Sizes
-        </h3>
+        <h3 className="text-sm font-semibold mb-2 text-ink">Sizes</h3>
         <div className="flex flex-wrap items-center gap-3">
           <Button size="sm">Small</Button>
           <Button size="md">Medium</Button>
@@ -105,9 +101,7 @@ function ButtonDemo() {
 
       {/* States */}
       <div>
-        <h3 className="text-sm font-semibold mb-2 text-ink">
-          States
-        </h3>
+        <h3 className="text-sm font-semibold mb-2 text-ink">States</h3>
         <div className="flex flex-wrap gap-3">
           <Button disabled>Disabled</Button>
           <Button loading={loading} onClick={handleSubmit}>
@@ -124,42 +118,56 @@ function IconButtonDemo() {
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold mb-2 text-ink">
-          Variants
-        </h3>
+        <h3 className="text-sm font-semibold mb-2 text-ink">Variants</h3>
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex flex-col items-center gap-1">
-            <IconButton variant="default"><HiX size={20} /></IconButton>
+            <IconButton variant="default">
+              <HiX size={20} />
+            </IconButton>
             <span className="text-xs text-ink-muted">default</span>
           </div>
           <div className="flex flex-col items-center gap-1">
-            <IconButton variant="primary"><HiPlus size={20} /></IconButton>
+            <IconButton variant="primary">
+              <HiPlus size={20} />
+            </IconButton>
             <span className="text-xs text-ink-muted">primary</span>
           </div>
           <div className="flex flex-col items-center gap-1">
-            <IconButton variant="danger"><HiTrash size={20} /></IconButton>
+            <IconButton variant="danger">
+              <HiTrash size={20} />
+            </IconButton>
             <span className="text-xs text-ink-muted">danger</span>
           </div>
           <div className="flex flex-col items-center gap-1">
-            <IconButton variant="success"><HiCheck size={20} /></IconButton>
+            <IconButton variant="success">
+              <HiCheck size={20} />
+            </IconButton>
             <span className="text-xs text-ink-muted">success</span>
           </div>
           <div className="flex flex-col items-center gap-1">
-            <IconButton variant="ghost"><HiCog size={20} /></IconButton>
+            <IconButton variant="ghost">
+              <HiCog size={20} />
+            </IconButton>
             <span className="text-xs text-ink-muted">ghost</span>
           </div>
         </div>
       </div>
 
       <div>
-        <h3 className="text-sm font-semibold mb-2 text-ink">
-          Sizes & Rounded
-        </h3>
+        <h3 className="text-sm font-semibold mb-2 text-ink">Sizes & Rounded</h3>
         <div className="flex flex-wrap items-center gap-3">
-          <IconButton size="sm"><MdClose size={16} /></IconButton>
-          <IconButton size="md"><MdClose size={20} /></IconButton>
-          <IconButton size="lg"><MdClose size={24} /></IconButton>
-          <IconButton rounded variant="primary"><MdAdd size={20} /></IconButton>
+          <IconButton size="sm">
+            <MdClose size={16} />
+          </IconButton>
+          <IconButton size="md">
+            <MdClose size={20} />
+          </IconButton>
+          <IconButton size="lg">
+            <MdClose size={24} />
+          </IconButton>
+          <IconButton rounded variant="primary">
+            <MdAdd size={20} />
+          </IconButton>
         </div>
       </div>
     </div>
@@ -172,12 +180,7 @@ function InputDemo() {
 
   return (
     <div className="space-y-4">
-      <Input
-        label="名前"
-        placeholder="山田太郎"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
+      <Input label="名前" placeholder="山田太郎" value={name} onChange={(e) => setName(e.target.value)} />
       <Input
         label="パスワード（トグル付き）"
         type="password"
@@ -186,11 +189,7 @@ function InputDemo() {
         onChange={(e) => setPassword(e.target.value)}
         showPasswordToggle
       />
-      <Input
-        label="エラー表示テスト"
-        placeholder="入力してください"
-        error="このフィールドは必須です"
-      />
+      <Input label="エラー表示テスト" placeholder="入力してください" error="このフィールドは必須です" />
     </div>
   );
 }
@@ -200,12 +199,7 @@ function NumberInputDemo() {
 
   return (
     <div className="space-y-4">
-      <NumberInput
-        label="幅設定"
-        suffix="px"
-        value={width}
-        onChange={(e) => setWidth(parseInt(e.target.value) || 0)}
-      />
+      <NumberInput label="幅設定" suffix="px" value={width} onChange={(e) => setWidth(parseInt(e.target.value) || 0)} />
       <NumberInput
         label="エラー表示テスト"
         suffix="px"
@@ -223,27 +217,15 @@ function InlineInputDemo() {
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold mb-2 text-ink">
-          Light Background
-        </h3>
+        <h3 className="text-sm font-semibold mb-2 text-ink">Light Background</h3>
         <div className="p-4 rounded-lg bg-ground">
-          <InlineInput
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            variant="light"
-          />
+          <InlineInput value={value} onChange={(e) => setValue(e.target.value)} variant="light" />
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-semibold mb-2 text-ink">
-          Dark Background
-        </h3>
+        <h3 className="text-sm font-semibold mb-2 text-ink">Dark Background</h3>
         <div className="p-4 rounded-lg bg-ground">
-          <InlineInput
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            variant="dark"
-          />
+          <InlineInput value={value} onChange={(e) => setValue(e.target.value)} variant="dark" />
         </div>
       </div>
     </div>
@@ -288,21 +270,14 @@ function CheckboxDemo() {
 
   return (
     <div className="space-y-4">
-      <Checkbox
-        label="基本的なチェックボックス"
-        checked={checked1}
-        onChange={(e) => setChecked1(e.target.checked)}
-      />
+      <Checkbox label="基本的なチェックボックス" checked={checked1} onChange={(e) => setChecked1(e.target.checked)} />
       <Checkbox
         label="説明文付き"
         description="このオプションを有効にすると、通知が送信されます。"
         checked={checked2}
         onChange={(e) => setChecked2(e.target.checked)}
       />
-      <Checkbox
-        label="無効状態"
-        disabled
-      />
+      <Checkbox label="無効状態" disabled />
     </div>
   );
 }
@@ -312,11 +287,7 @@ function SwitchDemo() {
 
   return (
     <div className="space-y-4">
-      <Switch
-        label="通知を有効にする"
-        checked={switchOn}
-        onChange={(e) => setSwitchOn(e.target.checked)}
-      />
+      <Switch label="通知を有効にする" checked={switchOn} onChange={(e) => setSwitchOn(e.target.checked)} />
       <div className="flex flex-wrap items-center gap-6">
         <Switch size="sm" checked={true} label="Small" />
         <Switch size="md" checked={true} label="Medium" />
@@ -330,14 +301,10 @@ function CardDemo() {
   return (
     <div className="space-y-4">
       <Card variant="default">
-        <p className="text-ink">
-          Default Card - 基本的なカード
-        </p>
+        <p className="text-ink">Default Card - 基本的なカード</p>
       </Card>
       <Card variant="hoverable">
-        <p className="text-ink">
-          Hoverable Card - ホバーでシャドウ変化
-        </p>
+        <p className="text-ink">Hoverable Card - ホバーでシャドウ変化</p>
       </Card>
       <Card variant="coffee">
         <p className="text-white">Coffee Card - ダークブラウン背景</p>
@@ -360,12 +327,8 @@ function ModalDemo() {
         contentClassName="bg-overlay rounded-2xl shadow-xl overflow-hidden max-w-sm w-full border border-edge"
       >
         <div className="p-6">
-          <h3 className="text-lg font-bold mb-2 text-ink">
-            モーダルタイトル
-          </h3>
-          <p className="text-sm mb-4 text-ink-sub">
-            これはモーダルの内容です。
-          </p>
+          <h3 className="text-lg font-bold mb-2 text-ink">モーダルタイトル</h3>
+          <p className="text-sm mb-4 text-ink-sub">これはモーダルの内容です。</p>
           <div className="flex justify-end">
             <Button variant="primary" onClick={() => setShowModal(false)}>
               閉じる
@@ -416,9 +379,7 @@ function BadgeDemo() {
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold mb-2 text-ink">
-          Variants
-        </h3>
+        <h3 className="text-sm font-semibold mb-2 text-ink">Variants</h3>
         <div className="flex flex-wrap gap-2">
           <Badge variant="default">Default</Badge>
           <Badge variant="primary">Primary</Badge>
@@ -430,13 +391,17 @@ function BadgeDemo() {
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-semibold mb-2 text-ink">
-          Sizes
-        </h3>
+        <h3 className="text-sm font-semibold mb-2 text-ink">Sizes</h3>
         <div className="flex flex-wrap items-center gap-2">
-          <Badge size="sm" variant="primary">Small</Badge>
-          <Badge size="md" variant="primary">Medium</Badge>
-          <Badge size="lg" variant="primary">Large</Badge>
+          <Badge size="sm" variant="primary">
+            Small
+          </Badge>
+          <Badge size="md" variant="primary">
+            Medium
+          </Badge>
+          <Badge size="lg" variant="primary">
+            Large
+          </Badge>
         </div>
       </div>
     </div>
@@ -447,9 +412,7 @@ function RoastLevelBadgeDemo() {
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold mb-2 text-ink">
-          焙煎度レベル
-        </h3>
+        <h3 className="text-sm font-semibold mb-2 text-ink">焙煎度レベル</h3>
         <div className="flex flex-wrap gap-3">
           <RoastLevelBadge level="浅煎り" />
           <RoastLevelBadge level="中煎り" />
@@ -458,9 +421,7 @@ function RoastLevelBadgeDemo() {
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-semibold mb-2 text-ink">
-          サイズ
-        </h3>
+        <h3 className="text-sm font-semibold mb-2 text-ink">サイズ</h3>
         <div className="flex flex-wrap items-center gap-3">
           <RoastLevelBadge level="中深煎り" size="sm" />
           <RoastLevelBadge level="中深煎り" size="md" />
@@ -546,17 +507,11 @@ function BackLinkDemo() {
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold mb-2 text-ink">
-          Default（テキスト付き）
-        </h3>
-        <BackLink href="#">
-          一覧に戻る
-        </BackLink>
+        <h3 className="text-sm font-semibold mb-2 text-ink">Default（テキスト付き）</h3>
+        <BackLink href="#">一覧に戻る</BackLink>
       </div>
       <div>
-        <h3 className="text-sm font-semibold mb-2 text-ink">
-          Icon Only（アイコンのみ）
-        </h3>
+        <h3 className="text-sm font-semibold mb-2 text-ink">Icon Only（アイコンのみ）</h3>
         <BackLink href="#" variant="icon-only" />
       </div>
     </div>
@@ -567,25 +522,25 @@ function FloatingNavDemo() {
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-sm font-semibold mb-2 text-ink">
-          戻るボタンのみ
-        </h3>
+        <h3 className="text-sm font-semibold mb-2 text-ink">戻るボタンのみ</h3>
         <div className="relative h-24 bg-ground rounded-lg overflow-hidden transform-gpu">
           <FloatingNav backHref="#" />
           <p className="pt-14 text-center text-sm text-ink-sub">コンテンツ領域</p>
         </div>
       </div>
       <div>
-        <h3 className="text-sm font-semibold mb-2 text-ink">
-          戻る + 右アクション
-        </h3>
+        <h3 className="text-sm font-semibold mb-2 text-ink">戻る + 右アクション</h3>
         <div className="relative h-24 bg-ground rounded-lg overflow-hidden transform-gpu">
           <FloatingNav
             backHref="#"
             right={
               <>
-                <Button variant="surface" size="sm"><HiCog className="h-4 w-4" /></Button>
-                <Button variant="primary" size="sm"><HiPlus className="h-4 w-4" /> 追加</Button>
+                <Button variant="surface" size="sm">
+                  <HiCog className="h-4 w-4" />
+                </Button>
+                <Button variant="primary" size="sm">
+                  <HiPlus className="h-4 w-4" /> 追加
+                </Button>
               </>
             }
           />
@@ -612,7 +567,8 @@ export const componentRegistry: ComponentRegistryItem[] = [
   // ボタン系
   {
     name: 'Button',
-    description: '統一されたボタンコンポーネント。8種類のvariant（primary, secondary, danger, success, outline, ghost, coffee, surface）と3種類のサイズ。',
+    description:
+      '統一されたボタンコンポーネント。8種類のvariant（primary, secondary, danger, success, outline, ghost, coffee, surface）と3種類のサイズ。',
     category: 'button',
     Demo: ButtonDemo,
   },

@@ -48,18 +48,11 @@ export function Loading({ message = '読み込み中...', fullScreen = true }: L
               <div className="text-gray-400">読み込み中...</div>
             </div>
           ) : (
-            <Lottie
-              animationData={animationData}
-              loop={true}
-              style={{ width: 200, height: 200 }}
-            />
+            <Lottie animationData={animationData} loop={true} style={{ width: 200, height: 200 }} />
           )}
         </div>
-        {message && (
-          <div className="text-lg text-gray-600">{message}</div>
-        )}
+        {message && <div className="text-lg text-gray-600">{message}</div>}
       </div>
     </div>
   );
 }
-

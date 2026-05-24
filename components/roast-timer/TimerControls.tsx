@@ -47,10 +47,7 @@ export function TimerControls({
           >
             {formatTime(Math.floor(elapsed))}
           </span>
-          <div
-            className="flex-1 h-[3px] rounded-full overflow-hidden"
-            style={{ background: 'var(--edge)' }}
-          >
+          <div className="flex-1 h-[3px] rounded-full overflow-hidden" style={{ background: 'var(--edge)' }}>
             <div
               className="h-full rounded-full"
               style={{
@@ -74,31 +71,19 @@ export function TimerControls({
           style={{ background: 'var(--ground)', padding: '12px 20px' }}
         >
           <div className="flex flex-col items-center gap-[3px]">
-            <span
-              className="uppercase tracking-[0.14em] font-bold"
-              style={{ fontSize: 9, color: 'var(--ink-muted)' }}
-            >
+            <span className="uppercase tracking-[0.14em] font-bold" style={{ fontSize: 9, color: 'var(--ink-muted)' }}>
               重さ
             </span>
-            <span
-              className="tabular-nums"
-              style={{ fontSize: 16, fontWeight: 400, color: 'var(--ink)' }}
-            >
+            <span className="tabular-nums" style={{ fontSize: 16, fontWeight: 400, color: 'var(--ink)' }}>
               {weight ? `${weight}g` : '—'}
             </span>
           </div>
           <div style={{ width: 1, height: 32, background: 'var(--edge)' }} />
           <div className="flex flex-col items-center gap-[3px]">
-            <span
-              className="uppercase tracking-[0.14em] font-bold"
-              style={{ fontSize: 9, color: 'var(--ink-muted)' }}
-            >
+            <span className="uppercase tracking-[0.14em] font-bold" style={{ fontSize: 9, color: 'var(--ink-muted)' }}>
               設定時間
             </span>
-            <span
-              className="tabular-nums"
-              style={{ fontSize: 16, fontWeight: 400, color: 'var(--ink)' }}
-            >
+            <span className="tabular-nums" style={{ fontSize: 16, fontWeight: 400, color: 'var(--ink)' }}>
               {formatTime(duration)}
             </span>
           </div>
@@ -149,7 +134,16 @@ export function TimerControls({
           >
             <svg width={15} height={15} viewBox="0 0 24 24" fill="var(--ink-sub)" className="shrink-0">
               <polygon points="5 4 15 12 5 20 5 4" />
-              <line x1="19" y1="5" x2="19" y2="19" strokeWidth="2.5" stroke="var(--ink-sub)" fill="none" strokeLinecap="round" />
+              <line
+                x1="19"
+                y1="5"
+                x2="19"
+                y2="19"
+                strokeWidth="2.5"
+                stroke="var(--ink-sub)"
+                fill="none"
+                strokeLinecap="round"
+              />
             </svg>
             <span className="text-[13px] font-semibold" style={{ color: 'var(--ink-sub)' }}>
               スキップ
@@ -169,10 +163,7 @@ export function TimerControls({
       <div className="flex flex-col flex-1 min-h-0 justify-end md:justify-center md:py-8">
         {/* 完了メッセージ */}
         <div className="text-center mb-3">
-          <div
-            className="font-medium tracking-[0.04em]"
-            style={{ fontSize: 11, color: 'var(--ink-muted)' }}
-          >
+          <div className="font-medium tracking-[0.04em]" style={{ fontSize: 11, color: 'var(--ink-muted)' }}>
             焙煎室に戻るタイミングです
           </div>
         </div>
@@ -182,32 +173,20 @@ export function TimerControls({
           className="rounded-[14px] overflow-hidden mb-4"
           style={{ background: 'var(--surface)', border: '1.5px solid var(--edge)' }}
         >
-          <div
-            className="flex items-center justify-between"
-            style={{ padding: '12px 16px' }}
-          >
+          <div className="flex items-center justify-between" style={{ padding: '12px 16px' }}>
             <span className="text-xs font-medium" style={{ color: 'var(--ink-muted)' }}>
               重さ
             </span>
-            <span
-              className="text-sm tabular-nums"
-              style={{ fontWeight: 400, color: 'var(--ink)' }}
-            >
+            <span className="text-sm tabular-nums" style={{ fontWeight: 400, color: 'var(--ink)' }}>
               {weight ? `${weight}g` : '—'}
             </span>
           </div>
           <div style={{ borderTop: '1px solid var(--edge)' }} />
-          <div
-            className="flex items-center justify-between"
-            style={{ padding: '12px 16px' }}
-          >
+          <div className="flex items-center justify-between" style={{ padding: '12px 16px' }}>
             <span className="text-xs font-medium" style={{ color: 'var(--ink-muted)' }}>
               焙煎時間
             </span>
-            <span
-              className="text-sm tabular-nums"
-              style={{ fontWeight: 400, color: 'var(--ink)' }}
-            >
+            <span className="text-sm tabular-nums" style={{ fontWeight: 400, color: 'var(--ink)' }}>
               {formatTime(duration)}
             </span>
           </div>

@@ -8,262 +8,261 @@ import { MOCK_RECIPES } from '@/lib/drip-guide/mockData';
 import { Input, Textarea, Button } from '@/components/ui';
 
 interface RecipeFormProps {
-    initialRecipe?: DripRecipe;
-    onSubmit: (recipe: DripRecipe) => void;
+  initialRecipe?: DripRecipe;
+  onSubmit: (recipe: DripRecipe) => void;
 }
 
 export const RecipeForm: React.FC<RecipeFormProps> = ({ initialRecipe, onSubmit }) => {
-    const [name, setName] = useState(initialRecipe?.name || '');
-    const [beanName, setBeanName] = useState(initialRecipe?.beanName || '');
-    const [beanAmountGram, setBeanAmountGram] = useState(initialRecipe?.beanAmountGram || 20);
-    const [totalWaterGram, setTotalWaterGram] = useState(initialRecipe?.totalWaterGram || 300);
-    const [totalDurationSec, setTotalDurationSec] = useState(initialRecipe?.totalDurationSec || 180);
-    const [purpose, setPurpose] = useState(initialRecipe?.purpose || '');
-    const [description, setDescription] = useState(initialRecipe?.description || '');
-    const [steps, setSteps] = useState<DripStep[]>(initialRecipe?.steps || []);
-    const [isManualMode, setIsManualMode] = useState(initialRecipe?.isManualMode ?? false);
+  const [name, setName] = useState(initialRecipe?.name || '');
+  const [beanName, setBeanName] = useState(initialRecipe?.beanName || '');
+  const [beanAmountGram, setBeanAmountGram] = useState(initialRecipe?.beanAmountGram || 20);
+  const [totalWaterGram, setTotalWaterGram] = useState(initialRecipe?.totalWaterGram || 300);
+  const [totalDurationSec, setTotalDurationSec] = useState(initialRecipe?.totalDurationSec || 180);
+  const [purpose, setPurpose] = useState(initialRecipe?.purpose || '');
+  const [description, setDescription] = useState(initialRecipe?.description || '');
+  const [steps, setSteps] = useState<DripStep[]>(initialRecipe?.steps || []);
+  const [isManualMode, setIsManualMode] = useState(initialRecipe?.isManualMode ?? false);
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
 
-        // Basic validation
-        if (!name || !beanName) {
-            alert('レシピ名と豆名は必須です');
-            return;
-        }
+    // Basic validation
+    if (!name || !beanName) {
+      alert('レシピ名と豆名は必須です');
+      return;
+    }
 
-        if (steps.length === 0) {
-            alert('少なくとも1つのステップを追加してください');
-            return;
-        }
+    if (steps.length === 0) {
+      alert('少なくとも1つのステップを追加してください');
+      return;
+    }
 
-        // Sort steps by start time
-        const sortedSteps = [...steps].sort((a, b) => a.startTimeSec - b.startTimeSec);
+    // Sort steps by start time
+    const sortedSteps = [...steps].sort((a, b) => a.startTimeSec - b.startTimeSec);
 
-        const recipe: DripRecipe = {
-            id: initialRecipe?.id || crypto.randomUUID(),
-            name,
-            beanName,
-            beanAmountGram,
-            totalWaterGram,
-            totalDurationSec,
-            purpose,
-            description,
-            steps: sortedSteps,
-            isManualMode,
-            createdAt: initialRecipe?.createdAt || new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        };
-
-        onSubmit(recipe);
+    const recipe: DripRecipe = {
+      id: initialRecipe?.id || crypto.randomUUID(),
+      name,
+      beanName,
+      beanAmountGram,
+      totalWaterGram,
+      totalDurationSec,
+      purpose,
+      description,
+      steps: sortedSteps,
+      isManualMode,
+      createdAt: initialRecipe?.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
 
-    const handleResetToDefault = () => {
-        if (!initialRecipe?.isDefault || !initialRecipe?.id) {
-            return;
-        }
+    onSubmit(recipe);
+  };
 
-        // MOCK_RECIPESから元のデフォルト値を取得
-        const defaultRecipe = MOCK_RECIPES.find((r) => r.id === initialRecipe.id);
-        if (!defaultRecipe) {
-            return;
-        }
+  const handleResetToDefault = () => {
+    if (!initialRecipe?.isDefault || !initialRecipe?.id) {
+      return;
+    }
 
-        // 確認ダイアログ
-        if (!confirm('デフォルト値に戻しますか？現在の編集内容は失われます。')) {
-            return;
-        }
+    // MOCK_RECIPESから元のデフォルト値を取得
+    const defaultRecipe = MOCK_RECIPES.find((r) => r.id === initialRecipe.id);
+    if (!defaultRecipe) {
+      return;
+    }
 
-        // フォームの状態をデフォルト値にリセット
-        setName(defaultRecipe.name);
-        setBeanName(defaultRecipe.beanName);
-        setBeanAmountGram(defaultRecipe.beanAmountGram);
-        setTotalWaterGram(defaultRecipe.totalWaterGram);
-        setTotalDurationSec(defaultRecipe.totalDurationSec);
-        setPurpose(defaultRecipe.purpose || '');
-        setDescription(defaultRecipe.description || '');
-        setSteps(defaultRecipe.steps.map(step => ({ ...step }))); // ディープコピー
-        setIsManualMode(defaultRecipe.isManualMode ?? false);
-    };
+    // 確認ダイアログ
+    if (!confirm('デフォルト値に戻しますか？現在の編集内容は失われます。')) {
+      return;
+    }
 
-    return (
-        <form onSubmit={handleSubmit} className="max-w-3xl mx-auto pb-28 sm:pb-24">
-            <div className="mb-5 sm:mb-6">
-                <h1 className="text-center text-xl sm:text-2xl font-bold text-ink">
-                    {initialRecipe ? 'レシピを編集' : '新しいレシピを作成'}
-                </h1>
+    // フォームの状態をデフォルト値にリセット
+    setName(defaultRecipe.name);
+    setBeanName(defaultRecipe.beanName);
+    setBeanAmountGram(defaultRecipe.beanAmountGram);
+    setTotalWaterGram(defaultRecipe.totalWaterGram);
+    setTotalDurationSec(defaultRecipe.totalDurationSec);
+    setPurpose(defaultRecipe.purpose || '');
+    setDescription(defaultRecipe.description || '');
+    setSteps(defaultRecipe.steps.map((step) => ({ ...step }))); // ディープコピー
+    setIsManualMode(defaultRecipe.isManualMode ?? false);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="max-w-3xl mx-auto pb-28 sm:pb-24">
+      <div className="mb-5 sm:mb-6">
+        <h1 className="text-center text-xl sm:text-2xl font-bold text-ink">
+          {initialRecipe ? 'レシピを編集' : '新しいレシピを作成'}
+        </h1>
+      </div>
+
+      <div className="bg-surface rounded-xl shadow-card border border-edge p-4 sm:p-6 mb-6 space-y-6">
+        {/* Basic Info Section */}
+        <div>
+          <h2 className="text-lg font-bold text-ink-sub mb-4 border-b border-edge pb-2">基本情報</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium text-ink-sub mb-1">
+                レシピ名 <span className="text-danger">*</span>
+              </label>
+              <Input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="例: BYSN Standard Drip"
+                required
+              />
             </div>
 
-            <div className="bg-surface rounded-xl shadow-card border border-edge p-4 sm:p-6 mb-6 space-y-6">
-                {/* Basic Info Section */}
-                <div>
-                    <h2 className="text-lg font-bold text-ink-sub mb-4 border-b border-edge pb-2">基本情報</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                        <div className="sm:col-span-2">
-                            <label className="block text-sm font-medium text-ink-sub mb-1">レシピ名 <span className="text-danger">*</span></label>
-                            <Input
-                                type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                placeholder="例: BYSN Standard Drip"
-                                required
-                            />
-                        </div>
+            <div>
+              <label className="block text-sm font-medium text-ink-sub mb-1">
+                豆の名前 <span className="text-danger">*</span>
+              </label>
+              <Input
+                type="text"
+                value={beanName}
+                onChange={(e) => setBeanName(e.target.value)}
+                placeholder="例: Ethiopia Yirgacheffe"
+                required
+              />
+            </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-ink-sub mb-1">豆の名前 <span className="text-danger">*</span></label>
-                            <Input
-                                type="text"
-                                value={beanName}
-                                onChange={(e) => setBeanName(e.target.value)}
-                                placeholder="例: Ethiopia Yirgacheffe"
-                                required
-                            />
-                        </div>
+            <div>
+              <label className="block text-sm font-medium text-ink-sub mb-1">用途・タグ</label>
+              <Input
+                type="text"
+                value={purpose}
+                onChange={(e) => setPurpose(e.target.value)}
+                placeholder="例: 試飲会用"
+              />
+            </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-ink-sub mb-1">用途・タグ</label>
-                            <Input
-                                type="text"
-                                value={purpose}
-                                onChange={(e) => setPurpose(e.target.value)}
-                                placeholder="例: 試飲会用"
-                            />
-                        </div>
+            <div>
+              <label className="block text-sm font-medium text-ink-sub mb-1">豆の量 (g)</label>
+              <Input
+                type="number"
+                value={beanAmountGram}
+                onChange={(e) => setBeanAmountGram(parseInt(e.target.value) || 0)}
+                min={1}
+              />
+            </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-ink-sub mb-1">豆の量 (g)</label>
-                            <Input
-                                type="number"
-                                value={beanAmountGram}
-                                onChange={(e) => setBeanAmountGram(parseInt(e.target.value) || 0)}
-                                min={1}
-                            />
-                        </div>
+            <div>
+              <label className="block text-sm font-medium text-ink-sub mb-1">総湯量 (g)</label>
+              <Input
+                type="number"
+                value={totalWaterGram}
+                onChange={(e) => setTotalWaterGram(parseInt(e.target.value) || 0)}
+                min={1}
+              />
+            </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-ink-sub mb-1">総湯量 (g)</label>
-                            <Input
-                                type="number"
-                                value={totalWaterGram}
-                                onChange={(e) => setTotalWaterGram(parseInt(e.target.value) || 0)}
-                                min={1}
-                            />
-                        </div>
+            <div>
+              <label className="block text-sm font-medium text-ink-sub mb-1">総時間</label>
+              <div className="grid grid-cols-[1fr_auto_1fr_auto] items-center gap-2">
+                <Input
+                  type="number"
+                  value={Math.floor(totalDurationSec / 60)}
+                  onChange={(e) => {
+                    const minutes = parseInt(e.target.value) || 0;
+                    const seconds = totalDurationSec % 60;
+                    setTotalDurationSec(minutes * 60 + seconds);
+                  }}
+                  className="w-full text-right"
+                  min={0}
+                  aria-label="総時間の分"
+                />
+                <span className="text-sm font-medium text-ink-sub">分</span>
+                <Input
+                  type="number"
+                  value={totalDurationSec % 60}
+                  onChange={(e) => {
+                    const minutes = Math.floor(totalDurationSec / 60);
+                    const seconds = parseInt(e.target.value) || 0;
+                    setTotalDurationSec(minutes * 60 + seconds);
+                  }}
+                  className="w-full text-right"
+                  min={0}
+                  max={59}
+                  aria-label="総時間の秒"
+                />
+                <span className="text-sm font-medium text-ink-sub">秒</span>
+              </div>
+            </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-ink-sub mb-1">総時間</label>
-                            <div className="grid grid-cols-[1fr_auto_1fr_auto] items-center gap-2">
-                                <Input
-                                    type="number"
-                                    value={Math.floor(totalDurationSec / 60)}
-                                    onChange={(e) => {
-                                        const minutes = parseInt(e.target.value) || 0;
-                                        const seconds = totalDurationSec % 60;
-                                        setTotalDurationSec(minutes * 60 + seconds);
-                                    }}
-                                    className="w-full text-right"
-                                    min={0}
-                                    aria-label="総時間の分"
-                                />
-                                <span className="text-sm font-medium text-ink-sub">分</span>
-                                <Input
-                                    type="number"
-                                    value={totalDurationSec % 60}
-                                    onChange={(e) => {
-                                        const minutes = Math.floor(totalDurationSec / 60);
-                                        const seconds = parseInt(e.target.value) || 0;
-                                        setTotalDurationSec(minutes * 60 + seconds);
-                                    }}
-                                    className="w-full text-right"
-                                    min={0}
-                                    max={59}
-                                    aria-label="総時間の秒"
-                                />
-                                <span className="text-sm font-medium text-ink-sub">秒</span>
-                            </div>
-                        </div>
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium text-ink-sub mb-1">説明・メモ</label>
+              <Textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows={3}
+                placeholder="レシピの特徴や注意点など"
+              />
+            </div>
+          </div>
+        </div>
 
-                        <div className="sm:col-span-2">
-                            <label className="block text-sm font-medium text-ink-sub mb-1">説明・メモ</label>
-                            <Textarea
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                rows={3}
-                                placeholder="レシピの特徴や注意点など"
-                            />
-                        </div>
+        {/* Guide Mode Settings Section */}
+        <div>
+          <h2 className="text-lg font-bold text-ink-sub mb-4 border-b border-edge pb-2">ガイドモード設定</h2>
+          <div className="space-y-4">
+            <div className="bg-ground rounded-lg p-4 border border-edge">
+              <div className="space-y-3">
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="guideMode"
+                    checked={!isManualMode}
+                    onChange={() => setIsManualMode(false)}
+                    className="mt-0.5 w-5 h-5 text-spot focus:ring-2 focus:ring-spot"
+                  />
+                  <div className="flex-1">
+                    <div className="font-semibold text-ink">自動モード</div>
+                    <div className="text-sm text-ink-sub">
+                      タイマーに基づいて自動的にステップが進行します。時間が確定しているレシピに適しています。
                     </div>
-                </div>
-
-                {/* Guide Mode Settings Section */}
-                <div>
-                    <h2 className="text-lg font-bold text-ink-sub mb-4 border-b border-edge pb-2">ガイドモード設定</h2>
-                    <div className="space-y-4">
-                        <div className="bg-ground rounded-lg p-4 border border-edge">
-                            <div className="space-y-3">
-                                <label className="flex items-start gap-3 cursor-pointer">
-                                    <input
-                                        type="radio"
-                                        name="guideMode"
-                                        checked={!isManualMode}
-                                        onChange={() => setIsManualMode(false)}
-                                        className="mt-0.5 w-5 h-5 text-spot focus:ring-2 focus:ring-spot"
-                                    />
-                                    <div className="flex-1">
-                                        <div className="font-semibold text-ink">自動モード</div>
-                                        <div className="text-sm text-ink-sub">タイマーに基づいて自動的にステップが進行します。時間が確定しているレシピに適しています。</div>
-                                    </div>
-                                </label>
-                                <label className="flex items-start gap-3 cursor-pointer">
-                                    <input
-                                        type="radio"
-                                        name="guideMode"
-                                        checked={isManualMode}
-                                        onChange={() => setIsManualMode(true)}
-                                        className="mt-0.5 w-5 h-5 text-spot focus:ring-2 focus:ring-spot"
-                                    />
-                                    <div className="flex-1">
-                                        <div className="font-semibold text-ink">手動モード</div>
-                                        <div className="text-sm text-ink-sub">手動でステップを進めます。タイマーは参考として表示されます。時間が不確定なレシピ（BYSN Standard Dripなど）に適しています。</div>
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
+                  </div>
+                </label>
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="guideMode"
+                    checked={isManualMode}
+                    onChange={() => setIsManualMode(true)}
+                    className="mt-0.5 w-5 h-5 text-spot focus:ring-2 focus:ring-spot"
+                  />
+                  <div className="flex-1">
+                    <div className="font-semibold text-ink">手動モード</div>
+                    <div className="text-sm text-ink-sub">
+                      手動でステップを進めます。タイマーは参考として表示されます。時間が不確定なレシピ（BYSN Standard
+                      Dripなど）に適しています。
                     </div>
-                </div>
-
-                {/* Steps Section */}
-                <div>
-                    <StepEditor steps={steps} onChange={setSteps} isManualMode={isManualMode} />
-                </div>
+                  </div>
+                </label>
+              </div>
             </div>
+          </div>
+        </div>
 
-            {/* Submit Button */}
-            <div className="fixed bottom-0 left-0 right-0 px-4 py-3 bg-overlay border-t border-edge z-10">
-                <div className="max-w-3xl mx-auto grid grid-cols-1 gap-3 sm:flex sm:flex-row sm:justify-center">
-                    {initialRecipe?.isDefault && (
-                        <Button
-                            type="button"
-                            variant="secondary"
-                            onClick={handleResetToDefault}
-                            className="w-full sm:w-auto"
-                        >
-                            <ArrowClockwise size={20} />
-                            デフォルトに戻す
-                        </Button>
-                    )}
-                    <Button
-                        type="submit"
-                        variant="primary"
-                        size="lg"
-                        className="w-full sm:w-auto"
-                    >
-                        <FloppyDisk size={24} />
-                        レシピを保存
-                    </Button>
-                </div>
-            </div>
-        </form>
-    );
+        {/* Steps Section */}
+        <div>
+          <StepEditor steps={steps} onChange={setSteps} isManualMode={isManualMode} />
+        </div>
+      </div>
+
+      {/* Submit Button */}
+      <div className="fixed bottom-0 left-0 right-0 px-4 py-3 bg-overlay border-t border-edge z-10">
+        <div className="max-w-3xl mx-auto grid grid-cols-1 gap-3 sm:flex sm:flex-row sm:justify-center">
+          {initialRecipe?.isDefault && (
+            <Button type="button" variant="secondary" onClick={handleResetToDefault} className="w-full sm:w-auto">
+              <ArrowClockwise size={20} />
+              デフォルトに戻す
+            </Button>
+          )}
+          <Button type="submit" variant="primary" size="lg" className="w-full sm:w-auto">
+            <FloppyDisk size={24} />
+            レシピを保存
+          </Button>
+        </div>
+      </div>
+    </form>
+  );
 };

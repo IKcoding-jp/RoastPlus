@@ -11,9 +11,7 @@ interface GroupFormDialogProps {
   isEditing?: boolean;
 }
 
-export function GroupFormDialog({
-  isOpen, onClose, onSubmit, initialGroupName, isEditing
-}: GroupFormDialogProps) {
+export function GroupFormDialog({ isOpen, onClose, onSubmit, initialGroupName, isEditing }: GroupFormDialogProps) {
   const [groupName, setGroupName] = useState(initialGroupName || '');
 
   if (!isOpen) return null;
@@ -22,9 +20,7 @@ export function GroupFormDialog({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
       <div className="bg-overlay rounded-2xl shadow-xl w-full max-w-sm overflow-hidden animate-scale-in border border-edge">
         <div className="px-6 py-4 border-b border-edge bg-ground">
-          <h3 className="font-bold text-ink text-lg">
-            {isEditing ? 'グループ名を編集' : '新しいグループを作成'}
-          </h3>
+          <h3 className="font-bold text-ink text-lg">{isEditing ? 'グループ名を編集' : '新しいグループを作成'}</h3>
         </div>
         <form
           onSubmit={(e) => {
@@ -44,13 +40,7 @@ export function GroupFormDialog({
             />
           </div>
           <div className="flex gap-3">
-            <Button
-              type="button"
-              variant="secondary"
-              size="md"
-              onClick={onClose}
-              className="flex-1 !rounded-xl"
-            >
+            <Button type="button" variant="secondary" size="md" onClick={onClose} className="flex-1 !rounded-xl">
               キャンセル
             </Button>
             <Button

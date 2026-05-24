@@ -44,7 +44,6 @@ describe('Checkbox', () => {
       const description = screen.getByText('説明文');
       expect(description.className).toContain('text-sm');
     });
-
   });
 
   describe('disabled状態', () => {

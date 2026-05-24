@@ -12,11 +12,7 @@ interface OCRTimeLabelEditorProps {
   onDelete: (id: string) => void;
 }
 
-export function OCRTimeLabelEditor({
-  timeLabels,
-  onUpdate,
-  onDelete,
-}: OCRTimeLabelEditorProps) {
+export function OCRTimeLabelEditor({ timeLabels, onUpdate, onDelete }: OCRTimeLabelEditorProps) {
   const editor = useOCRTimeLabelEditor({ timeLabels, onUpdate });
 
   return (

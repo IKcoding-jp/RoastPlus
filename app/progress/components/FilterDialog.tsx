@@ -18,7 +18,14 @@ interface FilterDialogProps {
 }
 
 export function FilterDialog({
-  isOpen, onClose, filterTaskName, setFilterTaskName, filterStatus, setFilterStatus, sortOption, setSortOption
+  isOpen,
+  onClose,
+  filterTaskName,
+  setFilterTaskName,
+  filterStatus,
+  setFilterStatus,
+  sortOption,
+  setSortOption,
 }: FilterDialogProps) {
   if (!isOpen) return null;
 
@@ -79,13 +86,7 @@ export function FilterDialog({
         </div>
 
         <div className="bg-ground px-6 py-4 border-t border-edge">
-          <Button
-            variant="primary"
-            size="md"
-            fullWidth
-            onClick={onClose}
-            className="shadow-md !rounded-xl"
-          >
+          <Button variant="primary" size="md" fullWidth onClick={onClose} className="shadow-md !rounded-xl">
             完了
           </Button>
         </div>

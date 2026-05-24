@@ -16,17 +16,13 @@ const firestoreMocks = vi.hoisted(() => {
     getFirestore: vi.fn(() => ({ app: 'mock-firestore' })),
     doc: vi.fn((first: { path?: string } | unknown, ...segments: string[]) => {
       const basePath =
-        first && typeof first === 'object' && 'path' in first && typeof first.path === 'string'
-          ? first.path
-          : '';
+        first && typeof first === 'object' && 'path' in first && typeof first.path === 'string' ? first.path : '';
       const path = basePath ? [basePath, ...segments].join('/') : segments.join('/');
       return { id: segments.at(-1), path };
     }),
     collection: vi.fn((first: { path?: string } | unknown, ...segments: string[]) => {
       const basePath =
-        first && typeof first === 'object' && 'path' in first && typeof first.path === 'string'
-          ? first.path
-          : '';
+        first && typeof first === 'object' && 'path' in first && typeof first.path === 'string' ? first.path : '';
       const path = basePath ? [basePath, ...segments].join('/') : segments.join('/');
       return { path };
     }),
@@ -127,10 +123,14 @@ describe('saveUserData workProgresses split writes', () => {
   it('workProgressesをサブコレクションへ保存し、root users/{uid}.workProgressesを増やさない', async () => {
     const { saveUserData, SAVE_USER_DATA_DEBOUNCE_MS } = await import('./userData');
 
-    const savePromise = saveUserData('user-1', appData({
-      encouragementCount: 3,
-      workProgresses: [keepProgress],
-    }), { syncWorkProgresses: true });
+    const savePromise = saveUserData(
+      'user-1',
+      appData({
+        encouragementCount: 3,
+        workProgresses: [keepProgress],
+      }),
+      { syncWorkProgresses: true }
+    );
 
     await flushSaveTimers(SAVE_USER_DATA_DEBOUNCE_MS);
     await savePromise;
@@ -167,7 +167,9 @@ describe('saveUserData workProgresses split writes', () => {
 
     const { saveUserData, SAVE_USER_DATA_DEBOUNCE_MS } = await import('./userData');
 
-    const savePromise = saveUserData('user-1', appData({ workProgresses: [keepProgress] }), { syncWorkProgresses: true });
+    const savePromise = saveUserData('user-1', appData({ workProgresses: [keepProgress] }), {
+      syncWorkProgresses: true,
+    });
 
     await flushSaveTimers(SAVE_USER_DATA_DEBOUNCE_MS);
     await savePromise;
@@ -183,10 +185,13 @@ describe('saveUserData workProgresses split writes', () => {
   it('関係ないAppDataフィールドのroot保存挙動を維持する', async () => {
     const { saveUserData, SAVE_USER_DATA_DEBOUNCE_MS } = await import('./userData');
 
-    const savePromise = saveUserData('user-1', appData({
-      todaySchedules: [{ id: 'today-1', date: '2026-05-24', timeLabels: [] }],
-      workProgresses: [],
-    }));
+    const savePromise = saveUserData(
+      'user-1',
+      appData({
+        todaySchedules: [{ id: 'today-1', date: '2026-05-24', timeLabels: [] }],
+        workProgresses: [],
+      })
+    );
 
     await flushSaveTimers(SAVE_USER_DATA_DEBOUNCE_MS);
     await savePromise;
@@ -199,10 +204,13 @@ describe('saveUserData workProgresses split writes', () => {
   it('workProgresses未変更の保存ではサブコレクションを読み書きしない', async () => {
     const { saveUserData, SAVE_USER_DATA_DEBOUNCE_MS } = await import('./userData');
 
-    const savePromise = saveUserData('user-1', appData({
-      encouragementCount: 8,
-      workProgresses: [keepProgress],
-    }));
+    const savePromise = saveUserData(
+      'user-1',
+      appData({
+        encouragementCount: 8,
+        workProgresses: [keepProgress],
+      })
+    );
 
     await flushSaveTimers(SAVE_USER_DATA_DEBOUNCE_MS);
     await savePromise;
@@ -221,7 +229,9 @@ describe('saveUserData workProgresses split writes', () => {
     firestoreMocks.getDocs.mockResolvedValueOnce(querySnapshot([keepProgress]));
     const { saveUserData, SAVE_USER_DATA_DEBOUNCE_MS } = await import('./userData');
 
-    const savePromise = saveUserData('user-1', appData({ workProgresses: [keepProgress] }), { syncWorkProgresses: true });
+    const savePromise = saveUserData('user-1', appData({ workProgresses: [keepProgress] }), {
+      syncWorkProgresses: true,
+    });
 
     await flushSaveTimers(SAVE_USER_DATA_DEBOUNCE_MS);
     await savePromise;
@@ -243,7 +253,9 @@ describe('saveUserData workProgresses split writes', () => {
     firestoreMocks.getDocs.mockResolvedValueOnce(querySnapshot([existingProgress]));
     const { saveUserData, SAVE_USER_DATA_DEBOUNCE_MS } = await import('./userData');
 
-    const savePromise = saveUserData('user-1', appData({ workProgresses: [keepProgress] }), { syncWorkProgresses: true });
+    const savePromise = saveUserData('user-1', appData({ workProgresses: [keepProgress] }), {
+      syncWorkProgresses: true,
+    });
 
     await flushSaveTimers(SAVE_USER_DATA_DEBOUNCE_MS);
     await savePromise;

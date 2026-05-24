@@ -24,15 +24,12 @@ interface TodayScheduleInnerProps extends TodayScheduleProps {
 export function TodaySchedule(props: TodayScheduleProps) {
   const { data, selectedDate } = props;
   const todaySchedules = data?.todaySchedules ?? [];
-  const currentSchedule =
-    todaySchedules.find((s) => s.date === selectedDate) || {
-      id: `schedule-${selectedDate}`,
-      date: selectedDate,
-      timeLabels: [],
-    };
-  const scheduleKey = `${selectedDate}-${todaySchedules
-    .map((s) => `${s.id}:${s.timeLabels?.length ?? 0}`)
-    .join('|')}`;
+  const currentSchedule = todaySchedules.find((s) => s.date === selectedDate) || {
+    id: `schedule-${selectedDate}`,
+    date: selectedDate,
+    timeLabels: [],
+  };
+  const scheduleKey = `${selectedDate}-${todaySchedules.map((s) => `${s.id}:${s.timeLabels?.length ?? 0}`).join('|')}`;
 
   return <TodayScheduleInner key={scheduleKey} {...props} currentSchedule={currentSchedule} />;
 }
@@ -72,7 +69,7 @@ function TodayScheduleInner({ data, onUpdate, selectedDate, currentSchedule, onC
   }, [localTimeLabels]);
 
   const handleEditGroup = (time: string) => {
-    const label = localTimeLabels.find(l => l.time === time);
+    const label = localTimeLabels.find((l) => l.time === time);
     if (label) setEditingLabelId(label.id);
   };
 
@@ -82,11 +79,7 @@ function TodayScheduleInner({ data, onUpdate, selectedDate, currentSchedule, onC
     const formattedMinute = newMinuteVal ? newMinuteVal.padStart(2, '0') : '00';
     const newTime = `${formattedHour}:${formattedMinute}`;
 
-    setLocalTimeLabels(
-      localTimeLabels.map((label) =>
-        label.time === oldTime ? { ...label, time: newTime } : label
-      )
-    );
+    setLocalTimeLabels(localTimeLabels.map((label) => (label.time === oldTime ? { ...label, time: newTime } : label)));
     setEditingLabelId(null);
   };
 
@@ -139,11 +132,7 @@ function TodayScheduleInner({ data, onUpdate, selectedDate, currentSchedule, onC
 
       {localTimeLabels.length === 0 ? (
         <div className="flex-1 flex items-center justify-center">
-          <EmptyScheduleState
-            icon="clock"
-            message="今日のスケジュールはまだありません"
-            onCamera={onCamera}
-          />
+          <EmptyScheduleState icon="clock" message="今日のスケジュールはまだありません" onCamera={onCamera} />
         </div>
       ) : (
         <div className="flex-1 overflow-y-auto min-h-0">
@@ -181,15 +170,10 @@ function TodayScheduleInner({ data, onUpdate, selectedDate, currentSchedule, onC
                             {label.subTasks
                               .sort((a, b) => a.order - b.order)
                               .map((subTask) => (
-                                <span
-                                  key={subTask.id}
-                                  className="min-w-0 truncate text-base text-ink-sub"
-                                >
+                                <span key={subTask.id} className="min-w-0 truncate text-base text-ink-sub">
                                   {subTask.content}
                                   {subTask.assignee && (
-                                    <span className="ml-1 text-sm text-ink-muted">
-                                      {subTask.assignee}
-                                    </span>
+                                    <span className="ml-1 text-sm text-ink-muted">{subTask.assignee}</span>
                                   )}
                                 </span>
                               ))}
@@ -205,7 +189,6 @@ function TodayScheduleInner({ data, onUpdate, selectedDate, currentSchedule, onC
                           </span>
                         </div>
                       )}
-
                     </div>
                   ))}
                 </div>
@@ -239,32 +222,34 @@ function TodayScheduleInner({ data, onUpdate, selectedDate, currentSchedule, onC
       )}
 
       {/* 時間編集ダイアログ */}
-      {editingLabelId && typeof window !== 'undefined' && (() => {
-        const editingLabel = localTimeLabels.find((label) => label.id === editingLabelId);
-        if (!editingLabel) return null;
+      {editingLabelId &&
+        typeof window !== 'undefined' &&
+        (() => {
+          const editingLabel = localTimeLabels.find((label) => label.id === editingLabelId);
+          if (!editingLabel) return null;
 
-        const parseTime = (timeStr: string) => {
-          if (!timeStr) return { hour: '', minute: '' };
-          const [hour, minute] = timeStr.split(':');
-          return { hour: hour || '', minute: minute || '' };
-        };
+          const parseTime = (timeStr: string) => {
+            if (!timeStr) return { hour: '', minute: '' };
+            const [hour, minute] = timeStr.split(':');
+            return { hour: hour || '', minute: minute || '' };
+          };
 
-        const initialTime = parseTime(editingLabel.time);
-        const labelsForTime = localTimeLabels.filter((label) => label.time === editingLabel.time);
+          const initialTime = parseTime(editingLabel.time);
+          const labelsForTime = localTimeLabels.filter((label) => label.time === editingLabel.time);
 
-        return createPortal(
-          <TimeEditDialog
-            key={editingLabel.id}
-            initialHour={initialTime.hour}
-            initialMinute={initialTime.minute}
-            onSave={(hour, minute) => handleEditGroupSave(editingLabel.time, hour, minute)}
-            labels={labelsForTime}
-            onDeleteLabel={handleDeleteLabel}
-            onCancel={() => setEditingLabelId(null)}
-          />,
-          document.body
-        );
-      })()}
+          return createPortal(
+            <TimeEditDialog
+              key={editingLabel.id}
+              initialHour={initialTime.hour}
+              initialMinute={initialTime.minute}
+              onSave={(hour, minute) => handleEditGroupSave(editingLabel.time, hour, minute)}
+              labels={labelsForTime}
+              onDeleteLabel={handleDeleteLabel}
+              onCancel={() => setEditingLabelId(null)}
+            />,
+            document.body
+          );
+        })()}
     </div>
   );
 }

@@ -1,10 +1,15 @@
 import { useState, useEffect } from 'react';
-import {
-  SortAscending,
-  SortDescending,
-} from 'phosphor-react';
+import { SortAscending, SortDescending } from 'phosphor-react';
 import { ROAST_LEVELS } from '@/lib/constants';
-import { Button, FilterModal, FilterOptionButton, FilterSearchInput, FilterSection, FilterSortOption, Input } from '@/components/ui';
+import {
+  Button,
+  FilterModal,
+  FilterOptionButton,
+  FilterSearchInput,
+  FilterSection,
+  FilterSortOption,
+  Input,
+} from '@/components/ui';
 
 type SortOption = 'newest' | 'oldest' | 'beanName';
 
@@ -48,13 +53,13 @@ export function TastingSessionFilterModal({
     if (isOpen) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- モーダルオープン時の状態同期に必要
       setTempSearchQuery(searchQuery);
-       
+
       setTempSortOption(sortOption);
-       
+
       setTempDateFrom(dateFrom);
-       
+
       setTempDateTo(dateTo);
-       
+
       setTempSelectedRoastLevels(selectedRoastLevels);
     }
   }, [isOpen, searchQuery, sortOption, dateFrom, dateTo, selectedRoastLevels]);
@@ -73,9 +78,7 @@ export function TastingSessionFilterModal({
   }, [isOpen, onClose]);
 
   const handleRoastLevelToggle = (level: '浅煎り' | '中煎り' | '中深煎り' | '深煎り') => {
-    setTempSelectedRoastLevels((prev) =>
-      prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]
-    );
+    setTempSelectedRoastLevels((prev) => (prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]));
   };
 
   const handleApply = () => {
@@ -97,8 +100,7 @@ export function TastingSessionFilterModal({
     setTempSelectedRoastLevels([]);
   };
 
-  const hasActiveFilters =
-    tempSearchQuery.trim() || tempDateFrom || tempDateTo || tempSelectedRoastLevels.length > 0;
+  const hasActiveFilters = tempSearchQuery.trim() || tempDateFrom || tempDateTo || tempSelectedRoastLevels.length > 0;
 
   const sortOptions = [
     { id: 'newest', label: '新しい順', icon: <SortDescending size={20} weight="bold" /> },
@@ -126,18 +128,10 @@ export function TastingSessionFilterModal({
       }
       footer={
         <>
-          <Button
-            variant="surface"
-            onClick={onClose}
-            className="flex-1 !min-h-[44px] !rounded-lg !text-sm"
-          >
+          <Button variant="surface" onClick={onClose} className="flex-1 !min-h-[44px] !rounded-lg !text-sm">
             キャンセル
           </Button>
-          <Button
-            variant="primary"
-            onClick={handleApply}
-            className="flex-1 !min-h-[44px] !rounded-lg !text-sm"
-          >
+          <Button variant="primary" onClick={handleApply} className="flex-1 !min-h-[44px] !rounded-lg !text-sm">
             適用
           </Button>
         </>

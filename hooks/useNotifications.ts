@@ -33,40 +33,40 @@ export function useNotifications() {
 
     // 移行処理を実行
     hasMigratedRef.current = true;
-    
+
     const migrateLocalStorageData = () => {
       try {
         const oldStorageKey = 'roastplus_notifications';
         const stored = localStorage.getItem(oldStorageKey);
-        
+
         const currentData = data;
         const firestoreNotifications = currentData.notifications || [];
-        const existingIds = new Set(firestoreNotifications.map(n => n.id));
-        
+        const existingIds = new Set(firestoreNotifications.map((n) => n.id));
+
         if (stored) {
           const oldData: { notifications: Notification[]; readIds: string[] } = JSON.parse(stored);
-          
+
           if (oldData.readIds && oldData.readIds.length > 0) {
             localStorage.setItem(READ_IDS_STORAGE_KEY, JSON.stringify(oldData.readIds));
             setReadIds(oldData.readIds);
           }
-          
+
           const oldNotifications = oldData.notifications || [];
           const newNotifications = [
             ...firestoreNotifications,
-            ...oldNotifications.filter(n => !existingIds.has(n.id)),
+            ...oldNotifications.filter((n) => !existingIds.has(n.id)),
           ];
-          
+
           if (newNotifications.length !== firestoreNotifications.length) {
             void updateData({
               ...currentData,
               notifications: newNotifications,
             });
           }
-          
+
           localStorage.removeItem(oldStorageKey);
         }
-        
+
         hasMigratedRef.current = true;
         setMigrationDone(true);
       } catch (error) {
@@ -83,11 +83,11 @@ export function useNotifications() {
   const notifications = useMemo(() => data.notifications || [], [data.notifications]);
 
   // 未確認通知数を計算
-  const unreadCount = notifications.filter(n => !readIds.includes(n.id)).length;
+  const unreadCount = notifications.filter((n) => !readIds.includes(n.id)).length;
 
   // 全て既読にする
   const markAllAsRead = useCallback(() => {
-    const allIds = notifications.map(n => n.id);
+    const allIds = notifications.map((n) => n.id);
     setReadIds(allIds);
     try {
       localStorage.setItem(READ_IDS_STORAGE_KEY, JSON.stringify(allIds));
@@ -115,9 +115,7 @@ export function useNotifications() {
   // 通知を更新
   const updateNotification = useCallback(
     async (id: string, updates: Partial<Notification>) => {
-      const updatedNotifications = notifications.map(n =>
-        n.id === id ? { ...n, ...updates } : n
-      );
+      const updatedNotifications = notifications.map((n) => (n.id === id ? { ...n, ...updates } : n));
       await updateData({
         ...data,
         notifications: updatedNotifications,
@@ -129,9 +127,9 @@ export function useNotifications() {
   // 通知を削除
   const deleteNotification = useCallback(
     async (id: string) => {
-      const updatedNotifications = notifications.filter(n => n.id !== id);
+      const updatedNotifications = notifications.filter((n) => n.id !== id);
       // 削除された通知の既読状態も削除
-      const updatedReadIds = readIds.filter(readId => readId !== id);
+      const updatedReadIds = readIds.filter((readId) => readId !== id);
       setReadIds(updatedReadIds);
       try {
         localStorage.setItem(READ_IDS_STORAGE_KEY, JSON.stringify(updatedReadIds));

@@ -79,9 +79,7 @@ describe('findWorkProgressOrThrow', () => {
     const appData = {
       workProgresses: [createWorkProgress('wp-1')],
     } as AppData;
-    expect(() => findWorkProgressOrThrow(appData, 'wp-999')).toThrow(
-      'WorkProgress with id wp-999 not found'
-    );
+    expect(() => findWorkProgressOrThrow(appData, 'wp-999')).toThrow('WorkProgress with id wp-999 not found');
   });
 
   it('workProgressesがundefined → Errorスロー', () => {
@@ -188,11 +186,7 @@ describe('recalculateFromHistory', () => {
     });
 
     it('目標超過 → completed', () => {
-      const result = recalculateFromHistory(
-        baseProgress,
-        [createEntry(5, 'e1'), createEntry(8, 'e2')],
-        now
-      );
+      const result = recalculateFromHistory(baseProgress, [createEntry(5, 'e1'), createEntry(8, 'e2')], now);
       expect(result.currentAmount).toBe(13);
       expect(result.status).toBe('completed');
     });

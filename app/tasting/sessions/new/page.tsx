@@ -71,14 +71,9 @@ export default function NewTastingSessionPage() {
       <FloatingNav backHref="/tasting" />
       <div className="min-h-screen max-w-lg mx-auto flex items-center py-16">
         <main className="w-full">
-          <TastingSessionForm
-            session={null}
-            onSave={handleSave}
-            onCancel={handleCancel}
-          />
+          <TastingSessionForm session={null} onSave={handleSave} onCancel={handleCancel} />
         </main>
       </div>
     </div>
   );
 }
-

@@ -211,12 +211,7 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
             <Button variant="secondary" size="sm" onClick={handleCancel}>
               キャンセル
             </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => handleSave(label.id)}
-              disabled={!editingTime.hour}
-            >
+            <Button variant="primary" size="sm" onClick={() => handleSave(label.id)} disabled={!editingTime.hour}>
               保存
             </Button>
           </div>

@@ -89,7 +89,12 @@ export function useWorkProgressActions(userId: string | undefined, data: AppData
     setEditingHistoryEntryId(entryId);
   };
 
-  const handleUpdateProgressHistory = async (workProgressId: string, entryId: string, amount: number, memo?: string) => {
+  const handleUpdateProgressHistory = async (
+    workProgressId: string,
+    entryId: string,
+    amount: number,
+    memo?: string
+  ) => {
     if (!userId || !data) return;
     await updateProgressHistoryEntry(userId, workProgressId, entryId, { amount, memo }, data);
     setEditingHistoryWorkProgressId(null);

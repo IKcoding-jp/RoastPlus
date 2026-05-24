@@ -3,8 +3,21 @@
 import { ArrowLeft, ArrowCounterClockwise, Play, X, Drop, CaretRight } from 'phosphor-react';
 
 const MOCK_STEPS = [
-  { id: '1', title: '蒸らし（味：40%）', description: '粉全体にまんべんなく注いで、均一に湿らせます', startTimeSec: 0, targetTotalWater: 30, note: '蒸らしのお湯を入れたタイミングでタイマーを開始してください。' },
-  { id: '2', title: '2投目（味：40%）', description: '中心から外へ円を描くように注ぐ', startTimeSec: 45, targetTotalWater: 60 },
+  {
+    id: '1',
+    title: '蒸らし（味：40%）',
+    description: '粉全体にまんべんなく注いで、均一に湿らせます',
+    startTimeSec: 0,
+    targetTotalWater: 30,
+    note: '蒸らしのお湯を入れたタイミングでタイマーを開始してください。',
+  },
+  {
+    id: '2',
+    title: '2投目（味：40%）',
+    description: '中心から外へ円を描くように注ぐ',
+    startTimeSec: 45,
+    targetTotalWater: 60,
+  },
   { id: '3', title: '濃度調整（60%）', description: '中心に細く注ぐ', startTimeSec: 90, targetTotalWater: 150 },
 ];
 const MOCK_CURRENT_TIME = 30;
@@ -50,9 +63,7 @@ export default function DripSizeC() {
         <div className="flex-1 flex flex-col items-center px-5 pb-3 overflow-y-auto">
           {/* Timer Section */}
           <div className="relative flex flex-col items-center pt-2 pb-5 w-full">
-            <span className="text-[11px] text-ink-muted font-medium mb-3 tracking-wide">
-              {MOCK_RECIPE_NAME}
-            </span>
+            <span className="text-[11px] text-ink-muted font-medium mb-3 tracking-wide">{MOCK_RECIPE_NAME}</span>
             {/* ★ Timer: 4.5rem → 6.5rem */}
             <div className="text-[6.5rem] font-extrabold text-ink tracking-[-0.04em] tabular-nums leading-none font-nunito">
               {formatTime(MOCK_CURRENT_TIME)}
@@ -81,9 +92,7 @@ export default function DripSizeC() {
                   <Drop size={14} weight="fill" className="text-white" />
                 </div>
                 {/* ★ Step title: 15px → 18px */}
-                <span className="text-[18px] font-bold text-ink leading-tight">
-                  {currentStep.title}
-                </span>
+                <span className="text-[18px] font-bold text-ink leading-tight">{currentStep.title}</span>
               </div>
 
               {currentStep.targetTotalWater && (
@@ -99,14 +108,10 @@ export default function DripSizeC() {
               )}
 
               {/* ★ Description: 13px → 15px */}
-              <p className="text-[15px] text-ink-sub leading-relaxed">
-                {currentStep.description}
-              </p>
+              <p className="text-[15px] text-ink-sub leading-relaxed">{currentStep.description}</p>
 
               {currentStep.note && (
-                <p className="text-[12px] text-ink-muted mt-2 leading-relaxed italic">
-                  {currentStep.note}
-                </p>
+                <p className="text-[12px] text-ink-muted mt-2 leading-relaxed italic">{currentStep.note}</p>
               )}
             </div>
 
@@ -120,9 +125,7 @@ export default function DripSizeC() {
                       <div className="flex items-center gap-1.5">
                         <CaretRight size={11} weight="bold" className="text-spot/40" />
                         {/* ★ Next step title: 13px → 14px */}
-                        <span className="text-[14px] font-semibold text-ink-sub truncate">
-                          {nextStep.title}
-                        </span>
+                        <span className="text-[14px] font-semibold text-ink-sub truncate">{nextStep.title}</span>
                         {nextStep.targetTotalWater && (
                           <span className="text-[12px] font-medium text-ink-muted ml-0.5">
                             {nextStep.targetTotalWater}gまで

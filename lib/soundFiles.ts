@@ -11,7 +11,7 @@ export interface SoundFile {
 
 export const roastTimerSoundFiles: SoundFile[] = [
   {
-    "value": "/sounds/roasttimer/alarm1.mp3",
-    "label": "alarm1"
-  }
+    value: '/sounds/roasttimer/alarm1.mp3',
+    label: 'alarm1',
+  },
 ];

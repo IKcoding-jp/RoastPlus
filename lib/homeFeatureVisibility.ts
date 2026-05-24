@@ -1,8 +1,4 @@
-import {
-  CONFIGURABLE_HOME_FEATURE_KEYS,
-  HOME_FEATURE_KEYS,
-  type HomeFeatureKey,
-} from './homeFeatures';
+import { CONFIGURABLE_HOME_FEATURE_KEYS, HOME_FEATURE_KEYS, type HomeFeatureKey } from './homeFeatures';
 
 const HOME_HIDDEN_FEATURES_KEY = 'roastplus_home_hidden_features';
 const HOME_FEATURE_KEY_SET = new Set<string>(HOME_FEATURE_KEYS);
@@ -59,9 +55,7 @@ export function setHomeFeatureHidden(key: HomeFeatureKey, hidden: boolean): void
   if (!isConfigurableHomeFeatureKey(key)) return;
 
   const currentKeys = getHiddenHomeFeatureKeys();
-  const nextKeys = hidden
-    ? [...currentKeys, key]
-    : currentKeys.filter((currentKey) => currentKey !== key);
+  const nextKeys = hidden ? [...currentKeys, key] : currentKeys.filter((currentKey) => currentKey !== key);
 
   setHiddenHomeFeatureKeys(nextKeys);
 }

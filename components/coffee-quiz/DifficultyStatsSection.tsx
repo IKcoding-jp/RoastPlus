@@ -3,7 +3,16 @@ import type { QuizDifficulty, QuizStats } from '@/lib/coffee-quiz/types';
 import { DIFFICULTY_LABELS } from '@/lib/coffee-quiz/types';
 
 const TargetIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <circle cx="12" cy="12" r="10" />
     <circle cx="12" cy="12" r="6" />
     <circle cx="12" cy="12" r="2" />
@@ -13,7 +22,10 @@ const TargetIcon = () => (
 interface DifficultyStatsSectionProps {
   stats: QuizStats;
   questionsStats: { byDifficulty: Record<QuizDifficulty, number> } | null;
-  difficultyMasteryStats: Record<QuizDifficulty, { averageMastery: number; masteredCount: number; answeredCorrectlyCount: number }>;
+  difficultyMasteryStats: Record<
+    QuizDifficulty,
+    { averageMastery: number; masteredCount: number; answeredCorrectlyCount: number }
+  >;
 }
 
 export function DifficultyStatsSection({ stats, questionsStats, difficultyMasteryStats }: DifficultyStatsSectionProps) {
@@ -43,21 +55,20 @@ export function DifficultyStatsSection({ stats, questionsStats, difficultyMaster
           const progressPercent = totalQuestions > 0 ? Math.round((answeredCorrectlyCount / totalQuestions) * 100) : 0;
 
           return (
-            <div
-              key={difficulty}
-              className="bg-ground rounded-xl p-4 border border-edge"
-            >
+            <div key={difficulty} className="bg-ground rounded-xl p-4 border border-edge">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-medium text-ink">
-                  {DIFFICULTY_LABELS[difficulty]}
+                <span className="font-medium text-ink">{DIFFICULTY_LABELS[difficulty]}</span>
+                <span
+                  className={`font-bold ${
+                    difficulty === 'beginner'
+                      ? 'text-emerald-600'
+                      : difficulty === 'intermediate'
+                        ? 'text-spot'
+                        : 'text-rose-600'
+                  }`}
+                >
+                  {progressPercent}%
                 </span>
-                <span className={`font-bold ${
-                  difficulty === 'beginner'
-                    ? 'text-emerald-600'
-                    : difficulty === 'intermediate'
-                    ? 'text-spot'
-                    : 'text-rose-600'
-                }`}>{progressPercent}%</span>
               </div>
               <div className="h-2 bg-edge rounded-full overflow-hidden">
                 <motion.div
@@ -65,8 +76,8 @@ export function DifficultyStatsSection({ stats, questionsStats, difficultyMaster
                     difficulty === 'beginner'
                       ? 'bg-gradient-to-r from-emerald-500 to-emerald-400'
                       : difficulty === 'intermediate'
-                      ? 'bg-gradient-to-r from-spot to-spot-hover'
-                      : 'bg-gradient-to-r from-rose-500 to-rose-400'
+                        ? 'bg-gradient-to-r from-spot to-spot-hover'
+                        : 'bg-gradient-to-r from-rose-500 to-rose-400'
                   }`}
                   initial={{ width: 0 }}
                   animate={{ width: `${progressPercent}%` }}

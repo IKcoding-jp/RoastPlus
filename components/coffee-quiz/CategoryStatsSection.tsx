@@ -3,7 +3,16 @@ import type { QuizCategory, QuizStats } from '@/lib/coffee-quiz/types';
 import { CATEGORY_LABELS } from '@/lib/coffee-quiz/types';
 
 const BookOpenIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
     <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
   </svg>
@@ -12,7 +21,10 @@ const BookOpenIcon = () => (
 interface CategoryStatsSectionProps {
   stats: QuizStats;
   questionsStats: { byCategory: Record<QuizCategory, number> } | null;
-  categoryMasteryStats: Record<QuizCategory, { averageMastery: number; masteredCount: number; answeredCorrectlyCount: number }>;
+  categoryMasteryStats: Record<
+    QuizCategory,
+    { averageMastery: number; masteredCount: number; answeredCorrectlyCount: number }
+  >;
 }
 
 export function CategoryStatsSection({ stats, questionsStats, categoryMasteryStats }: CategoryStatsSectionProps) {
@@ -44,9 +56,7 @@ export function CategoryStatsSection({ stats, questionsStats, categoryMasterySta
           return (
             <div key={category} className="bg-ground rounded-xl p-4 border border-edge">
               <div className="flex items-center justify-between mb-2">
-                <span className="font-medium text-ink">
-                  {CATEGORY_LABELS[category]}
-                </span>
+                <span className="font-medium text-ink">{CATEGORY_LABELS[category]}</span>
                 <span className="text-spot font-bold">{progressPercent}%</span>
               </div>
               <div className="h-2 bg-edge rounded-full overflow-hidden">

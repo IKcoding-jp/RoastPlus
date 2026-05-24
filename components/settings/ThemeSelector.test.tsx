@@ -35,18 +35,14 @@ describe('ThemeSelector', () => {
   it('現在選択中のテーマにaria-pressed=trueが設定される', () => {
     render(<ThemeSelector />);
     const buttons = screen.getAllByRole('button');
-    const defaultButton = buttons.find((btn) =>
-      btn.textContent?.includes('デフォルト')
-    );
+    const defaultButton = buttons.find((btn) => btn.textContent?.includes('デフォルト'));
     expect(defaultButton).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('未選択のテーマにaria-pressed=falseが設定される', () => {
     render(<ThemeSelector />);
     const buttons = screen.getAllByRole('button');
-    const darkRoastButton = buttons.find((btn) =>
-      btn.textContent?.includes('ダークロースト')
-    );
+    const darkRoastButton = buttons.find((btn) => btn.textContent?.includes('ダークロースト'));
     expect(darkRoastButton).toHaveAttribute('aria-pressed', 'false');
   });
 
@@ -54,9 +50,7 @@ describe('ThemeSelector', () => {
     render(<ThemeSelector />);
 
     const buttons = screen.getAllByRole('button');
-    const matchaButton = buttons.find((btn) =>
-      btn.textContent?.includes('抹茶ラテ')
-    );
+    const matchaButton = buttons.find((btn) => btn.textContent?.includes('抹茶ラテ'));
     fireEvent.click(matchaButton!);
 
     expect(mockSetTheme).toHaveBeenCalledWith('matcha');

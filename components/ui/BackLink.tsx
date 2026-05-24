@@ -60,11 +60,7 @@ export function BackLink({
       title={title}
       aria-label={ariaLabel}
     >
-      <CaretLeft
-        size={20}
-        weight="bold"
-        className="group-hover:-translate-x-1 transition-transform"
-      />
+      <CaretLeft size={20} weight="bold" className="group-hover:-translate-x-1 transition-transform" />
       {children}
     </Link>
   );

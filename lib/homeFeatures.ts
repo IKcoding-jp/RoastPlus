@@ -51,14 +51,10 @@ export const HOME_FEATURES = [
   },
 ] as const;
 
-export type HomeFeatureKey = typeof HOME_FEATURES[number]['key'];
+export type HomeFeatureKey = (typeof HOME_FEATURES)[number]['key'];
 
 export const HOME_FEATURE_KEYS = HOME_FEATURES.map((feature) => feature.key);
 
-export const CONFIGURABLE_HOME_FEATURES = HOME_FEATURES.filter(
-  (feature) => feature.key !== 'settings'
-);
+export const CONFIGURABLE_HOME_FEATURES = HOME_FEATURES.filter((feature) => feature.key !== 'settings');
 
-export const CONFIGURABLE_HOME_FEATURE_KEYS = CONFIGURABLE_HOME_FEATURES.map(
-  (feature) => feature.key
-);
+export const CONFIGURABLE_HOME_FEATURE_KEYS = CONFIGURABLE_HOME_FEATURES.map((feature) => feature.key);

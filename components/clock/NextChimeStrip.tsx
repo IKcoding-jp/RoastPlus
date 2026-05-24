@@ -23,12 +23,18 @@ export function NextChimeStrip({ currentPeriod, nextChime, colors }: NextChimeSt
     >
       {currentPeriod && (
         <span className="text-base font-bold sm:text-xl">
-          現在 <strong style={{ color: colors.text }}>{currentPeriod.period.start}-{currentPeriod.period.end} {currentPeriod.label}</strong>
+          現在{' '}
+          <strong style={{ color: colors.text }}>
+            {currentPeriod.period.start}-{currentPeriod.period.end} {currentPeriod.label}
+          </strong>
         </span>
       )}
       {nextChime && (
         <span className="text-base font-bold sm:text-xl">
-          次 <strong style={{ color: colors.text }}>{nextChime.time} {nextChime.label}</strong>
+          次{' '}
+          <strong style={{ color: colors.text }}>
+            {nextChime.time} {nextChime.label}
+          </strong>
         </span>
       )}
       {nextChime && (

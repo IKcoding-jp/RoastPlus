@@ -87,7 +87,8 @@ export const EPISODE_004: DevStoryEpisode = {
     {
       id: 'msg-004-16',
       characterId: 'siphon',
-      content: '表面的にはそう見えるかもね。ただ最近は「AIエージェント」という新しい使い方が出てきて、これがすごいんだよね。',
+      content:
+        '表面的にはそう見えるかもね。ただ最近は「AIエージェント」という新しい使い方が出てきて、これがすごいんだよね。',
     },
     {
       id: 'msg-004-17',
@@ -177,7 +178,8 @@ export const EPISODE_004: DevStoryEpisode = {
     {
       id: 'msg-004-34',
       characterId: 'siphon',
-      content: 'Claude Codeはターミナルという黒い画面で動くんだけど、自分でファイルを探して、自分で編集してくれるんだよね。',
+      content:
+        'Claude Codeはターミナルという黒い画面で動くんだけど、自分でファイルを探して、自分で編集してくれるんだよね。',
     },
     {
       id: 'msg-004-35',
@@ -187,7 +189,8 @@ export const EPISODE_004: DevStoryEpisode = {
     {
       id: 'msg-004-36',
       characterId: 'siphon',
-      content: 'そう見えるかもね。CodexはOpenAIが作っていて、複雑な問題を解くのが得意。Antigravityは新しいツールで、フロントエンドの開発に強いんだよね。',
+      content:
+        'そう見えるかもね。CodexはOpenAIが作っていて、複雑な問題を解くのが得意。Antigravityは新しいツールで、フロントエンドの開発に強いんだよね。',
     },
     {
       id: 'msg-004-37',
@@ -218,7 +221,8 @@ export const EPISODE_004: DevStoryEpisode = {
     {
       id: 'msg-004-42',
       characterId: 'siphon',
-      content: 'AGIは「汎用人工知能」のこと。今のAIは特定のタスクが得意だけど、AGIは人間みたいに何でもできるAIなんだよね。',
+      content:
+        'AGIは「汎用人工知能」のこと。今のAIは特定のタスクが得意だけど、AGIは人間みたいに何でもできるAIなんだよね。',
     },
     {
       id: 'msg-004-43',
@@ -238,7 +242,8 @@ export const EPISODE_004: DevStoryEpisode = {
     {
       id: 'msg-004-46',
       characterId: 'siphon',
-      content: '例えば、2022年から2025年の3年でこれだけ進化したでしょ？次の3年はもっと大きな変化が起きる可能性があるんだよね。',
+      content:
+        '例えば、2022年から2025年の3年でこれだけ進化したでしょ？次の3年はもっと大きな変化が起きる可能性があるんだよね。',
     },
     {
       id: 'msg-004-47',

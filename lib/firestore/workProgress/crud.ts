@@ -1,10 +1,6 @@
 import { saveUserData } from '../userData';
 import type { AppData, WorkProgress } from '@/types';
-import {
-  extractTargetAmount,
-  findWorkProgressOrThrow,
-  resolveStatusTransition,
-} from './helpers';
+import { extractTargetAmount, findWorkProgressOrThrow, resolveStatusTransition } from './helpers';
 
 /**
  * 作業進捗を追加
@@ -33,12 +29,8 @@ export async function addWorkProgress(
     id: crypto.randomUUID(),
     createdAt: now,
     updatedAt: now,
-    startedAt: workProgress.status === 'in_progress' || workProgress.status === 'completed'
-      ? now
-      : undefined,
-    completedAt: workProgress.status === 'completed'
-      ? now
-      : undefined,
+    startedAt: workProgress.status === 'in_progress' || workProgress.status === 'completed' ? now : undefined,
+    completedAt: workProgress.status === 'completed' ? now : undefined,
     targetAmount,
     currentAmount: targetAmount !== undefined ? 0 : undefined,
     progressHistory: targetAmount !== undefined ? [] : undefined,
@@ -47,12 +39,16 @@ export async function addWorkProgress(
 
   const updatedWorkProgresses = [...(appData.workProgresses || []), newWorkProgress];
 
-  await saveUserData(userId, {
-    ...appData,
-    workProgresses: updatedWorkProgresses,
-  }, {
-    syncWorkProgresses: true,
-  });
+  await saveUserData(
+    userId,
+    {
+      ...appData,
+      workProgresses: updatedWorkProgresses,
+    },
+    {
+      syncWorkProgresses: true,
+    }
+  );
 }
 
 /**
@@ -96,7 +92,11 @@ export async function updateWorkProgress(
 
   if (updates.status !== undefined && updates.status !== existing.status) {
     ({ startedAt, completedAt } = resolveStatusTransition(
-      existing.status, updates.status, startedAt, completedAt, now
+      existing.status,
+      updates.status,
+      startedAt,
+      completedAt,
+      now
     ));
   }
 
@@ -112,12 +112,16 @@ export async function updateWorkProgress(
   const updatedWorkProgresses = [...workProgresses];
   updatedWorkProgresses[existingIndex] = updatedWorkProgress;
 
-  await saveUserData(userId, {
-    ...appData,
-    workProgresses: updatedWorkProgresses,
-  }, {
-    syncWorkProgresses: true,
-  });
+  await saveUserData(
+    userId,
+    {
+      ...appData,
+      workProgresses: updatedWorkProgresses,
+    },
+    {
+      syncWorkProgresses: true,
+    }
+  );
 }
 
 /**
@@ -164,7 +168,11 @@ export async function updateWorkProgresses(
 
     if (updateData.status !== undefined && updateData.status !== existing.status) {
       ({ startedAt, completedAt } = resolveStatusTransition(
-        existing.status, updateData.status, startedAt, completedAt, now
+        existing.status,
+        updateData.status,
+        startedAt,
+        completedAt,
+        now
       ));
     }
 
@@ -182,12 +190,16 @@ export async function updateWorkProgresses(
   }
 
   if (hasChanges) {
-    await saveUserData(userId, {
-      ...appData,
-      workProgresses: updatedWorkProgresses,
-    }, {
-      syncWorkProgresses: true,
-    });
+    await saveUserData(
+      userId,
+      {
+        ...appData,
+        workProgresses: updatedWorkProgresses,
+      },
+      {
+        syncWorkProgresses: true,
+      }
+    );
   }
 }
 
@@ -197,19 +209,17 @@ export async function updateWorkProgresses(
  * @param workProgressId 削除する作業進捗ID
  * @param appData 現在のAppData
  */
-export async function deleteWorkProgress(
-  userId: string,
-  workProgressId: string,
-  appData: AppData
-): Promise<void> {
-  const updatedWorkProgresses = (appData.workProgresses || []).filter(
-    (wp) => wp.id !== workProgressId
-  );
+export async function deleteWorkProgress(userId: string, workProgressId: string, appData: AppData): Promise<void> {
+  const updatedWorkProgresses = (appData.workProgresses || []).filter((wp) => wp.id !== workProgressId);
 
-  await saveUserData(userId, {
-    ...appData,
-    workProgresses: updatedWorkProgresses,
-  }, {
-    syncWorkProgresses: true,
-  });
+  await saveUserData(
+    userId,
+    {
+      ...appData,
+      workProgresses: updatedWorkProgresses,
+    },
+    {
+      syncWorkProgresses: true,
+    }
+  );
 }

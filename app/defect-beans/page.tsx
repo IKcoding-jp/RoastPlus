@@ -54,13 +54,9 @@ export default function DefectBeansPage() {
 
     // 設定フィルタ
     if (filterOption === 'shouldRemove') {
-      filtered = filtered.filter(
-        (bean) => settings[bean.id]?.shouldRemove === true
-      );
+      filtered = filtered.filter((bean) => settings[bean.id]?.shouldRemove === true);
     } else if (filterOption === 'shouldNotRemove') {
-      filtered = filtered.filter(
-        (bean) => settings[bean.id]?.shouldRemove === false
-      );
+      filtered = filtered.filter((bean) => settings[bean.id]?.shouldRemove === false);
     }
 
     // ソート
@@ -224,9 +220,7 @@ export default function DefectBeansPage() {
     }
   };
 
-  const selectedDefectBeans = filteredDefectBeans.filter((bean) =>
-    selectedIds.has(bean.id)
-  );
+  const selectedDefectBeans = filteredDefectBeans.filter((bean) => selectedIds.has(bean.id));
 
   return (
     <div className="min-h-screen pt-16 pb-2 sm:pb-4 px-4 sm:px-6 lg:px-8 transition-colors duration-1000 bg-page">
@@ -253,9 +247,7 @@ export default function DefectBeansPage() {
                 className="!px-3 !py-2 gap-1.5"
               >
                 <MdCompareArrows className="h-5 w-5" />
-                <span className="text-xs sm:text-sm">
-                  {compareMode ? '選択モード' : '比較'}
-                </span>
+                <span className="text-xs sm:text-sm">{compareMode ? '選択モード' : '比較'}</span>
               </Button>
               {compareMode && selectedIds.size > 0 && (
                 <Button
@@ -285,13 +277,11 @@ export default function DefectBeansPage() {
         }
       />
       <div className="max-w-7xl mx-auto">
-
         {/* グリッド表示 */}
         {filteredDefectBeans.length === 0 ? (
           <EmptyState
             hasSearchOrFilter={!!(searchQuery || filterOption !== 'all')}
             onAddClick={() => setShowAddForm(true)}
-
           />
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
@@ -315,31 +305,26 @@ export default function DefectBeansPage() {
 
         {/* 追加フォーム */}
         {showAddForm && (
-          <DefectBeanForm
-            mode="add"
-            onSubmit={handleAddDefectBean}
-            onCancel={() => setShowAddForm(false)}
-
-          />
+          <DefectBeanForm mode="add" onSubmit={handleAddDefectBean} onCancel={() => setShowAddForm(false)} />
         )}
 
         {/* 編集フォーム */}
-        {editingDefectBeanId && (() => {
-          const editingBean = allDefectBeans.find((db) => db.id === editingDefectBeanId);
-          if (!editingBean) return null;
+        {editingDefectBeanId &&
+          (() => {
+            const editingBean = allDefectBeans.find((db) => db.id === editingDefectBeanId);
+            if (!editingBean) return null;
 
-          return (
-            <DefectBeanForm
-              mode="edit"
-              defectBean={editingBean}
-              onSubmit={handleAddDefectBean} // 使用されないが型のため必要
-              onUpdate={handleUpdateDefectBean}
-              onDelete={isDeveloperModeEnabled && !editingBean.isMaster ? handleDeleteDefectBeanFromEdit : undefined}
-              onCancel={() => setEditingDefectBeanId(null)}
-  
-            />
-          );
-        })()}
+            return (
+              <DefectBeanForm
+                mode="edit"
+                defectBean={editingBean}
+                onSubmit={handleAddDefectBean} // 使用されないが型のため必要
+                onUpdate={handleUpdateDefectBean}
+                onDelete={isDeveloperModeEnabled && !editingBean.isMaster ? handleDeleteDefectBeanFromEdit : undefined}
+                onCancel={() => setEditingDefectBeanId(null)}
+              />
+            );
+          })()}
 
         {/* 比較表示 */}
         {showCompare && selectedDefectBeans.length > 0 && (
@@ -351,7 +336,6 @@ export default function DefectBeansPage() {
               setSelectedIds(new Set());
               setCompareMode(false);
             }}
-
           />
         )}
       </div>

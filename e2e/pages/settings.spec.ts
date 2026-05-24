@@ -21,9 +21,7 @@ test.describe('設定ページ', () => {
     await expect(loginButton.first()).toBeVisible({ timeout: 10000 });
   });
 
-  test('認証済みの場合、設定ページのコンテンツが表示される', async ({
-    page,
-  }) => {
+  test('認証済みの場合、設定ページのコンテンツが表示される', async ({ page }) => {
     await page.goto('/settings');
     await page.waitForLoadState('domcontentloaded');
     const isLogin = await isRedirectedToLogin(page);
@@ -42,10 +40,7 @@ test.describe('設定ページ', () => {
     await page.goto('/settings');
     await page.waitForLoadState('load');
     const criticalErrors = errors.filter(
-      (e) =>
-        !e.includes('Firebase') &&
-        !e.includes('firestore') &&
-        !e.includes('auth/')
+      (e) => !e.includes('Firebase') && !e.includes('firestore') && !e.includes('auth/')
     );
     expect(criticalErrors).toHaveLength(0);
   });

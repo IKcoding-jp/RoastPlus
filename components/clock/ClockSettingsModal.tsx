@@ -47,11 +47,7 @@ export function ClockSettingsModal({
   const contentClassName = 'w-full max-w-md max-h-[85vh] overflow-y-auto rounded-2xl shadow-2xl border border-edge';
 
   return (
-    <Modal
-      show={show}
-      onClose={onClose}
-      contentClassName={contentClassName}
-    >
+    <Modal show={show} onClose={onClose} contentClassName={contentClassName}>
       <div style={{ backgroundColor: themeColors.bg }}>
         {/* ヘッダー */}
         <div
@@ -61,12 +57,7 @@ export function ClockSettingsModal({
           <h2 className="text-lg font-bold" style={{ color: themeColors.text }}>
             時計の設定
           </h2>
-          <IconButton
-            variant="ghost"
-            rounded
-            onClick={onClose}
-            aria-label="閉じる"
-          >
+          <IconButton variant="ghost" rounded onClick={onClose} aria-label="閉じる">
             <HiXMark className="w-6 h-6" style={{ color: themeColors.uiText }} />
           </IconButton>
         </div>
@@ -180,7 +171,9 @@ export function ClockSettingsModal({
               </span>
             </div>
             <div className="mt-2 flex items-center gap-3">
-              <span className="text-xs" style={{ color: themeColors.uiText }}>小</span>
+              <span className="text-xs" style={{ color: themeColors.uiText }}>
+                小
+              </span>
               <input
                 type="range"
                 min="0.5"
@@ -195,7 +188,9 @@ export function ClockSettingsModal({
                 }}
                 aria-label="文字サイズ"
               />
-              <span className="text-xs" style={{ color: themeColors.uiText }}>大</span>
+              <span className="text-xs" style={{ color: themeColors.uiText }}>
+                大
+              </span>
             </div>
           </section>
 
@@ -207,28 +202,19 @@ export function ClockSettingsModal({
                 <span className="text-sm font-medium" style={{ color: themeColors.text }}>
                   24時間表示
                 </span>
-                <Switch
-                  checked={settings.use24Hour}
-                  onChange={(e) => onUpdate({ use24Hour: e.target.checked })}
-                />
+                <Switch checked={settings.use24Hour} onChange={(e) => onUpdate({ use24Hour: e.target.checked })} />
               </div>
               <div className="flex items-center justify-between py-3 px-1 min-h-[44px]">
                 <span className="text-sm font-medium" style={{ color: themeColors.text }}>
                   秒を表示
                 </span>
-                <Switch
-                  checked={settings.showSeconds}
-                  onChange={(e) => onUpdate({ showSeconds: e.target.checked })}
-                />
+                <Switch checked={settings.showSeconds} onChange={(e) => onUpdate({ showSeconds: e.target.checked })} />
               </div>
               <div className="flex items-center justify-between py-3 px-1 min-h-[44px]">
                 <span className="text-sm font-medium" style={{ color: themeColors.text }}>
                   日付を表示
                 </span>
-                <Switch
-                  checked={settings.showDate}
-                  onChange={(e) => onUpdate({ showDate: e.target.checked })}
-                />
+                <Switch checked={settings.showDate} onChange={(e) => onUpdate({ showDate: e.target.checked })} />
               </div>
             </div>
           </section>
@@ -277,12 +263,7 @@ export function ClockSettingsModal({
                           有効
                         </span>
                       ) : (
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          size="sm"
-                          onClick={onEnableWorkChimeAudio}
-                        >
+                        <Button type="button" variant="secondary" size="sm" onClick={onEnableWorkChimeAudio}>
                           <MdVolumeUp className="mr-1.5 h-4 w-4" />
                           音を有効化
                         </Button>
@@ -381,12 +362,7 @@ export function ClockSettingsModal({
 
           {/* ─── リセットボタン ─── */}
           <div className="pt-2 pb-2">
-            <Button
-              variant="secondary"
-              fullWidth
-              onClick={onReset}
-              size="md"
-            >
+            <Button variant="secondary" fullWidth onClick={onReset} size="md">
               設定をリセット
             </Button>
           </div>

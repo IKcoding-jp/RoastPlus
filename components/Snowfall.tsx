@@ -66,7 +66,8 @@ export const Snowfall = memo(function Snowfall() {
           }
         }
         @keyframes sway-a {
-          0%, 100% {
+          0%,
+          100% {
             translate: 0 0;
           }
           25% {
@@ -77,7 +78,8 @@ export const Snowfall = memo(function Snowfall() {
           }
         }
         @keyframes sway-b {
-          0%, 100% {
+          0%,
+          100% {
             translate: 0 0;
           }
           25% {
@@ -88,7 +90,8 @@ export const Snowfall = memo(function Snowfall() {
           }
         }
         @keyframes sway-c {
-          0%, 100% {
+          0%,
+          100% {
             translate: 0 0;
           }
           33% {
@@ -106,13 +109,19 @@ export const Snowfall = memo(function Snowfall() {
           contain: layout style;
         }
         .sway-a {
-          animation: snowfall linear infinite, sway-a ease-in-out infinite;
+          animation:
+            snowfall linear infinite,
+            sway-a ease-in-out infinite;
         }
         .sway-b {
-          animation: snowfall linear infinite, sway-b ease-in-out infinite;
+          animation:
+            snowfall linear infinite,
+            sway-b ease-in-out infinite;
         }
         .sway-c {
-          animation: snowfall linear infinite, sway-c ease-in-out infinite;
+          animation:
+            snowfall linear infinite,
+            sway-c ease-in-out infinite;
         }
       `}</style>
       {snowflakes.map((flake) => (
@@ -126,7 +135,7 @@ export const Snowfall = memo(function Snowfall() {
             borderRadius: '50%',
             backgroundColor: `rgba(255, 255, 255, ${flake.opacity})`,
             animationDelay: `${flake.delay}, ${flake.delay}`,
-            animationDuration: `${flake.duration}, ${3 + flake.id % 3}s`,
+            animationDuration: `${flake.duration}, ${3 + (flake.id % 3)}s`,
           }}
         />
       ))}

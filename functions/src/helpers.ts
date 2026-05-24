@@ -62,10 +62,7 @@ function readString(value: unknown, label: string, maxLength: number): string {
   return trimmed;
 }
 
-function readScore(
-  scores: Record<string, unknown>,
-  key: keyof TastingAnalysisRequest['averageScores']
-): number {
+function readScore(scores: Record<string, unknown>, key: keyof TastingAnalysisRequest['averageScores']): number {
   const value = scores[key];
   if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > 5) {
     throw new Error(`${SCORE_LABELS[key]}は0から5の数値である必要があります`);
@@ -139,19 +136,13 @@ export function normalizeOCRImageBase64(data: unknown): string {
     throw new Error('画像データの形式が正しくありません');
   }
 
-  return imageBase64.startsWith('data:image/')
-    ? imageBase64
-    : `data:image/jpeg;base64,${imageBase64}`;
+  return imageBase64.startsWith('data:image/') ? imageBase64 : `data:image/jpeg;base64,${imageBase64}`;
 }
 
 /**
  * 詳細なエラーログを出力するヘルパー関数
  */
-export function logDetailedError(
-  tag: string,
-  error: unknown,
-  additionalInfo?: Record<string, unknown>
-): void {
+export function logDetailedError(tag: string, error: unknown, additionalInfo?: Record<string, unknown>): void {
   const errorObj = error as Record<string, unknown>;
   const timestamp = new Date().toISOString();
   const errorType = error?.constructor?.name || 'Unknown';

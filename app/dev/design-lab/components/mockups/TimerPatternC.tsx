@@ -3,9 +3,28 @@
 import { Pause, ArrowCounterClockwise, X, ArrowLeft } from 'phosphor-react';
 
 const MOCK_STEPS = [
-  { id: '1', title: '蒸らし', description: '中心からゆっくり40g注ぐ', startTimeSec: 0, targetTotalWater: 40, note: '30秒待ちます' },
-  { id: '2', title: '2回目の注ぎ', description: '中心から外へ円を描くように注ぐ', startTimeSec: 30, targetTotalWater: 120 },
-  { id: '3', title: '3回目の注ぎ', description: '中心から外へ円を描くように注ぐ', startTimeSec: 120, targetTotalWater: 180 },
+  {
+    id: '1',
+    title: '蒸らし',
+    description: '中心からゆっくり40g注ぐ',
+    startTimeSec: 0,
+    targetTotalWater: 40,
+    note: '30秒待ちます',
+  },
+  {
+    id: '2',
+    title: '2回目の注ぎ',
+    description: '中心から外へ円を描くように注ぐ',
+    startTimeSec: 30,
+    targetTotalWater: 120,
+  },
+  {
+    id: '3',
+    title: '3回目の注ぎ',
+    description: '中心から外へ円を描くように注ぐ',
+    startTimeSec: 120,
+    targetTotalWater: 180,
+  },
   { id: '4', title: '4回目の注ぎ', description: '細く中心に注ぐ', startTimeSec: 180, targetTotalWater: 240 },
   { id: '5', title: '待ち', description: 'ドリッパーを外すまで待つ', startTimeSec: 210 },
 ];
@@ -53,14 +72,7 @@ export default function TimerPatternC() {
         <div className="relative flex items-center justify-center mb-3">
           <svg viewBox="0 0 120 120" className="w-48 h-48">
             {/* 背景リング */}
-            <circle
-              cx="60"
-              cy="60"
-              r={radius}
-              fill="none"
-              stroke="var(--color-ground)"
-              strokeWidth="8"
-            />
+            <circle cx="60" cy="60" r={radius} fill="none" stroke="var(--color-ground)" strokeWidth="8" />
             {/* プログレスリング */}
             <circle
               cx="60"
@@ -78,15 +90,10 @@ export default function TimerPatternC() {
           </svg>
           {/* 中央タイマー表示 */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span
-              className="text-4xl font-bold text-ink"
-              style={{ fontFamily: 'var(--font-nunito), sans-serif' }}
-            >
+            <span className="text-4xl font-bold text-ink" style={{ fontFamily: 'var(--font-nunito), sans-serif' }}>
               {formatTime(MOCK_CURRENT_TIME)}
             </span>
-            <span className="text-xs text-muted mt-1">
-              / {formatTime(MOCK_TOTAL_DURATION)}
-            </span>
+            <span className="text-xs text-muted mt-1">/ {formatTime(MOCK_TOTAL_DURATION)}</span>
           </div>
         </div>
 
@@ -104,9 +111,7 @@ export default function TimerPatternC() {
             <span className="text-sm font-semibold text-ink">{currentStep.title}</span>
           </div>
           {currentStep.targetTotalWater && (
-            <p className="text-sm text-muted mb-1">
-              {currentStep.targetTotalWater}gまで注ぐ
-            </p>
+            <p className="text-sm text-muted mb-1">{currentStep.targetTotalWater}gまで注ぐ</p>
           )}
           <p className="text-xs text-muted">{currentStep.description}</p>
         </div>

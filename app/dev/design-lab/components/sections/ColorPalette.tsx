@@ -2,7 +2,6 @@
 
 import { Card } from '@/components/ui';
 
-
 interface ColorGroup {
   label: string;
   colors: { name: string; variable: string; normalValue: string; christmasValue: string }[];
@@ -31,7 +30,12 @@ const colorGroups: ColorGroup[] = [
     label: 'Border',
     colors: [
       { name: 'edge', variable: '--edge', normalValue: '#e5e7eb', christmasValue: 'rgba(212,175,55,0.2)' },
-      { name: 'edge-strong', variable: '--edge-strong', normalValue: '#d1d5db', christmasValue: 'rgba(212,175,55,0.4)' },
+      {
+        name: 'edge-strong',
+        variable: '--edge-strong',
+        normalValue: '#d1d5db',
+        christmasValue: 'rgba(212,175,55,0.4)',
+      },
     ],
   },
   {
@@ -39,8 +43,18 @@ const colorGroups: ColorGroup[] = [
     colors: [
       { name: 'spot', variable: '--spot', normalValue: '#d97706', christmasValue: '#d4af37' },
       { name: 'spot-hover', variable: '--spot-hover', normalValue: '#b45309', christmasValue: '#e8c65f' },
-      { name: 'spot-subtle', variable: '--spot-subtle', normalValue: '#fef3c7', christmasValue: 'rgba(212,175,55,0.15)' },
-      { name: 'spot-surface', variable: '--spot-surface', normalValue: '#fffbeb', christmasValue: 'rgba(212,175,55,0.05)' },
+      {
+        name: 'spot-subtle',
+        variable: '--spot-subtle',
+        normalValue: '#fef3c7',
+        christmasValue: 'rgba(212,175,55,0.15)',
+      },
+      {
+        name: 'spot-surface',
+        variable: '--spot-surface',
+        normalValue: '#fffbeb',
+        christmasValue: 'rgba(212,175,55,0.05)',
+      },
     ],
   },
   {
@@ -54,11 +68,26 @@ const colorGroups: ColorGroup[] = [
     label: 'Status',
     colors: [
       { name: 'danger', variable: '--danger', normalValue: '#dc2626', christmasValue: '#991b1b' },
-      { name: 'danger-subtle', variable: '--danger-subtle', normalValue: '#fee2e2', christmasValue: 'rgba(127,29,29,0.5)' },
+      {
+        name: 'danger-subtle',
+        variable: '--danger-subtle',
+        normalValue: '#fee2e2',
+        christmasValue: 'rgba(127,29,29,0.5)',
+      },
       { name: 'success', variable: '--success', normalValue: '#16a34a', christmasValue: '#166534' },
-      { name: 'success-subtle', variable: '--success-subtle', normalValue: '#dcfce7', christmasValue: 'rgba(20,83,45,0.5)' },
+      {
+        name: 'success-subtle',
+        variable: '--success-subtle',
+        normalValue: '#dcfce7',
+        christmasValue: 'rgba(20,83,45,0.5)',
+      },
       { name: 'warning', variable: '--warning', normalValue: '#eab308', christmasValue: '#d4af37' },
-      { name: 'warning-subtle', variable: '--warning-subtle', normalValue: '#fef9c3', christmasValue: 'rgba(113,63,18,0.5)' },
+      {
+        name: 'warning-subtle',
+        variable: '--warning-subtle',
+        normalValue: '#fef9c3',
+        christmasValue: 'rgba(113,63,18,0.5)',
+      },
       { name: 'info', variable: '--info', normalValue: '#00b8d4', christmasValue: '#0097a7' },
       { name: 'info-hover', variable: '--info-hover', normalValue: '#00a0b8', christmasValue: '#00838f' },
     ],
@@ -75,10 +104,7 @@ const colorGroups: ColorGroup[] = [
 function ColorSwatch({ color, value }: { color: string; value: string }) {
   return (
     <div className="flex items-center gap-3 p-3 rounded-lg bg-ground">
-      <div
-        className="w-10 h-10 rounded-lg border border-edge shrink-0"
-        style={{ backgroundColor: value }}
-      />
+      <div className="w-10 h-10 rounded-lg border border-edge shrink-0" style={{ backgroundColor: value }} />
       <div className="min-w-0">
         <p className="text-sm font-medium text-ink">{color}</p>
         <p className="text-xs text-ink-muted truncate">{value}</p>
@@ -93,39 +119,25 @@ export default function ColorPalette() {
       {colorGroups.map((group) => (
         <Card key={group.label} variant="default">
           <div className="p-5">
-            <h4 className="text-base font-semibold text-ink mb-4">
-              {group.label}
-            </h4>
+            <h4 className="text-base font-semibold text-ink mb-4">{group.label}</h4>
 
             <div className="space-y-4">
               {/* Normal Theme */}
               <div>
-                <p className="text-xs font-medium text-ink-muted uppercase tracking-wide mb-2">
-                  Normal
-                </p>
+                <p className="text-xs font-medium text-ink-muted uppercase tracking-wide mb-2">Normal</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                   {group.colors.map((c) => (
-                    <ColorSwatch
-                      key={`normal-${c.name}`}
-                      color={c.variable}
-                      value={c.normalValue}
-                    />
+                    <ColorSwatch key={`normal-${c.name}`} color={c.variable} value={c.normalValue} />
                   ))}
                 </div>
               </div>
 
               {/* Christmas Theme */}
               <div>
-                <p className="text-xs font-medium text-ink-muted uppercase tracking-wide mb-2">
-                  Christmas
-                </p>
+                <p className="text-xs font-medium text-ink-muted uppercase tracking-wide mb-2">Christmas</p>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
                   {group.colors.map((c) => (
-                    <ColorSwatch
-                      key={`xmas-${c.name}`}
-                      color={c.variable}
-                      value={c.christmasValue}
-                    />
+                    <ColorSwatch key={`xmas-${c.name}`} color={c.variable} value={c.christmasValue} />
                   ))}
                 </div>
               </div>

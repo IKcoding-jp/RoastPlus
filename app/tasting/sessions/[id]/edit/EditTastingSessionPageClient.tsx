@@ -19,11 +19,10 @@ export default function EditTastingSessionPageClient() {
   }, [params, router]);
 
   return (
-      <div className="flex min-h-screen items-center justify-center bg-page">
+    <div className="flex min-h-screen items-center justify-center bg-page">
       <div className="text-center">
         <div className="text-lg text-ink-sub">リダイレクト中...</div>
       </div>
     </div>
   );
 }
-

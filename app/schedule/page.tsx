@@ -52,7 +52,12 @@ export default function SchedulePage() {
   }
 
   return (
-    <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as TabType)} defaultValue="today" className="h-dvh pt-14 sm:pt-3 pb-4 px-4 sm:px-4 lg:px-6 flex flex-col overflow-hidden bg-page">
+    <Tabs
+      value={activeTab}
+      onValueChange={(v) => setActiveTab(v as TabType)}
+      defaultValue="today"
+      className="h-dvh pt-14 sm:pt-3 pb-4 px-4 sm:px-4 lg:px-6 flex flex-col overflow-hidden bg-page"
+    >
       <FloatingNav backHref="/" />
       {/* モバイル版：日付ナビ（戻るボタンの右側に余白を確保） */}
       <div className="sm:hidden fixed top-3 left-16 right-4 z-50 flex">
@@ -140,12 +145,7 @@ export default function SchedulePage() {
             <div className="flex-shrink-0 h-7 md:h-8 flex items-center">
               <div className="w-px h-full bg-edge"></div>
             </div>
-            <IconButton
-              variant="ghost"
-              size="md"
-              onClick={() => setIsOCROpen(true)}
-              aria-label="画像から読み取り"
-            >
+            <IconButton variant="ghost" size="md" onClick={() => setIsOCROpen(true)} aria-label="画像から読み取り">
               <HiCamera className="h-5 w-5 md:h-6 md:w-6" />
             </IconButton>
           </div>
@@ -155,7 +155,10 @@ export default function SchedulePage() {
         <div className="lg:hidden fixed bottom-0 left-0 right-0 z-20 px-4 pb-4">
           <div className="flex items-end gap-3 justify-center">
             <TabsList className="flex-1 !rounded-2xl shadow-xl !p-1 sm:!p-1.5 !bg-surface border border-edge">
-              <TabsTrigger value="today" className="py-3.5 sm:py-4 text-xs sm:text-sm font-semibold !rounded-xl aria-selected:!bg-spot aria-selected:!text-on-spot aria-selected:!shadow-md">
+              <TabsTrigger
+                value="today"
+                className="py-3.5 sm:py-4 text-xs sm:text-sm font-semibold !rounded-xl aria-selected:!bg-spot aria-selected:!text-on-spot aria-selected:!shadow-md"
+              >
                 本日のスケジュール
               </TabsTrigger>
               {/* 中央OCRボタン */}
@@ -168,7 +171,10 @@ export default function SchedulePage() {
               >
                 <HiCamera className="h-5 w-5" />
               </IconButton>
-              <TabsTrigger value="roast" className="py-3.5 sm:py-4 text-xs sm:text-sm font-semibold !rounded-xl aria-selected:!bg-spot aria-selected:!text-on-spot aria-selected:!shadow-md">
+              <TabsTrigger
+                value="roast"
+                className="py-3.5 sm:py-4 text-xs sm:text-sm font-semibold !rounded-xl aria-selected:!bg-spot aria-selected:!text-on-spot aria-selected:!shadow-md"
+              >
                 ローストスケジュール
               </TabsTrigger>
             </TabsList>
@@ -180,20 +186,46 @@ export default function SchedulePage() {
           {/* モバイル版：タブ切替 */}
           <div className="block lg:hidden flex-1 flex flex-col min-h-0">
             <TabsContent value="today" className="flex-1 flex flex-col min-h-0">
-              <TodaySchedule key={selectedDate} data={data} onUpdate={updateData} selectedDate={selectedDate} isToday={isToday} onCamera={() => setIsOCROpen(true)} />
+              <TodaySchedule
+                key={selectedDate}
+                data={data}
+                onUpdate={updateData}
+                selectedDate={selectedDate}
+                isToday={isToday}
+                onCamera={() => setIsOCROpen(true)}
+              />
             </TabsContent>
             <TabsContent value="roast" className="flex-1 flex flex-col min-h-0">
-              <RoastSchedulerTab data={data} onUpdate={updateData} selectedDate={selectedDate} isToday={isToday} onCamera={() => setIsOCROpen(true)} />
+              <RoastSchedulerTab
+                data={data}
+                onUpdate={updateData}
+                selectedDate={selectedDate}
+                isToday={isToday}
+                onCamera={() => setIsOCROpen(true)}
+              />
             </TabsContent>
           </div>
 
           {/* デスクトップ版：横並び */}
           <div className="hidden lg:grid lg:grid-cols-2 lg:gap-6 lg:flex-1 lg:min-h-0">
             <div className="flex flex-col min-h-0">
-              <TodaySchedule key={selectedDate} data={data} onUpdate={updateData} selectedDate={selectedDate} isToday={isToday} onCamera={() => setIsOCROpen(true)} />
+              <TodaySchedule
+                key={selectedDate}
+                data={data}
+                onUpdate={updateData}
+                selectedDate={selectedDate}
+                isToday={isToday}
+                onCamera={() => setIsOCROpen(true)}
+              />
             </div>
             <div className="flex flex-col min-h-0">
-              <RoastSchedulerTab data={data} onUpdate={updateData} selectedDate={selectedDate} isToday={isToday} onCamera={() => setIsOCROpen(true)} />
+              <RoastSchedulerTab
+                data={data}
+                onUpdate={updateData}
+                selectedDate={selectedDate}
+                isToday={isToday}
+                onCamera={() => setIsOCROpen(true)}
+              />
             </div>
           </div>
         </main>
@@ -224,8 +256,6 @@ export default function SchedulePage() {
           onCancel={() => setIsOCROpen(false)}
         />
       )}
-
     </Tabs>
   );
 }
-

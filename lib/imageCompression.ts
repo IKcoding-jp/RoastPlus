@@ -16,21 +16,14 @@ export interface CompressImageOptions {
  * @param options 圧縮オプション
  * @returns 圧縮後のFileオブジェクト
  */
-export async function compressImage(
-  file: File,
-  options: CompressImageOptions = {}
-): Promise<File> {
+export async function compressImage(file: File, options: CompressImageOptions = {}): Promise<File> {
   const { maxSize = 800, quality = 0.8 } = options;
 
   // 画像を読み込む
   const img = await loadImage(file);
 
   // リサイズ後のサイズを計算
-  const { width, height } = calculateDimensions(
-    img.naturalWidth,
-    img.naturalHeight,
-    maxSize
-  );
+  const { width, height } = calculateDimensions(img.naturalWidth, img.naturalHeight, maxSize);
 
   // Canvasに描画して圧縮
   const canvas = document.createElement('canvas');

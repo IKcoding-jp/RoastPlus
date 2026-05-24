@@ -8,7 +8,9 @@ let audioContext: AudioContext | null = null;
 
 function getAudioContext(): AudioContext {
   if (!audioContext) {
-    audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    audioContext = new (
+      window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+    )();
   }
   return audioContext;
 }
@@ -16,12 +18,7 @@ function getAudioContext(): AudioContext {
 /**
  * シンプルなトーンを再生
  */
-function playTone(
-  frequency: number,
-  duration: number,
-  type: OscillatorType = 'sine',
-  volume: number = 0.3
-): void {
+function playTone(frequency: number, duration: number, type: OscillatorType = 'sine', volume: number = 0.3): void {
   try {
     const ctx = getAudioContext();
 
@@ -168,7 +165,7 @@ export function playCompleteSound(volume: number = 0.3): void {
     playTone(523.25, 0.12, 'sine', volume); // C5
     setTimeout(() => playTone(659.25, 0.12, 'sine', volume), 100); // E5
     setTimeout(() => playTone(783.99, 0.12, 'sine', volume), 200); // G5
-    setTimeout(() => playTone(1046.50, 0.25, 'sine', volume), 300); // C6
+    setTimeout(() => playTone(1046.5, 0.25, 'sine', volume), 300); // C6
   } catch (error) {
     console.warn('Failed to play complete sound:', error);
   }

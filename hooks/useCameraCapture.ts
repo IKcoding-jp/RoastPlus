@@ -30,11 +30,7 @@ interface UseCameraCaptureReturn {
   handleVideoReady: () => void;
 }
 
-export function useCameraCapture({
-  onCapture,
-  onCancel,
-  showToast,
-}: UseCameraCaptureProps): UseCameraCaptureReturn {
+export function useCameraCapture({ onCapture, onCancel, showToast }: UseCameraCaptureProps): UseCameraCaptureReturn {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [guideSize, setGuideSize] = useState<GuideSize>({
@@ -229,8 +225,7 @@ export function useCameraCapture({
     const cropY = Math.max(0, Math.min(rawCropY, videoHeight - cropHeight));
 
     // ガイドのアスペクト比に合わせて出力サイズを決定（縦長）
-    const guideAspect =
-      guideSize.width > 0 && guideSize.height > 0 ? guideSize.width / guideSize.height : 3 / 4;
+    const guideAspect = guideSize.width > 0 && guideSize.height > 0 ? guideSize.width / guideSize.height : 3 / 4;
     const targetHeight = 1280;
     const targetWidth = Math.max(720, Math.round(targetHeight * guideAspect));
 
@@ -327,11 +322,7 @@ export function useCameraCapture({
         console.error('Failed to restart camera:', error);
         showToast('カメラの再起動に失敗しました。', 'error');
       }
-    } else if (
-      videoRef.current &&
-      videoRef.current.videoWidth > 0 &&
-      videoRef.current.videoHeight > 0
-    ) {
+    } else if (videoRef.current && videoRef.current.videoWidth > 0 && videoRef.current.videoHeight > 0) {
       // 既存ストリームですでにメタデータが揃っている場合は即座に撮影可能にする
       setIsVideoReady(true);
     } else if (videoRef.current && streamRef.current) {

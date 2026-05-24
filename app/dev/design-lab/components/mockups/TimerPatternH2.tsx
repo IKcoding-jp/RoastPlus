@@ -4,8 +4,21 @@ import { ArrowLeft, ArrowCounterClockwise, Play, X, Drop, CaretRight } from 'pho
 
 // --- モックデータ ---
 const MOCK_STEPS = [
-  { id: '1', title: '蒸らし（味：40%）', description: '粉全体にまんべんなく注いで、均一に湿らせます', startTimeSec: 0, targetTotalWater: 30, note: '蒸らしのお湯を入れたタイミングでタイマーを開始してください。' },
-  { id: '2', title: '2投目（味：40%）', description: '中心から外へ円を描くように注ぐ', startTimeSec: 45, targetTotalWater: 60 },
+  {
+    id: '1',
+    title: '蒸らし（味：40%）',
+    description: '粉全体にまんべんなく注いで、均一に湿らせます',
+    startTimeSec: 0,
+    targetTotalWater: 30,
+    note: '蒸らしのお湯を入れたタイミングでタイマーを開始してください。',
+  },
+  {
+    id: '2',
+    title: '2投目（味：40%）',
+    description: '中心から外へ円を描くように注ぐ',
+    startTimeSec: 45,
+    targetTotalWater: 60,
+  },
   { id: '3', title: '濃度調整（60%）', description: '中心に細く注ぐ', startTimeSec: 90, targetTotalWater: 150 },
 ];
 const MOCK_CURRENT_TIME = 30;
@@ -57,9 +70,7 @@ export default function TimerPatternH2() {
             </span>
 
             {/* タイマー数字 */}
-            <div
-              className="relative z-10 text-[4.5rem] font-extrabold text-ink tracking-[-0.04em] tabular-nums leading-none font-nunito"
-            >
+            <div className="relative z-10 text-[4.5rem] font-extrabold text-ink tracking-[-0.04em] tabular-nums leading-none font-nunito">
               {formatTime(MOCK_CURRENT_TIME)}
             </div>
 
@@ -90,9 +101,7 @@ export default function TimerPatternH2() {
                   <Drop size={14} weight="fill" className="text-white" />
                 </div>
                 {/* ステップ名: 白テキスト */}
-                <span className="text-[15px] font-bold text-white leading-tight">
-                  {currentStep.title}
-                </span>
+                <span className="text-[15px] font-bold text-white leading-tight">{currentStep.title}</span>
               </div>
 
               {currentStep.targetTotalWater && (
@@ -107,15 +116,11 @@ export default function TimerPatternH2() {
               )}
 
               {/* 説明文: 白系 */}
-              <p className="text-[13px] text-white/70 leading-relaxed">
-                {currentStep.description}
-              </p>
+              <p className="text-[13px] text-white/70 leading-relaxed">{currentStep.description}</p>
 
               {/* note: 白系の薄め */}
               {currentStep.note && (
-                <p className="text-[11px] text-white/40 mt-2 leading-relaxed italic">
-                  {currentStep.note}
-                </p>
+                <p className="text-[11px] text-white/40 mt-2 leading-relaxed italic">{currentStep.note}</p>
               )}
             </div>
 
@@ -131,9 +136,7 @@ export default function TimerPatternH2() {
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-1.5">
                         <CaretRight size={11} weight="bold" className="text-spot/40" />
-                        <span className="text-[13px] font-semibold text-ink-sub truncate">
-                          {nextStep.title}
-                        </span>
+                        <span className="text-[13px] font-semibold text-ink-sub truncate">{nextStep.title}</span>
                         {nextStep.targetTotalWater && (
                           <span className="text-[11px] font-medium text-ink-muted ml-0.5">
                             {nextStep.targetTotalWater}gまで

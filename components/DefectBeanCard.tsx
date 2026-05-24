@@ -98,9 +98,7 @@ export function DefectBeanCard({
           {/* 名称 */}
           <div className="flex-shrink-0">
             <div className="flex items-start justify-between gap-2">
-              <h3 className="text-sm font-semibold text-ink mb-1">
-                {defectBean.name}
-              </h3>
+              <h3 className="text-sm font-semibold text-ink mb-1">{defectBean.name}</h3>
             </div>
           </div>
 
@@ -130,15 +128,16 @@ export function DefectBeanCard({
 
           {/* 設定切り替え */}
           {onToggleSetting && (
-            <div className="flex gap-1.5 pt-1.5 border-t border-edge mt-auto flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+            <div
+              className="flex gap-1.5 pt-1.5 border-t border-edge mt-auto flex-shrink-0"
+              onClick={(e) => e.stopPropagation()}
+            >
               <Button
                 variant="danger"
                 size="sm"
                 onClick={() => handleToggleSetting(true)}
                 className={`flex-1 !px-1.5 sm:!px-2 !py-1.5 !text-[10px] sm:!text-xs !min-h-[36px] gap-0.5 sm:gap-1 whitespace-nowrap ${
-                  shouldRemove === true
-                    ? ''
-                    : '!bg-gray-200 !text-gray-700 hover:!bg-gray-300'
+                  shouldRemove === true ? '' : '!bg-gray-200 !text-gray-700 hover:!bg-gray-300'
                 }`}
               >
                 <HiXCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
@@ -149,9 +148,7 @@ export function DefectBeanCard({
                 size="sm"
                 onClick={() => handleToggleSetting(false)}
                 className={`flex-1 !px-1.5 sm:!px-2 !py-1.5 !text-[10px] sm:!text-xs !min-h-[36px] gap-0.5 sm:gap-1 whitespace-nowrap ${
-                  shouldRemove === false
-                    ? ''
-                    : '!bg-gray-200 !text-gray-700 hover:!bg-gray-300'
+                  shouldRemove === false ? '' : '!bg-gray-200 !text-gray-700 hover:!bg-gray-300'
                 }`}
               >
                 <HiCheck className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />

@@ -36,9 +36,7 @@ export function TastingRecordFormScores({
             <div className="w-1 h-4 rounded-full bg-spot" />
             <h3 className="text-sm font-bold text-ink">評価項目</h3>
           </div>
-          <div className="text-[10px] font-bold text-spot">
-            1.0 - 5.0 スケール
-          </div>
+          <div className="text-[10px] font-bold text-spot">1.0 - 5.0 スケール</div>
         </div>
         <p className="text-[11px] font-medium leading-relaxed text-ink-muted">
           ※ これらの項目は、味わいのバランスや特徴の数値であり、味の良し悪しを評価するものではありません。

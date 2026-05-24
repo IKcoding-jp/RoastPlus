@@ -2,10 +2,7 @@
 
 import React from 'react';
 import type { DialogueMessage } from '@/types';
-import {
-  CHARACTERS,
-  getCharacterPairByEpisodeId,
-} from '@/data/dev-stories/characters';
+import { CHARACTERS, getCharacterPairByEpisodeId } from '@/data/dev-stories/characters';
 import { DialogueBubble } from './DialogueBubble';
 import { CharacterAvatar } from './CharacterAvatar';
 
@@ -14,10 +11,7 @@ interface DialogueSectionProps {
   episodeId: string;
 }
 
-export const DialogueSection: React.FC<DialogueSectionProps> = ({
-  dialogues,
-  episodeId,
-}) => {
+export const DialogueSection: React.FC<DialogueSectionProps> = ({ dialogues, episodeId }) => {
   const characterPair = getCharacterPairByEpisodeId(episodeId);
 
   // フォールバック: ペアが見つからない場合はepisode-001のペアを使用
@@ -37,15 +31,10 @@ export const DialogueSection: React.FC<DialogueSectionProps> = ({
             <h3 className="font-bold text-ink mb-1">
               {pair.left.emoji} {pair.left.name}
             </h3>
-            <p
-              className="text-xs font-medium mb-2"
-              style={{ color: CHARACTERS[pair.left.id].textColor }}
-            >
+            <p className="text-xs font-medium mb-2" style={{ color: CHARACTERS[pair.left.id].textColor }}>
               {pair.left.subtitle}
             </p>
-            <p className="text-xs text-ink-sub leading-relaxed">
-              {pair.left.description}
-            </p>
+            <p className="text-xs text-ink-sub leading-relaxed">{pair.left.description}</p>
           </div>
 
           {/* 右側キャラクター */}
@@ -56,23 +45,16 @@ export const DialogueSection: React.FC<DialogueSectionProps> = ({
             <h3 className="font-bold text-ink mb-1">
               {pair.right.emoji} {pair.right.name}
             </h3>
-            <p
-              className="text-xs font-medium mb-2"
-              style={{ color: CHARACTERS[pair.right.id].textColor }}
-            >
+            <p className="text-xs font-medium mb-2" style={{ color: CHARACTERS[pair.right.id].textColor }}>
               {pair.right.subtitle}
             </p>
-            <p className="text-xs text-ink-sub leading-relaxed">
-              {pair.right.description}
-            </p>
+            <p className="text-xs text-ink-sub leading-relaxed">{pair.right.description}</p>
           </div>
         </div>
 
         {/* 二人の関係性 */}
         <div className="bg-ground rounded-xl p-4 text-center">
-          <p className="text-xs text-ink-sub leading-relaxed whitespace-pre-line">
-            {pair.relationship}
-          </p>
+          <p className="text-xs text-ink-sub leading-relaxed whitespace-pre-line">{pair.relationship}</p>
         </div>
       </div>
 
@@ -82,17 +64,9 @@ export const DialogueSection: React.FC<DialogueSectionProps> = ({
           const character = CHARACTERS[message.characterId];
           // 連続した同じキャラクターのメッセージではアバターを非表示
           const prevMessage = index > 0 ? dialogues[index - 1] : null;
-          const showAvatar =
-            !prevMessage || prevMessage.characterId !== message.characterId;
+          const showAvatar = !prevMessage || prevMessage.characterId !== message.characterId;
 
-          return (
-            <DialogueBubble
-              key={message.id}
-              message={message}
-              character={character}
-              showAvatar={showAvatar}
-            />
-          );
+          return <DialogueBubble key={message.id} message={message} character={character} showAvatar={showAvatar} />;
         })}
       </div>
     </div>

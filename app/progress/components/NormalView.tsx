@@ -75,7 +75,8 @@ export function NormalView({
           </div>
           <h2 className="text-xl sm:text-2xl font-bold text-ink mb-2">作業進捗を管理しましょう</h2>
           <p className="text-ink-sub mb-8 max-w-md mx-auto">
-            日々の作業の進捗状況を記録・可視化できます。<br />
+            日々の作業の進捗状況を記録・可視化できます。
+            <br />
             まずは新しい作業を追加してみましょう。
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
@@ -119,12 +120,7 @@ export function NormalView({
             <HiSearch className="h-12 w-12 mx-auto" />
           </div>
           <p className="text-ink-sub font-medium">条件に一致する作業が見つかりませんでした</p>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onClearFilters}
-            className="mt-4 !min-h-0 !font-medium"
-          >
+          <Button variant="ghost" size="sm" onClick={onClearFilters} className="mt-4 !min-h-0 !font-medium">
             フィルタを解除
           </Button>
         </div>

@@ -55,12 +55,10 @@ function RoastRecordFormInner({
   const [beanName, setBeanName] = useState<BeanName | ''>(
     (record?.beanName || initialValues?.beanName || '') as BeanName | ''
   );
-  const [weight, setWeight] = useState<200 | 300 | 500 | ''>(
-    record?.weight || initialValues?.weight || ''
+  const [weight, setWeight] = useState<200 | 300 | 500 | ''>(record?.weight || initialValues?.weight || '');
+  const [roastLevel, setRoastLevel] = useState<'浅煎り' | '中煎り' | '中深煎り' | '深煎り' | ''>(
+    record?.roastLevel || initialValues?.roastLevel || ''
   );
-  const [roastLevel, setRoastLevel] = useState<
-    '浅煎り' | '中煎り' | '中深煎り' | '深煎り' | ''
-  >(record?.roastLevel || initialValues?.roastLevel || '');
   const [durationMinutes, setDurationMinutes] = useState<string>(() => {
     const duration = record?.duration || initialValues?.duration || 0;
     return duration > 0 ? Math.floor(duration / 60).toString() : '';
@@ -69,9 +67,7 @@ function RoastRecordFormInner({
     const duration = record?.duration || initialValues?.duration || 0;
     return duration > 0 ? (duration % 60).toString().padStart(2, '0') : '';
   });
-  const [roastDate, setRoastDate] = useState<string>(
-    record?.roastDate || formatDateString()
-  );
+  const [roastDate, setRoastDate] = useState<string>(record?.roastDate || formatDateString());
 
   const handleDurationMinutesChange = (value: string) => {
     const halfWidth = convertToHalfWidth(value);
@@ -171,9 +167,7 @@ function RoastRecordFormInner({
         </label>
         <Select
           value={weight.toString()}
-          onChange={(e) =>
-            setWeight(e.target.value ? (parseInt(e.target.value, 10) as 200 | 300 | 500) : '')
-          }
+          onChange={(e) => setWeight(e.target.value ? (parseInt(e.target.value, 10) as 200 | 300 | 500) : '')}
           options={WEIGHTS.map((w) => ({ value: w.toString(), label: `${w}g` }))}
           placeholder="選択してください"
           required
@@ -187,11 +181,7 @@ function RoastRecordFormInner({
         </label>
         <Select
           value={roastLevel}
-          onChange={(e) =>
-            setRoastLevel(
-              e.target.value as '浅煎り' | '中煎り' | '中深煎り' | '深煎り' | ''
-            )
-          }
+          onChange={(e) => setRoastLevel(e.target.value as '浅煎り' | '中煎り' | '中深煎り' | '深煎り' | '')}
           options={ROAST_LEVELS.map((level) => ({ value: level, label: level }))}
           placeholder="選択してください"
           required
@@ -212,7 +202,7 @@ function RoastRecordFormInner({
               onChange={(e) => handleDurationMinutesChange(e.target.value)}
               placeholder="分"
               required
-                />
+            />
           </div>
           <div className="flex-1">
             <Input
@@ -222,7 +212,7 @@ function RoastRecordFormInner({
               onChange={(e) => handleDurationSecondsChange(e.target.value)}
               placeholder="秒"
               maxLength={2}
-                />
+            />
           </div>
         </div>
         {durationMinutes && (
@@ -237,12 +227,7 @@ function RoastRecordFormInner({
         <label className="block text-sm sm:text-base font-medium mb-1 sm:mb-2 text-ink">
           焙煎日 <span className="text-red-500">*</span>
         </label>
-        <Input
-          type="date"
-          value={roastDate}
-          onChange={(e) => setRoastDate(e.target.value)}
-          required
-        />
+        <Input type="date" value={roastDate} onChange={(e) => setRoastDate(e.target.value)} required />
       </div>
 
       {/* ボタン */}
@@ -257,25 +242,17 @@ function RoastRecordFormInner({
               }
             }}
             className="w-full sm:w-auto"
-            >
+          >
             削除
           </Button>
         )}
         <div className="flex-1 flex gap-3">
           {onCancel && (
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={onCancel}
-                >
+            <Button type="button" variant="secondary" onClick={onCancel}>
               キャンセル
             </Button>
           )}
-          <Button
-            type="submit"
-            variant="primary"
-            className="flex-1"
-            >
+          <Button type="submit" variant="primary" className="flex-1">
             {isEditMode ? '更新' : '保存'}
           </Button>
         </div>

@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  getRoastLevelColor,
-  getModeColor,
-  getWeightColor,
-} from './roastScheduleColors';
+import { getRoastLevelColor, getModeColor, getWeightColor } from './roastScheduleColors';
 
 describe('getRoastLevelColor', () => {
   it('浅煎りは黄色系を返す', () => {

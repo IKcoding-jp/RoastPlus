@@ -55,12 +55,16 @@ export async function addCompletedCountToWorkProgress(
   const updatedWorkProgresses = [...workProgresses];
   updatedWorkProgresses[existingIndex] = updatedWorkProgress;
 
-  await saveUserData(userId, {
-    ...appData,
-    workProgresses: updatedWorkProgresses,
-  }, {
-    syncWorkProgresses: true,
-  });
+  await saveUserData(
+    userId,
+    {
+      ...appData,
+      workProgresses: updatedWorkProgresses,
+    },
+    {
+      syncWorkProgresses: true,
+    }
+  );
 }
 
 /**
@@ -130,22 +134,22 @@ export async function addProgressToWorkProgress(
   const updatedWorkProgresses = [...workProgresses];
   updatedWorkProgresses[existingIndex] = updatedWorkProgress;
 
-  await saveUserData(userId, {
-    ...appData,
-    workProgresses: updatedWorkProgresses,
-  }, {
-    syncWorkProgresses: true,
-  });
+  await saveUserData(
+    userId,
+    {
+      ...appData,
+      workProgresses: updatedWorkProgresses,
+    },
+    {
+      syncWorkProgresses: true,
+    }
+  );
 }
 
 /**
  * 作業進捗をアーカイブ
  */
-export async function archiveWorkProgress(
-  userId: string,
-  workProgressId: string,
-  appData: AppData
-): Promise<void> {
+export async function archiveWorkProgress(userId: string, workProgressId: string, appData: AppData): Promise<void> {
   const { existing, existingIndex, workProgresses } = findWorkProgressOrThrow(appData, workProgressId);
   const now = new Date().toISOString();
 
@@ -158,22 +162,22 @@ export async function archiveWorkProgress(
   const updatedWorkProgresses = [...workProgresses];
   updatedWorkProgresses[existingIndex] = updatedWorkProgress;
 
-  await saveUserData(userId, {
-    ...appData,
-    workProgresses: updatedWorkProgresses,
-  }, {
-    syncWorkProgresses: true,
-  });
+  await saveUserData(
+    userId,
+    {
+      ...appData,
+      workProgresses: updatedWorkProgresses,
+    },
+    {
+      syncWorkProgresses: true,
+    }
+  );
 }
 
 /**
  * 作業進捗のアーカイブを解除
  */
-export async function unarchiveWorkProgress(
-  userId: string,
-  workProgressId: string,
-  appData: AppData
-): Promise<void> {
+export async function unarchiveWorkProgress(userId: string, workProgressId: string, appData: AppData): Promise<void> {
   const { existing, existingIndex, workProgresses } = findWorkProgressOrThrow(appData, workProgressId);
   const now = new Date().toISOString();
 
@@ -186,12 +190,16 @@ export async function unarchiveWorkProgress(
   const updatedWorkProgresses = [...workProgresses];
   updatedWorkProgresses[existingIndex] = updatedWorkProgress;
 
-  await saveUserData(userId, {
-    ...appData,
-    workProgresses: updatedWorkProgresses,
-  }, {
-    syncWorkProgresses: true,
-  });
+  await saveUserData(
+    userId,
+    {
+      ...appData,
+      workProgresses: updatedWorkProgresses,
+    },
+    {
+      syncWorkProgresses: true,
+    }
+  );
 }
 
 /**
@@ -238,12 +246,16 @@ export async function updateProgressHistoryEntry(
   const updatedWorkProgresses = [...workProgresses];
   updatedWorkProgresses[existingIndex] = updatedWorkProgress;
 
-  await saveUserData(userId, {
-    ...appData,
-    workProgresses: updatedWorkProgresses,
-  }, {
-    syncWorkProgresses: true,
-  });
+  await saveUserData(
+    userId,
+    {
+      ...appData,
+      workProgresses: updatedWorkProgresses,
+    },
+    {
+      syncWorkProgresses: true,
+    }
+  );
 }
 
 /**
@@ -284,10 +296,14 @@ export async function deleteProgressHistoryEntry(
   const updatedWorkProgresses = [...workProgresses];
   updatedWorkProgresses[existingIndex] = updatedWorkProgress;
 
-  await saveUserData(userId, {
-    ...appData,
-    workProgresses: updatedWorkProgresses,
-  }, {
-    syncWorkProgresses: true,
-  });
+  await saveUserData(
+    userId,
+    {
+      ...appData,
+      workProgresses: updatedWorkProgresses,
+    },
+    {
+      syncWorkProgresses: true,
+    }
+  );
 }

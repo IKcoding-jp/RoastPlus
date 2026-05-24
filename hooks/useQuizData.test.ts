@@ -31,9 +31,7 @@ const mockQuestions: QuizQuestion[] = [
   },
 ];
 
-const createMockProgress = (
-  overrides: Partial<QuizProgress> = {}
-): QuizProgress => ({
+const createMockProgress = (overrides: Partial<QuizProgress> = {}): QuizProgress => ({
   userId: 'local',
   cards: [],
   checkmarks: [],
@@ -103,11 +101,7 @@ function expectAnswerResult(result: AnswerResult | null): asserts result is Answ
 }
 
 async function recordAnswerInAct(
-  recordAnswer: (
-    questionId: string,
-    selectedOptionId: string,
-    responseTimeMs: number
-  ) => Promise<AnswerResult | null>,
+  recordAnswer: (questionId: string, selectedOptionId: string, responseTimeMs: number) => Promise<AnswerResult | null>,
   questionId: string,
   selectedOptionId: string,
   responseTimeMs: number
@@ -208,8 +202,7 @@ vi.mock('@/lib/coffee-quiz/questions', () => ({
 vi.mock('@/lib/coffee-quiz/fsrs', () => ({
   createQuizCard: (questionId: string) => mockCreateQuizCard(questionId),
   reviewCard: (card: QuizCard, rating: number) => mockReviewCard(card, rating),
-  determineRating: (isCorrect: boolean, responseTimeMs: number) =>
-    mockDetermineRating(isCorrect, responseTimeMs),
+  determineRating: (isCorrect: boolean, responseTimeMs: number) => mockDetermineRating(isCorrect, responseTimeMs),
   getDueCards: (cards: QuizCard[]) => mockGetDueCards(cards),
   sortCardsByPriority: (cards: QuizCard[]) => mockSortCardsByPriority(cards),
   getCardMastery: (card: QuizCard) => mockGetCardMastery(card),
@@ -226,8 +219,7 @@ vi.mock('@/lib/coffee-quiz/gamification', () => ({
     mockUpdateDailyGoal(dailyGoals, isCorrect, xp, goalTarget),
   getTodayGoal: (dailyGoals: unknown[]) => mockGetTodayGoal(dailyGoals),
   checkNewBadges: (params: unknown) => mockCheckNewBadges(params),
-  earnBadges: (earnedBadges: unknown[], newBadgeTypes: string[]) =>
-    mockEarnBadges(earnedBadges, newBadgeTypes),
+  earnBadges: (earnedBadges: unknown[], newBadgeTypes: string[]) => mockEarnBadges(earnedBadges, newBadgeTypes),
 }));
 
 vi.mock('@/lib/coffee-quiz/types', () => ({
@@ -379,12 +371,7 @@ describe('useQuizData', () => {
         await vi.runAllTimersAsync();
       });
 
-      const recordResult = await recordAnswerInAct(
-        result.current.recordAnswer,
-        'q1',
-        'opt1',
-        5000
-      );
+      const recordResult = await recordAnswerInAct(result.current.recordAnswer, 'q1', 'opt1', 5000);
 
       expectAnswerResult(recordResult);
       expect(recordResult.isCorrect).toBe(true);
@@ -400,12 +387,7 @@ describe('useQuizData', () => {
         await vi.runAllTimersAsync();
       });
 
-      const recordResult = await recordAnswerInAct(
-        result.current.recordAnswer,
-        'q1',
-        'opt2',
-        3000
-      );
+      const recordResult = await recordAnswerInAct(result.current.recordAnswer, 'q1', 'opt2', 3000);
 
       expectAnswerResult(recordResult);
       expect(recordResult.isCorrect).toBe(false);
@@ -421,12 +403,7 @@ describe('useQuizData', () => {
 
       mockCalculateXP.mockReturnValue(15);
 
-      const recordResult = await recordAnswerInAct(
-        result.current.recordAnswer,
-        'q1',
-        'opt1',
-        5000
-      );
+      const recordResult = await recordAnswerInAct(result.current.recordAnswer, 'q1', 'opt1', 5000);
 
       expectAnswerResult(recordResult);
       expect(mockCalculateXP).toHaveBeenCalledWith({
@@ -452,12 +429,7 @@ describe('useQuizData', () => {
         newLevel: 2,
       });
 
-      const recordResult = await recordAnswerInAct(
-        result.current.recordAnswer,
-        'q1',
-        'opt1',
-        5000
-      );
+      const recordResult = await recordAnswerInAct(result.current.recordAnswer, 'q1', 'opt1', 5000);
 
       expectAnswerResult(recordResult);
       expect(recordResult.leveledUp).toBe(true);
@@ -472,16 +444,9 @@ describe('useQuizData', () => {
       });
 
       mockCheckNewBadges.mockReturnValue(['first-quiz']);
-      mockEarnBadges.mockReturnValue([
-        { type: 'first-quiz', earnedAt: '2024-02-05T12:00:00.000Z' },
-      ]);
+      mockEarnBadges.mockReturnValue([{ type: 'first-quiz', earnedAt: '2024-02-05T12:00:00.000Z' }]);
 
-      const recordResult = await recordAnswerInAct(
-        result.current.recordAnswer,
-        'q1',
-        'opt1',
-        5000
-      );
+      const recordResult = await recordAnswerInAct(result.current.recordAnswer, 'q1', 'opt1', 5000);
 
       expectAnswerResult(recordResult);
       expect(recordResult.newBadges).toHaveLength(1);
@@ -501,12 +466,7 @@ describe('useQuizData', () => {
         lastActiveDate: '2024-02-05',
       });
 
-      const recordResult = await recordAnswerInAct(
-        result.current.recordAnswer,
-        'q1',
-        'opt1',
-        5000
-      );
+      const recordResult = await recordAnswerInAct(result.current.recordAnswer, 'q1', 'opt1', 5000);
 
       expectAnswerResult(recordResult);
       expect(recordResult.streakUpdated).toBe(true);
@@ -823,10 +783,7 @@ describe('useQuizData', () => {
         result.current.refreshProgress();
       });
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Failed to refresh quiz progress:',
-        expect.any(Error)
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to refresh quiz progress:', expect.any(Error));
 
       consoleErrorSpy.mockRestore();
     });
@@ -849,10 +806,7 @@ describe('useQuizData', () => {
 
       expect(result.current.error).toBe(loadError);
       expect(result.current.loading).toBe(false);
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Failed to load quiz progress:',
-        loadError
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to load quiz progress:', loadError);
 
       consoleErrorSpy.mockRestore();
     });
@@ -882,10 +836,7 @@ describe('useQuizData', () => {
         await vi.runAllTimersAsync();
       });
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Failed to save quiz progress:',
-        saveError
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to save quiz progress:', saveError);
       expect(result.current.error).toBe(saveError);
 
       consoleErrorSpy.mockRestore();
@@ -918,18 +869,13 @@ describe('useQuizData', () => {
       });
 
       // 不正解を送信
-      const recordResult = await recordAnswerInAct(
-        result.current.recordAnswer,
-        'q1',
-        'opt2',
-        3000
-      );
+      const recordResult = await recordAnswerInAct(result.current.recordAnswer, 'q1', 'opt2', 3000);
 
       expectAnswerResult(recordResult);
       expect(recordResult.isCorrect).toBe(false);
 
       // progressのカードを確認: hasAnsweredCorrectlyはtrueのまま維持されるべき
-      const updatedCard = result.current.progress?.cards.find(c => c.questionId === 'q1');
+      const updatedCard = result.current.progress?.cards.find((c) => c.questionId === 'q1');
       expect(updatedCard?.hasAnsweredCorrectly).toBe(true);
     });
 
@@ -957,18 +903,13 @@ describe('useQuizData', () => {
       });
 
       // 正解を送信
-      const recordResult = await recordAnswerInAct(
-        result.current.recordAnswer,
-        'q1',
-        'opt1',
-        5000
-      );
+      const recordResult = await recordAnswerInAct(result.current.recordAnswer, 'q1', 'opt1', 5000);
 
       expectAnswerResult(recordResult);
       expect(recordResult.isCorrect).toBe(true);
 
       // progressのカードを確認: hasAnsweredCorrectlyがtrueに更新される
-      const updatedCard = result.current.progress?.cards.find(c => c.questionId === 'q1');
+      const updatedCard = result.current.progress?.cards.find((c) => c.questionId === 'q1');
       expect(updatedCard?.hasAnsweredCorrectly).toBe(true);
     });
 
@@ -981,12 +922,7 @@ describe('useQuizData', () => {
         await vi.runAllTimersAsync();
       });
 
-      const recordResult = await recordAnswerInAct(
-        result.current.recordAnswer,
-        'nonexistent',
-        'opt1',
-        5000
-      );
+      const recordResult = await recordAnswerInAct(result.current.recordAnswer, 'nonexistent', 'opt1', 5000);
 
       expect(recordResult).toBeNull();
     });
@@ -1012,12 +948,7 @@ describe('useQuizData', () => {
         newLevel: 2,
       });
 
-      const result2 = await recordAnswerInAct(
-        result.current.recordAnswer,
-        'q2',
-        'opt3',
-        4000
-      );
+      const result2 = await recordAnswerInAct(result.current.recordAnswer, 'q2', 'opt3', 4000);
 
       expectAnswerResult(result2);
       expect(result2.leveledUp).toBe(true);

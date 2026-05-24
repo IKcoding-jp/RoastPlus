@@ -1,12 +1,7 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import {
-  type ClockSettings,
-  DEFAULT_CLOCK_SETTINGS,
-  getClockSettings,
-  setClockSettings,
-} from '@/lib/clockSettings';
+import { type ClockSettings, DEFAULT_CLOCK_SETTINGS, getClockSettings, setClockSettings } from '@/lib/clockSettings';
 
 function loadInitialSettings(): ClockSettings {
   if (typeof window === 'undefined') return DEFAULT_CLOCK_SETTINGS;

@@ -15,15 +15,7 @@ interface ActionCardProps {
   cardHeight: number | null;
 }
 
-export function ActionCard({
-  title,
-  description,
-  href,
-  icon: Icon,
-  badge,
-  index,
-  cardHeight,
-}: ActionCardProps) {
+export function ActionCard({ title, description, href, icon: Icon, badge, index, cardHeight }: ActionCardProps) {
   const router = useRouter();
 
   return (
@@ -60,11 +52,7 @@ export function ActionCard({
         >
           {title}
         </p>
-        <p
-          className="text-xs transition-colors text-ink-muted md:text-sm"
-        >
-          {description}
-        </p>
+        <p className="text-xs transition-colors text-ink-muted md:text-sm">{description}</p>
       </div>
     </Button>
   );

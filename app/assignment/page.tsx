@@ -9,168 +9,171 @@ import { Loading } from '@/components/Loading';
 import LoginPage from '@/app/login/page';
 import { useDeveloperMode } from '@/hooks/useDeveloperMode';
 import { useAuth } from '@/lib/auth';
-import { setManager, deleteManager, addPairExclusion, deletePairExclusion, updateShuffleSettings } from './lib/firebase';
+import {
+  setManager,
+  deleteManager,
+  addPairExclusion,
+  deletePairExclusion,
+  updateShuffleSettings,
+} from './lib/firebase';
 import { useAssignmentData, useShuffleExecution, useAssignmentHandlers } from './hooks';
-import { FaUserTie } from "react-icons/fa";
-import { HiPlus, HiCog } from "react-icons/hi";
+import { FaUserTie } from 'react-icons/fa';
+import { HiPlus, HiCog } from 'react-icons/hi';
 import { Button, FloatingNav } from '@/components/ui';
 
 export default function AssignmentPage() {
-    const { user, loading: authLoading } = useAuth();
-    const userId = user?.uid ?? null;
-    const { isEnabled: isDeveloperMode } = useDeveloperMode();
-    // 管理者ダイアログ
-    const [isManagerDialogOpen, setIsManagerDialogOpen] = useState(false);
-    // 詳細設定モーダル
-    const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const { user, loading: authLoading } = useAuth();
+  const userId = user?.uid ?? null;
+  const { isEnabled: isDeveloperMode } = useDeveloperMode();
+  // 管理者ダイアログ
+  const [isManagerDialogOpen, setIsManagerDialogOpen] = useState(false);
+  // 詳細設定モーダル
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
-    const data = useAssignmentData(userId, authLoading);
+  const data = useAssignmentData(userId, authLoading);
 
-    const { handleShuffle } = useShuffleExecution({
-        userId,
-        teams: data.teams,
-        taskLabels: data.taskLabels,
-        members: data.members,
-        pairExclusions: data.pairExclusions,
-        shuffleSettings: data.shuffleSettings,
-        activeDate: data.activeDate,
-        displayAssignments: data.displayAssignments,
-        setTodayDate: data.setTodayDate,
-        setActiveDate: data.setActiveDate,
-        setIsLocalShuffling: data.setIsLocalShuffling,
-        setMembers: data.setMembers,
-    });
+  const { handleShuffle } = useShuffleExecution({
+    userId,
+    teams: data.teams,
+    taskLabels: data.taskLabels,
+    members: data.members,
+    pairExclusions: data.pairExclusions,
+    shuffleSettings: data.shuffleSettings,
+    activeDate: data.activeDate,
+    displayAssignments: data.displayAssignments,
+    setTodayDate: data.setTodayDate,
+    setActiveDate: data.setActiveDate,
+    setIsLocalShuffling: data.setIsLocalShuffling,
+    setMembers: data.setMembers,
+  });
 
-    const handlers = useAssignmentHandlers({
-        userId,
-        activeDate: data.activeDate,
-        todayDate: data.todayDate,
-        members: data.members,
-        setMembers: data.setMembers,
-        setTeams: data.setTeams,
-        setTaskLabels: data.setTaskLabels,
-    });
+  const handlers = useAssignmentHandlers({
+    userId,
+    activeDate: data.activeDate,
+    todayDate: data.todayDate,
+    members: data.members,
+    setMembers: data.setMembers,
+    setTeams: data.setTeams,
+    setTaskLabels: data.setTaskLabels,
+  });
 
-    if (!authLoading && !user) {
-        return <LoginPage />;
-    }
+  if (!authLoading && !user) {
+    return <LoginPage />;
+  }
 
-    if (data.isLoading) {
-        return <Loading />;
-    }
+  if (data.isLoading) {
+    return <Loading />;
+  }
 
-    return (
-        <div className="min-h-screen flex flex-col bg-page">
-            <FloatingNav
-                backHref="/"
-                right={
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setIsSettingsModalOpen(true)}
-                        className="!rounded-full !px-3 !py-2 shadow-md !bg-surface !text-ink-sub hover:!bg-ground !border !border-edge-strong"
-                        title="詳細設定"
-                    >
-                        <HiCog className="w-5 h-5" />
-                    </Button>
-                }
-            />
+  return (
+    <div className="min-h-screen flex flex-col bg-page">
+      <FloatingNav
+        backHref="/"
+        right={
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsSettingsModalOpen(true)}
+            className="!rounded-full !px-3 !py-2 shadow-md !bg-surface !text-ink-sub hover:!bg-ground !border !border-edge-strong"
+            title="詳細設定"
+          >
+            <HiCog className="w-5 h-5" />
+          </Button>
+        }
+      />
 
-            <main className="flex-1 w-full px-2 md:px-4 pt-14 pb-4 flex flex-col items-center justify-center min-h-[calc(100vh-56px)]">
-                <AssignmentTable
-                    teams={data.teams}
-                    taskLabels={data.taskLabels}
-                    assignments={data.displayAssignments}
-                    members={data.members}
-                    tableSettings={data.tableSettings}
-                    onUpdateTableSettings={handlers.handleUpdateTableSettings}
-                    onUpdateMember={handlers.handleUpdateMember}
-                    onUpdateMemberName={handlers.handleUpdateMemberName}
-                    onUpdateMemberExclusion={handlers.handleUpdateMemberExclusion}
-                    onSwapAssignments={handlers.handleSwapAssignments}
-                    onShuffle={handleShuffle}
-                    isShuffleDisabled={data.isShuffleDisabled}
-                    onAddMember={handlers.handleAddMember}
-                    onDeleteMember={handlers.handleDeleteMember}
-                    onUpdateTaskLabel={handlers.handleUpdateTaskLabel}
-                    onAddTaskLabel={handlers.handleAddTaskLabel}
-                    onDeleteTaskLabel={handlers.handleDeleteTaskLabel}
-                    onAddTeam={handlers.handleAddTeam}
-                    onDeleteTeam={handlers.handleDeleteTeam}
-                    onUpdateTeam={handlers.handleUpdateTeam}
-                />
-            </main>
+      <main className="flex-1 w-full px-2 md:px-4 pt-14 pb-4 flex flex-col items-center justify-center min-h-[calc(100vh-56px)]">
+        <AssignmentTable
+          teams={data.teams}
+          taskLabels={data.taskLabels}
+          assignments={data.displayAssignments}
+          members={data.members}
+          tableSettings={data.tableSettings}
+          onUpdateTableSettings={handlers.handleUpdateTableSettings}
+          onUpdateMember={handlers.handleUpdateMember}
+          onUpdateMemberName={handlers.handleUpdateMemberName}
+          onUpdateMemberExclusion={handlers.handleUpdateMemberExclusion}
+          onSwapAssignments={handlers.handleSwapAssignments}
+          onShuffle={handleShuffle}
+          isShuffleDisabled={data.isShuffleDisabled}
+          onAddMember={handlers.handleAddMember}
+          onDeleteMember={handlers.handleDeleteMember}
+          onUpdateTaskLabel={handlers.handleUpdateTaskLabel}
+          onAddTaskLabel={handlers.handleAddTaskLabel}
+          onDeleteTaskLabel={handlers.handleDeleteTaskLabel}
+          onAddTeam={handlers.handleAddTeam}
+          onDeleteTeam={handlers.handleDeleteTeam}
+          onUpdateTeam={handlers.handleUpdateTeam}
+        />
+      </main>
 
-            <RouletteOverlay
-                isVisible={data.isRouletteVisible}
-                members={data.members}
-            />
+      <RouletteOverlay isVisible={data.isRouletteVisible} members={data.members} />
 
-            {/* 管理者バッジ（右下固定） */}
-            <div className="fixed bottom-6 right-6 z-20">
-                <Button
-                    variant={data.manager ? 'outline' : 'primary'}
-                    size="md"
-                    onClick={() => setIsManagerDialogOpen(true)}
-                    className={`!flex !items-center !gap-2 !px-4 !py-3 !rounded-lg shadow-lg ${
-                        data.manager ? '!bg-surface hover:!bg-ground !border-edge' : ''
-                    }`}
-                >
-                    {data.manager ? (
-                        <>
-                            <FaUserTie className="w-5 h-5 text-spot" />
-                            <div className="text-left">
-                                <div className="text-sm font-semibold text-ink">{data.manager.name}</div>
-                                <div className="text-xs text-ink-sub">管理者</div>
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <HiPlus className="w-5 h-5" />
-                            <span className="font-medium">管理者</span>
-                        </>
-                    )}
-                </Button>
-            </div>
+      {/* 管理者バッジ（右下固定） */}
+      <div className="fixed bottom-6 right-6 z-20">
+        <Button
+          variant={data.manager ? 'outline' : 'primary'}
+          size="md"
+          onClick={() => setIsManagerDialogOpen(true)}
+          className={`!flex !items-center !gap-2 !px-4 !py-3 !rounded-lg shadow-lg ${
+            data.manager ? '!bg-surface hover:!bg-ground !border-edge' : ''
+          }`}
+        >
+          {data.manager ? (
+            <>
+              <FaUserTie className="w-5 h-5 text-spot" />
+              <div className="text-left">
+                <div className="text-sm font-semibold text-ink">{data.manager.name}</div>
+                <div className="text-xs text-ink-sub">管理者</div>
+              </div>
+            </>
+          ) : (
+            <>
+              <HiPlus className="w-5 h-5" />
+              <span className="font-medium">管理者</span>
+            </>
+          )}
+        </Button>
+      </div>
 
-            {/* 管理者編集ダイアログ */}
-            <ManagerDialog
-                isOpen={isManagerDialogOpen}
-                manager={data.manager}
-                onClose={() => setIsManagerDialogOpen(false)}
-                onSave={async (name: string) => {
-                    if (!userId) return;
-                    await setManager(userId, name);
-                    data.setManagerState({ id: 'default', name });
-                }}
-                onDelete={async () => {
-                    if (!userId) return;
-                    await deleteManager(userId);
-                    data.setManagerState(null);
-                }}
-            />
+      {/* 管理者編集ダイアログ */}
+      <ManagerDialog
+        isOpen={isManagerDialogOpen}
+        manager={data.manager}
+        onClose={() => setIsManagerDialogOpen(false)}
+        onSave={async (name: string) => {
+          if (!userId) return;
+          await setManager(userId, name);
+          data.setManagerState({ id: 'default', name });
+        }}
+        onDelete={async () => {
+          if (!userId) return;
+          await deleteManager(userId);
+          data.setManagerState(null);
+        }}
+      />
 
-            {/* 詳細設定モーダル */}
-            <AssignmentSettingsModal
-                isOpen={isSettingsModalOpen}
-                onClose={() => setIsSettingsModalOpen(false)}
-                shuffleSettings={data.shuffleSettings}
-                onUpdateShuffleSettings={async (settings) => {
-                    if (!userId) return;
-                    await updateShuffleSettings(userId, settings);
-                }}
-                isDeveloperMode={isDeveloperMode}
-                members={data.members}
-                pairExclusions={data.pairExclusions}
-                onAddPairExclusion={async (memberId1: string, memberId2: string) => {
-                    if (!userId) return;
-                    await addPairExclusion(userId, memberId1, memberId2);
-                }}
-                onDeletePairExclusion={async (exclusionId: string) => {
-                    if (!userId) return;
-                    await deletePairExclusion(userId, exclusionId);
-                }}
-            />
-        </div>
-    );
+      {/* 詳細設定モーダル */}
+      <AssignmentSettingsModal
+        isOpen={isSettingsModalOpen}
+        onClose={() => setIsSettingsModalOpen(false)}
+        shuffleSettings={data.shuffleSettings}
+        onUpdateShuffleSettings={async (settings) => {
+          if (!userId) return;
+          await updateShuffleSettings(userId, settings);
+        }}
+        isDeveloperMode={isDeveloperMode}
+        members={data.members}
+        pairExclusions={data.pairExclusions}
+        onAddPairExclusion={async (memberId1: string, memberId2: string) => {
+          if (!userId) return;
+          await addPairExclusion(userId, memberId1, memberId2);
+        }}
+        onDeletePairExclusion={async (exclusionId: string) => {
+          if (!userId) return;
+          await deletePairExclusion(userId, exclusionId);
+        }}
+      />
+    </div>
+  );
 }

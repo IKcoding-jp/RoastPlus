@@ -224,10 +224,7 @@ describe('useDefectBeans - マスターデータのロード', () => {
 
     expect(result.current.masterDefectBeans).toEqual([]);
     expect(result.current.isLoading).toBe(false);
-    expect(consoleSpy).toHaveBeenCalledWith(
-      'Failed to load master defect beans:',
-      expect.any(Error)
-    );
+    expect(consoleSpy).toHaveBeenCalledWith('Failed to load master defect beans:', expect.any(Error));
     consoleSpy.mockRestore();
   });
 
@@ -629,12 +626,7 @@ describe('useDefectBeans - updateDefectBean', () => {
 
     await expect(
       act(async () => {
-        await result.current.updateDefectBean(
-          'master-1',
-          updatePayload,
-          imageFile,
-          MASTER_BEAN.imageUrl
-        );
+        await result.current.updateDefectBean('master-1', updatePayload, imageFile, MASTER_BEAN.imageUrl);
       })
     ).rejects.toThrow('Master defect beans cannot be edited from the client');
 
@@ -660,12 +652,7 @@ describe('useDefectBeans - updateDefectBean', () => {
     };
 
     await act(async () => {
-      await result.current.updateDefectBean(
-        USER_BEAN.id,
-        updatePayload,
-        imageFile,
-        USER_BEAN.imageUrl
-      );
+      await result.current.updateDefectBean(USER_BEAN.id, updatePayload, imageFile, USER_BEAN.imageUrl);
     });
 
     // ユーザー豆の画像アップロードはuserId=user.uid
@@ -739,19 +726,11 @@ describe('useDefectBeans - updateDefectBean', () => {
 
     // エラーがスローされないことを確認
     await act(async () => {
-      await result.current.updateDefectBean(
-        USER_BEAN.id,
-        updatePayload,
-        imageFile,
-        USER_BEAN.imageUrl
-      );
+      await result.current.updateDefectBean(USER_BEAN.id, updatePayload, imageFile, USER_BEAN.imageUrl);
     });
 
     // 画像削除失敗がログに出力される
-    expect(consoleSpy).toHaveBeenCalledWith(
-      'Failed to delete old image:',
-      expect.any(Error)
-    );
+    expect(consoleSpy).toHaveBeenCalledWith('Failed to delete old image:', expect.any(Error));
 
     // updateDataは正常に呼ばれる
     expect(mockUpdateData).toHaveBeenCalledTimes(1);
@@ -776,12 +755,7 @@ describe('useDefectBeans - updateDefectBean', () => {
     };
 
     await act(async () => {
-      await result.current.updateDefectBean(
-        USER_BEAN.id,
-        updatePayload,
-        imageFile,
-        USER_BEAN.imageUrl
-      );
+      await result.current.updateDefectBean(USER_BEAN.id, updatePayload, imageFile, USER_BEAN.imageUrl);
     });
 
     // アップロードは呼ばれる

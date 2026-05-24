@@ -37,15 +37,7 @@ function createAudioContext(): AudioContextLike | null {
 }
 
 function tone(ctx: AudioContextLike, master: GainNode, options: ToneOptions): void {
-  const {
-    start,
-    frequency,
-    duration,
-    gain,
-    type = 'sine',
-    release = 0.32,
-    detune = 0,
-  } = options;
+  const { start, frequency, duration, gain, type = 'sine', release = 0.32, detune = 0 } = options;
 
   const osc = ctx.createOscillator();
   const amp = ctx.createGain();
@@ -64,7 +56,14 @@ function tone(ctx: AudioContextLike, master: GainNode, options: ToneOptions): vo
   osc.stop(start + duration + release + 0.04);
 }
 
-function bell(ctx: AudioContextLike, master: GainNode, start: number, frequency: number, duration: number, gain: number): void {
+function bell(
+  ctx: AudioContextLike,
+  master: GainNode,
+  start: number,
+  frequency: number,
+  duration: number,
+  gain: number
+): void {
   tone(ctx, master, { start, frequency, duration, gain, release: 0.42 });
   tone(ctx, master, {
     start,

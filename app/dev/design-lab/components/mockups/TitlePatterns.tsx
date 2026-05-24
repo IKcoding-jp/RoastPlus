@@ -17,23 +17,80 @@ interface TitlePattern {
 }
 
 const titlePatterns: TitlePattern[] = [
-  { id: 1, font: 'Playfair Display', weight: 'Bold', description: 'クラシック・エレガント / セリフ体で高級感', adopted: false },
-  { id: 2, font: 'Cormorant Garamond', weight: 'SemiBold', description: 'ラグジュアリー・繊細 / クリーム × ゴールド配色', adopted: false },
-  { id: 3, font: 'Lora', weight: 'Bold + Italic', description: '温かみ・読みやすさ / 「Plus」イタリック', adopted: false },
-  { id: 4, font: 'Cinzel', weight: 'Black (900)', description: '力強い・伝統的 / オールキャップス・広い字間', adopted: false },
-  { id: 5, font: 'Raleway', weight: 'Light + Bold', description: 'モダン・クリーン / 細×太のコントラスト', adopted: true },
-  { id: 6, font: 'Montserrat', weight: 'ExtraBold (800)', description: '安定・プロフェッショナル / オレンジグロー効果', adopted: false },
-  { id: 7, font: 'Josefin Sans', weight: 'Light + SemiBold', description: 'スタイリッシュ・軽やか / 大文字・広い字間', adopted: false },
+  {
+    id: 1,
+    font: 'Playfair Display',
+    weight: 'Bold',
+    description: 'クラシック・エレガント / セリフ体で高級感',
+    adopted: false,
+  },
+  {
+    id: 2,
+    font: 'Cormorant Garamond',
+    weight: 'SemiBold',
+    description: 'ラグジュアリー・繊細 / クリーム × ゴールド配色',
+    adopted: false,
+  },
+  {
+    id: 3,
+    font: 'Lora',
+    weight: 'Bold + Italic',
+    description: '温かみ・読みやすさ / 「Plus」イタリック',
+    adopted: false,
+  },
+  {
+    id: 4,
+    font: 'Cinzel',
+    weight: 'Black (900)',
+    description: '力強い・伝統的 / オールキャップス・広い字間',
+    adopted: false,
+  },
+  {
+    id: 5,
+    font: 'Raleway',
+    weight: 'Light + Bold',
+    description: 'モダン・クリーン / 細×太のコントラスト',
+    adopted: true,
+  },
+  {
+    id: 6,
+    font: 'Montserrat',
+    weight: 'ExtraBold (800)',
+    description: '安定・プロフェッショナル / オレンジグロー効果',
+    adopted: false,
+  },
+  {
+    id: 7,
+    font: 'Josefin Sans',
+    weight: 'Light + SemiBold',
+    description: 'スタイリッシュ・軽やか / 大文字・広い字間',
+    adopted: false,
+  },
   { id: 8, font: 'Bebas Neue', weight: 'Regular', description: 'インパクト・大胆 / コンデンスド体', adopted: false },
-  { id: 9, font: 'Libre Baskerville', weight: 'Bold + Italic', description: '知的・洗練 / アンダーライン付き', adopted: false },
-  { id: 10, font: 'DM Serif Display', weight: 'Regular + Italic', description: 'レトロ・印象的 / オレンジグロー効果', adopted: false },
+  {
+    id: 9,
+    font: 'Libre Baskerville',
+    weight: 'Bold + Italic',
+    description: '知的・洗練 / アンダーライン付き',
+    adopted: false,
+  },
+  {
+    id: 10,
+    font: 'DM Serif Display',
+    weight: 'Regular + Italic',
+    description: 'レトロ・印象的 / オレンジグロー効果',
+    adopted: false,
+  },
 ];
 
 const GOOGLE_FONTS_URL =
   'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Cormorant+Garamond:wght@600;700&family=Lora:ital,wght@0,700;1,400&family=Cinzel:wght@900&family=Raleway:wght@300;700&family=Montserrat:wght@800;900&family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap';
 
 // パターンごとのスタイル定義
-const patternStyles: Record<number, { containerClass: string; roast: string; roastText: string; plus: string; plusText: string }> = {
+const patternStyles: Record<
+  number,
+  { containerClass: string; roast: string; roastText: string; plus: string; plusText: string }
+> = {
   1: {
     containerClass: '',
     roast: 'font-bold tracking-tight text-white',
@@ -108,16 +165,15 @@ const patternStyles: Record<number, { containerClass: string; roast: string; roa
 
 function TitlePreview({ pattern }: { pattern: TitlePattern }) {
   const style = patternStyles[pattern.id];
-  const fontFamily = pattern.id === 5
-    ? 'var(--font-raleway)'
-    : `'${pattern.font}', ${pattern.id <= 4 || pattern.id >= 9 ? 'serif' : 'sans-serif'}`;
+  const fontFamily =
+    pattern.id === 5
+      ? 'var(--font-raleway)'
+      : `'${pattern.font}', ${pattern.id <= 4 || pattern.id >= 9 ? 'serif' : 'sans-serif'}`;
 
   return (
     <div
       className={`relative rounded-xl overflow-hidden border transition-all ${
-        pattern.adopted
-          ? 'border-spot shadow-[0_0_20px_rgba(239,138,0,0.15)]'
-          : 'border-edge'
+        pattern.adopted ? 'border-spot shadow-[0_0_20px_rgba(239,138,0,0.15)]' : 'border-edge'
       }`}
     >
       {/* Badge */}
@@ -134,10 +190,7 @@ function TitlePreview({ pattern }: { pattern: TitlePattern }) {
 
       {/* Preview */}
       <div className="bg-[rgba(38,26,20,0.98)] flex items-center justify-center min-h-[80px] py-6 px-6">
-        <span
-          className={`text-2xl ${style.roast}`}
-          style={{ fontFamily }}
-        >
+        <span className={`text-2xl ${style.roast}`} style={{ fontFamily }}>
           {style.roastText}
           <span className={style.plus}>{style.plusText}</span>
         </span>
@@ -148,9 +201,7 @@ function TitlePreview({ pattern }: { pattern: TitlePattern }) {
         <div className="text-sm font-semibold text-spot">
           {pattern.font} — {pattern.weight}
         </div>
-        <div className="text-xs text-ink-muted mt-0.5">
-          {pattern.description}
-        </div>
+        <div className="text-xs text-ink-muted mt-0.5">{pattern.description}</div>
       </div>
     </div>
   );
@@ -175,19 +226,11 @@ export default function TitlePatterns() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-ink mb-1">
-          ホームヘッダー タイトルデザインモック
-        </h2>
-        <p className="text-sm text-ink-sub">
-          Issue #208: 10パターンから A/B テストで Pattern 5 (Raleway) を採用。
-        </p>
+        <h2 className="text-xl font-bold text-ink mb-1">ホームヘッダー タイトルデザインモック</h2>
+        <p className="text-sm text-ink-sub">Issue #208: 10パターンから A/B テストで Pattern 5 (Raleway) を採用。</p>
       </div>
 
-      {!fontsLoaded && (
-        <div className="text-sm text-ink-muted animate-pulse">
-          フォントを読み込み中...
-        </div>
-      )}
+      {!fontsLoaded && <div className="text-sm text-ink-muted animate-pulse">フォントを読み込み中...</div>}
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         {titlePatterns.map((p) => (

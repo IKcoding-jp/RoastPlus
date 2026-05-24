@@ -11,11 +11,7 @@ import {
   storeContactSuccessTimestamp,
   validateContactForm,
 } from '@/lib/contactForm';
-import {
-  sendContactEmail,
-  isEmailJSConfigured,
-  ContactFormData,
-} from '@/lib/emailjs';
+import { sendContactEmail, isEmailJSConfigured, ContactFormData } from '@/lib/emailjs';
 
 type FormStatus = 'idle' | 'sending' | 'success' | 'error';
 
@@ -29,9 +25,7 @@ export default function ContactPage() {
   });
   const [status, setStatus] = useState<FormStatus>('idle');
   const [errorMessage, setErrorMessage] = useState('');
-  const [validationErrors, setValidationErrors] = useState<
-    Partial<Record<keyof ContactFormData, string>>
-  >({});
+  const [validationErrors, setValidationErrors] = useState<Partial<Record<keyof ContactFormData, string>>>({});
 
   const validateForm = (data: ContactFormData): boolean => {
     const result = validateContactForm(data);
@@ -69,9 +63,7 @@ export default function ContactPage() {
     const waitSeconds = getStoredContactCooldownWaitSeconds(getCooldownStorage());
     if (waitSeconds > 0) {
       setStatus('error');
-      setErrorMessage(
-        `送信が続いています。少し時間をおいて再度お試しください（約${waitSeconds}秒後に送信できます）。`
-      );
+      setErrorMessage(`送信が続いています。少し時間をおいて再度お試しください（約${waitSeconds}秒後に送信できます）。`);
       return;
     }
 
@@ -102,9 +94,7 @@ export default function ContactPage() {
     }
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     const fieldName = name as keyof ContactFormData;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -137,10 +127,7 @@ export default function ContactPage() {
                   <p className="text-danger text-sm mt-1">{errorMessage}</p>
                   <p className="text-danger text-sm mt-2">
                     直接メールでのお問い合わせ:{' '}
-                    <a
-                      href="mailto:kensaku.ikeda04@gmail.com"
-                      className="underline hover:no-underline"
-                    >
+                    <a href="mailto:kensaku.ikeda04@gmail.com" className="underline hover:no-underline">
                       kensaku.ikeda04@gmail.com
                     </a>
                   </p>
@@ -181,10 +168,7 @@ export default function ContactPage() {
             <div className="mt-8 pt-6 border-t border-edge">
               <p className="text-sm text-ink-muted text-center">
                 直接メールでのお問い合わせ:{' '}
-                <a
-                  href="mailto:kensaku.ikeda04@gmail.com"
-                  className="text-spot hover:text-spot-hover underline"
-                >
+                <a href="mailto:kensaku.ikeda04@gmail.com" className="text-spot hover:text-spot-hover underline">
                   kensaku.ikeda04@gmail.com
                 </a>
               </p>

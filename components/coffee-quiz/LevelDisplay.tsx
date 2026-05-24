@@ -9,10 +9,7 @@ interface LevelDisplayProps {
 }
 
 export function LevelDisplay({ level, compact = false }: LevelDisplayProps) {
-  const progress =
-    level.xpToNextLevel > 0
-      ? (level.currentXP / level.xpToNextLevel) * 100
-      : 100;
+  const progress = level.xpToNextLevel > 0 ? (level.currentXP / level.xpToNextLevel) * 100 : 100;
 
   if (compact) {
     return (
@@ -24,7 +21,9 @@ export function LevelDisplay({ level, compact = false }: LevelDisplayProps) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-medium text-ink">Lv.{level.level}</span>
-              <span className="text-xs text-ink-muted">{level.currentXP}/{level.xpToNextLevel}</span>
+              <span className="text-xs text-ink-muted">
+                {level.currentXP}/{level.xpToNextLevel}
+              </span>
             </div>
             <div className="h-1.5 bg-edge rounded-full overflow-hidden">
               <motion.div
@@ -61,9 +60,7 @@ export function LevelDisplay({ level, compact = false }: LevelDisplayProps) {
         <div className="flex-1">
           <div className="flex items-baseline justify-between mb-2">
             <span className="text-ink-muted text-xs">次のレベルまで</span>
-            <span className="text-ink font-semibold text-sm">
-              {level.xpToNextLevel - level.currentXP} XP
-            </span>
+            <span className="text-ink font-semibold text-sm">{level.xpToNextLevel - level.currentXP} XP</span>
           </div>
 
           {/* プログレスバー */}

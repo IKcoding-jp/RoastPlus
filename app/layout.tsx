@@ -1,11 +1,11 @@
-import type { Metadata, Viewport } from "next";
+import type { Metadata, Viewport } from 'next';
 // TEMPORARY: Google Fonts disabled for build - will re-enable after deployment
 // import { Geist, Geist_Mono, Noto_Serif_JP, Playfair_Display, Nunito } from "next/font/google";
-import "./globals.css";
-import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
-import { SplashScreenWrapper } from "@/components/SplashScreenWrapper";
-import { ToastProvider } from "@/components/Toast";
-import { ThemeProvider } from "@/components/ThemeProvider";
+import './globals.css';
+import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
+import { SplashScreenWrapper } from '@/components/SplashScreenWrapper';
+import { ToastProvider } from '@/components/Toast';
+import { ThemeProvider } from '@/components/ThemeProvider';
 
 export const metadata: Metadata = {
   title: 'RoastPlus',
@@ -16,9 +16,7 @@ export const metadata: Metadata = {
       { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
       { url: '/android-chrome-192x192.png', sizes: '192x192', type: 'image/png' },
     ],
-    apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
   },
   manifest: '/site.webmanifest',
   appleWebApp: {
@@ -39,16 +37,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ja" suppressHydrationWarning>
-      <body
-        className="antialiased font-serif bg-page"
-        suppressHydrationWarning
-      >
+      <body className="antialiased font-serif bg-page" suppressHydrationWarning>
         <SplashScreenWrapper />
         <ServiceWorkerRegistration />
         <ThemeProvider>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
+          <ToastProvider>{children}</ToastProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -60,9 +60,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     const generatedId = useId();
     const selectId = id || generatedId;
 
-    const baseStyles = 'w-full rounded-lg border-2 px-4 py-3 text-lg transition-all duration-200 min-h-[44px] appearance-none bg-no-repeat bg-right pr-10';
+    const baseStyles =
+      'w-full rounded-lg border-2 px-4 py-3 text-lg transition-all duration-200 min-h-[44px] appearance-none bg-no-repeat bg-right pr-10';
 
-    const themeStyles = 'border-edge text-ink bg-field hover:border-edge-strong focus:border-spot focus:outline-none focus:ring-2 focus:ring-spot-subtle';
+    const themeStyles =
+      'border-edge text-ink bg-field hover:border-edge-strong focus:border-spot focus:outline-none focus:ring-2 focus:ring-spot-subtle';
 
     const errorStyles = 'border-error focus:border-error focus:ring-error-ring';
 
@@ -75,7 +77,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
       error ? errorStyles : '',
       props.disabled ? disabledStyles : '',
       className,
-    ].filter(Boolean).join(' ');
+    ]
+      .filter(Boolean)
+      .join(' ');
 
     const labelStyles = 'block text-sm font-medium text-ink mb-2';
 

@@ -98,21 +98,23 @@ export function useAppData() {
     (incomingData: AppData) => {
       // データ消失防止: ローカルに実データがあるのに受信データが全て空の場合はスキップ
       const localData = latestLocalDataRef.current;
-      const localHasData = localData.tastingSessions.length > 0
-        || localData.tastingRecords.length > 0
-        || localData.roastSchedules.length > 0
-        || localData.todaySchedules.length > 0
-        || localData.roastTimerRecords.length > 0
-        || localData.workProgresses.length > 0
-        || (localData.dripRecipes?.length ?? 0) > 0;
+      const localHasData =
+        localData.tastingSessions.length > 0 ||
+        localData.tastingRecords.length > 0 ||
+        localData.roastSchedules.length > 0 ||
+        localData.todaySchedules.length > 0 ||
+        localData.roastTimerRecords.length > 0 ||
+        localData.workProgresses.length > 0 ||
+        (localData.dripRecipes?.length ?? 0) > 0;
 
-      const incomingIsEmpty = incomingData.tastingSessions.length === 0
-        && incomingData.tastingRecords.length === 0
-        && incomingData.roastSchedules.length === 0
-        && incomingData.todaySchedules.length === 0
-        && incomingData.roastTimerRecords.length === 0
-        && incomingData.workProgresses.length === 0
-        && (incomingData.dripRecipes?.length ?? 0) === 0;
+      const incomingIsEmpty =
+        incomingData.tastingSessions.length === 0 &&
+        incomingData.tastingRecords.length === 0 &&
+        incomingData.roastSchedules.length === 0 &&
+        incomingData.todaySchedules.length === 0 &&
+        incomingData.roastTimerRecords.length === 0 &&
+        incomingData.workProgresses.length === 0 &&
+        (incomingData.dripRecipes?.length ?? 0) === 0;
 
       if (localHasData && incomingIsEmpty && !isUpdatingRef.current) {
         console.warn(
@@ -146,8 +148,7 @@ export function useAppData() {
 
       const now = Date.now();
       const ackTimedOut =
-        pendingSaveCountRef.current === 0 &&
-        now - lastMutationTimestampRef.current >= FIRESTORE_ACK_TIMEOUT_MS;
+        pendingSaveCountRef.current === 0 && now - lastMutationTimestampRef.current >= FIRESTORE_ACK_TIMEOUT_MS;
 
       if (ackTimedOut) {
         lockedKeys.clear();
@@ -248,9 +249,11 @@ export function useAppData() {
         encouragementCount: hasOwn(newData, 'encouragementCount')
           ? typeof newData.encouragementCount === 'number'
             ? newData.encouragementCount
-            : currentData.encouragementCount ?? 0
-          : currentData.encouragementCount ?? 0,
-        roastTimerRecords: Array.isArray(newData.roastTimerRecords) ? newData.roastTimerRecords : currentData.roastTimerRecords,
+            : (currentData.encouragementCount ?? 0)
+          : (currentData.encouragementCount ?? 0),
+        roastTimerRecords: Array.isArray(newData.roastTimerRecords)
+          ? newData.roastTimerRecords
+          : currentData.roastTimerRecords,
         roastTimerState: hasRoastTimerStateOverride ? newData.roastTimerState : currentData.roastTimerState,
         defectBeans: hasOwn(newData, 'defectBeans') ? newData.defectBeans : currentData.defectBeans,
         defectBeanSettings: hasOwn(newData, 'defectBeanSettings')
@@ -258,7 +261,9 @@ export function useAppData() {
           : currentData.defectBeanSettings,
         workProgresses: Array.isArray(newData.workProgresses) ? newData.workProgresses : currentData.workProgresses,
         dripRecipes: hasOwn(newData, 'dripRecipes')
-          ? (Array.isArray(newData.dripRecipes) ? newData.dripRecipes : currentData.dripRecipes)
+          ? Array.isArray(newData.dripRecipes)
+            ? newData.dripRecipes
+            : currentData.dripRecipes
           : currentData.dripRecipes,
       };
 

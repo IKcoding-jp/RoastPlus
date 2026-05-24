@@ -13,21 +13,48 @@ import { useQuizSound } from '@/hooks/useQuizSound';
 
 // アイコン
 const ArrowLeftIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="m12 19-7-7 7-7" />
     <path d="M19 12H5" />
   </svg>
 );
 
 const ArrowRightIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M5 12h14" />
     <path d="m12 5 7 7-7 7" />
   </svg>
 );
 
 const RefreshIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
     <path d="M21 3v5h-5" />
     <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
@@ -227,7 +254,7 @@ export default function ReviewPage() {
                 currentIndex={currentIndex}
                 totalQuestions={totalQuestions}
                 selectedOptionId={selectedOptionId}
-                correctOptionId={showFeedback ? answerFeedback?.correctOptionId ?? null : null}
+                correctOptionId={showFeedback ? (answerFeedback?.correctOptionId ?? null) : null}
                 showFeedback={showFeedback}
                 onSelectOption={handleSelectOption}
                 xpEarned={answerFeedback?.xpEarned}
@@ -260,11 +287,7 @@ export default function ReviewPage() {
       </main>
 
       {/* レベルアップモーダル */}
-      <LevelUpModal
-        show={showLevelUp}
-        newLevel={newLevel}
-        onClose={() => setShowLevelUp(false)}
-      />
+      <LevelUpModal show={showLevelUp} newLevel={newLevel} onClose={() => setShowLevelUp(false)} />
     </div>
   );
 }

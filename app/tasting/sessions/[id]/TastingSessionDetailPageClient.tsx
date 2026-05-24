@@ -15,13 +15,13 @@ export default function TastingSessionDetailPageClient() {
       // パスに /edit や /records/new が含まれている場合は対応するクエリパラメータを追加
       const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
       let query = `sessionId=${encodeURIComponent(id)}`;
-      
+
       if (pathname.includes('/edit')) {
         query += '&edit=true';
       } else if (pathname.includes('/records/new')) {
         query += '&newRecord=true';
       }
-      
+
       router.replace(`/tasting?${query}`);
     } else {
       router.replace('/tasting');
@@ -29,11 +29,10 @@ export default function TastingSessionDetailPageClient() {
   }, [params, router]);
 
   return (
-      <div className="flex min-h-screen items-center justify-center bg-page">
+    <div className="flex min-h-screen items-center justify-center bg-page">
       <div className="text-center">
         <div className="text-lg text-ink-sub">リダイレクト中...</div>
       </div>
     </div>
   );
 }
-

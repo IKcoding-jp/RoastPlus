@@ -17,7 +17,13 @@ interface RoastSchedulerTabProps {
   onCamera?: () => void;
 }
 
-export function RoastSchedulerTab({ data, onUpdate, selectedDate, isToday: _isToday, onCamera }: RoastSchedulerTabProps) {
+export function RoastSchedulerTab({
+  data,
+  onUpdate,
+  selectedDate,
+  isToday: _isToday,
+  onCamera,
+}: RoastSchedulerTabProps) {
   const [editingSchedule, setEditingSchedule] = useState<RoastSchedule | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [draggedId, setDraggedId] = useState<string | null>(null);
@@ -65,7 +71,7 @@ export function RoastSchedulerTab({ data, onUpdate, selectedDate, isToday: _isTo
     // 全スケジュールを取得（選択日でフィルタリングする前）
     const allSchedules = data.roastSchedules || [];
     const updatedSchedules = [...allSchedules];
-    
+
     // 選択日のスケジュールのみを対象にする
     const schedulesForSelectedDate = updatedSchedules.filter((s) => s.date === selectedDate);
     const existingIndex = schedulesForSelectedDate.findIndex((s) => s.id === schedule.id);
@@ -93,7 +99,7 @@ export function RoastSchedulerTab({ data, onUpdate, selectedDate, isToday: _isTo
             }
           }
         }
-        
+
         if (lastAfterPurgeIndex >= 0) {
           // アフターパージの後に追加するため、orderに大きな値を設定
           const newSchedule: RoastSchedule = {
@@ -128,7 +134,7 @@ export function RoastSchedulerTab({ data, onUpdate, selectedDate, isToday: _isTo
             }
           }
         }
-        
+
         const newSchedule: RoastSchedule = {
           ...schedule,
           date: selectedDate,
@@ -224,15 +230,12 @@ export function RoastSchedulerTab({ data, onUpdate, selectedDate, isToday: _isTo
     let newOrder: number;
     if (draggedIndex < targetIndex) {
       // 下に移動
-      const nextOrder = targetIndex < schedulesWithOrder.length - 1
-        ? schedulesWithOrder[targetIndex + 1].order!
-        : targetOrder + 1000;
+      const nextOrder =
+        targetIndex < schedulesWithOrder.length - 1 ? schedulesWithOrder[targetIndex + 1].order! : targetOrder + 1000;
       newOrder = (targetOrder + nextOrder) / 2;
     } else {
       // 上に移動
-      const prevOrder = targetIndex > 0
-        ? schedulesWithOrder[targetIndex - 1].order!
-        : targetOrder - 1000;
+      const prevOrder = targetIndex > 0 ? schedulesWithOrder[targetIndex - 1].order! : targetOrder - 1000;
       newOrder = (prevOrder + targetOrder) / 2;
     }
 
@@ -337,16 +340,18 @@ export function RoastSchedulerTab({ data, onUpdate, selectedDate, isToday: _isTo
       )}
 
       {/* モーダルダイアログ */}
-      {typeof window !== 'undefined' && (isAdding || editingSchedule) && createPortal(
-        <RoastScheduleMemoDialog
-          schedule={editingSchedule}
-          selectedDate={selectedDate}
-          onSave={handleSave}
-          onDelete={editingSchedule ? () => handleDelete(editingSchedule.id) : undefined}
-          onCancel={handleDialogCancel}
-        />,
-        document.body
-      )}
+      {typeof window !== 'undefined' &&
+        (isAdding || editingSchedule) &&
+        createPortal(
+          <RoastScheduleMemoDialog
+            schedule={editingSchedule}
+            selectedDate={selectedDate}
+            onSave={handleSave}
+            onDelete={editingSchedule ? () => handleDelete(editingSchedule.id) : undefined}
+            onCancel={handleDialogCancel}
+          />,
+          document.body
+        )}
     </div>
   );
 }

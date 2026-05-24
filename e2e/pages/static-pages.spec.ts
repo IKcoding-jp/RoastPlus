@@ -38,9 +38,7 @@ test.describe('静的・その他ページ', () => {
     await expect(page.locator('body')).not.toBeEmpty();
   });
 
-  test('焙煎記録ページで未認証時はログインページにリダイレクトされる', async ({
-    page,
-  }) => {
+  test('焙煎記録ページで未認証時はログインページにリダイレクトされる', async ({ page }) => {
     await page.goto('/roast-record');
     await page.waitForLoadState('domcontentloaded');
     const isLogin = await isRedirectedToLogin(page);
@@ -67,10 +65,7 @@ test.describe('静的・その他ページ', () => {
     }
 
     const criticalErrors = errors.filter(
-      (e) =>
-        !e.includes('Firebase') &&
-        !e.includes('firestore') &&
-        !e.includes('auth/')
+      (e) => !e.includes('Firebase') && !e.includes('firestore') && !e.includes('auth/')
     );
     expect(criticalErrors).toHaveLength(0);
   });

@@ -46,9 +46,7 @@ test.describe('パフォーマンス: ページロード時間', () => {
 
 test.describe('パフォーマンス: CLS（Cumulative Layout Shift）', () => {
   for (const page_ of pages) {
-    test(`${page_.name}ページのCLSが${performanceThresholds.cls}以内`, async ({
-      browser,
-    }) => {
+    test(`${page_.name}ページのCLSが${performanceThresholds.cls}以内`, async ({ browser }) => {
       const context = await browser.newContext();
       const newPage = await context.newPage();
 
@@ -73,9 +71,7 @@ test.describe('パフォーマンス: CLS（Cumulative Layout Shift）', () => {
       // ページ安定化を待つ
       await newPage.waitForLoadState('domcontentloaded');
 
-      const cls = await newPage.evaluate(
-        () => (window as unknown as Record<string, number>).__CLS__ ?? 0
-      );
+      const cls = await newPage.evaluate(() => (window as unknown as Record<string, number>).__CLS__ ?? 0);
 
       console.log(`${page_.name} CLS: ${cls}`);
       expect(cls).toBeLessThanOrEqual(performanceThresholds.cls);
@@ -127,9 +123,7 @@ test.describe('パフォーマンス: メモリリーク検証', () => {
     await page.waitForLoadState('domcontentloaded');
 
     const initialMetrics = await client.send('Performance.getMetrics');
-    const initialHeap =
-      initialMetrics.metrics.find((m: { name: string }) => m.name === 'JSHeapUsedSize')
-        ?.value ?? 0;
+    const initialHeap = initialMetrics.metrics.find((m: { name: string }) => m.name === 'JSHeapUsedSize')?.value ?? 0;
 
     // 5回ページ遷移
     for (let i = 0; i < 5; i++) {
@@ -141,9 +135,7 @@ test.describe('パフォーマンス: メモリリーク検証', () => {
 
     // 最終メモリ計測
     const finalMetrics = await client.send('Performance.getMetrics');
-    const finalHeap =
-      finalMetrics.metrics.find((m: { name: string }) => m.name === 'JSHeapUsedSize')
-        ?.value ?? 0;
+    const finalHeap = finalMetrics.metrics.find((m: { name: string }) => m.name === 'JSHeapUsedSize')?.value ?? 0;
 
     const heapGrowth = finalHeap - initialHeap;
     const heapGrowthMB = heapGrowth / (1024 * 1024);

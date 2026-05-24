@@ -51,10 +51,7 @@ export default function ResponsivePreview({ children }: ResponsivePreviewProps) 
         ))}
       </div>
 
-      <div
-        ref={containerRef}
-        className="border border-edge rounded-lg overflow-hidden bg-page"
-      >
+      <div ref={containerRef} className="border border-edge rounded-lg overflow-hidden bg-page">
         <div
           style={{
             width: targetWidth,
@@ -63,9 +60,7 @@ export default function ResponsivePreview({ children }: ResponsivePreviewProps) 
             height: `${600 * scale}px`,
           }}
         >
-          <div style={{ width: targetWidth, height: 600, overflow: 'auto' }}>
-            {children}
-          </div>
+          <div style={{ width: targetWidth, height: 600, overflow: 'auto' }}>{children}</div>
         </div>
       </div>
     </div>

@@ -26,7 +26,8 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
     const generatedId = useId();
     const checkboxId = id || generatedId;
 
-    const checkboxStyles = 'h-5 w-5 rounded border-2 border-edge-strong bg-field text-spot focus:ring-2 focus:ring-spot/30 focus:ring-offset-0 checked:bg-spot checked:border-spot';
+    const checkboxStyles =
+      'h-5 w-5 rounded border-2 border-edge-strong bg-field text-spot focus:ring-2 focus:ring-spot/30 focus:ring-offset-0 checked:bg-spot checked:border-spot';
 
     const labelStyles = 'text-ink font-medium';
 
@@ -47,16 +48,11 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
         {(label || description) && (
           <div className="flex flex-col">
             {label && (
-              <label
-                htmlFor={checkboxId}
-                className={`${labelStyles} ${disabledStyles}`}
-              >
+              <label htmlFor={checkboxId} className={`${labelStyles} ${disabledStyles}`}>
                 {label}
               </label>
             )}
-            {description && (
-              <span className={descriptionStyles}>{description}</span>
-            )}
+            {description && <span className={descriptionStyles}>{description}</span>}
           </div>
         )}
       </div>

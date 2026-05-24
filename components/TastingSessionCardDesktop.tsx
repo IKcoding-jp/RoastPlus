@@ -1,16 +1,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  Coffee,
-  PencilSimple,
-  Quotes,
-  Users,
-  CalendarBlank,
-  CaretRight,
-  Notepad,
-  X,
-} from 'phosphor-react';
+import { Coffee, PencilSimple, Quotes, Users, CalendarBlank, CaretRight, Notepad, X } from 'phosphor-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { TastingSession } from '@/types';
 import type { AverageScores } from '@/lib/tastingUtils';
@@ -54,15 +45,22 @@ export function TastingSessionCardDesktop({
   return (
     <div className="h-full py-3">
       <Link href={`/tasting?sessionId=${session.id}`} className="block group relative h-full">
-        <Card variant="hoverable" className="p-0 h-full overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500">
+        <Card
+          variant="hoverable"
+          className="p-0 h-full overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500"
+        >
           <div className="relative z-10 h-full">
             <div className="h-full flex flex-col">
               {/* ヘッダー */}
-              <div className={`px-8 pt-6 pb-5 border-b border-dashed ${cardBorderClass} flex items-center justify-between flex-shrink-0`}>
+              <div
+                className={`px-8 pt-6 pb-5 border-b border-dashed ${cardBorderClass} flex items-center justify-between flex-shrink-0`}
+              >
                 <div className="flex items-center gap-6 flex-1 min-w-0">
                   <div>
                     <div className="flex items-center gap-4 mb-1">
-                      <h3 className={`text-3xl font-serif font-bold ${textPrimaryClass} tracking-tight leading-tight truncate`}>
+                      <h3
+                        className={`text-3xl font-serif font-bold ${textPrimaryClass} tracking-tight leading-tight truncate`}
+                      >
                         {session.beanName}
                       </h3>
                       <div className="flex items-center gap-2">
@@ -103,7 +101,9 @@ export function TastingSessionCardDesktop({
                         <Quotes size={20} weight="fill" />
                         <h4 className="text-base font-bold">感想</h4>
                       </div>
-                      <div className={`flex items-center gap-1.5 px-2 py-1 ${bgMutedClass} rounded-md text-xs ${textSecondaryClass}`}>
+                      <div
+                        className={`flex items-center gap-1.5 px-2 py-1 ${bgMutedClass} rounded-md text-xs ${textSecondaryClass}`}
+                      >
                         <Users size={14} weight="fill" />
                         <span>
                           {recordCount} / {activeMemberCount}
@@ -112,24 +112,26 @@ export function TastingSessionCardDesktop({
                     </div>
                     <div className="relative flex-1 min-h-0">
                       <div className="h-full overflow-y-auto pr-3 pb-6 [scrollbar-width:thin] [scrollbar-color:var(--edge-strong)_var(--ground)] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-ground [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-edge-strong">
-                      {comments.length > 0 ? (
-                        <ul className="space-y-4">
-                          {comments.map((comment, commentIndex) => (
-                            <li
-                              key={commentIndex}
-                              className={`text-sm italic ${textSecondaryClass} leading-relaxed relative pl-4 border-l-2 ${cardBorderClass}`}
-                            >
-                              &ldquo;{comment}&rdquo;
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <div className={`flex flex-col items-center justify-center h-full rounded-lg border border-dashed ${cardBorderClass} py-6 px-4`}>
-                          <Coffee size={32} weight="duotone" className={textMutedClass} />
-                          <p className={`mt-2 text-sm font-bold ${textSecondaryClass}`}>感想はまだありません</p>
-                          <p className={`mt-1 text-xs ${textMutedClass}`}>右下の「記録を追加する」から入力できます</p>
-                        </div>
-                      )}
+                        {comments.length > 0 ? (
+                          <ul className="space-y-4">
+                            {comments.map((comment, commentIndex) => (
+                              <li
+                                key={commentIndex}
+                                className={`text-sm italic ${textSecondaryClass} leading-relaxed relative pl-4 border-l-2 ${cardBorderClass}`}
+                              >
+                                &ldquo;{comment}&rdquo;
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <div
+                            className={`flex flex-col items-center justify-center h-full rounded-lg border border-dashed ${cardBorderClass} py-6 px-4`}
+                          >
+                            <Coffee size={32} weight="duotone" className={textMutedClass} />
+                            <p className={`mt-2 text-sm font-bold ${textSecondaryClass}`}>感想はまだありません</p>
+                            <p className={`mt-1 text-xs ${textMutedClass}`}>右下の「記録を追加する」から入力できます</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -164,11 +166,11 @@ export function TastingSessionCardDesktop({
                       ))}
                     </div>
                   ) : (
-                    <div className={`flex flex-col items-center justify-center w-full h-full border border-dashed ${cardBorderClass} rounded-lg p-8`}>
+                    <div
+                      className={`flex flex-col items-center justify-center w-full h-full border border-dashed ${cardBorderClass} rounded-lg p-8`}
+                    >
                       <Coffee size={32} weight="duotone" className={textMutedClass} />
-                      <p className={`mt-2 text-xs font-bold ${textSecondaryClass} text-center`}>
-                        評価データなし
-                      </p>
+                      <p className={`mt-2 text-xs font-bold ${textSecondaryClass} text-center`}>評価データなし</p>
                     </div>
                   )}
                 </div>
@@ -179,18 +181,14 @@ export function TastingSessionCardDesktop({
                 <div className="relative z-10">
                   {!hasAnalysis && !isAnalyzing && recordCount === 0 && (
                     <div className="flex items-center justify-center py-1">
-                      <p className={`text-xs ${textSecondaryClass} italic`}>
-                        記録が追加されるとAI分析が開始されます
-                      </p>
+                      <p className={`text-xs ${textSecondaryClass} italic`}>記録が追加されるとAI分析が開始されます</p>
                     </div>
                   )}
 
                   {isAnalyzing && (
                     <div className="flex items-center justify-center py-2 gap-2">
                       <div className={`animate-spin rounded-full h-4 w-4 border-b-2 ${spinnerClass}`}></div>
-                      <p className={`text-xs ${textSecondaryClass} animate-pulse`}>
-                        コーヒーの香りを分析中...
-                      </p>
+                      <p className={`text-xs ${textSecondaryClass} animate-pulse`}>コーヒーの香りを分析中...</p>
                     </div>
                   )}
 
@@ -220,12 +218,16 @@ export function TastingSessionCardDesktop({
               </div>
 
               {/* フッター */}
-              <div className={`px-8 py-2.5 bg-surface border-t ${borderSectionClass} flex justify-between items-center flex-shrink-0`}>
+              <div
+                className={`px-8 py-2.5 bg-surface border-t ${borderSectionClass} flex justify-between items-center flex-shrink-0`}
+              >
                 <div className={`flex items-center gap-1.5 text-xs ${textMutedClass}`}>
                   <CalendarBlank size={14} weight="fill" />
                   <span>{formatDate(session.createdAt)}</span>
                 </div>
-                <div className={`flex items-center gap-1 text-xs font-bold ${textSecondaryClass} hover:${iconAccentClass} transition-colors cursor-pointer`}>
+                <div
+                  className={`flex items-center gap-1 text-xs font-bold ${textSecondaryClass} hover:${iconAccentClass} transition-colors cursor-pointer`}
+                >
                   記録を追加する <CaretRight size={14} weight="bold" />
                 </div>
               </div>
@@ -258,12 +260,7 @@ export function TastingSessionCardDesktop({
                     <p className={`text-xs ${textMutedClass} truncate`}>{session.beanName}</p>
                   </div>
                 </div>
-                <IconButton
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsAiModalOpen(false)}
-                  aria-label="閉じる"
-                >
+                <IconButton variant="ghost" size="sm" onClick={() => setIsAiModalOpen(false)} aria-label="閉じる">
                   <X size={18} weight="bold" />
                 </IconButton>
               </div>
