@@ -195,9 +195,50 @@ npm run build
 npm run lint
 npm run test
 npm run test:run
+npm run test:rules
 npm run test:coverage
 npm run test:e2e
 ```
+
+### SDD の運用方針
+
+大きめの機能追加、業務フロー変更、データ構造変更、認証・認可・Firestore Rules・Storage Rules・Cloud Functions に関わる変更では、実装前に Spec-Driven Development を行う。
+
+RoastPlus における SDD は、GitHub Spec Kit 型の Spec-Driven Development と、Gojko Adzic の Specification by Example を参照点とする。
+
+実装前に、以下を仕様として短く整理する。
+
+- 目的
+- 背景となる問題
+- 対象ユーザー
+- 現在の挙動
+- 期待する挙動
+- 受け入れ条件
+- 具体例
+- 影響する画面
+- 影響するデータ
+- 認証・認可・Firestore Rules・Storage Rules への影響
+- Cloud Functions への影響
+- やらないこと
+- 未決事項
+- 検証方法
+
+未決事項が仕様、データ、安全性、本番環境、費用に影響する場合は、実装に進まない。ユーザーが仕様を確認し、「この仕様で実装してよい」と明示した後に、実装計画へ進む。
+
+TDD が必要な変更では、受け入れ条件をテストに対応づけてから実装する。
+
+### TDD の運用方針
+
+ロジック変更、バグ修正、Firestore Rules、Cloud Functions、データ変換・集計処理では、原則として Kent Beck の Test-Driven Development に準拠し、Red / Green / Refactor の順で進める。
+
+- Red: まず失敗するテストで、期待する振る舞いを表現する。
+- Green: 最小限の実装で、そのテストを通す。
+- Refactor: テストが通った状態を保ちながら、命名、重複、責務分担を整える。
+- テストを後付けの確認作業だけにしない。
+- 実装詳細を過度に固定するテストや、意味の薄いカバレッジ稼ぎは避ける。
+- UIだけの微修正、文言修正、設定変更などTDDが不自然な場合は、理由を明示し、代わりの検証方法を示す。
+
+特に `lib/`, `hooks/`, `functions/`, `tests/rules/` に関わる変更では、既存テストを確認し、必要に応じて先にテストを追加・更新する。
 
 補足:
 
@@ -206,7 +247,6 @@ npm run test:e2e
 - functions/ を変更した場合は、Functions側の build/test も確認する。
 - Lint は Husky pre-commit でも実行されるが、必要に応じて npm run lint を手動実行する。
 - ロジック変更では、既存テストを優先して更新・追加する。
-- lib/, hooks/, components/ のロジック変更はTDDを基本とする。
 - 検証できない場合は、未検証の理由とユーザーが実行すべきコマンドを報告する。
 
 ## Git運用
