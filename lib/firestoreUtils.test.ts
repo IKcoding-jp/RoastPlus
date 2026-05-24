@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  toJSDate,
-  toFirestoreTimestamp,
-  type FirestoreTimestamp,
-} from './firestoreUtils';
+import { toJSDate, toFirestoreTimestamp, type FirestoreTimestamp } from './firestoreUtils';
 
 describe('firestoreUtils', () => {
   describe('toJSDate', () => {

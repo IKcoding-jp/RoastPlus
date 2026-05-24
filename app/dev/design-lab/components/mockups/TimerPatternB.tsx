@@ -64,9 +64,7 @@ export default function TimerPatternB() {
           <button className="p-1 text-ink/40 hover:text-ink">
             <ArrowLeft size={20} weight="bold" />
           </button>
-          <span className="text-xs text-ink/40 font-medium">
-            {MOCK_RECIPE_NAME}
-          </span>
+          <span className="text-xs text-ink/40 font-medium">{MOCK_RECIPE_NAME}</span>
           <div className="w-7" />
         </div>
 
@@ -81,17 +79,12 @@ export default function TimerPatternB() {
           </div>
 
           {/* Step Name - large */}
-          <h2 className="text-3xl font-bold text-ink mt-5">
-            {currentStep.title}
-          </h2>
+          <h2 className="text-3xl font-bold text-ink mt-5">{currentStep.title}</h2>
 
           {/* Water Target Badge */}
           {currentStep.targetTotalWater && (
             <div className="mt-4 px-6 py-2.5 rounded-full bg-spot/10 border border-spot/30">
-              <span
-                className="text-2xl font-bold text-spot"
-                style={{ fontFamily: 'var(--font-nunito), sans-serif' }}
-              >
+              <span className="text-2xl font-bold text-spot" style={{ fontFamily: 'var(--font-nunito), sans-serif' }}>
                 {currentStep.targetTotalWater}g
               </span>
               <span className="text-sm text-spot/70 ml-1.5">まで</span>
@@ -99,9 +92,7 @@ export default function TimerPatternB() {
           )}
 
           {/* Description */}
-          <p className="text-lg text-ink/60 mt-4 text-center leading-relaxed">
-            {currentStep.description}
-          </p>
+          <p className="text-lg text-ink/60 mt-4 text-center leading-relaxed">{currentStep.description}</p>
         </div>
 
         {/* Bottom Section */}
@@ -110,10 +101,7 @@ export default function TimerPatternB() {
           <div>
             <div className="flex items-center gap-3">
               <div className="flex-1 h-1.5 rounded-full bg-ink/10 overflow-hidden">
-                <div
-                  className="h-full rounded-full bg-spot transition-all"
-                  style={{ width: `${progress * 100}%` }}
-                />
+                <div className="h-full rounded-full bg-spot transition-all" style={{ width: `${progress * 100}%` }} />
               </div>
               <span className="text-xs font-semibold text-ink/40 whitespace-nowrap">
                 {MOCK_CURRENT_STEP_INDEX + 1}/{MOCK_STEPS.length}
@@ -125,8 +113,7 @@ export default function TimerPatternB() {
           {nextStep && (
             <p className="text-xs text-ink/35 text-center">
               次: {nextStep.title}
-              {nextStep.startTimeSec !== undefined &&
-                ` (${formatTime(nextStep.startTimeSec)})`}
+              {nextStep.startTimeSec !== undefined && ` (${formatTime(nextStep.startTimeSec)})`}
             </p>
           )}
         </div>

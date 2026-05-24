@@ -50,10 +50,7 @@ export function useDatePicker({ selectedDate, isWeekend, getTodayString }: UseDa
   const tomorrow = getTomorrowString();
   // 翌日（土日なら次の平日）が最大選択可能日
   const maxSelectableDate = isWeekend(tomorrow) ? getNextWeekday(today) : tomorrow;
-  const maxSelectableDateObj = useMemo(
-    () => new Date(maxSelectableDate + 'T00:00:00'),
-    [maxSelectableDate]
-  );
+  const maxSelectableDateObj = useMemo(() => new Date(maxSelectableDate + 'T00:00:00'), [maxSelectableDate]);
 
   // 日付文字列フォーマット関数
   const formatDateString = (date: Date): string => {
@@ -119,9 +116,10 @@ export function useDatePicker({ selectedDate, isWeekend, getTodayString }: UseDa
   };
 
   const handleNextMonth = () => {
-    const nextMonth = currentMonth.month === 11
-      ? { year: currentMonth.year + 1, month: 0 }
-      : { year: currentMonth.year, month: currentMonth.month + 1 };
+    const nextMonth =
+      currentMonth.month === 11
+        ? { year: currentMonth.year + 1, month: 0 }
+        : { year: currentMonth.year, month: currentMonth.month + 1 };
     const nextMonthFirstDay = new Date(nextMonth.year, nextMonth.month, 1);
 
     // 最大選択可能日より未来の月には進めない
@@ -149,9 +147,10 @@ export function useDatePicker({ selectedDate, isWeekend, getTodayString }: UseDa
   };
 
   const canGoToNextMonth = useMemo(() => {
-    const nextMonth = currentMonth.month === 11
-      ? { year: currentMonth.year + 1, month: 0 }
-      : { year: currentMonth.year, month: currentMonth.month + 1 };
+    const nextMonth =
+      currentMonth.month === 11
+        ? { year: currentMonth.year + 1, month: 0 }
+        : { year: currentMonth.year, month: currentMonth.month + 1 };
     const nextMonthFirstDay = new Date(nextMonth.year, nextMonth.month, 1);
     return nextMonthFirstDay <= maxSelectableDateObj;
   }, [currentMonth, maxSelectableDateObj]);
@@ -170,10 +169,7 @@ export function useDatePicker({ selectedDate, isWeekend, getTodayString }: UseDa
     onSelect(dateString);
   };
 
-  const monthNames = [
-    '1月', '2月', '3月', '4月', '5月', '6月',
-    '7月', '8月', '9月', '10月', '11月', '12月',
-  ];
+  const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
 
   const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
 

@@ -4,11 +4,7 @@ import { HiXMark } from 'react-icons/hi2';
 import { MdAdd, MdDelete } from 'react-icons/md';
 
 import { Button, IconButton, Input, Modal } from '@/components/ui';
-import {
-  type WorkChimePeriod,
-  type WorkChimePeriodKind,
-  type WorkChimeSettings,
-} from '@/lib/workChime';
+import { type WorkChimePeriod, type WorkChimePeriodKind, type WorkChimeSettings } from '@/lib/workChime';
 
 interface WorkChimeScheduleModalProps {
   show: boolean;
@@ -82,19 +78,12 @@ function getKindButtonStyle(buttonKind: WorkChimePeriodKind, currentKind: WorkCh
   };
 }
 
-export function WorkChimeScheduleModal({
-  show,
-  settings,
-  onUpdate,
-  onClose,
-}: WorkChimeScheduleModalProps) {
+export function WorkChimeScheduleModal({ show, settings, onUpdate, onClose }: WorkChimeScheduleModalProps) {
   const sortedPeriods = [...settings.periods].sort((a, b) => a.start.localeCompare(b.start));
 
   const updatePeriod = (id: string, patch: Partial<WorkChimePeriod>) => {
     onUpdate({
-      periods: settings.periods.map((period) => (
-        period.id === id ? { ...period, ...patch } : period
-      )),
+      periods: settings.periods.map((period) => (period.id === id ? { ...period, ...patch } : period)),
     });
   };
 
@@ -122,12 +111,7 @@ export function WorkChimeScheduleModal({
           <h2 className="text-lg font-bold text-ink">チャイム時刻設定</h2>
           <p className="mt-1 text-sm text-ink-muted">作業と休憩の時間帯</p>
         </div>
-        <IconButton
-          variant="ghost"
-          rounded
-          onClick={onClose}
-          aria-label="閉じる"
-        >
+        <IconButton variant="ghost" rounded onClick={onClose} aria-label="閉じる">
           <HiXMark className="h-6 w-6" />
         </IconButton>
       </div>

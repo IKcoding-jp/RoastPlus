@@ -1,11 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-  needsConsent,
-  createConsentData,
-  formatConsentDate,
-  TERMS_VERSION,
-  PRIVACY_POLICY_VERSION,
-} from './consent';
+import { needsConsent, createConsentData, formatConsentDate, TERMS_VERSION, PRIVACY_POLICY_VERSION } from './consent';
 import type { UserConsent } from '@/types';
 
 describe('consent', () => {

@@ -1,33 +1,26 @@
 // ユーザーデータ書き込みキュー・リトライ管理
 // Write stream exhausted対策として同時書き込み数を制限する
 
-import {
-  deleteField,
-  doc,
-  getDocs,
-  writeBatch,
-  type FieldValue,
-  type WriteBatch,
-} from 'firebase/firestore';
+import { deleteField, doc, getDocs, writeBatch, type FieldValue, type WriteBatch } from 'firebase/firestore';
 import { getDb, getUserDocRef, removeUndefinedFields } from '../common';
-import {
-  getDataSplitsDocRef,
-  getWorkProgressesCollectionRef,
-} from '../workProgress/subcollection';
+import { getDataSplitsDocRef, getWorkProgressesCollectionRef } from '../workProgress/subcollection';
 import type { AppData, WorkProgress } from '@/types';
 
 // デバウンス待機時間（ミリ秒）
 export const SAVE_USER_DATA_DEBOUNCE_MS = 300;
 
 // ユーザーごとの書き込みキューとリトライ管理
-export const writeQueues = new Map<string, {
-  pendingData: AppData | null;
-  pendingOptions: SaveUserDataOptions | null;
-  timeoutId: ReturnType<typeof setTimeout> | null;
-  isWriting: boolean;
-  retryCount: number;
-  pendingPromise: { resolve: () => void; reject: (error: unknown) => void } | null;
-}>();
+export const writeQueues = new Map<
+  string,
+  {
+    pendingData: AppData | null;
+    pendingOptions: SaveUserDataOptions | null;
+    timeoutId: ReturnType<typeof setTimeout> | null;
+    isWriting: boolean;
+    retryCount: number;
+    pendingPromise: { resolve: () => void; reject: (error: unknown) => void } | null;
+  }
+>();
 const workProgressesSyncSignatures = new Map<string, string>();
 
 export function clearWriteQueueStateForTests(): void {
@@ -189,12 +182,15 @@ async function performWrite(userId: string, data: AppData, options: SaveUserData
     const now = Date.now();
     const timeSinceLastWrite = now - lastWriteTime;
     if (timeSinceLastWrite < MIN_WRITE_INTERVAL) {
-      await new Promise(resolve => setTimeout(resolve, MIN_WRITE_INTERVAL - timeSinceLastWrite));
+      await new Promise((resolve) => setTimeout(resolve, MIN_WRITE_INTERVAL - timeSinceLastWrite));
     }
     lastWriteTime = Date.now();
 
     const userDocRef = getUserDocRef(userId);
-    const cleanedData: Record<string, unknown> = removeUndefinedFields<AppData>(data) as unknown as Record<string, unknown>;
+    const cleanedData: Record<string, unknown> = removeUndefinedFields<AppData>(data) as unknown as Record<
+      string,
+      unknown
+    >;
 
     const setOrDelete = <T>(value: T | undefined): T | FieldValue => {
       return value !== undefined ? value : deleteField();
@@ -212,9 +208,7 @@ async function performWrite(userId: string, data: AppData, options: SaveUserData
         userSettingsUpdate.roastTimerSettings = data.userSettings.roastTimerSettings;
       }
 
-      const hasAnyValue = Object.values(userSettingsUpdate).some(
-        (value) => value !== deleteField()
-      );
+      const hasAnyValue = Object.values(userSettingsUpdate).some((value) => value !== deleteField());
 
       if (!hasAnyValue) {
         cleanedData.userSettings = deleteField();
@@ -272,12 +266,16 @@ export async function executeWrite(
       await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY * 2));
       const refreshedQueuedWrites = writeWaitQueue.length + activeWriteCount;
       if (refreshedQueuedWrites >= MAX_QUEUE_SIZE) {
-        console.warn(`Firestore write queue still saturated (${refreshedQueuedWrites}/${MAX_QUEUE_SIZE}) after extended wait, retrying once...`);
+        console.warn(
+          `Firestore write queue still saturated (${refreshedQueuedWrites}/${MAX_QUEUE_SIZE}) after extended wait, retrying once...`
+        );
         await executeWrite(userId, data, options, true);
         return;
       }
     } else {
-      console.warn(`Firestore write queue remains saturated (${writeWaitQueue.length + activeWriteCount}/${MAX_QUEUE_SIZE}) after extended wait; proceeding to avoid infinite recursion.`);
+      console.warn(
+        `Firestore write queue remains saturated (${writeWaitQueue.length + activeWriteCount}/${MAX_QUEUE_SIZE}) after extended wait; proceeding to avoid infinite recursion.`
+      );
     }
   }
 
@@ -314,7 +312,8 @@ export async function executeWrite(
       const errorInfo = error as { code?: string; message?: string };
       const isWriteStreamExhausted =
         errorInfo?.code === 'resource-exhausted' ||
-        (errorInfo?.message && typeof errorInfo.message === 'string' &&
+        (errorInfo?.message &&
+          typeof errorInfo.message === 'string' &&
           errorInfo.message.toLowerCase().includes('write stream exhausted'));
 
       if (isWriteStreamExhausted && queue.retryCount <= MAX_RETRY_COUNT) {
@@ -324,10 +323,10 @@ export async function executeWrite(
 
         console.warn(
           `Firestore write stream exhausted, retrying in ${delay}ms ` +
-          `(attempt ${queue.retryCount}/${MAX_RETRY_COUNT}, ` +
-          `queued: ${writeWaitQueue.length}, active: ${activeWriteCount})`
+            `(attempt ${queue.retryCount}/${MAX_RETRY_COUNT}, ` +
+            `queued: ${writeWaitQueue.length}, active: ${activeWriteCount})`
         );
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
         continue;
       }
 

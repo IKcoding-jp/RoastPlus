@@ -28,17 +28,9 @@ function ThemePreviewCard({
         flex flex-col items-center
         !pt-5 !px-3.5 !pb-4
         transition-all duration-200 ease-out
-        ${
-          isSelected
-            ? '!border-[2px] border-spot'
-            : '!border-[1.5px] border-edge-subtle hover:border-edge'
-        }
+        ${isSelected ? '!border-[2px] border-spot' : '!border-[1.5px] border-edge-subtle hover:border-edge'}
       `}
-      style={
-        isSelected
-          ? { boxShadow: '0 0 0 3px rgba(217,119,6,0.12)' }
-          : undefined
-      }
+      style={isSelected ? { boxShadow: '0 0 0 3px rgba(217,119,6,0.12)' } : undefined}
     >
       {/* 選択チェック（右上） */}
       {isSelected && (
@@ -62,14 +54,10 @@ function ThemePreviewCard({
       />
 
       {/* テーマ名 */}
-      <span className="text-[15px] font-bold text-ink text-center leading-snug block">
-        {preset.name}
-      </span>
+      <span className="text-[15px] font-bold text-ink text-center leading-snug block">{preset.name}</span>
 
       {/* 説明文 */}
-      <p className="text-[12.5px] text-ink-sub text-center mt-1 leading-snug">
-        {preset.description}
-      </p>
+      <p className="text-[12.5px] text-ink-sub text-center mt-1 leading-snug">{preset.description}</p>
     </Button>
   );
 }

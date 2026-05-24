@@ -1,7 +1,4 @@
-import {
-  collection,
-  getDocs,
-} from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { getDb } from './common';
 import { saveUserData } from './userData';
 import type { AppData, DefectBean, DefectBeanSettings } from '@/types';
@@ -59,11 +56,7 @@ export async function getDefectBeanMasterData(): Promise<DefectBean[]> {
  * @param defectBean 欠陥豆データ
  * @param appData 現在のAppData
  */
-export async function saveDefectBean(
-  userId: string,
-  defectBean: DefectBean,
-  appData: AppData
-): Promise<void> {
+export async function saveDefectBean(userId: string, defectBean: DefectBean, appData: AppData): Promise<void> {
   const updatedDefectBeans = [...(appData.defectBeans || [])];
   const existingIndex = updatedDefectBeans.findIndex((db) => db.id === defectBean.id);
 
@@ -87,14 +80,8 @@ export async function saveDefectBean(
  * @param defectBeanId 削除する欠陥豆ID
  * @param appData 現在のAppData
  */
-export async function deleteDefectBean(
-  userId: string,
-  defectBeanId: string,
-  appData: AppData
-): Promise<void> {
-  const updatedDefectBeans = (appData.defectBeans || []).filter(
-    (db) => db.id !== defectBeanId
-  );
+export async function deleteDefectBean(userId: string, defectBeanId: string, appData: AppData): Promise<void> {
+  const updatedDefectBeans = (appData.defectBeans || []).filter((db) => db.id !== defectBeanId);
 
   const updatedData: AppData = {
     ...appData,

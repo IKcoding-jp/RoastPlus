@@ -4,14 +4,7 @@ import { useState } from 'react';
 import type { TastingSession } from '@/types';
 import { useToastContext } from '@/components/Toast';
 import { motion } from 'framer-motion';
-import {
-  Coffee,
-  CalendarBlank,
-  Thermometer,
-  Trash,
-  Plus,
-  Warning,
-} from 'phosphor-react';
+import { Coffee, CalendarBlank, Thermometer, Trash, Plus, Warning } from 'phosphor-react';
 import { Input, Select, Button } from '@/components/ui';
 import { ROAST_LEVELS } from '@/lib/constants';
 import { formatDateString } from '@/lib/dateUtils';
@@ -23,22 +16,15 @@ interface TastingSessionFormProps {
   onDelete?: (id: string) => void;
 }
 
-export function TastingSessionForm({
-  session,
-  onSave,
-  onCancel,
-  onDelete,
-}: TastingSessionFormProps) {
+export function TastingSessionForm({ session, onSave, onCancel, onDelete }: TastingSessionFormProps) {
   const isNew = !session;
   const { showToast } = useToastContext();
 
   const [beanName, setBeanName] = useState(session?.beanName || '');
-  const [createdAt, setCreatedAt] = useState(
-    session?.createdAt ? session.createdAt.split('T')[0] : formatDateString()
+  const [createdAt, setCreatedAt] = useState(session?.createdAt ? session.createdAt.split('T')[0] : formatDateString());
+  const [roastLevel, setRoastLevel] = useState<'浅煎り' | '中煎り' | '中深煎り' | '深煎り'>(
+    session?.roastLevel || '中深煎り'
   );
-  const [roastLevel, setRoastLevel] = useState<
-    '浅煎り' | '中煎り' | '中深煎り' | '深煎り'
-  >(session?.roastLevel || '中深煎り');
 
   const handleDelete = () => {
     if (!session || !onDelete) return;
@@ -107,11 +93,7 @@ export function TastingSessionForm({
               </label>
               <Select
                 value={roastLevel}
-                onChange={(e) =>
-                  setRoastLevel(
-                    e.target.value as '浅煎り' | '中煎り' | '中深煎り' | '深煎り'
-                  )
-                }
+                onChange={(e) => setRoastLevel(e.target.value as '浅煎り' | '中煎り' | '中深煎り' | '深煎り')}
                 options={ROAST_LEVELS.map((level) => ({ value: level, label: level }))}
                 required
               />
@@ -123,12 +105,7 @@ export function TastingSessionForm({
                 <CalendarBlank size={14} weight="bold" className="text-spot" />
                 試飲日 <span className="text-red-500">*</span>
               </label>
-              <Input
-                type="date"
-                value={createdAt}
-                onChange={(e) => setCreatedAt(e.target.value)}
-                required
-              />
+              <Input type="date" value={createdAt} onChange={(e) => setCreatedAt(e.target.value)} required />
             </div>
           </div>
         </div>
@@ -136,19 +113,10 @@ export function TastingSessionForm({
 
       {/* ボタン行 */}
       <div className="flex gap-3">
-        <Button
-          type="button"
-          variant="surface"
-          onClick={onCancel}
-          className="flex-1"
-        >
+        <Button type="button" variant="surface" onClick={onCancel} className="flex-1">
           キャンセル
         </Button>
-        <Button
-          type="submit"
-          variant="primary"
-          className="flex-[1.5]"
-        >
+        <Button type="submit" variant="primary" className="flex-[1.5]">
           {isNew ? (
             <>
               <Plus size={18} weight="bold" />
@@ -165,16 +133,9 @@ export function TastingSessionForm({
         <div className="rounded-lg border border-edge bg-surface p-4">
           <div className="flex items-center gap-1.5 mb-3">
             <Warning size={13} weight="fill" className="text-danger" />
-            <span className="text-xs font-bold text-danger">
-              危険な操作
-            </span>
+            <span className="text-xs font-bold text-danger">危険な操作</span>
           </div>
-          <Button
-            type="button"
-            variant="danger"
-            onClick={handleDelete}
-            className="w-full"
-          >
+          <Button type="button" variant="danger" onClick={handleDelete} className="w-full">
             <Trash size={16} weight="bold" />
             試飲感想を削除する
           </Button>

@@ -113,12 +113,7 @@ export function NotificationCard({
             >
               <IoCreateOutline className="h-5 w-5" />
             </IconButton>
-            <IconButton
-              variant="danger"
-              size="sm"
-              onClick={() => onDelete(notification.id)}
-              aria-label="削除"
-            >
+            <IconButton variant="danger" size="sm" onClick={() => onDelete(notification.id)} aria-label="削除">
               <IoTrashOutline className="h-5 w-5" />
             </IconButton>
           </div>

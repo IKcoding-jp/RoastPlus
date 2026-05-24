@@ -34,9 +34,7 @@ export function OCRConfirmModal({
   const { showToast } = useToastContext();
   const [activeTab, setActiveTab] = useState<TabType>('timeLabels');
   const [mode, setMode] = useState<'replace' | 'add'>('replace');
-  const [timeLabels, setTimeLabels] = useState<TimeLabel[]>(() =>
-    sortTimeLabels(initialTimeLabels)
-  );
+  const [timeLabels, setTimeLabels] = useState<TimeLabel[]>(() => sortTimeLabels(initialTimeLabels));
   const [roastSchedules, setRoastSchedules] = useState<RoastSchedule[]>(() =>
     sortRoastSchedules(initialRoastSchedules)
   );
@@ -115,7 +113,11 @@ export function OCRConfirmModal({
 
     // アフターパージの時間を元に戻す（空文字列に）
     const restoredSchedules = finalSorted.map((schedule) => {
-      if (schedule.isAfterPurge && schedule.time === lastRoastTime && !roastSchedules.find(s => s.id === schedule.id)?.time) {
+      if (
+        schedule.isAfterPurge &&
+        schedule.time === lastRoastTime &&
+        !roastSchedules.find((s) => s.id === schedule.id)?.time
+      ) {
         return { ...schedule, time: '' };
       }
       return schedule;
@@ -141,9 +143,7 @@ export function OCRConfirmModal({
         {/* ヘッダー */}
         <div className="flex items-center justify-between gap-3 px-4 py-3 border-b flex-shrink-0 border-edge bg-overlay">
           <div className="flex min-w-0 items-center gap-2">
-            <h2 className="text-base font-bold tracking-tight text-ink">
-              読み取り結果の確認
-            </h2>
+            <h2 className="text-base font-bold tracking-tight text-ink">読み取り結果の確認</h2>
             <span className="text-[11px] text-ink-sub">
               {timeLabels.length}件の予定 / {roastSchedules.length}件のロースト
             </span>
@@ -195,25 +195,15 @@ export function OCRConfirmModal({
             >
               <div className="border-b border-edge flex-shrink-0">
                 <TabsList className="mt-2 grid grid-cols-2">
-                  <TabsTrigger
-                    value="timeLabels"
-                    className="text-xs !gap-1.5 !px-2 !py-1.5 !min-h-0"
-                  >
+                  <TabsTrigger value="timeLabels" className="text-xs !gap-1.5 !px-2 !py-1.5 !min-h-0">
                     <HiClock className="h-4 w-4" />
                     <span>本日の予定</span>
-                    <span className="rounded-full px-2 py-0.5 text-xs bg-ground text-ink">
-                      {timeLabels.length}
-                    </span>
+                    <span className="rounded-full px-2 py-0.5 text-xs bg-ground text-ink">{timeLabels.length}</span>
                   </TabsTrigger>
-                  <TabsTrigger
-                    value="roastSchedules"
-                    className="text-xs !gap-1.5 !px-2 !py-1.5 !min-h-0"
-                  >
+                  <TabsTrigger value="roastSchedules" className="text-xs !gap-1.5 !px-2 !py-1.5 !min-h-0">
                     <HiFire className="h-4 w-4" />
                     <span>ロースト</span>
-                    <span className="rounded-full px-2 py-0.5 text-xs bg-ground text-ink">
-                      {roastSchedules.length}
-                    </span>
+                    <span className="rounded-full px-2 py-0.5 text-xs bg-ground text-ink">{roastSchedules.length}</span>
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -278,8 +268,6 @@ export function OCRConfirmModal({
           </div>
         </div>
 
-  
-
         {/* フッター */}
         <div className="flex items-center justify-between px-4 py-3 border-t gap-2 flex-shrink-0 border-edge bg-overlay">
           <Button
@@ -293,18 +281,10 @@ export function OCRConfirmModal({
             再解析
           </Button>
           <div className="flex gap-2">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={onCancel}
-            >
+            <Button variant="secondary" size="sm" onClick={onCancel}>
               キャンセル
             </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={handleSave}
-            >
+            <Button variant="primary" size="sm" onClick={handleSave}>
               保存
             </Button>
           </div>

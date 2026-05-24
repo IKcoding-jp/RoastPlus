@@ -115,10 +115,13 @@ export default function ClockPage() {
   }, [previewChime]);
   const displayedChime = previewChime ?? activeChime;
 
-  const handleTestWorkChime = useCallback((kind: WorkChimeKind) => {
-    setShowSettings(false);
-    testWorkChime(kind);
-  }, [testWorkChime]);
+  const handleTestWorkChime = useCallback(
+    (kind: WorkChimeKind) => {
+      setShowSettings(false);
+      testWorkChime(kind);
+    },
+    [testWorkChime]
+  );
 
   const colors = getThemeColors(settings.theme);
   const fontFamily = getFontFamily(settings.fontKey);
@@ -129,8 +132,13 @@ export default function ClockPage() {
     return (
       <div className="flex items-center justify-center h-dvh" style={{ backgroundColor: colors.bg }}>
         <div className="flex items-center gap-3">
-          <div className="h-5 w-5 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: colors.accent, borderTopColor: 'transparent' }} />
-          <span className="text-lg" style={{ color: colors.uiText }}>読み込み中...</span>
+          <div
+            className="h-5 w-5 rounded-full border-2 border-t-transparent animate-spin"
+            style={{ borderColor: colors.accent, borderTopColor: 'transparent' }}
+          />
+          <span className="text-lg" style={{ color: colors.uiText }}>
+            読み込み中...
+          </span>
         </div>
       </div>
     );
@@ -160,12 +168,7 @@ export default function ClockPage() {
       </div>
 
       <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
-        <IconButton
-          variant="ghost"
-          rounded
-          onClick={() => setShowSettings(true)}
-          aria-label="時計の設定"
-        >
+        <IconButton variant="ghost" rounded onClick={() => setShowSettings(true)} aria-label="時計の設定">
           <HiCog6Tooth className="h-6 w-6" style={{ color: colors.uiText }} />
         </IconButton>
       </div>
@@ -192,22 +195,13 @@ export default function ClockPage() {
           style={{ fontFamily, fontFeatureSettings: '"tnum"' }}
           dateTime={now.toISOString()}
         >
-          <span
-            className="font-black"
-            style={{ fontSize: getScaledClamp(6, 28, scale, wf), color: colors.text }}
-          >
+          <span className="font-black" style={{ fontSize: getScaledClamp(6, 28, scale, wf), color: colors.text }}>
             {time.h}
           </span>
-          <span
-            className="font-black"
-            style={{ fontSize: getScaledClamp(4, 18, scale, wf), color: colors.accent }}
-          >
+          <span className="font-black" style={{ fontSize: getScaledClamp(4, 18, scale, wf), color: colors.accent }}>
             :
           </span>
-          <span
-            className="font-black"
-            style={{ fontSize: getScaledClamp(6, 28, scale, wf), color: colors.text }}
-          >
+          <span className="font-black" style={{ fontSize: getScaledClamp(6, 28, scale, wf), color: colors.text }}>
             {time.m}
           </span>
           {settings.showSeconds && (

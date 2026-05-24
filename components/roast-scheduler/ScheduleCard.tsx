@@ -201,18 +201,15 @@ export function ScheduleCard({
               <span className="inline-flex items-center rounded px-1.5 md:px-2 py-0.5 md:py-1 text-sm md:text-xs font-medium border whitespace-nowrap bg-surface text-ink-sub border-edge">
                 {memoContent.beanName2 && memoContent.blendRatio ? (
                   <>
-                    <span className="whitespace-nowrap">{memoContent.beanName}</span>
-                    {' '}
+                    <span className="whitespace-nowrap">{memoContent.beanName}</span>{' '}
                     <CountryFlagEmoji countryName={memoContent.beanName} />
                     <span className="mx-0.5 md:mx-1 text-ink-muted">×</span>
-                    <span className="whitespace-nowrap">{memoContent.beanName2}</span>
-                    {' '}
+                    <span className="whitespace-nowrap">{memoContent.beanName2}</span>{' '}
                     <CountryFlagEmoji countryName={memoContent.beanName2} />
                   </>
                 ) : (
                   <>
-                    <span className="whitespace-nowrap">{memoContent.beanName}</span>
-                    {' '}
+                    <span className="whitespace-nowrap">{memoContent.beanName}</span>{' '}
                     <CountryFlagEmoji countryName={memoContent.beanName} />
                   </>
                 )}
@@ -222,12 +219,16 @@ export function ScheduleCard({
           {(memoContent.mode || memoContent.weight || memoContent.roastLevel) && (
             <div className="text-sm md:text-xs flex items-center gap-1 md:gap-1 flex-wrap">
               {memoContent.mode && (
-                <span className={`inline-block rounded px-2 md:px-2 py-1 md:py-0.5 text-sm md:text-xs font-medium ${getModeColor(memoContent.mode)} whitespace-nowrap`}>
+                <span
+                  className={`inline-block rounded px-2 md:px-2 py-1 md:py-0.5 text-sm md:text-xs font-medium ${getModeColor(memoContent.mode)} whitespace-nowrap`}
+                >
                   {memoContent.mode}
                 </span>
               )}
               {memoContent.weight && (
-                <span className={`inline-block rounded px-2 md:px-2 py-1 md:py-0.5 text-sm md:text-xs font-medium ${getWeightColor(memoContent.weight)} whitespace-nowrap`}>
+                <span
+                  className={`inline-block rounded px-2 md:px-2 py-1 md:py-0.5 text-sm md:text-xs font-medium ${getWeightColor(memoContent.weight)} whitespace-nowrap`}
+                >
                   {memoContent.weight}
                 </span>
               )}
@@ -238,12 +239,12 @@ export function ScheduleCard({
                     memoContent.roastLevel === '深煎り'
                       ? { backgroundColor: '#120C0A' }
                       : memoContent.roastLevel === '中深煎り'
-                      ? { backgroundColor: '#4E3526' }
-                      : memoContent.roastLevel === '中煎り'
-                      ? { backgroundColor: '#745138' }
-                      : memoContent.roastLevel === '浅煎り'
-                      ? { backgroundColor: '#C78F5D' }
-                      : undefined
+                        ? { backgroundColor: '#4E3526' }
+                        : memoContent.roastLevel === '中煎り'
+                          ? { backgroundColor: '#745138' }
+                          : memoContent.roastLevel === '浅煎り'
+                            ? { backgroundColor: '#C78F5D' }
+                            : undefined
                   }
                 >
                   {memoContent.roastLevel}

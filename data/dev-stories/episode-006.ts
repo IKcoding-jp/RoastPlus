@@ -25,7 +25,8 @@ export const EPISODE_006: DevStoryEpisode = {
     {
       id: 'msg-006-4',
       characterId: 'siphon',
-      content: 'Cursorはエディタ画面の中でAIと対話するスタイル。Claude Codeはターミナルっていう黒い画面でテキストだけでやり取りするんだ。シンプルだけど、その分パワフルなんだよね。',
+      content:
+        'Cursorはエディタ画面の中でAIと対話するスタイル。Claude Codeはターミナルっていう黒い画面でテキストだけでやり取りするんだ。シンプルだけど、その分パワフルなんだよね。',
     },
     {
       id: 'msg-006-5',
@@ -46,7 +47,8 @@ export const EPISODE_006: DevStoryEpisode = {
     {
       id: 'msg-006-8',
       characterId: 'siphon',
-      content: '一つ目は「エディタ統合型」。CursorやAntigravityみたいに、コードエディタの中にAIが組み込まれているタイプだね。',
+      content:
+        '一つ目は「エディタ統合型」。CursorやAntigravityみたいに、コードエディタの中にAIが組み込まれているタイプだね。',
     },
     {
       id: 'msg-006-9',
@@ -56,7 +58,8 @@ export const EPISODE_006: DevStoryEpisode = {
     {
       id: 'msg-006-10',
       characterId: 'siphon',
-      content: '二つ目が「ターミナル型」。Claude Codeがこれにあたるね。テキストだけでやり取りするから、動作が軽くて柔軟性が高いんだ。',
+      content:
+        '二つ目が「ターミナル型」。Claude Codeがこれにあたるね。テキストだけでやり取りするから、動作が軽くて柔軟性が高いんだ。',
     },
     {
       id: 'msg-006-11',
@@ -66,7 +69,8 @@ export const EPISODE_006: DevStoryEpisode = {
     {
       id: 'msg-006-12',
       characterId: 'siphon',
-      content: 'LovableやBoltみたいに「こんなアプリが欲しい」って伝えるだけで作ってくれるツールもあるよ。ただ、細かい調整が難しいんだよね。',
+      content:
+        'LovableやBoltみたいに「こんなアプリが欲しい」って伝えるだけで作ってくれるツールもあるよ。ただ、細かい調整が難しいんだよね。',
     },
     {
       id: 'msg-006-13',
@@ -77,7 +81,8 @@ export const EPISODE_006: DevStoryEpisode = {
     {
       id: 'msg-006-14',
       characterId: 'siphon',
-      content: 'Claude Codeのすごいところは「自分で考えて動いてくれる」ことなんだ。例えば「この機能を直して」って言うと…',
+      content:
+        'Claude Codeのすごいところは「自分で考えて動いてくれる」ことなんだ。例えば「この機能を直して」って言うと…',
     },
     {
       id: 'msg-006-15',
@@ -87,7 +92,8 @@ export const EPISODE_006: DevStoryEpisode = {
     {
       id: 'msg-006-16',
       characterId: 'siphon',
-      content: 'まず自分でファイルを探して、中身を読んで、問題を見つけて、直すところまで全部やってくれるんだ。まるで優秀な助手がいるみたい。',
+      content:
+        'まず自分でファイルを探して、中身を読んで、問題を見つけて、直すところまで全部やってくれるんだ。まるで優秀な助手がいるみたい。',
     },
     {
       id: 'msg-006-17',
@@ -97,7 +103,8 @@ export const EPISODE_006: DevStoryEpisode = {
     {
       id: 'msg-006-18',
       characterId: 'siphon',
-      content: '「スキル」っていう機能があって、よく使う作業を一言で頼めるんだ。例えば「/commit」って打つだけで、変更を記録してくれる。',
+      content:
+        '「スキル」っていう機能があって、よく使う作業を一言で頼めるんだ。例えば「/commit」って打つだけで、変更を記録してくれる。',
     },
     {
       id: 'msg-006-19',
@@ -107,7 +114,8 @@ export const EPISODE_006: DevStoryEpisode = {
     {
       id: 'msg-006-20',
       characterId: 'siphon',
-      content: 'そうそう！自分だけのオリジナルレシピも作れるんだよ。ローストプラスでは「UIデザインを確認する」スキルとか作ってるんだ。',
+      content:
+        'そうそう！自分だけのオリジナルレシピも作れるんだよ。ローストプラスでは「UIデザインを確認する」スキルとか作ってるんだ。',
     },
     {
       id: 'msg-006-21',
@@ -127,7 +135,8 @@ export const EPISODE_006: DevStoryEpisode = {
     {
       id: 'msg-006-24',
       characterId: 'siphon',
-      content: '一つ目はコードの中身を賢く探せる機能。二つ目は最新のマニュアルを自動で調べてくれる機能。三つ目はブラウザ画面を見て確認してくれる機能。',
+      content:
+        '一つ目はコードの中身を賢く探せる機能。二つ目は最新のマニュアルを自動で調べてくれる機能。三つ目はブラウザ画面を見て確認してくれる機能。',
     },
     {
       id: 'msg-006-25',
@@ -137,7 +146,8 @@ export const EPISODE_006: DevStoryEpisode = {
     {
       id: 'msg-006-26',
       characterId: 'siphon',
-      content: 'そう！「このボタンをクリックして」って頼むと、実際に画面を見ながら操作してくれるんだ。表示がおかしくないかも確認できるよ。',
+      content:
+        'そう！「このボタンをクリックして」って頼むと、実際に画面を見ながら操作してくれるんだ。表示がおかしくないかも確認できるよ。',
     },
     // 開発効率の向上（6メッセージ）
     {
@@ -148,7 +158,8 @@ export const EPISODE_006: DevStoryEpisode = {
     {
       id: 'msg-006-28',
       characterId: 'siphon',
-      content: '実はこの「開発秘話」ページ自体がClaude Codeで作られてるんだ。新しいエピソードを追加するのも、ほとんど自動でやってくれる。',
+      content:
+        '実はこの「開発秘話」ページ自体がClaude Codeで作られてるんだ。新しいエピソードを追加するのも、ほとんど自動でやってくれる。',
     },
     {
       id: 'msg-006-29',
@@ -158,7 +169,8 @@ export const EPISODE_006: DevStoryEpisode = {
     {
       id: 'msg-006-30',
       characterId: 'siphon',
-      content: '例えば「焙煎タイマーの表示を大きくして」って頼むと、関連するファイルを探して、コードを直して、画面で確認するところまでやってくれるんだ。',
+      content:
+        '例えば「焙煎タイマーの表示を大きくして」って頼むと、関連するファイルを探して、コードを直して、画面で確認するところまでやってくれるんだ。',
     },
     {
       id: 'msg-006-31',
@@ -179,7 +191,8 @@ export const EPISODE_006: DevStoryEpisode = {
     {
       id: 'msg-006-34',
       characterId: 'siphon',
-      content: 'いや、両方使い分けてるよ。Cursorは画面を見ながら細かく調整したい時に便利。Claude Codeは「この機能を作って」って大きく任せたい時に使うんだ。',
+      content:
+        'いや、両方使い分けてるよ。Cursorは画面を見ながら細かく調整したい時に便利。Claude Codeは「この機能を作って」って大きく任せたい時に使うんだ。',
     },
     {
       id: 'msg-006-35',
@@ -189,7 +202,8 @@ export const EPISODE_006: DevStoryEpisode = {
     {
       id: 'msg-006-36',
       characterId: 'siphon',
-      content: 'Cursorはハンドドリップみたいに丁寧に一杯ずつ淹れる感じ。Claude Codeは優秀なバリスタに「美味しいコーヒーをお願い」って任せる感じかな。',
+      content:
+        'Cursorはハンドドリップみたいに丁寧に一杯ずつ淹れる感じ。Claude Codeは優秀なバリスタに「美味しいコーヒーをお願い」って任せる感じかな。',
     },
     // まとめ（4メッセージ）
     {
@@ -200,7 +214,8 @@ export const EPISODE_006: DevStoryEpisode = {
     {
       id: 'msg-006-38',
       characterId: 'siphon',
-      content: 'そうだね。でも大事なのは「何を作りたいか」っていうアイデア。道具が便利になっても、そこは変わらないと思うんだ。',
+      content:
+        'そうだね。でも大事なのは「何を作りたいか」っていうアイデア。道具が便利になっても、そこは変わらないと思うんだ。',
     },
     {
       id: 'msg-006-39',

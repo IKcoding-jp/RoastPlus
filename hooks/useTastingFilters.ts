@@ -8,9 +8,9 @@ export function useTastingFilters(sessions: TastingSession[]) {
   const [sortOption, setSortOption] = useState<SortOption>('newest');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
-  const [selectedRoastLevels, setSelectedRoastLevels] = useState<
-    Array<'浅煎り' | '中煎り' | '中深煎り' | '深煎り'>
-  >([]);
+  const [selectedRoastLevels, setSelectedRoastLevels] = useState<Array<'浅煎り' | '中煎り' | '中深煎り' | '深煎り'>>(
+    []
+  );
 
   // フィルタリングとソート
   const filteredAndSortedSessions = useMemo(() => {

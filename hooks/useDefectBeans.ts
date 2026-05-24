@@ -108,7 +108,7 @@ export function useDefectBeans() {
         // 既存の欠点豆を取得
         const allBeans = getAllDefectBeans();
         const existingBean = allBeans.find((db) => db.id === defectBeanId);
-        
+
         if (!existingBean) {
           throw new Error('Defect bean not found');
         }
@@ -147,9 +147,7 @@ export function useDefectBeans() {
         // ユーザーデータの更新
         await updateData((currentData) => ({
           ...currentData,
-          defectBeans: (currentData.defectBeans || []).map((db) =>
-            db.id === defectBeanId ? updatedDefectBean : db
-          ),
+          defectBeans: (currentData.defectBeans || []).map((db) => (db.id === defectBeanId ? updatedDefectBean : db)),
         }));
       } catch (error) {
         console.error('Failed to update defect bean:', error);
@@ -170,7 +168,7 @@ export function useDefectBeans() {
         // 既存の欠点豆を取得
         const allBeans = getAllDefectBeans();
         const existingBean = allBeans.find((db) => db.id === defectBeanId);
-        
+
         if (!existingBean) {
           throw new Error('Defect bean not found');
         }
@@ -205,4 +203,3 @@ export function useDefectBeans() {
     removeDefectBean,
   };
 }
-

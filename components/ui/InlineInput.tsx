@@ -32,15 +32,7 @@ export interface InlineInputProps extends React.InputHTMLAttributes<HTMLInputEle
 }
 
 export const InlineInput = forwardRef<HTMLInputElement, InlineInputProps>(
-  (
-    {
-      variant = 'light',
-      textAlign = 'center',
-      className = '',
-      ...props
-    },
-    ref
-  ) => {
+  ({ variant = 'light', textAlign = 'center', className = '', ...props }, ref) => {
     const baseStyles = 'w-full px-2 py-1 border rounded outline-none transition-all duration-200';
 
     const textAlignStyles = {
@@ -54,20 +46,11 @@ export const InlineInput = forwardRef<HTMLInputElement, InlineInputProps>(
       dark: 'bg-field border-spot text-ink focus:ring-2 focus:ring-spot/20',
     };
 
-    const inputStyles = [
-      baseStyles,
-      textAlignStyles[textAlign],
-      variantStyles[variant],
-      className,
-    ].filter(Boolean).join(' ');
+    const inputStyles = [baseStyles, textAlignStyles[textAlign], variantStyles[variant], className]
+      .filter(Boolean)
+      .join(' ');
 
-    return (
-      <input
-        ref={ref}
-        className={inputStyles}
-        {...props}
-      />
-    );
+    return <input ref={ref} className={inputStyles} {...props} />;
   }
 );
 

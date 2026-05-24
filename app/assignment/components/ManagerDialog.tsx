@@ -13,13 +13,7 @@ interface ManagerDialogProps {
   onDelete: () => Promise<void>;
 }
 
-export function ManagerDialog({
-  isOpen,
-  manager,
-  onClose,
-  onSave,
-  onDelete,
-}: ManagerDialogProps) {
+export function ManagerDialog({ isOpen, manager, onClose, onSave, onDelete }: ManagerDialogProps) {
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -70,25 +64,15 @@ export function ManagerDialog({
   };
 
   return (
-    <div
-      className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={onClose}>
       <div
         className="rounded-xl max-w-sm w-full mx-4 shadow-xl bg-overlay border border-edge overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* ヘッダー */}
         <div className="px-4 py-3 flex items-center justify-between bg-ground border-b border-edge">
-          <h2 className="font-bold text-ink">
-            {manager ? '管理者を編集' : '管理者を追加'}
-          </h2>
-          <IconButton
-            variant="ghost"
-            size="sm"
-            onClick={onClose}
-            aria-label="閉じる"
-          >
+          <h2 className="font-bold text-ink">{manager ? '管理者を編集' : '管理者を追加'}</h2>
+          <IconButton variant="ghost" size="sm" onClick={onClose} aria-label="閉じる">
             <MdClose size={20} />
           </IconButton>
         </div>
@@ -112,13 +96,7 @@ export function ManagerDialog({
           {/* ボタン */}
           <div className="flex gap-3">
             {manager && (
-              <Button
-                variant="danger"
-                size="md"
-                onClick={handleDelete}
-                disabled={isLoading}
-                className="flex-1"
-              >
+              <Button variant="danger" size="md" onClick={handleDelete} disabled={isLoading} className="flex-1">
                 削除
               </Button>
             )}

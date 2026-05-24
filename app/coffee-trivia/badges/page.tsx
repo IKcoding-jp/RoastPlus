@@ -77,10 +77,7 @@ export default function BadgesPage() {
     correct: BADGE_DEFINITIONS.filter((b) => b.type.startsWith('correct-')),
     master: BADGE_DEFINITIONS.filter((b) => b.type.startsWith('master-')),
     achievement: BADGE_DEFINITIONS.filter(
-      (b) =>
-        !b.type.startsWith('streak-') &&
-        !b.type.startsWith('correct-') &&
-        !b.type.startsWith('master-')
+      (b) => !b.type.startsWith('streak-') && !b.type.startsWith('correct-') && !b.type.startsWith('master-')
     ),
   };
 
@@ -192,14 +189,7 @@ interface BadgeSectionProps {
   delay: number;
 }
 
-function BadgeSection({
-  title,
-  icon,
-  badges,
-  earnedBadges,
-  formatDate,
-  delay,
-}: BadgeSectionProps) {
+function BadgeSection({ title, icon, badges, earnedBadges, formatDate, delay }: BadgeSectionProps) {
   const earnedMap = new Map(earnedBadges.map((b) => [b.type, b.earnedAt]));
 
   return (
@@ -223,36 +213,20 @@ function BadgeSection({
               key={badge.type}
               whileHover={isEarned ? { scale: 1.02 } : {}}
               className={`rounded-xl p-4 transition-all ${
-                isEarned
-                  ? 'bg-ground border border-spot/20'
-                  : 'bg-edge-subtle border border-edge opacity-60'
+                isEarned ? 'bg-ground border border-spot/20' : 'bg-edge-subtle border border-edge opacity-60'
               }`}
             >
               <div className="flex items-center gap-3 mb-2">
-                <span className="flex-shrink-0">
-                  {getBadgeIcon(badge.type, isEarned)}
-                </span>
+                <span className="flex-shrink-0">{getBadgeIcon(badge.type, isEarned)}</span>
                 <div className="flex-1 min-w-0">
-                  <h3
-                    className={`font-bold text-sm truncate ${
-                      isEarned ? 'text-ink' : 'text-ink-muted'
-                    }`}
-                  >
+                  <h3 className={`font-bold text-sm truncate ${isEarned ? 'text-ink' : 'text-ink-muted'}`}>
                     {badge.name}
                   </h3>
                 </div>
               </div>
-              <p
-                className={`text-xs mb-2 ${
-                  isEarned ? 'text-ink-muted' : 'text-ink-muted/60'
-                }`}
-              >
-                {badge.description}
-              </p>
+              <p className={`text-xs mb-2 ${isEarned ? 'text-ink-muted' : 'text-ink-muted/60'}`}>{badge.description}</p>
               {isEarned && earnedAt ? (
-                <p className="text-xs text-spot font-medium">
-                  獲得: {formatDate(earnedAt)}
-                </p>
+                <p className="text-xs text-spot font-medium">獲得: {formatDate(earnedAt)}</p>
               ) : (
                 <p className="text-xs text-ink-muted/60">{badge.requirement}</p>
               )}

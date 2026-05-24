@@ -70,9 +70,7 @@ function LoginForm() {
           </h1>
         </div>
 
-        <p className="mb-6 text-center text-sm text-ink-sub">
-          共有アカウントでログインしてください。
-        </p>
+        <p className="mb-6 text-center text-sm text-ink-sub">共有アカウントでログインしてください。</p>
 
         {/* フォーム */}
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -98,17 +96,10 @@ function LoginForm() {
             showPasswordToggle
           />
 
-          {error && (
-            <p className="text-sm text-red-600">{error}</p>
-          )}
+          {error && <p className="text-sm text-red-600">{error}</p>}
 
           {/* 送信ボタン */}
-          <Button
-            type="submit"
-            disabled={loading}
-            loading={loading}
-            fullWidth
-          >
+          <Button type="submit" disabled={loading} loading={loading} fullWidth>
             ログイン
           </Button>
         </form>
@@ -119,16 +110,16 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={
-      <div className="flex min-h-screen items-center justify-center bg-page px-4">
-        <div className="w-full max-w-md rounded-lg bg-surface p-8 shadow-md border border-edge">
-          <h1 className="mb-8 text-center text-2xl font-bold text-ink">
-            RoastPlus
-          </h1>
-          <Loading fullScreen={false} />
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-page px-4">
+          <div className="w-full max-w-md rounded-lg bg-surface p-8 shadow-md border border-edge">
+            <h1 className="mb-8 text-center text-2xl font-bold text-ink">RoastPlus</h1>
+            <Loading fullScreen={false} />
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <LoginForm />
     </Suspense>
   );

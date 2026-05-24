@@ -54,7 +54,13 @@ export { Modal } from './Modal';
 export type { ModalProps } from './Modal';
 
 export { FilterModal, FilterOptionButton, FilterSearchInput, FilterSection, FilterSortOption } from './FilterModal';
-export type { FilterModalProps, FilterOptionButtonProps, FilterSearchInputProps, FilterSectionProps, FilterSortOptionProps } from './FilterModal';
+export type {
+  FilterModalProps,
+  FilterOptionButtonProps,
+  FilterSearchInputProps,
+  FilterSectionProps,
+  FilterSortOptionProps,
+} from './FilterModal';
 
 export { Dialog } from './Dialog';
 export type { DialogProps } from './Dialog';

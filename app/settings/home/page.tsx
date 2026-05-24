@@ -11,12 +11,7 @@ import { CONFIGURABLE_HOME_FEATURES } from '@/lib/homeFeatures';
 
 export default function HomeVisibilitySettingsPage() {
   const { user, loading: authLoading } = useAuth();
-  const {
-    hiddenKeys,
-    isLoading,
-    updateFeatureHidden,
-    resetVisibility,
-  } = useHomeFeatureVisibility();
+  const { hiddenKeys, isLoading, updateFeatureHidden, resetVisibility } = useHomeFeatureVisibility();
 
   if (authLoading) {
     return <Loading />;

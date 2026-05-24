@@ -1,8 +1,4 @@
-import {
-  getFirestore,
-  doc,
-  Firestore,
-} from 'firebase/firestore';
+import { getFirestore, doc, Firestore } from 'firebase/firestore';
 import app from '../firebase';
 import type { AppData, UserSettings } from '@/types';
 import { normalizeHiddenHomeFeatureKeys } from '@/lib/homeFeatureVisibility';
@@ -74,37 +70,39 @@ export function normalizeAppData(data: Partial<AppData> | undefined | null): App
     todaySchedules: Array.isArray(data?.todaySchedules) ? data.todaySchedules : [],
     roastSchedules: Array.isArray(data?.roastSchedules)
       ? data.roastSchedules.map((schedule) => ({
-        ...schedule,
-        // dateが存在しない場合は現在日時から日付部分を取得して補完する。
-        date: schedule.date || new Date().toISOString().split('T')[0],
-      }))
+          ...schedule,
+          // dateが存在しない場合は現在日時から日付部分を取得して補完する。
+          date: schedule.date || new Date().toISOString().split('T')[0],
+        }))
       : [],
     tastingSessions: Array.isArray(data?.tastingSessions)
       ? data.tastingSessions.map((session) => ({
-        ...session,
-        // aiAnalysis関連フィールドを保持
-        aiAnalysis: typeof session.aiAnalysis === 'string' ? session.aiAnalysis : undefined,
-        aiAnalysisUpdatedAt: typeof session.aiAnalysisUpdatedAt === 'string' ? session.aiAnalysisUpdatedAt : undefined,
-        aiAnalysisRecordCount: typeof session.aiAnalysisRecordCount === 'number' ? session.aiAnalysisRecordCount : undefined,
-      }))
+          ...session,
+          // aiAnalysis関連フィールドを保持
+          aiAnalysis: typeof session.aiAnalysis === 'string' ? session.aiAnalysis : undefined,
+          aiAnalysisUpdatedAt:
+            typeof session.aiAnalysisUpdatedAt === 'string' ? session.aiAnalysisUpdatedAt : undefined,
+          aiAnalysisRecordCount:
+            typeof session.aiAnalysisRecordCount === 'number' ? session.aiAnalysisRecordCount : undefined,
+        }))
       : [],
     tastingRecords: Array.isArray(data?.tastingRecords) ? data.tastingRecords : [],
     notifications: Array.isArray(data?.notifications) ? data.notifications : [],
     encouragementCount: typeof data?.encouragementCount === 'number' ? data.encouragementCount : 0,
     roastTimerRecords: Array.isArray(data?.roastTimerRecords)
       ? data.roastTimerRecords.map((record) => ({
-        ...record,
-        // roastDateが存在しない場合はcreatedAtから日付部分を取得、それもなければ現在日時の日付部分を使用
-        roastDate:
-          record.roastDate ||
-          (record.createdAt ? record.createdAt.split('T')[0] : new Date().toISOString().split('T')[0]),
-      }))
+          ...record,
+          // roastDateが存在しない場合はcreatedAtから日付部分を取得、それもなければ現在日時の日付部分を使用
+          roastDate:
+            record.roastDate ||
+            (record.createdAt ? record.createdAt.split('T')[0] : new Date().toISOString().split('T')[0]),
+        }))
       : [],
     workProgresses: Array.isArray(data?.workProgresses)
       ? data.workProgresses.map((wp) => ({
-        ...wp,
-        completedCount: typeof wp.completedCount === 'number' ? wp.completedCount : undefined,
-      }))
+          ...wp,
+          completedCount: typeof wp.completedCount === 'number' ? wp.completedCount : undefined,
+        }))
       : [],
   };
 
@@ -138,19 +136,26 @@ export function normalizeAppData(data: Partial<AppData> | undefined | null): App
       const settings = data.userSettings.roastTimerSettings;
       cleanedUserSettings.roastTimerSettings = {
         timerSoundEnabled: typeof settings.timerSoundEnabled === 'boolean' ? settings.timerSoundEnabled : true,
-        timerSoundFile: typeof settings.timerSoundFile === 'string'
-          ? settings.timerSoundFile.startsWith('/sounds/alarm/')
-            ? settings.timerSoundFile.replace('/sounds/alarm/', '/sounds/roasttimer/')
-            : settings.timerSoundFile
-          : '/sounds/roasttimer/alarm.mp3',
-        timerSoundVolume: typeof settings.timerSoundVolume === 'number' ? Math.max(0, Math.min(1, settings.timerSoundVolume)) : 0.5,
-        notificationSoundEnabled: typeof settings.notificationSoundEnabled === 'boolean' ? settings.notificationSoundEnabled : true,
-        notificationSoundFile: typeof settings.notificationSoundFile === 'string'
-          ? settings.notificationSoundFile.startsWith('/sounds/alarm/')
-            ? settings.notificationSoundFile.replace('/sounds/alarm/', '/sounds/roasttimer/')
-            : settings.notificationSoundFile
-          : '/sounds/roasttimer/alarm.mp3',
-        notificationSoundVolume: typeof settings.notificationSoundVolume === 'number' ? Math.max(0, Math.min(1, settings.notificationSoundVolume)) : 0.5,
+        timerSoundFile:
+          typeof settings.timerSoundFile === 'string'
+            ? settings.timerSoundFile.startsWith('/sounds/alarm/')
+              ? settings.timerSoundFile.replace('/sounds/alarm/', '/sounds/roasttimer/')
+              : settings.timerSoundFile
+            : '/sounds/roasttimer/alarm.mp3',
+        timerSoundVolume:
+          typeof settings.timerSoundVolume === 'number' ? Math.max(0, Math.min(1, settings.timerSoundVolume)) : 0.5,
+        notificationSoundEnabled:
+          typeof settings.notificationSoundEnabled === 'boolean' ? settings.notificationSoundEnabled : true,
+        notificationSoundFile:
+          typeof settings.notificationSoundFile === 'string'
+            ? settings.notificationSoundFile.startsWith('/sounds/alarm/')
+              ? settings.notificationSoundFile.replace('/sounds/alarm/', '/sounds/roasttimer/')
+              : settings.notificationSoundFile
+            : '/sounds/roasttimer/alarm.mp3',
+        notificationSoundVolume:
+          typeof settings.notificationSoundVolume === 'number'
+            ? Math.max(0, Math.min(1, settings.notificationSoundVolume))
+            : 0.5,
       };
     }
     if (Object.keys(cleanedUserSettings).length > 0) {
@@ -160,10 +165,7 @@ export function normalizeAppData(data: Partial<AppData> | undefined | null): App
 
   // shuffleEventは存在する場合のみ処理
   if (data?.shuffleEvent && typeof data.shuffleEvent === 'object') {
-    if (
-      typeof data.shuffleEvent.startTime === 'string' &&
-      Array.isArray(data.shuffleEvent.shuffledAssignments)
-    ) {
+    if (typeof data.shuffleEvent.startTime === 'string' && Array.isArray(data.shuffleEvent.shuffledAssignments)) {
       normalized.shuffleEvent = {
         startTime: data.shuffleEvent.startTime,
         targetDate: typeof data.shuffleEvent.targetDate === 'string' ? data.shuffleEvent.targetDate : undefined,

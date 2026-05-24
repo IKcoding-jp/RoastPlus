@@ -27,12 +27,7 @@ export const EpisodeCard: React.FC<EpisodeCardProps> = ({ episode }) => {
         {/* サムネイル */}
         <div className="relative h-28 bg-ground rounded-lg mb-3 flex items-center justify-center overflow-hidden">
           {episode.imageUrl ? (
-            <Image
-              src={episode.imageUrl}
-              alt={episode.title}
-              fill
-              className="object-cover"
-            />
+            <Image src={episode.imageUrl} alt={episode.title} fill className="object-cover" />
           ) : (
             <RiLightbulbFlashFill className="h-10 w-10 text-ink-muted" />
           )}
@@ -40,15 +35,15 @@ export const EpisodeCard: React.FC<EpisodeCardProps> = ({ episode }) => {
 
         {/* タイトル */}
         <h3 className="font-bold text-ink mb-1 line-clamp-1">{episode.title}</h3>
-        {episode.subtitle && (
-          <p className="text-sm text-ink-sub mb-2 line-clamp-1">{episode.subtitle}</p>
-        )}
+        {episode.subtitle && <p className="text-sm text-ink-sub mb-2 line-clamp-1">{episode.subtitle}</p>}
 
         {/* タグ */}
         {episode.tags && episode.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-2">
             {episode.tags.slice(0, 3).map((tag) => (
-              <Badge key={tag} size="sm">{tag}</Badge>
+              <Badge key={tag} size="sm">
+                {tag}
+              </Badge>
             ))}
           </div>
         )}

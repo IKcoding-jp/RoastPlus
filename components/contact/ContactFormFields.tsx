@@ -10,11 +10,7 @@ interface ContactFormFieldsProps {
   onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
 }
 
-export function ContactFormFields({
-  formData,
-  validationErrors,
-  onInputChange,
-}: ContactFormFieldsProps) {
+export function ContactFormFields({ formData, validationErrors, onInputChange }: ContactFormFieldsProps) {
   const isMessageAtLimit = formData.message.length >= CONTACT_FORM_LIMITS.messageMax;
 
   return (
@@ -72,9 +68,7 @@ export function ContactFormFields({
           error={validationErrors.message}
         />
         <p
-          className={`mt-1 text-right text-sm ${
-            isMessageAtLimit ? 'text-warning' : 'text-ink-muted'
-          }`}
+          className={`mt-1 text-right text-sm ${isMessageAtLimit ? 'text-warning' : 'text-ink-muted'}`}
           aria-live="polite"
         >
           {formData.message.length} / {CONTACT_FORM_LIMITS.messageMax}文字

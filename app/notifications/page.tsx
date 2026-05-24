@@ -15,7 +15,8 @@ import type { Notification } from '@/types';
 
 export default function NotificationsPage() {
   const { user, loading: authLoading } = useAuth();
-  const { notifications, readIds, markAllAsRead, addNotification, updateNotification, deleteNotification, isLoading } = useNotifications();
+  const { notifications, readIds, markAllAsRead, addNotification, updateNotification, deleteNotification, isLoading } =
+    useNotifications();
   const { isEnabled: isDeveloperMode, isLoading: isDeveloperModeLoading } = useDeveloperMode();
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
@@ -35,7 +36,7 @@ export default function NotificationsPage() {
   // ページを開いた時点で全て既読にする
   useEffect(() => {
     if (!isLoading && notifications.length > 0) {
-      const hasUnread = notifications.some(n => !readIds.includes(n.id));
+      const hasUnread = notifications.some((n) => !readIds.includes(n.id));
       if (hasUnread) {
         markAllAsRead();
       }
@@ -49,7 +50,7 @@ export default function NotificationsPage() {
       if (a.order !== undefined && b.order !== undefined) {
         return a.order - b.order;
       }
-      
+
       // 片方だけorderがある場合
       if (a.order !== undefined && b.order === undefined) {
         return -1; // orderがある方が前
@@ -57,7 +58,7 @@ export default function NotificationsPage() {
       if (a.order === undefined && b.order !== undefined) {
         return 1; // orderがない方が後
       }
-      
+
       // 両方orderがない場合は日付順（新しい順）
       const dateDiff = new Date(b.date).getTime() - new Date(a.date).getTime();
       if (dateDiff !== 0) {
@@ -115,10 +116,8 @@ export default function NotificationsPage() {
     }));
 
     const targetOrder = notificationsWithOrder[targetIndex].order!;
-    const prevOrder = targetIndex > 0
-      ? notificationsWithOrder[targetIndex - 1].order!
-      : targetOrder - 1000;
-    
+    const prevOrder = targetIndex > 0 ? notificationsWithOrder[targetIndex - 1].order! : targetOrder - 1000;
+
     const newOrder = (prevOrder + targetOrder) / 2;
 
     await updateNotification(id, { order: newOrder });
@@ -137,10 +136,11 @@ export default function NotificationsPage() {
     }));
 
     const targetOrder = notificationsWithOrder[targetIndex].order!;
-    const nextOrder = targetIndex < notificationsWithOrder.length - 1
-      ? notificationsWithOrder[targetIndex + 1].order!
-      : targetOrder + 1000;
-    
+    const nextOrder =
+      targetIndex < notificationsWithOrder.length - 1
+        ? notificationsWithOrder[targetIndex + 1].order!
+        : targetOrder + 1000;
+
     const newOrder = (targetOrder + nextOrder) / 2;
 
     await updateNotification(id, { order: newOrder });
@@ -216,12 +216,7 @@ export default function NotificationsPage() {
         )}
 
         {/* 削除確認ダイアログ */}
-        {deleteConfirmId && (
-          <DeleteConfirmDialog
-            onConfirm={handleDeleteConfirm}
-            onCancel={handleDeleteCancel}
-          />
-        )}
+        {deleteConfirmId && <DeleteConfirmDialog onConfirm={handleDeleteConfirm} onCancel={handleDeleteCancel} />}
       </div>
     </div>
   );

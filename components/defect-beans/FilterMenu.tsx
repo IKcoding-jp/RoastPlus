@@ -3,7 +3,14 @@
 import { useState } from 'react';
 import { HiCheckCircle, HiCollection, HiXCircle } from 'react-icons/hi';
 import { MdFilterList, MdSort, MdArrowUpward, MdArrowDownward } from 'react-icons/md';
-import { Button, FilterModal, FilterOptionButton, FilterSearchInput, FilterSection, FilterSortOption } from '@/components/ui';
+import {
+  Button,
+  FilterModal,
+  FilterOptionButton,
+  FilterSearchInput,
+  FilterSection,
+  FilterSortOption,
+} from '@/components/ui';
 
 type FilterOption = 'all' | 'shouldRemove' | 'shouldNotRemove';
 type SortOption = 'default' | 'createdAtDesc' | 'createdAtAsc' | 'nameAsc' | 'nameDesc';
@@ -80,34 +87,21 @@ export function FilterMenu({
         onClose={() => setShowModal(false)}
         title="フィルター"
         footer={
-          <Button
-            variant="surface"
-            size="sm"
-            onClick={() => setShowModal(false)}
-            className="w-full justify-center"
-          >
+          <Button variant="surface" size="sm" onClick={() => setShowModal(false)} className="w-full justify-center">
             閉じる
           </Button>
         }
       >
         {/* 検索セクション */}
         <FilterSection label="検索">
-          <FilterSearchInput
-            value={searchQuery}
-            onChange={onSearchChange}
-            placeholder="名称や特徴で検索..."
-          />
+          <FilterSearchInput value={searchQuery} onChange={onSearchChange} placeholder="名称や特徴で検索..." />
         </FilterSection>
 
         {/* 絞り込みセクション */}
         <FilterSection label="絞り込み">
           <div className="flex gap-2">
             {FILTER_OPTIONS.map(({ value, label, icon }) => (
-              <FilterOptionButton
-                key={value}
-                selected={filterOption === value}
-                onClick={() => onFilterChange(value)}
-              >
+              <FilterOptionButton key={value} selected={filterOption === value} onClick={() => onFilterChange(value)}>
                 {icon}
                 <span className="text-xs">{label}</span>
               </FilterOptionButton>

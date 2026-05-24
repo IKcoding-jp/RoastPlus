@@ -96,20 +96,23 @@ export function useAppVersion() {
       });
 
     // 定期的に更新をチェック（5分ごと）
-    intervalId = setInterval(async () => {
-      try {
-        const reg = await navigator.serviceWorker.getRegistration();
-        if (reg) {
-          await reg.update();
-          // 更新後、待機中のService Workerがあるかチェック
-          if (reg.waiting) {
-            setIsUpdateAvailable(true);
+    intervalId = setInterval(
+      async () => {
+        try {
+          const reg = await navigator.serviceWorker.getRegistration();
+          if (reg) {
+            await reg.update();
+            // 更新後、待機中のService Workerがあるかチェック
+            if (reg.waiting) {
+              setIsUpdateAvailable(true);
+            }
           }
+        } catch (error) {
+          console.error('Service Worker更新エラー:', error);
         }
-      } catch (error) {
-        console.error('Service Worker更新エラー:', error);
-      }
-    }, 5 * 60 * 1000);
+      },
+      5 * 60 * 1000
+    );
 
     return () => {
       if (intervalId) {
@@ -133,7 +136,7 @@ export function useAppVersion() {
       const registration = await navigator.serviceWorker.getRegistration();
       if (registration) {
         await registration.update();
-        
+
         // 更新後、待機中のService Workerがあるかチェック
         if (registration.waiting) {
           setIsUpdateAvailable(true);
@@ -170,4 +173,3 @@ export function useAppVersion() {
     applyUpdate,
   };
 }
-

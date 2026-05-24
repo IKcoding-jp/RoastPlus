@@ -32,14 +32,8 @@ export function useTimerPersistence({
   stateManager,
   currentDeviceId,
 }: UseTimerPersistenceArgs) {
-  const {
-    localState,
-    setLocalState,
-    pausedElapsedRef,
-    hasResetRef,
-    isInitialMountRef,
-    isUpdatingFromFirestoreRef,
-  } = stateManager;
+  const { localState, setLocalState, pausedElapsedRef, hasResetRef, isInitialMountRef, isUpdatingFromFirestoreRef } =
+    stateManager;
 
   // Firestoreの状態をローカル状態に反映
   useEffect(() => {
@@ -115,7 +109,8 @@ export function useTimerPersistence({
         };
 
         // ローカル状態と異なる場合のみ更新(lastUpdatedAtとtriggeredByDeviceIdで比較)
-        const shouldUpdate = !localState ||
+        const shouldUpdate =
+          !localState ||
           localState.status !== restoredState.status ||
           localState.lastUpdatedAt !== firestoreState.lastUpdatedAt ||
           localState.triggeredByDeviceId !== firestoreState.triggeredByDeviceId;
@@ -134,7 +129,8 @@ export function useTimerPersistence({
           ...firestoreState,
           pausedElapsed: typeof firestoreState.pausedElapsed === 'number' ? firestoreState.pausedElapsed : 0,
         };
-        const shouldUpdate = !localState ||
+        const shouldUpdate =
+          !localState ||
           localState.status !== firestoreState.status ||
           localState.lastUpdatedAt !== firestoreState.lastUpdatedAt ||
           localState.triggeredByDeviceId !== firestoreState.triggeredByDeviceId;
@@ -155,8 +151,7 @@ export function useTimerPersistence({
       if (isInitialMountRef.current) {
         const storedState = loadLocalState();
         if (storedState) {
-          const storedPausedElapsed =
-            typeof storedState.pausedElapsed === 'number' ? storedState.pausedElapsed : 0;
+          const storedPausedElapsed = typeof storedState.pausedElapsed === 'number' ? storedState.pausedElapsed : 0;
           const normalizedStoredState: RoastTimerState = {
             ...storedState,
             pausedElapsed: storedPausedElapsed,
@@ -220,5 +215,17 @@ export function useTimerPersistence({
         }
       }
     }
-  }, [user, data, updateData, currentDeviceId, isLoading, localState, setLocalState, pausedElapsedRef, hasResetRef, isInitialMountRef, isUpdatingFromFirestoreRef]);
+  }, [
+    user,
+    data,
+    updateData,
+    currentDeviceId,
+    isLoading,
+    localState,
+    setLocalState,
+    pausedElapsedRef,
+    hasResetRef,
+    isInitialMountRef,
+    isUpdatingFromFirestoreRef,
+  ]);
 }

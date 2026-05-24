@@ -63,10 +63,7 @@ export function calculateAverageScores(records: TastingRecord[]): AverageScores 
  * @param sessionId セッションID
  * @returns セッションに紐づく記録の配列
  */
-export function getRecordsBySessionId(
-  records: TastingRecord[],
-  sessionId: string
-): TastingRecord[] {
+export function getRecordsBySessionId(records: TastingRecord[], sessionId: string): TastingRecord[] {
   return records.filter((record) => record.sessionId === sessionId);
 }
 
@@ -76,10 +73,6 @@ export function getRecordsBySessionId(
  * @param sessionId セッションID
  * @returns 記録数
  */
-export function getRecordCountBySessionId(
-  records: TastingRecord[],
-  sessionId: string
-): number {
+export function getRecordCountBySessionId(records: TastingRecord[], sessionId: string): number {
   return getRecordsBySessionId(records, sessionId).length;
 }
-

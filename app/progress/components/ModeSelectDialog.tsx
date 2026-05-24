@@ -20,25 +20,13 @@ export function ModeSelectDialog({ onClose, onAddWork, onAddGroup }: ModeSelectD
             新しい作業を追加するか、作業をまとめるグループを作成するか選択してください。
           </p>
           <div className="space-y-3">
-            <Button
-              variant="primary"
-              size="md"
-              fullWidth
-              onClick={onAddWork}
-              className="shadow-md !rounded-xl !py-3"
-            >
+            <Button variant="primary" size="md" fullWidth onClick={onAddWork} className="shadow-md !rounded-xl !py-3">
               <div className="bg-white/20 p-2 rounded-full shadow-sm mr-3">
                 <HiPlus className="h-5 w-5" />
               </div>
               <span>作業を追加</span>
             </Button>
-            <Button
-              variant="surface"
-              size="md"
-              fullWidth
-              onClick={onAddGroup}
-              className="!rounded-xl !py-3"
-            >
+            <Button variant="surface" size="md" fullWidth onClick={onAddGroup} className="!rounded-xl !py-3">
               <div className="bg-ground p-2 rounded-full shadow-sm mr-3">
                 <HiOutlineCollection className="h-5 w-5" />
               </div>
@@ -47,12 +35,7 @@ export function ModeSelectDialog({ onClose, onAddWork, onAddGroup }: ModeSelectD
           </div>
         </div>
         <div className="bg-ground px-6 py-4 border-t border-edge">
-          <Button
-            variant="ghost"
-            size="md"
-            fullWidth
-            onClick={onClose}
-          >
+          <Button variant="ghost" size="md" fullWidth onClick={onClose}>
             キャンセル
           </Button>
         </div>

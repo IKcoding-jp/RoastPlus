@@ -42,9 +42,7 @@ function ThemeMigration({ children }: { children: React.ReactNode }) {
 
   // テーマ変更時に meta[name="theme-color"] を動的更新
   useEffect(() => {
-    const meta = document.querySelector<HTMLMetaElement>(
-      'meta[name="theme-color"]',
-    );
+    const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
     if (meta) {
       meta.content = getThemeColor(theme);
     }

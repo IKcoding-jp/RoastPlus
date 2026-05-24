@@ -26,24 +26,13 @@ describe('TastingSessionFilterModal', () => {
     });
 
     it('フィルター適用中はリセットボタンをヘッダーに表示する', () => {
-      render(
-        <TastingSessionFilterModal
-          {...baseProps}
-          searchQuery="ブラジル"
-        />
-      );
+      render(<TastingSessionFilterModal {...baseProps} searchQuery="ブラジル" />);
       expect(screen.getByText('リセット')).toBeInTheDocument();
     });
 
     it('リセットボタンを押すと全フィルターがリセットされ適用される', () => {
       const onApply = vi.fn();
-      render(
-        <TastingSessionFilterModal
-          {...baseProps}
-          searchQuery="ブラジル"
-          onApply={onApply}
-        />
-      );
+      render(<TastingSessionFilterModal {...baseProps} searchQuery="ブラジル" onApply={onApply} />);
       fireEvent.click(screen.getByText('リセット'));
       fireEvent.click(screen.getByText('適用'));
       expect(onApply).toHaveBeenCalledWith({
@@ -65,9 +54,7 @@ describe('TastingSessionFilterModal', () => {
     });
 
     it('現在の sortOption に対応するチップが aria-pressed="true" になる', () => {
-      render(
-        <TastingSessionFilterModal {...baseProps} sortOption="oldest" />
-      );
+      render(<TastingSessionFilterModal {...baseProps} sortOption="oldest" />);
       expect(screen.getByRole('button', { name: '古い順' })).toHaveAttribute('aria-pressed', 'true');
     });
 
@@ -76,9 +63,7 @@ describe('TastingSessionFilterModal', () => {
       render(<TastingSessionFilterModal {...baseProps} onApply={onApply} />);
       fireEvent.click(screen.getByRole('button', { name: '古い順' }));
       fireEvent.click(screen.getByText('適用'));
-      expect(onApply).toHaveBeenCalledWith(
-        expect.objectContaining({ sortOption: 'oldest' })
-      );
+      expect(onApply).toHaveBeenCalledWith(expect.objectContaining({ sortOption: 'oldest' }));
     });
 
     it('選択肢は豆図鑑フィルターと同じ角丸で表示する', () => {
@@ -106,13 +91,7 @@ describe('TastingSessionFilterModal', () => {
     });
 
     it('ソート行と焙煎度合いは共通フィルターの選択表示になる', () => {
-      render(
-        <TastingSessionFilterModal
-          {...baseProps}
-          sortOption="oldest"
-          selectedRoastLevels={['中深煎り']}
-        />
-      );
+      render(<TastingSessionFilterModal {...baseProps} sortOption="oldest" selectedRoastLevels={['中深煎り']} />);
 
       expect(screen.getByRole('button', { name: '古い順' })).toHaveClass('!text-spot');
       expect(screen.getByRole('button', { name: '中深煎り' })).toHaveClass('!bg-spot', '!text-white', '!border-spot');
@@ -129,15 +108,8 @@ describe('TastingSessionFilterModal', () => {
     });
 
     it('選択中の焙煎度が aria-pressed="true" になる', () => {
-      render(
-        <TastingSessionFilterModal
-          {...baseProps}
-          selectedRoastLevels={['中深煎り']}
-        />
-      );
-      expect(
-        screen.getByRole('button', { name: '中深煎り' })
-      ).toHaveAttribute('aria-pressed', 'true');
+      render(<TastingSessionFilterModal {...baseProps} selectedRoastLevels={['中深煎り']} />);
+      expect(screen.getByRole('button', { name: '中深煎り' })).toHaveAttribute('aria-pressed', 'true');
     });
   });
 
@@ -158,13 +130,7 @@ describe('TastingSessionFilterModal', () => {
     it('適用を押すと onApply が呼ばれてモーダルが閉じる', () => {
       const onApply = vi.fn();
       const onClose = vi.fn();
-      render(
-        <TastingSessionFilterModal
-          {...baseProps}
-          onApply={onApply}
-          onClose={onClose}
-        />
-      );
+      render(<TastingSessionFilterModal {...baseProps} onApply={onApply} onClose={onClose} />);
       fireEvent.click(screen.getByText('適用'));
       expect(onApply).toHaveBeenCalledTimes(1);
       expect(onClose).toHaveBeenCalledTimes(1);

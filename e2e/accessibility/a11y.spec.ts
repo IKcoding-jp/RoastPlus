@@ -23,13 +23,9 @@ test.describe('アクセシビリティ: axe-core自動スキャン', () => {
       await page.goto(page_.path);
       await page.waitForLoadState('domcontentloaded');
 
-      const results = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa'])
-        .analyze();
+      const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
 
-      const criticalViolations = results.violations.filter(
-        (v) => v.impact === 'critical' || v.impact === 'serious'
-      );
+      const criticalViolations = results.violations.filter((v) => v.impact === 'critical' || v.impact === 'serious');
 
       if (criticalViolations.length > 0) {
         const summary = criticalViolations.map(

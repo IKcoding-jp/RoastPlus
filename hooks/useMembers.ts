@@ -23,31 +23,42 @@ export function useMembers(userId: string | null) {
 
     // メンバーの購読
     const membersCol = collection(db, 'users', userId, 'members');
-    const unsubMembers = onSnapshot(membersCol, (snapshot) => {
-      const membersData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      } as Member));
-      setMembers(membersData);
-      setIsMembersReady(true);
-    }, (error) => {
-      console.error('Failed to fetch members:', error);
-      setIsMembersReady(true);
-    });
+    const unsubMembers = onSnapshot(
+      membersCol,
+      (snapshot) => {
+        const membersData = snapshot.docs.map(
+          (doc) =>
+            ({
+              id: doc.id,
+              ...doc.data(),
+            }) as Member
+        );
+        setMembers(membersData);
+        setIsMembersReady(true);
+      },
+      (error) => {
+        console.error('Failed to fetch members:', error);
+        setIsMembersReady(true);
+      }
+    );
 
     // 管理者の購読
     const managerDoc = doc(db, 'users', userId, 'managers', 'default');
-    const unsubManager = onSnapshot(managerDoc, (snapshot) => {
-      if (snapshot.exists()) {
-        setManager({ id: snapshot.id, ...snapshot.data() } as Manager);
-      } else {
-        setManager(null);
+    const unsubManager = onSnapshot(
+      managerDoc,
+      (snapshot) => {
+        if (snapshot.exists()) {
+          setManager({ id: snapshot.id, ...snapshot.data() } as Manager);
+        } else {
+          setManager(null);
+        }
+        setIsManagerReady(true);
+      },
+      (error) => {
+        console.error('Failed to fetch manager:', error);
+        setIsManagerReady(true);
       }
-      setIsManagerReady(true);
-    }, (error) => {
-      console.error('Failed to fetch manager:', error);
-      setIsManagerReady(true);
-    });
+    );
 
     return () => {
       unsubMembers();
@@ -70,4 +81,3 @@ export function useMembers(userId: string | null) {
 export function getActiveMembers(members: Member[]): Member[] {
   return members.filter((m) => m.active !== false);
 }
-

@@ -26,9 +26,9 @@ export function RoastRecordList({ data, onUpdate }: RoastRecordListProps) {
   const [sortOption, setSortOption] = useState<SortOption>('newest');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
-  const [selectedRoastLevels, setSelectedRoastLevels] = useState<
-    Array<'浅煎り' | '中煎り' | '中深煎り' | '深煎り'>
-  >([]);
+  const [selectedRoastLevels, setSelectedRoastLevels] = useState<Array<'浅煎り' | '中煎り' | '中深煎り' | '深煎り'>>(
+    []
+  );
   const [selectedWeights, setSelectedWeights] = useState<Array<200 | 300 | 500>>([]);
   const [showFilters, setShowFilters] = useState(false);
 
@@ -39,9 +39,7 @@ export function RoastRecordList({ data, onUpdate }: RoastRecordListProps) {
     // 検索フィルタ
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter((record) =>
-        record.beanName.toLowerCase().includes(query)
-      );
+      filtered = filtered.filter((record) => record.beanName.toLowerCase().includes(query));
     }
 
     // 日付範囲フィルタ
@@ -54,16 +52,12 @@ export function RoastRecordList({ data, onUpdate }: RoastRecordListProps) {
 
     // 焙煎度合いフィルタ
     if (selectedRoastLevels.length > 0) {
-      filtered = filtered.filter((record) =>
-        selectedRoastLevels.includes(record.roastLevel)
-      );
+      filtered = filtered.filter((record) => selectedRoastLevels.includes(record.roastLevel));
     }
 
     // 重さフィルタ
     if (selectedWeights.length > 0) {
-      filtered = filtered.filter((record) =>
-        selectedWeights.includes(record.weight)
-      );
+      filtered = filtered.filter((record) => selectedWeights.includes(record.weight));
     }
 
     // ソート
@@ -73,16 +67,12 @@ export function RoastRecordList({ data, onUpdate }: RoastRecordListProps) {
           // 焙煎日（新しい順）、同じ日付の場合はcreatedAt（新しい順）
           const dateCompare = b.roastDate.localeCompare(a.roastDate);
           if (dateCompare !== 0) return dateCompare;
-          return (
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          );
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         case 'oldest':
           // 焙煎日（古い順）、同じ日付の場合はcreatedAt（古い順）
           const dateCompareOld = a.roastDate.localeCompare(b.roastDate);
           if (dateCompareOld !== 0) return dateCompareOld;
-          return (
-            new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-          );
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         case 'beanName':
           return a.beanName.localeCompare(b.beanName, 'ja');
         case 'date':
@@ -93,15 +83,7 @@ export function RoastRecordList({ data, onUpdate }: RoastRecordListProps) {
     });
 
     return filtered;
-  }, [
-    roastTimerRecords,
-    searchQuery,
-    sortOption,
-    dateFrom,
-    dateTo,
-    selectedRoastLevels,
-    selectedWeights,
-  ]);
+  }, [roastTimerRecords, searchQuery, sortOption, dateFrom, dateTo, selectedRoastLevels, selectedWeights]);
 
   // 検索・フィルタ変更時のハンドラー
   const handleSearchChange = (value: string) => {
@@ -120,22 +102,12 @@ export function RoastRecordList({ data, onUpdate }: RoastRecordListProps) {
     setDateTo(value);
   };
 
-  const handleRoastLevelToggle = (
-    level: '浅煎り' | '中煎り' | '中深煎り' | '深煎り'
-  ) => {
-    setSelectedRoastLevels((prev) =>
-      prev.includes(level)
-        ? prev.filter((l) => l !== level)
-        : [...prev, level]
-    );
+  const handleRoastLevelToggle = (level: '浅煎り' | '中煎り' | '中深煎り' | '深煎り') => {
+    setSelectedRoastLevels((prev) => (prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]));
   };
 
   const handleWeightToggle = (weight: 200 | 300 | 500) => {
-    setSelectedWeights((prev) =>
-      prev.includes(weight)
-        ? prev.filter((w) => w !== weight)
-        : [...prev, weight]
-    );
+    setSelectedWeights((prev) => (prev.includes(weight) ? prev.filter((w) => w !== weight) : [...prev, weight]));
   };
 
   const handleDelete = (id: string, e: React.MouseEvent) => {
@@ -165,9 +137,7 @@ export function RoastRecordList({ data, onUpdate }: RoastRecordListProps) {
     return (
       <div className="text-center py-12">
         <p className="text-ink-sub">ロースト記録がありません</p>
-        <p className="text-sm mt-2 text-ink-muted">
-          右上のボタンから新規記録を作成できます
-        </p>
+        <p className="text-sm mt-2 text-ink-muted">右上のボタンから新規記録を作成できます</p>
       </div>
     );
   }
@@ -191,7 +161,6 @@ export function RoastRecordList({ data, onUpdate }: RoastRecordListProps) {
         onRoastLevelToggle={handleRoastLevelToggle}
         onWeightToggle={handleWeightToggle}
         onResetFilters={handleResetFilters}
-
       />
 
       {/* 結果数表示 */}
@@ -202,13 +171,7 @@ export function RoastRecordList({ data, onUpdate }: RoastRecordListProps) {
       ) : (
         <div className="flex-1 min-h-0 overflow-y-auto space-y-3 md:grid md:grid-cols-3 md:gap-4 md:space-y-0 md:items-start md:auto-rows-auto">
           {filteredAndSortedRecords.map((record) => (
-            <RoastRecordCard
-              key={record.id}
-              record={record}
-              onDelete={handleDelete}
-              onClick={handleCardClick}
-      
-            />
+            <RoastRecordCard key={record.id} record={record} onDelete={handleDelete} onClick={handleCardClick} />
           ))}
         </div>
       )}

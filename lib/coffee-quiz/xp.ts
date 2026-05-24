@@ -38,16 +38,11 @@ export function calculateXP(params: XPCalculationParams): number {
 
   // ストリーク倍率（連続正解ボーナス）
   const streakMultiplier = isCorrect
-    ? Math.min(
-        1 + consecutiveCorrect * XP_CONFIG.streakMultiplierPerCorrect,
-        XP_CONFIG.maxStreakMultiplier
-      )
+    ? Math.min(1 + consecutiveCorrect * XP_CONFIG.streakMultiplierPerCorrect, XP_CONFIG.maxStreakMultiplier)
     : 1;
 
   // 合計XP
-  const totalXP = Math.floor(
-    (baseXP * difficultyMultiplier + speedBonus + firstTimeBonus) * streakMultiplier
-  );
+  const totalXP = Math.floor((baseXP * difficultyMultiplier + speedBonus + firstTimeBonus) * streakMultiplier);
 
   return totalXP;
 }

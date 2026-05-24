@@ -15,11 +15,7 @@ interface WorkChimeAlertProps {
 export function WorkChimeAlert({ chime, colors, onClose }: WorkChimeAlertProps) {
   if (!chime) return null;
 
-  const accentColor = chime.kind === 'break'
-    ? '#0891b2'
-    : chime.kind === 'cleanup-start'
-      ? '#4b5563'
-      : '#d97706';
+  const accentColor = chime.kind === 'break' ? '#0891b2' : chime.kind === 'cleanup-start' ? '#4b5563' : '#d97706';
 
   return (
     <div
@@ -37,12 +33,7 @@ export function WorkChimeAlert({ chime, colors, onClose }: WorkChimeAlertProps) 
         aria-live="polite"
       >
         <div className="absolute right-5 top-5">
-          <IconButton
-            variant="ghost"
-            rounded
-            onClick={onClose}
-            aria-label="作業チャイム表示を閉じる"
-          >
+          <IconButton variant="ghost" rounded onClick={onClose} aria-label="作業チャイム表示を閉じる">
             <HiXMark className="h-6 w-6" style={{ color: colors.uiText }} />
           </IconButton>
         </div>

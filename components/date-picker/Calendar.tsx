@@ -84,10 +84,10 @@ export function Calendar({
                       isSelected
                         ? 'bg-amber-600 text-white font-semibold'
                         : isToday
-                        ? 'bg-amber-100 text-amber-900 font-semibold'
-                        : isSelectable
-                        ? 'bg-white text-gray-900 hover:bg-gray-100'
-                        : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                          ? 'bg-amber-100 text-amber-900 font-semibold'
+                          : isSelectable
+                            ? 'bg-white text-gray-900 hover:bg-gray-100'
+                            : 'bg-gray-50 text-gray-400 cursor-not-allowed'
                     }
                     ${!day.isCurrentMonth ? 'opacity-40' : ''}
                   `}
@@ -120,10 +120,10 @@ export function Calendar({
                     isSelectedYear
                       ? 'bg-amber-600 text-white'
                       : isCurrentYear
-                      ? 'bg-amber-100 text-amber-900'
-                      : isFuture
-                      ? 'bg-gray-50 text-gray-400 cursor-not-allowed'
-                      : 'bg-white text-gray-900 hover:bg-gray-100'
+                        ? 'bg-amber-100 text-amber-900'
+                        : isFuture
+                          ? 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                          : 'bg-white text-gray-900 hover:bg-gray-100'
                   }
                 `}
                 aria-label={`${year}年を選択`}
@@ -156,8 +156,8 @@ export function Calendar({
                     isCurrentMonth
                       ? 'bg-amber-600 text-white'
                       : isSelectable
-                      ? 'bg-white text-gray-900 hover:bg-gray-100'
-                      : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                        ? 'bg-white text-gray-900 hover:bg-gray-100'
+                        : 'bg-gray-50 text-gray-400 cursor-not-allowed'
                   }
                 `}
                 aria-label={`${selectedYear}年${monthName}を選択`}

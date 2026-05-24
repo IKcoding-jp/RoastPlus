@@ -45,9 +45,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
     const currentSize = sizeStyles[size];
 
     // トラック（背景）スタイル
-    const trackStyles = checked
-      ? 'bg-spot'
-      : 'bg-edge-strong';
+    const trackStyles = checked ? 'bg-spot' : 'bg-edge-strong';
 
     const disabledStyles = disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer';
 
@@ -98,11 +96,7 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
           disabled={disabled}
         />
         {label && (
-          <label
-            id={`${switchId}-label`}
-            htmlFor={switchId}
-            className={`text-ink font-medium ${disabledStyles}`}
-          >
+          <label id={`${switchId}-label`} htmlFor={switchId} className={`text-ink font-medium ${disabledStyles}`}>
             {label}
           </label>
         )}

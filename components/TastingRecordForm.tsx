@@ -134,15 +134,11 @@ export function TastingRecordForm({
 
     const finalBeanName = isSessionMode && sessionInfo ? sessionInfo.beanName : beanName.trim();
     const finalRoastLevel = isSessionMode && sessionInfo ? sessionInfo.roastLevel : roastLevel;
-    const finalTastingDate =
-      isSessionMode && sessionInfo ? sessionInfo.createdAt.split('T')[0] : tastingDate;
+    const finalTastingDate = isSessionMode && sessionInfo ? sessionInfo.createdAt.split('T')[0] : tastingDate;
 
     const now = new Date().toISOString();
     const newRecord: TastingRecord = {
-      id:
-        record?.id ||
-        existingRecordId ||
-        `tasting_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: record?.id || existingRecordId || `tasting_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       sessionId: currentSessionId,
       beanName: finalBeanName,
       tastingDate: finalTastingDate,
@@ -156,9 +152,7 @@ export function TastingRecordForm({
       overallImpression: overallImpression.trim() || undefined,
       createdAt:
         record?.createdAt ||
-        (existingRecordId
-          ? sessionRecords.find((r) => r.id === existingRecordId)?.createdAt || now
-          : now),
+        (existingRecordId ? sessionRecords.find((r) => r.id === existingRecordId)?.createdAt || now : now),
       updatedAt: now,
       userId: record?.userId || '',
       memberId: selectedMemberId,
@@ -239,7 +233,7 @@ export function TastingRecordForm({
                   onChange={(e) => setTastingDate(e.target.value)}
                   required
                   disabled={readOnly}
-                                 />
+                />
               </div>
             )}
 
@@ -252,13 +246,11 @@ export function TastingRecordForm({
                 </label>
                 <Select
                   value={roastLevel}
-                  onChange={(e) =>
-                    setRoastLevel(e.target.value as '浅煎り' | '中煎り' | '中深煎り' | '深煎り')
-                  }
+                  onChange={(e) => setRoastLevel(e.target.value as '浅煎り' | '中煎り' | '中深煎り' | '深煎り')}
                   options={ROAST_LEVELS.map((level) => ({ value: level, label: level }))}
                   required
                   disabled={readOnly}
-                                 />
+                />
               </div>
             )}
           </div>

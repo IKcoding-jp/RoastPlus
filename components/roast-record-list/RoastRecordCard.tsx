@@ -19,9 +19,7 @@ const formatDate = (dateStr: string) => {
   return `${year}/${month}/${day}`;
 };
 
-const getRoastLevelColor = (
-  level: '浅煎り' | '中煎り' | '中深煎り' | '深煎り'
-) => {
+const getRoastLevelColor = (level: '浅煎り' | '中煎り' | '中深煎り' | '深煎り') => {
   switch (level) {
     case '深煎り':
       return '#120C0A';
@@ -38,11 +36,7 @@ const getRoastLevelColor = (
 
 export function RoastRecordCard({ record, onDelete, onClick }: RoastRecordCardProps) {
   return (
-    <Card
-      variant="hoverable"
-      className="p-3 md:p-4 relative h-auto"
-      onClick={() => onClick(record.id)}
-    >
+    <Card variant="hoverable" className="p-3 md:p-4 relative h-auto" onClick={() => onClick(record.id)}>
       {/* 削除ボタン（右上） */}
       <div className="absolute top-2 right-2 z-10">
         <IconButton
@@ -65,9 +59,7 @@ export function RoastRecordCard({ record, onDelete, onClick }: RoastRecordCardPr
           <PiCoffeeBeanFill className="h-4 w-4 md:h-5 md:w-5 text-spot" />
         </div>
         <div className="flex-1 min-w-0 flex items-center gap-2 flex-wrap">
-          <h3 className="text-base md:text-lg font-bold truncate text-ink">
-            {record.beanName}
-          </h3>
+          <h3 className="text-base md:text-lg font-bold truncate text-ink">{record.beanName}</h3>
           <span
             className="inline-block px-2 py-0.5 text-white text-xs font-semibold rounded-full flex-shrink-0"
             style={{ backgroundColor: getRoastLevelColor(record.roastLevel) }}
@@ -84,9 +76,7 @@ export function RoastRecordCard({ record, onDelete, onClick }: RoastRecordCardPr
           <MdTimer className="h-4 w-4 flex-shrink-0 text-ink-muted" />
           <div className="flex items-center gap-2">
             <span className="text-xs text-ink-sub">焙煎時間</span>
-            <span className="text-sm md:text-base font-medium font-mono text-ink">
-              {formatTime(record.duration)}
-            </span>
+            <span className="text-sm md:text-base font-medium font-mono text-ink">{formatTime(record.duration)}</span>
           </div>
         </div>
 
@@ -97,9 +87,7 @@ export function RoastRecordCard({ record, onDelete, onClick }: RoastRecordCardPr
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-ink-sub">重さ</span>
-            <span className="text-sm md:text-base font-medium font-mono text-ink">
-              {record.weight}g
-            </span>
+            <span className="text-sm md:text-base font-medium font-mono text-ink">{record.weight}g</span>
           </div>
         </div>
 
@@ -108,9 +96,7 @@ export function RoastRecordCard({ record, onDelete, onClick }: RoastRecordCardPr
           <HiCalendar className="h-4 w-4 flex-shrink-0 text-ink-muted" />
           <div className="flex items-center gap-2">
             <span className="text-xs text-ink-sub">焙煎日</span>
-            <span className="text-sm md:text-base font-medium font-mono text-ink">
-              {formatDate(record.roastDate)}
-            </span>
+            <span className="text-sm md:text-base font-medium font-mono text-ink">{formatDate(record.roastDate)}</span>
           </div>
         </div>
       </div>

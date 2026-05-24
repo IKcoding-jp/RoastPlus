@@ -77,9 +77,7 @@ test.describe('データ管理フロー', () => {
       const isLogin = await isRedirectedToLogin(page);
       test.skip(isLogin, '認証が必要なためスキップ');
 
-      const createButton = page
-        .locator('[aria-label="新規セッション作成"]')
-        .or(page.getByText('セッションを作成'));
+      const createButton = page.locator('[aria-label="新規セッション作成"]').or(page.getByText('セッションを作成'));
       await expect(createButton.first()).toBeVisible({ timeout: 10000 });
     });
 
@@ -90,9 +88,7 @@ test.describe('データ管理フロー', () => {
       const isLogin = await isRedirectedToLogin(page);
       test.skip(isLogin, '認証が必要なためスキップ');
 
-      const createButton = page
-        .locator('[aria-label="新規セッション作成"]')
-        .or(page.getByText('セッションを作成'));
+      const createButton = page.locator('[aria-label="新規セッション作成"]').or(page.getByText('セッションを作成'));
       await expect(createButton.first()).toBeVisible({ timeout: 10000 });
       await createButton.first().click();
       await expect(page.locator('body')).not.toBeEmpty();

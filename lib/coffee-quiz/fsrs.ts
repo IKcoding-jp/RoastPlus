@@ -1,12 +1,5 @@
 // FSRS（分散学習アルゴリズム）ユーティリティ
-import {
-  FSRS,
-  Rating,
-  createEmptyCard,
-  type RecordLog,
-  type FSRSParameters,
-  type Grade,
-} from 'ts-fsrs';
+import { FSRS, Rating, createEmptyCard, type RecordLog, type FSRSParameters, type Grade } from 'ts-fsrs';
 import type { QuizCard, QuizRating, QuizQuestion } from './types';
 import { getCurrentDate } from './debug';
 import { toJSDate } from '@/lib/firestoreUtils';
@@ -29,10 +22,7 @@ function normalizeCard(card: QuizCard): QuizCard {
 const FSRS_PARAMS: Partial<FSRSParameters> = {
   request_retention: 0.9, // 目標定着率: 90%
   maximum_interval: 365, // 最大間隔: 365日
-  w: [
-    0.4, 0.6, 2.4, 5.8, 4.93, 0.94, 0.86, 0.01, 1.49, 0.14, 0.94, 2.18, 0.05,
-    0.34, 1.26, 0.29, 2.61,
-  ],
+  w: [0.4, 0.6, 2.4, 5.8, 4.93, 0.94, 0.86, 0.01, 1.49, 0.14, 0.94, 2.18, 0.05, 0.34, 1.26, 0.29, 2.61],
 };
 
 // FSRSインスタンス（シングルトン）
@@ -117,10 +107,7 @@ export function convertToFSRSRating(rating: QuizRating): Grade {
  * @param isCorrect 正解かどうか
  * @param responseTimeMs 回答時間（ミリ秒）
  */
-export function determineRating(
-  isCorrect: boolean,
-  responseTimeMs: number
-): QuizRating {
+export function determineRating(isCorrect: boolean, responseTimeMs: number): QuizRating {
   if (!isCorrect) {
     return 'again';
   }
@@ -179,11 +166,7 @@ export function sortCardsByPriority(cards: QuizCard[]): QuizCard[] {
  * @param questions 問題リスト
  * @param count 取得する数
  */
-export function getNewCards(
-  cards: QuizCard[],
-  questions: QuizQuestion[],
-  count: number
-): QuizCard[] {
+export function getNewCards(cards: QuizCard[], questions: QuizQuestion[], count: number): QuizCard[] {
   const existingQuestionIds = new Set(cards.map((c) => c.questionId));
   const newQuestions = questions.filter((q) => !existingQuestionIds.has(q.id));
 

@@ -7,21 +7,13 @@ export interface PatternProps {
   compact?: boolean; // プレビューカード用の小さいサイズ
 }
 
-const textSize = (compact?: boolean) =>
-  compact
-    ? 'text-[2rem]'
-    : 'text-[3rem] sm:text-[3.8rem]';
+const textSize = (compact?: boolean) => (compact ? 'text-[2rem]' : 'text-[3rem] sm:text-[3.8rem]');
 
-const subTextSize = (compact?: boolean) =>
-  compact
-    ? 'text-[0.55rem]'
-    : 'text-[0.65rem] sm:text-[0.72rem]';
+const subTextSize = (compact?: boolean) => (compact ? 'text-[0.55rem]' : 'text-[0.65rem] sm:text-[0.72rem]');
 
-const lineWidth = (compact?: boolean) =>
-  compact ? 'w-12' : 'w-16';
+const lineWidth = (compact?: boolean) => (compact ? 'w-12' : 'w-16');
 
-const spacing = (compact?: boolean) =>
-  compact ? 'mt-3' : 'mt-4';
+const spacing = (compact?: boolean) => (compact ? 'mt-3' : 'mt-4');
 
 // パターン1: Fade Up
 // ロゴが下から浮き上がりフェードイン → ライン展開 → サブテキスト表示
@@ -145,7 +137,9 @@ function PatternLetterStagger({ phase, compact }: PatternProps) {
 function PatternSlideReveal({ phase, compact }: PatternProps) {
   return (
     <div className="flex flex-col items-center">
-      <h1 className={`${textSize(compact)} font-bold tracking-[0.04em] leading-none font-[var(--font-playfair)] flex overflow-hidden`}>
+      <h1
+        className={`${textSize(compact)} font-bold tracking-[0.04em] leading-none font-[var(--font-playfair)] flex overflow-hidden`}
+      >
         <span
           className={`text-white transition-all duration-700 ease-out ${
             phase >= 1 ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'
@@ -211,10 +205,7 @@ function PatternGlowPulse({ phase, compact }: PatternProps) {
           className="ml-0.5"
           style={{
             color: '#EF8A00',
-            textShadow:
-              phase >= 2
-                ? '0 0 20px rgba(239,138,0,0.5), 0 0 40px rgba(239,138,0,0.2)'
-                : 'none',
+            textShadow: phase >= 2 ? '0 0 20px rgba(239,138,0,0.5), 0 0 40px rgba(239,138,0,0.2)' : 'none',
             transition: 'text-shadow 0.6s ease-out',
           }}
         >

@@ -45,9 +45,7 @@ describe('calculateRecipeForServings', () => {
   it('targetTotalWaterがundefinedのステップ → undefinedのまま', () => {
     const recipeWithUndefined: DripRecipe = {
       ...baseRecipe,
-      steps: [
-        { id: 'step-1', startTimeSec: 0, title: '蒸らし', description: '蒸らし' },
-      ],
+      steps: [{ id: 'step-1', startTimeSec: 0, title: '蒸らし', description: '蒸らし' }],
     };
     const result = calculateRecipeForServings(recipeWithUndefined, 2);
     expect(result.steps[0].targetTotalWater).toBeUndefined();
@@ -60,4 +58,3 @@ describe('calculateRecipeForServings', () => {
     expect(baseRecipe.steps[0].targetTotalWater).toBe(30);
   });
 });
-

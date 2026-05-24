@@ -35,10 +35,7 @@ test.describe('ログインページ', () => {
     });
     await page.waitForLoadState('load');
     const criticalErrors = errors.filter(
-      (e) =>
-        !e.includes('Firebase') &&
-        !e.includes('firestore') &&
-        !e.includes('auth/')
+      (e) => !e.includes('Firebase') && !e.includes('firestore') && !e.includes('auth/')
     );
     expect(criticalErrors).toHaveLength(0);
   });

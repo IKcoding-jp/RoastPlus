@@ -4,8 +4,20 @@ import { ArrowLeft, ArrowCounterClockwise, Pause, X } from 'phosphor-react';
 
 // --- Mock Data ---
 const MOCK_STEPS = [
-  { id: '1', title: '蒸らし（味：40%）', description: '粉全体にまんべんなく注いで、均一に湿らせます', startTimeSec: 0, targetTotalWater: 30 },
-  { id: '2', title: '2回目の注ぎ', description: '中心から外へ円を描くように注ぐ', startTimeSec: 45, targetTotalWater: 60 },
+  {
+    id: '1',
+    title: '蒸らし（味：40%）',
+    description: '粉全体にまんべんなく注いで、均一に湿らせます',
+    startTimeSec: 0,
+    targetTotalWater: 30,
+  },
+  {
+    id: '2',
+    title: '2回目の注ぎ',
+    description: '中心から外へ円を描くように注ぐ',
+    startTimeSec: 45,
+    targetTotalWater: 60,
+  },
   { id: '3', title: '濃度調整（60%）', description: '中心に細く注ぐ', startTimeSec: 90, targetTotalWater: 150 },
 ];
 const MOCK_CURRENT_TIME = 60;
@@ -45,9 +57,7 @@ export default function TimerPatternF() {
           <button className="p-1 text-ink-muted">
             <ArrowLeft size={22} />
           </button>
-          <h1 className="font-bold text-ink text-base truncate max-w-[180px]">
-            {MOCK_RECIPE_NAME}
-          </h1>
+          <h1 className="font-bold text-ink text-base truncate max-w-[180px]">{MOCK_RECIPE_NAME}</h1>
           <span className="text-sm font-bold text-spot tabular-nums">
             {MOCK_CURRENT_STEP_INDEX + 1}/{MOCK_STEPS.length}
           </span>
@@ -60,15 +70,12 @@ export default function TimerPatternF() {
             <div className="relative w-48 h-48 flex items-center justify-center">
               {/* Background Ring */}
               <svg viewBox="0 0 160 160" className="absolute inset-0 w-full h-full">
-                <circle
-                  cx="80" cy="80" r={radius}
-                  fill="none"
-                  className="stroke-ground"
-                  strokeWidth="10"
-                />
+                <circle cx="80" cy="80" r={radius} fill="none" className="stroke-ground" strokeWidth="10" />
                 {/* Progress Ring */}
                 <circle
-                  cx="80" cy="80" r={radius}
+                  cx="80"
+                  cy="80"
+                  r={radius}
                   fill="none"
                   className="stroke-spot"
                   strokeWidth="10"
@@ -90,8 +97,7 @@ export default function TimerPatternF() {
             </div>
             {/* カウントダウン */}
             <p className="text-sm text-ink-muted mt-1">
-              次のステップまで{' '}
-              <span className="font-bold text-spot text-base">{remainingSeconds}秒</span>
+              次のステップまで <span className="font-bold text-spot text-base">{remainingSeconds}秒</span>
             </p>
           </div>
 
@@ -103,19 +109,13 @@ export default function TimerPatternF() {
                 <span className="text-[10px] font-bold text-white bg-spot px-1.5 py-0.5 rounded uppercase tracking-wider">
                   NOW
                 </span>
-                <span className="font-bold text-ink text-base">
-                  {currentStep.title}
-                </span>
+                <span className="font-bold text-ink text-base">{currentStep.title}</span>
               </div>
               <div className="flex items-baseline gap-1 mb-1">
-                <span className="text-2xl font-bold text-spot tabular-nums">
-                  {currentStep.targetTotalWater}g
-                </span>
+                <span className="text-2xl font-bold text-spot tabular-nums">{currentStep.targetTotalWater}g</span>
                 <span className="text-sm text-ink-sub">まで注ぐ</span>
               </div>
-              <p className="text-xs text-ink-muted leading-relaxed">
-                {currentStep.description}
-              </p>
+              <p className="text-xs text-ink-muted leading-relaxed">{currentStep.description}</p>
             </div>
 
             {/* 次のステップカード */}
@@ -125,15 +125,11 @@ export default function TimerPatternF() {
                   <span className="text-[10px] font-bold text-ink-muted bg-ground px-1.5 py-0.5 rounded uppercase tracking-wider">
                     NEXT
                   </span>
-                  <span className="font-semibold text-ink-sub text-sm">
-                    {nextStep.title}
-                  </span>
+                  <span className="font-semibold text-ink-sub text-sm">{nextStep.title}</span>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-ink-muted">
                   <span>{formatTime(nextStep.startTimeSec)}〜</span>
-                  {nextStep.targetTotalWater && (
-                    <span>{nextStep.targetTotalWater}gまで</span>
-                  )}
+                  {nextStep.targetTotalWater && <span>{nextStep.targetTotalWater}gまで</span>}
                 </div>
               </div>
             )}

@@ -1,11 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
-import type {
-  QuizQuestion,
-  QuizSession,
-  QuizCategory,
-} from '@/lib/coffee-quiz/types';
+import type { QuizQuestion, QuizSession, QuizCategory } from '@/lib/coffee-quiz/types';
 import {
   getDailyQuestions,
   getRandomQuestions,
@@ -20,7 +16,7 @@ interface UseQuizSessionOptions {
   mode?: QuizMode;
   category?: QuizCategory;
   count?: number;
-  questionIds?: string[];  // 特定の問題IDを指定
+  questionIds?: string[]; // 特定の問題IDを指定
 }
 
 interface QuizSessionState {
@@ -87,7 +83,7 @@ export function useQuizSession(options: UseQuizSessionOptions = {}) {
           loadedQuestions = await getDailyQuestions(
             count,
             progress?.settings.enabledCategories,
-            progress?.cards  // マスター判定用
+            progress?.cards // マスター判定用
           );
           break;
         case 'category':
@@ -116,7 +112,6 @@ export function useQuizSession(options: UseQuizSessionOptions = {}) {
             loadedQuestions = await getQuestionsByIds(questionIds);
           }
           break;
-        
       }
 
       // 選択肢をシャッフル
@@ -176,11 +171,7 @@ export function useQuizSession(options: UseQuizSessionOptions = {}) {
       }
 
       // 回答を記録
-      const result = await recordAnswer(
-        state.currentQuestion.id,
-        optionId,
-        responseTimeMs
-      );
+      const result = await recordAnswer(state.currentQuestion.id, optionId, responseTimeMs);
 
       // フィードバック設定
       setAnswerFeedback({
@@ -225,9 +216,7 @@ export function useQuizSession(options: UseQuizSessionOptions = {}) {
       setState((prev) => ({
         ...prev,
         isComplete: true,
-        session: prev.session
-          ? { ...prev.session, completedAt: new Date().toISOString() }
-          : null,
+        session: prev.session ? { ...prev.session, completedAt: new Date().toISOString() } : null,
       }));
     } else {
       // 次の問題

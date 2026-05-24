@@ -1,10 +1,6 @@
 // ユーザーデータのCRUD操作
 
-import {
-  setDoc,
-  getDoc,
-  onSnapshot,
-} from 'firebase/firestore';
+import { setDoc, getDoc, onSnapshot } from 'firebase/firestore';
 import { getUserDocRef, removeUndefinedFields, normalizeAppData, defaultData } from '../common';
 import type { AppData } from '@/types';
 import {
@@ -15,12 +11,7 @@ import {
   normalizeWorkProgressQuerySnapshot,
   resolveWorkProgresses,
 } from '../workProgress/subcollection';
-import {
-  writeQueues,
-  SAVE_USER_DATA_DEBOUNCE_MS,
-  executeWrite,
-  type SaveUserDataOptions,
-} from './write-queue';
+import { writeQueues, SAVE_USER_DATA_DEBOUNCE_MS, executeWrite, type SaveUserDataOptions } from './write-queue';
 
 export async function getUserData(userId: string): Promise<AppData> {
   try {
@@ -86,9 +77,7 @@ export async function saveUserData(userId: string, data: AppData, options: SaveU
   // 最新のデータをキューに保存
   queue.pendingData = data;
   queue.pendingOptions = {
-    syncWorkProgresses:
-      queue.pendingOptions?.syncWorkProgresses === true ||
-      options.syncWorkProgresses === true,
+    syncWorkProgresses: queue.pendingOptions?.syncWorkProgresses === true || options.syncWorkProgresses === true,
   };
 
   // 書き込み中の場合は待機してから書き込み
@@ -117,10 +106,7 @@ export async function saveUserData(userId: string, data: AppData, options: SaveU
   return promise;
 }
 
-export function subscribeUserData(
-  userId: string,
-  callback: (data: AppData) => void
-): () => void {
+export function subscribeUserData(userId: string, callback: (data: AppData) => void): () => void {
   const userDocRef = getUserDocRef(userId);
   const workProgressesCollectionRef = getWorkProgressesCollectionRef(userId);
   const dataSplitsDocRef = getDataSplitsDocRef(userId);

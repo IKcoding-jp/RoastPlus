@@ -9,4 +9,3 @@ import NewTastingRecordPageClient from './NewTastingRecordPageClient';
 export default function NewTastingRecordPage() {
   return <NewTastingRecordPageClient />;
 }
-

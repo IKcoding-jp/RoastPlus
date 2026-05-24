@@ -4,17 +4,17 @@ on:
   workflow_dispatch:
     inputs:
       deploy_hosting:
-        description: "Deploy Firebase Hosting"
+        description: 'Deploy Firebase Hosting'
         required: true
         type: boolean
         default: true
       deploy_functions:
-        description: "Deploy Cloud Functions"
+        description: 'Deploy Cloud Functions'
         required: true
         type: boolean
         default: false
       deploy_firestore_rules:
-        description: "Deploy Firestore Rules"
+        description: 'Deploy Firestore Rules'
         required: true
         type: boolean
         default: false
@@ -23,12 +23,12 @@ on:
     branches:
       - main
     paths-ignore:
-      - "**/*.md"
-      - "docs/**"
-      - "AGENTS.md"
-      - "CLAUDE.md"
-      - "DESIGN.md"
-      - ".github/**"
+      - '**/*.md'
+      - 'docs/**'
+      - 'AGENTS.md'
+      - 'CLAUDE.md'
+      - 'DESIGN.md'
+      - '.github/**'
 
 permissions:
   checks: write
@@ -99,7 +99,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "21"
+          java-version: '21'
       - run: npm ci
       - name: Test Firestore Rules
         run: npm run test:rules

@@ -1,7 +1,16 @@
 import Link from 'next/link';
 
 const CheckCircleIcon = () => (
-  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="40"
+    height="40"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <circle cx="12" cy="12" r="10" />
     <path d="m9 12 2 2 4-4" />
   </svg>
@@ -15,7 +24,8 @@ export function ReviewEmptyState() {
       </div>
       <h2 className="text-lg font-bold text-ink mb-2">お疲れ様です！</h2>
       <p className="text-ink-muted mb-6">
-        今のところ復習が必要な問題はありません。<br />
+        今のところ復習が必要な問題はありません。
+        <br />
         クイズに挑戦して新しい問題を覚えましょう！
       </p>
       <Link

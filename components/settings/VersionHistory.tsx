@@ -10,10 +10,7 @@ interface VersionHistoryProps {
   maxDisplay?: number;
 }
 
-export const VersionHistory: React.FC<VersionHistoryProps> = ({
-  entries,
-  maxDisplay = 5,
-}) => {
+export const VersionHistory: React.FC<VersionHistoryProps> = ({ entries, maxDisplay = 5 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const formatDate = (dateString: string) => {
@@ -40,13 +37,9 @@ export const VersionHistory: React.FC<VersionHistoryProps> = ({
               <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-sm font-medium rounded">
                 v{entry.version}
               </span>
-              {entry.summary && (
-                <span className="text-sm text-gray-600">{entry.summary}</span>
-              )}
+              {entry.summary && <span className="text-sm text-gray-600">{entry.summary}</span>}
             </div>
-            <span className="text-xs text-gray-400 flex-shrink-0 ml-2">
-              {formatDate(entry.date)}
-            </span>
+            <span className="text-xs text-gray-400 flex-shrink-0 ml-2">{formatDate(entry.date)}</span>
           </li>
         ))}
       </ul>

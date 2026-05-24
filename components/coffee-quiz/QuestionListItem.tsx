@@ -90,18 +90,18 @@ export function QuestionListItem({
           {/* 問題ID & 難易度 & 定着率 */}
           <div className="flex items-center gap-2 mb-2">
             {/* 回答ステータス */}
-            <span className={`text-xl font-bold ${
-              answerStatus === 'correct' ? 'text-green-500' :
-              answerStatus === 'incorrect' ? 'text-red-400' :
-              'text-ink-muted'
-            }`}>
-              {answerStatus === 'correct' ? '○' :
-               answerStatus === 'incorrect' ? '×' :
-               '−'}
+            <span
+              className={`text-xl font-bold ${
+                answerStatus === 'correct'
+                  ? 'text-green-500'
+                  : answerStatus === 'incorrect'
+                    ? 'text-red-400'
+                    : 'text-ink-muted'
+              }`}
+            >
+              {answerStatus === 'correct' ? '○' : answerStatus === 'incorrect' ? '×' : '−'}
             </span>
-            <span className="text-xs text-ink-muted font-mono">
-              {question.id}
-            </span>
+            <span className="text-xs text-ink-muted font-mono">{question.id}</span>
             <span
               className={`
                 text-xs px-2 py-0.5 rounded-full
@@ -115,9 +115,7 @@ export function QuestionListItem({
           </div>
 
           {/* 問題文（プレビュー） */}
-          <p className="text-sm text-ink line-clamp-2">
-            {question.question}
-          </p>
+          <p className="text-sm text-ink line-clamp-2">{question.question}</p>
         </div>
 
         {/* 矢印 */}

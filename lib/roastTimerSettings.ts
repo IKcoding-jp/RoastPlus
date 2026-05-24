@@ -67,7 +67,7 @@ export async function loadRoastTimerSettings(_userId?: string): Promise<RoastTim
   loadPromise = (async () => {
     try {
       const storedSettings = getRoastTimerSettings();
-      
+
       if (storedSettings && typeof storedSettings === 'object' && !Array.isArray(storedSettings)) {
         // 設定が存在する場合は、デフォルト値とマージ
         const merged = {
@@ -93,9 +93,11 @@ export async function loadRoastTimerSettings(_userId?: string): Promise<RoastTim
         settingsCache = merged;
 
         // 移行が発生した場合は設定を保存
-        if (needsMigration ||
-            settingsCache.timerSoundFile !== (storedSettings as Partial<RoastTimerSettings>).timerSoundFile ||
-            settingsCache.notificationSoundFile !== (storedSettings as Partial<RoastTimerSettings>).notificationSoundFile) {
+        if (
+          needsMigration ||
+          settingsCache.timerSoundFile !== (storedSettings as Partial<RoastTimerSettings>).timerSoundFile ||
+          settingsCache.notificationSoundFile !== (storedSettings as Partial<RoastTimerSettings>).notificationSoundFile
+        ) {
           saveRoastTimerSettings(settingsCache).catch((error) => {
             console.error('Failed to save migrated settings:', error);
           });
@@ -104,7 +106,7 @@ export async function loadRoastTimerSettings(_userId?: string): Promise<RoastTim
         // 設定が存在しない場合はデフォルト値を使用
         settingsCache = { ...DEFAULT_SETTINGS };
       }
-      
+
       return settingsCache;
     } catch (error) {
       console.error('Failed to load roast timer settings:', error);
@@ -124,10 +126,7 @@ export async function loadRoastTimerSettings(_userId?: string): Promise<RoastTim
  * 設定を保存する（LocalStorageに保存）
  * updateAppDataパラメータは互換性のため残しているが、使用しない
  */
-export async function saveRoastTimerSettings(
-  settings: RoastTimerSettings,
-  _updateAppData?: unknown
-): Promise<void> {
+export async function saveRoastTimerSettings(settings: RoastTimerSettings, _updateAppData?: unknown): Promise<void> {
   void _updateAppData;
   try {
     // キャッシュを更新
@@ -154,4 +153,3 @@ export function clearRoastTimerSettingsCache(): void {
 export function getCachedRoastTimerSettings(): RoastTimerSettings | null {
   return settingsCache;
 }
-

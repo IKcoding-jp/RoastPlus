@@ -26,9 +26,7 @@ export function EmptyState({ hasSearchOrFilter, onAddClick }: EmptyStateProps) {
         {/* メッセージ */}
         <div className="space-y-2">
           <h3 className="text-lg sm:text-xl font-semibold text-ink">
-            {hasSearchOrFilter
-              ? '検索条件に一致する欠点豆がありません'
-              : '欠点豆が登録されていません'}
+            {hasSearchOrFilter ? '検索条件に一致する欠点豆がありません' : '欠点豆が登録されていません'}
           </h3>
           <p className="text-sm sm:text-base max-w-md mx-auto text-ink-muted">
             {hasSearchOrFilter

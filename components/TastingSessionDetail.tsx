@@ -16,26 +16,17 @@ interface TastingSessionDetailProps {
   onUpdate: (data: AppData) => void;
 }
 
-export function TastingSessionDetail({
-  session,
-  data,
-  onUpdate,
-}: TastingSessionDetailProps) {
+export function TastingSessionDetail({ session, data, onUpdate }: TastingSessionDetailProps) {
   const router = useRouter();
   const { user } = useAuth();
   const { showToast } = useToastContext();
   const [editingRecordId, setEditingRecordId] = useState<string | null>(null);
 
-  const tastingRecords = Array.isArray(data.tastingRecords)
-    ? data.tastingRecords
-    : [];
+  const tastingRecords = Array.isArray(data.tastingRecords) ? data.tastingRecords : [];
   const sessionRecords = getRecordsBySessionId(tastingRecords, session.id);
-  
-  // 編集対象の記録を取得（編集モードの場合）
-  const editingRecord = editingRecordId
-    ? sessionRecords.find((r) => r.id === editingRecordId) || null
-    : null;
 
+  // 編集対象の記録を取得（編集モードの場合）
+  const editingRecord = editingRecordId ? sessionRecords.find((r) => r.id === editingRecordId) || null : null;
 
   const handleRecordSave = async (record: TastingRecord) => {
     try {
@@ -48,12 +39,10 @@ export function TastingSessionDetail({
       // 既存の記録を上書きする場合（record.idが存在する、または同じセッション内で同じメンバーの記録がある場合）
       const existingRecordById = tastingRecords.find((r) => r.id === record.id);
       const existingRecordByMember = sessionRecords.find((r) => r.memberId === record.memberId && r.id !== record.id);
-      
+
       if (existingRecordById) {
         // IDで既存記録が見つかった場合（編集モード）
-        const updatedRecords = tastingRecords.map((r) =>
-          r.id === record.id ? newRecord : r
-        );
+        const updatedRecords = tastingRecords.map((r) => (r.id === record.id ? newRecord : r));
         await onUpdate({
           ...data,
           tastingRecords: updatedRecords,
@@ -62,9 +51,7 @@ export function TastingSessionDetail({
         setEditingRecordId(null);
       } else if (existingRecordByMember) {
         // 同じメンバーの記録が既にある場合（上書き）
-        const updatedRecords = tastingRecords.map((r) =>
-          r.id === existingRecordByMember.id ? newRecord : r
-        );
+        const updatedRecords = tastingRecords.map((r) => (r.id === existingRecordByMember.id ? newRecord : r));
         await onUpdate({
           ...data,
           tastingRecords: updatedRecords,
@@ -81,7 +68,7 @@ export function TastingSessionDetail({
         // 編集モードに切り替える（新規作成した記録を編集モードにする）
         setEditingRecordId(newRecord.id);
       }
-      
+
       // 保存が完了してから試飲記録一覧ページに遷移
       router.push('/tasting');
     } catch (error) {
@@ -104,7 +91,7 @@ export function TastingSessionDetail({
       if (editingRecordId === recordId) {
         setEditingRecordId(null);
       }
-      
+
       // 削除が完了してから試飲記録一覧ページに遷移
       router.push('/tasting');
     } catch (error) {
@@ -127,9 +114,7 @@ export function TastingSessionDetail({
               <Coffee size={32} weight="fill" className="text-spot" />
             </div>
             <div>
-              <h2 className="text-2xl font-black tracking-tight text-ink">
-                {session.beanName}
-              </h2>
+              <h2 className="text-2xl font-black tracking-tight text-ink">{session.beanName}</h2>
               <div className="flex items-center gap-2 mt-1">
                 <RoastLevelBadge level={session.roastLevel} size="sm" />
                 <span className="text-sm font-medium text-ink-muted">
@@ -169,4 +154,3 @@ export function TastingSessionDetail({
     </div>
   );
 }
-

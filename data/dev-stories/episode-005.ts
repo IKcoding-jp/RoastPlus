@@ -36,7 +36,8 @@ export const EPISODE_005: DevStoryEpisode = {
     {
       id: 'msg-005-6',
       characterId: 'fukairi',
-      content: '生成AIを活用するための知識を証明する資格なんだ。\nChatGPTとかの仕組みや、ビジネス活用、著作権の問題なんかを学べるよ。',
+      content:
+        '生成AIを活用するための知識を証明する資格なんだ。\nChatGPTとかの仕組みや、ビジネス活用、著作権の問題なんかを学べるよ。',
     },
     {
       id: 'msg-005-7',
@@ -46,7 +47,8 @@ export const EPISODE_005: DevStoryEpisode = {
     {
       id: 'msg-005-8',
       characterId: 'fukairi',
-      content: '「生成AIパスポートテキスト&問題集」と「生成AIパスポート、トレ速」っていうアプリを使ったよ。\n普段からAIを使ってるから、実感を持って勉強できたんだ。',
+      content:
+        '「生成AIパスポートテキスト&問題集」と「生成AIパスポート、トレ速」っていうアプリを使ったよ。\n普段からAIを使ってるから、実感を持って勉強できたんだ。',
     },
     {
       id: 'msg-005-9',
@@ -67,7 +69,8 @@ export const EPISODE_005: DevStoryEpisode = {
     {
       id: 'msg-005-12',
       characterId: 'fukairi',
-      content: 'ITの基礎知識を幅広く学べる国家資格だよ。\n経営戦略、マネジメント、テクノロジーの3分野から出題されるんだ。',
+      content:
+        'ITの基礎知識を幅広く学べる国家資格だよ。\n経営戦略、マネジメント、テクノロジーの3分野から出題されるんだ。',
     },
     {
       id: 'msg-005-13',
@@ -77,7 +80,8 @@ export const EPISODE_005: DevStoryEpisode = {
     {
       id: 'msg-005-14',
       characterId: 'fukairi',
-      content: '実は思ったより取り組みやすかったよ。\n「過去問道場」っていう無料のサイトと、アプリ、あとAnkiっていう分散学習ツールを使ったんだ。',
+      content:
+        '実は思ったより取り組みやすかったよ。\n「過去問道場」っていう無料のサイトと、アプリ、あとAnkiっていう分散学習ツールを使ったんだ。',
     },
     {
       id: 'msg-005-15',
@@ -87,7 +91,8 @@ export const EPISODE_005: DevStoryEpisode = {
     {
       id: 'msg-005-16',
       characterId: 'fukairi',
-      content: 'Ankiは忘れる頃に問題を出してくれるから、効率よく記憶に定着するんだ。\nスマホでどこでも勉強できるから、通勤中とか隙間時間に活用できたんだよ。',
+      content:
+        'Ankiは忘れる頃に問題を出してくれるから、効率よく記憶に定着するんだ。\nスマホでどこでも勉強できるから、通勤中とか隙間時間に活用できたんだよ。',
     },
     // G検定
     {
@@ -98,7 +103,8 @@ export const EPISODE_005: DevStoryEpisode = {
     {
       id: 'msg-005-18',
       characterId: 'fukairi',
-      content: 'そう、日本ディープラーニング協会が主催するAI・機械学習の検定だよ。\nディープラーニングの仕組みやビジネス活用について問われるんだ。',
+      content:
+        'そう、日本ディープラーニング協会が主催するAI・機械学習の検定だよ。\nディープラーニングの仕組みやビジネス活用について問われるんだ。',
     },
     {
       id: 'msg-005-19',
@@ -108,7 +114,8 @@ export const EPISODE_005: DevStoryEpisode = {
     {
       id: 'msg-005-20',
       characterId: 'fukairi',
-      content: '「ディープラーニングG検定（ジェネラリスト）最強の合格テキスト」と、AI問題集アプリを使ったよ。\n数学的な部分は難しかったけど、概念を理解することに集中したんだ。',
+      content:
+        '「ディープラーニングG検定（ジェネラリスト）最強の合格テキスト」と、AI問題集アプリを使ったよ。\n数学的な部分は難しかったけど、概念を理解することに集中したんだ。',
     },
     {
       id: 'msg-005-21',
@@ -144,7 +151,8 @@ export const EPISODE_005: DevStoryEpisode = {
     {
       id: 'msg-005-27',
       characterId: 'fukairi',
-      content: 'うん、かなりレベルアップするよ。\nアルゴリズムやプログラミング、ネットワークなど、より専門的な内容が出題されるんだ。',
+      content:
+        'うん、かなりレベルアップするよ。\nアルゴリズムやプログラミング、ネットワークなど、より専門的な内容が出題されるんだ。',
     },
     {
       id: 'msg-005-28',
@@ -154,7 +162,8 @@ export const EPISODE_005: DevStoryEpisode = {
     {
       id: 'msg-005-29',
       characterId: 'fukairi',
-      content: 'かやのき先生の参考書で基礎を固めて、過去問道場で問題演習をしてるよ。\n科目A・科目Bの両方をバランスよく対策中なんだ。',
+      content:
+        'かやのき先生の参考書で基礎を固めて、過去問道場で問題演習をしてるよ。\n科目A・科目Bの両方をバランスよく対策中なんだ。',
     },
     {
       id: 'msg-005-30',
@@ -180,7 +189,8 @@ export const EPISODE_005: DevStoryEpisode = {
     {
       id: 'msg-005-34',
       characterId: 'fukairi',
-      content: 'あとは「短期集中」がポイントかな。\n長期間ダラダラやるより、約1ヶ月でギュッと集中した方が効率がいいんだ。',
+      content:
+        'あとは「短期集中」がポイントかな。\n長期間ダラダラやるより、約1ヶ月でギュッと集中した方が効率がいいんだ。',
     },
     {
       id: 'msg-005-35',
@@ -190,7 +200,8 @@ export const EPISODE_005: DevStoryEpisode = {
     {
       id: 'msg-005-36',
       characterId: 'fukairi',
-      content: 'それと、スマホアプリや過去問サイトを活用すると、スキマ時間を有効に使えるよ。\n電車の中とか、ちょっとした待ち時間でも勉強できるんだ。',
+      content:
+        'それと、スマホアプリや過去問サイトを活用すると、スキマ時間を有効に使えるよ。\n電車の中とか、ちょっとした待ち時間でも勉強できるんだ。',
     },
     // まとめ
     {
@@ -201,7 +212,8 @@ export const EPISODE_005: DevStoryEpisode = {
     {
       id: 'msg-005-38',
       characterId: 'fukairi',
-      content: '知識が体系的に整理されたのが大きいかな。\nなんとなく使ってたAIやITの仕組みを、ちゃんと理解できるようになったんだ。',
+      content:
+        '知識が体系的に整理されたのが大きいかな。\nなんとなく使ってたAIやITの仕組みを、ちゃんと理解できるようになったんだ。',
     },
     {
       id: 'msg-005-39',
@@ -211,7 +223,8 @@ export const EPISODE_005: DevStoryEpisode = {
     {
       id: 'msg-005-40',
       characterId: 'fukairi',
-      content: 'もちろん！セキュリティやデータベースの知識とか、実際の開発に役立ってるよ。\n資格の勉強は「使える知識」を身につけるのにとても良い方法だと思うんだ。',
+      content:
+        'もちろん！セキュリティやデータベースの知識とか、実際の開発に役立ってるよ。\n資格の勉強は「使える知識」を身につけるのにとても良い方法だと思うんだ。',
     },
     {
       id: 'msg-005-41',
@@ -221,7 +234,8 @@ export const EPISODE_005: DevStoryEpisode = {
     {
       id: 'msg-005-42',
       characterId: 'fukairi',
-      content: '完璧を目指さなくていいから、まず始めてみることが大事だよ。\n楽しみながら、自分のペースで挑戦してほしいな。一緒に頑張ろう！',
+      content:
+        '完璧を目指さなくていいから、まず始めてみることが大事だよ。\n楽しみながら、自分のペースで挑戦してほしいな。一緒に頑張ろう！',
     },
   ],
   detailContent: `IT・AI関連の資格取得に挑戦した体験談をお届けします。楽しく効率的に資格を取得するコツも紹介します！

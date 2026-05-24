@@ -21,18 +21,39 @@ interface QuizDashboardProps {
   dueCardsCount: number;
   loading: boolean;
   questionsStats: QuestionsStats | null;
-  categoryMasteryStats?: Record<QuizCategory, { averageMastery: number; masteredCount: number; answeredCorrectlyCount: number }>; // カテゴリ別定着統計
+  categoryMasteryStats?: Record<
+    QuizCategory,
+    { averageMastery: number; masteredCount: number; answeredCorrectlyCount: number }
+  >; // カテゴリ別定着統計
 }
 
 // シンプルなSVGアイコン
 const PlayIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <polygon points="5 3 19 12 5 21 5 3" />
   </svg>
 );
 
 const RefreshIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
     <path d="M21 3v5h-5" />
     <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
@@ -41,7 +62,16 @@ const RefreshIcon = () => (
 );
 
 const ChartIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <line x1="18" y1="20" x2="18" y2="10" />
     <line x1="12" y1="20" x2="12" y2="4" />
     <line x1="6" y1="20" x2="6" y2="14" />
@@ -49,7 +79,16 @@ const ChartIcon = () => (
 );
 
 const TrophyIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
     <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
     <path d="M4 22h16" />
@@ -99,11 +138,7 @@ export function QuizDashboard({
   return (
     <div className="space-y-5">
       {/* レベル & ストリーク */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="grid grid-cols-2 gap-3"
-      >
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-2 gap-3">
         {progress && <LevelDisplay level={progress.level} compact />}
         {progress && <StreakCounter streak={progress.streak} compact />}
       </motion.div>
@@ -135,7 +170,6 @@ export function QuizDashboard({
           今日のクイズを始める
         </Link>
 
-
         {dueCardsCount > 0 ? (
           <Link
             href="/coffee-trivia/review"
@@ -161,12 +195,8 @@ export function QuizDashboard({
         transition={{ delay: 0.15 }}
         className="bg-surface rounded-xl p-4 border border-edge"
       >
-        <h3 className="font-semibold text-ink text-sm mb-3">
-          カテゴリ別学習
-        </h3>
-        <CategorySelector
-          stats={categoryStats}
-        />
+        <h3 className="font-semibold text-ink text-sm mb-3">カテゴリ別学習</h3>
+        <CategorySelector stats={categoryStats} />
       </motion.div>
 
       {/* クイック統計 */}
@@ -185,9 +215,7 @@ export function QuizDashboard({
           </div>
           <div>
             <span className="font-medium text-ink text-sm block">統計</span>
-            <span className="text-xs text-ink-muted">
-              正解率 {progress?.stats.averageAccuracy ?? 0}%
-            </span>
+            <span className="text-xs text-ink-muted">正解率 {progress?.stats.averageAccuracy ?? 0}%</span>
           </div>
         </Link>
 
@@ -200,9 +228,7 @@ export function QuizDashboard({
           </div>
           <div>
             <span className="font-medium text-ink text-sm block">バッジ</span>
-            <span className="text-xs text-ink-muted">
-              {progress?.earnedBadges.length ?? 0}個獲得
-            </span>
+            <span className="text-xs text-ink-muted">{progress?.earnedBadges.length ?? 0}個獲得</span>
           </div>
         </Link>
       </motion.div>

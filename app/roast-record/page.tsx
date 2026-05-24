@@ -27,12 +27,7 @@ function RoastRecordPageContent() {
   const beanName = searchParams?.get('beanName') || undefined;
   const weightParam = searchParams?.get('weight');
   const weight = weightParam ? (parseInt(weightParam, 10) as 200 | 300 | 500) : undefined;
-  const roastLevel = searchParams?.get('roastLevel') as
-    | '浅煎り'
-    | '中煎り'
-    | '中深煎り'
-    | '深煎り'
-    | undefined;
+  const roastLevel = searchParams?.get('roastLevel') as '浅煎り' | '中煎り' | '中深煎り' | '深煎り' | undefined;
   const durationParam = searchParams?.get('duration');
   const duration = durationParam ? parseInt(durationParam, 10) : undefined;
 
@@ -57,9 +52,7 @@ function RoastRecordPageContent() {
     return <Loading message="データを読み込み中..." />;
   }
 
-  const roastTimerRecords = Array.isArray(data.roastTimerRecords)
-    ? data.roastTimerRecords
-    : [];
+  const roastTimerRecords = Array.isArray(data.roastTimerRecords) ? data.roastTimerRecords : [];
 
   // 編集モード
   if (recordId) {
@@ -178,12 +171,7 @@ function RoastRecordPageContent() {
         <div className="max-w-2xl mx-auto">
           <main>
             <Card className="p-4 sm:p-6">
-              <RoastRecordForm
-                data={data}
-                onSave={handleSave}
-                initialValues={initialValues}
-                onCancel={handleCancel}
-              />
+              <RoastRecordForm data={data} onSave={handleSave} initialValues={initialValues} onCancel={handleCancel} />
             </Card>
           </main>
         </div>
@@ -210,7 +198,6 @@ function RoastRecordPageContent() {
         }
       />
       <div className="max-w-7xl mx-auto w-full flex flex-col flex-1 min-h-0">
-
         <main className="flex-1 min-h-0 overflow-hidden">
           <RoastRecordList data={data} onUpdate={updateData} />
         </main>
@@ -226,4 +213,3 @@ export default function RoastRecordPage() {
     </Suspense>
   );
 }
-

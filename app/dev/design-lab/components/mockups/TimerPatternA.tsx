@@ -55,24 +55,18 @@ export default function TimerPatternA() {
   const currentStep = MOCK_STEPS[MOCK_CURRENT_STEP_INDEX];
   const nextStep = MOCK_STEPS[MOCK_CURRENT_STEP_INDEX + 1];
   const progress = MOCK_CURRENT_TIME / MOCK_TOTAL_DURATION;
-  const timeUntilNext = nextStep
-    ? nextStep.startTimeSec - MOCK_CURRENT_TIME
-    : 0;
+  const timeUntilNext = nextStep ? nextStep.startTimeSec - MOCK_CURRENT_TIME : 0;
 
   return (
     <div className="max-w-sm mx-auto">
-      <div
-        className="h-[667px] rounded-3xl border-2 border-edge overflow-hidden flex flex-col bg-ground"
-      >
+      <div className="h-[667px] rounded-3xl border-2 border-edge overflow-hidden flex flex-col bg-ground">
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 bg-surface border-b border-edge">
           <div className="flex items-center gap-2">
             <button className="p-1 text-ink/60 hover:text-ink">
               <ArrowLeft size={20} weight="bold" />
             </button>
-            <span className="text-sm font-medium text-ink truncate max-w-[160px]">
-              {MOCK_RECIPE_NAME}
-            </span>
+            <span className="text-sm font-medium text-ink truncate max-w-[160px]">{MOCK_RECIPE_NAME}</span>
           </div>
           <span className="text-sm font-semibold text-spot">
             Step {MOCK_CURRENT_STEP_INDEX + 1}/{MOCK_STEPS.length}
@@ -89,11 +83,7 @@ export default function TimerPatternA() {
             >
               {formatTime(MOCK_CURRENT_TIME)}
             </div>
-            {nextStep && (
-              <p className="text-xs text-ink/50 mt-1">
-                次のステップまで {timeUntilNext}秒
-              </p>
-            )}
+            {nextStep && <p className="text-xs text-ink/50 mt-1">次のステップまで {timeUntilNext}秒</p>}
           </div>
 
           {/* Current Step Card */}
@@ -102,29 +92,18 @@ export default function TimerPatternA() {
               <div className="w-6 h-6 rounded-full bg-spot flex items-center justify-center">
                 <Drop size={14} weight="fill" className="text-white" />
               </div>
-              <span className="text-base font-bold text-ink">
-                {currentStep.title}
-              </span>
+              <span className="text-base font-bold text-ink">{currentStep.title}</span>
             </div>
             {currentStep.targetTotalWater && (
               <div className="mb-2">
-                <span
-                  className="text-3xl font-bold text-spot"
-                  style={{ fontFamily: 'var(--font-nunito), sans-serif' }}
-                >
+                <span className="text-3xl font-bold text-spot" style={{ fontFamily: 'var(--font-nunito), sans-serif' }}>
                   {currentStep.targetTotalWater}g
                 </span>
                 <span className="text-sm text-ink/50 ml-1">まで注ぐ</span>
               </div>
             )}
-            <p className="text-sm text-ink/70 leading-relaxed">
-              {currentStep.description}
-            </p>
-            {currentStep.note && (
-              <p className="text-xs text-ink/50 mt-2 italic">
-                {currentStep.note}
-              </p>
-            )}
+            <p className="text-sm text-ink/70 leading-relaxed">{currentStep.description}</p>
+            {currentStep.note && <p className="text-xs text-ink/50 mt-2 italic">{currentStep.note}</p>}
           </div>
 
           {/* Next Step Card (semi-transparent) */}
@@ -132,13 +111,9 @@ export default function TimerPatternA() {
             <div className="w-full rounded-xl border border-edge bg-surface/50 p-3 opacity-60">
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-5 h-5 rounded-full bg-ink/20 flex items-center justify-center">
-                  <span className="text-xs font-semibold text-ink/60">
-                    {MOCK_CURRENT_STEP_INDEX + 2}
-                  </span>
+                  <span className="text-xs font-semibold text-ink/60">{MOCK_CURRENT_STEP_INDEX + 2}</span>
                 </div>
-                <span className="text-sm font-semibold text-ink/70">
-                  {nextStep.title}
-                </span>
+                <span className="text-sm font-semibold text-ink/70">{nextStep.title}</span>
               </div>
               <p className="text-xs text-ink/50 ml-7">
                 {formatTime(nextStep.startTimeSec)} 開始
@@ -149,27 +124,18 @@ export default function TimerPatternA() {
 
           {/* Upcoming Steps Indicator */}
           {MOCK_CURRENT_STEP_INDEX + 2 < MOCK_STEPS.length && (
-            <p className="text-xs text-ink/40">
-              + 残り {MOCK_STEPS.length - MOCK_CURRENT_STEP_INDEX - 2} ステップ
-            </p>
+            <p className="text-xs text-ink/40">+ 残り {MOCK_STEPS.length - MOCK_CURRENT_STEP_INDEX - 2} ステップ</p>
           )}
         </div>
 
         {/* Progress Bar */}
         <div className="px-4 pb-1">
           <div className="w-full h-2 rounded-full bg-ground overflow-hidden">
-            <div
-              className="h-full rounded-full bg-spot transition-all"
-              style={{ width: `${progress * 100}%` }}
-            />
+            <div className="h-full rounded-full bg-spot transition-all" style={{ width: `${progress * 100}%` }} />
           </div>
           <div className="flex justify-between mt-1 px-0.5">
-            <span className="text-[10px] text-ink/40">
-              {formatTime(MOCK_CURRENT_TIME)}
-            </span>
-            <span className="text-[10px] text-ink/40">
-              {formatTime(MOCK_TOTAL_DURATION)}
-            </span>
+            <span className="text-[10px] text-ink/40">{formatTime(MOCK_CURRENT_TIME)}</span>
+            <span className="text-[10px] text-ink/40">{formatTime(MOCK_TOTAL_DURATION)}</span>
           </div>
         </div>
 

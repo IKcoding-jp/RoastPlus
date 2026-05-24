@@ -72,9 +72,7 @@ export default function PageMockups() {
       {/* Drip Guide Size Comparison */}
       <div className="space-y-6">
         <div>
-          <h2 className="text-xl font-bold text-ink mb-1">
-            ドリップガイド スマホ表示サイズ比較
-          </h2>
+          <h2 className="text-xl font-bold text-ink mb-1">ドリップガイド スマホ表示サイズ比較</h2>
           <p className="text-sm text-ink-sub">
             Issue #xxx: 現行（左）vs 3サイズ案。ハンドドリップ中の視認性改善。ボトムボタンサイズは全案共通。
           </p>
@@ -100,63 +98,49 @@ export default function PageMockups() {
 
       {/* Timer Design Patterns */}
       <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h2 className="text-xl font-bold text-ink mb-1">
-          ドリップガイド タイマー画面 デザインモック
-        </h2>
-        <p className="text-sm text-ink-sub">
-          Issue #200: 8パターンのUI改善案。Pattern Hが最新の統合カード型。
-        </p>
-      </div>
+        {/* Header */}
+        <div>
+          <h2 className="text-xl font-bold text-ink mb-1">ドリップガイド タイマー画面 デザインモック</h2>
+          <p className="text-sm text-ink-sub">Issue #200: 8パターンのUI改善案。Pattern Hが最新の統合カード型。</p>
+        </div>
 
-      {/* Pattern Tabs */}
-      <div className="flex flex-wrap gap-2">
-        <button
-          onClick={() => setSelectedId(null)}
-          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-            selectedId === null
-              ? 'bg-spot text-white'
-              : 'bg-ground text-ink-sub hover:text-ink'
-          }`}
-        >
-          全て表示
-        </button>
-        {patterns.map((p) => (
+        {/* Pattern Tabs */}
+        <div className="flex flex-wrap gap-2">
           <button
-            key={p.id}
-            onClick={() => setSelectedId(selectedId === p.id ? null : p.id)}
+            onClick={() => setSelectedId(null)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-              selectedId === p.id
-                ? 'bg-spot text-white'
-                : 'bg-ground text-ink-sub hover:text-ink'
+              selectedId === null ? 'bg-spot text-white' : 'bg-ground text-ink-sub hover:text-ink'
             }`}
           >
-            {p.id}: {p.title.split(': ')[1]}
+            全て表示
           </button>
-        ))}
-      </div>
-
-      {/* Pattern Grid */}
-      <div
-        className={
-          selectedId
-            ? 'flex justify-center'
-            : 'grid grid-cols-1 xl:grid-cols-2 gap-8'
-        }
-      >
-        {patterns
-          .filter((p) => !selectedId || p.id === selectedId)
-          .map((p) => (
-            <div key={p.id} className="space-y-3">
-              <div>
-                <h3 className="text-base font-bold text-ink">{p.title}</h3>
-                <p className="text-xs text-ink-muted">{p.description}</p>
-              </div>
-              <p.Component />
-            </div>
+          {patterns.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => setSelectedId(selectedId === p.id ? null : p.id)}
+              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                selectedId === p.id ? 'bg-spot text-white' : 'bg-ground text-ink-sub hover:text-ink'
+              }`}
+            >
+              {p.id}: {p.title.split(': ')[1]}
+            </button>
           ))}
-      </div>
+        </div>
+
+        {/* Pattern Grid */}
+        <div className={selectedId ? 'flex justify-center' : 'grid grid-cols-1 xl:grid-cols-2 gap-8'}>
+          {patterns
+            .filter((p) => !selectedId || p.id === selectedId)
+            .map((p) => (
+              <div key={p.id} className="space-y-3">
+                <div>
+                  <h3 className="text-base font-bold text-ink">{p.title}</h3>
+                  <p className="text-xs text-ink-muted">{p.description}</p>
+                </div>
+                <p.Component />
+              </div>
+            ))}
+        </div>
       </div>
     </div>
   );

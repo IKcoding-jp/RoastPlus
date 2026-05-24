@@ -5,7 +5,9 @@ import { FloatingNav } from './FloatingNav';
 // next/link のモック
 vi.mock('next/link', () => ({
   default: ({ children, href, ...props }: { children: React.ReactNode; href: string; [key: string]: unknown }) => (
-    <a href={href} {...props}>{children}</a>
+    <a href={href} {...props}>
+      {children}
+    </a>
   ),
 }));
 
@@ -94,9 +96,7 @@ describe('FloatingNav', () => {
 
   describe('className', () => {
     it('追加のclassNameが右側コンテナに適用される', () => {
-      const { container } = render(
-        <FloatingNav right={<button>追加</button>} className="custom-class" />
-      );
+      const { container } = render(<FloatingNav right={<button>追加</button>} className="custom-class" />);
       const rightContainer = container.querySelector('[class*="right-3"]');
       expect(rightContainer?.className).toContain('custom-class');
     });
@@ -104,9 +104,7 @@ describe('FloatingNav', () => {
 
   describe('組み合わせ', () => {
     it('backHref+rightの両方が指定された場合両方表示される', () => {
-      const { container } = render(
-        <FloatingNav backHref="/settings" right={<button>追加</button>} />
-      );
+      const { container } = render(<FloatingNav backHref="/settings" right={<button>追加</button>} />);
       expect(screen.getByLabelText('戻る')).toBeInTheDocument();
       expect(screen.getByText('追加')).toBeInTheDocument();
       // 両方fixedが適用されている

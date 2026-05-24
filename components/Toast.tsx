@@ -93,4 +93,3 @@ function ToastItem({ toast, onClose }: { toast: ToastType; onClose: () => void }
     </div>
   );
 }
-

@@ -22,9 +22,7 @@ test.describe('ドリップガイドページ', () => {
     await expect(page.locator('body')).not.toBeEmpty();
   });
 
-  test('認証済みの場合、ドリップガイドのコンテンツが表示される', async ({
-    page,
-  }) => {
+  test('認証済みの場合、ドリップガイドのコンテンツが表示される', async ({ page }) => {
     await page.goto('/drip-guide');
     await page.waitForLoadState('domcontentloaded');
     const isLogin = await isRedirectedToLogin(page);
@@ -43,10 +41,7 @@ test.describe('ドリップガイドページ', () => {
     await page.goto('/drip-guide');
     await page.waitForLoadState('load');
     const criticalErrors = errors.filter(
-      (e) =>
-        !e.includes('Firebase') &&
-        !e.includes('firestore') &&
-        !e.includes('auth/')
+      (e) => !e.includes('Firebase') && !e.includes('firestore') && !e.includes('auth/')
     );
     expect(criticalErrors).toHaveLength(0);
   });

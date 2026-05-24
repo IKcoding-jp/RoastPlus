@@ -96,12 +96,7 @@ function validateComponents(): ValidationResult {
     while ((nameMatch = namePattern.exec(block)) !== null) {
       const name = nameMatch[1];
       // キーワードやPropsの型定義を除外
-      if (
-        name !== 'export' &&
-        name !== 'from' &&
-        name !== 'type' &&
-        !name.endsWith('Props')
-      ) {
+      if (name !== 'export' && name !== 'from' && name !== 'type' && !name.endsWith('Props')) {
         exportedNames.add(name);
       }
     }
@@ -130,10 +125,7 @@ function validateVariants(): ValidationResult {
     { name: 'IconButton', file: 'IconButton.tsx' },
   ];
 
-  const skillMd = readFileSync(
-    resolve(ROOT, '.claude/skills/roastplus-ui/SKILL.md'),
-    'utf-8',
-  );
+  const skillMd = readFileSync(resolve(ROOT, '.claude/skills/roastplus-ui/SKILL.md'), 'utf-8');
 
   for (const target of targets) {
     let source: string;
@@ -144,23 +136,19 @@ function validateVariants(): ValidationResult {
     }
 
     // variant型定義からvariant値を抽出
-    const variantTypeMatch = source.match(
-      /variant\??\s*:\s*(['"][^'"]+['"]\s*\|\s*)*['"][^'"]+['"]/,
-    );
+    const variantTypeMatch = source.match(/variant\??\s*:\s*(['"][^'"]+['"]\s*\|\s*)*['"][^'"]+['"]/);
     if (variantTypeMatch) {
       const variantStr = variantTypeMatch[0];
       const variants = variantStr.match(/'([^']+)'/g)?.map((v) => v.replace(/'/g, '')) || [];
       const sourceCount = variants.length;
 
       // SKILL.md のvariant表もチェック
-      const skillVariantLine = skillMd.match(
-        new RegExp(`${target.name}[^|]*\\|[^|]*（(\\d+)種）`),
-      );
+      const skillVariantLine = skillMd.match(new RegExp(`${target.name}[^|]*\\|[^|]*（(\\d+)種）`));
       if (skillVariantLine) {
         const skillCount = parseInt(skillVariantLine[1]);
         if (skillCount !== sourceCount) {
           issues.push(
-            `${target.name}: SKILL.md に「${skillCount}種」と記載されているが、ソースには ${sourceCount} variants（${variants.join(', ')}）`,
+            `${target.name}: SKILL.md に「${skillCount}種」と記載されているが、ソースには ${sourceCount} variants（${variants.join(', ')}）`
           );
         }
       }
@@ -213,12 +201,7 @@ function validateAnimations(): ValidationResult {
 function main() {
   console.log('🔍 UIスキル整合性チェック開始...\n');
 
-  const results = [
-    validateDesignTokens(),
-    validateComponents(),
-    validateVariants(),
-    validateAnimations(),
-  ];
+  const results = [validateDesignTokens(), validateComponents(), validateVariants(), validateAnimations()];
 
   let totalIssues = 0;
 

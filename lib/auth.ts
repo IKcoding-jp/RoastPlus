@@ -30,7 +30,7 @@ export function useAuth() {
     waitForAuthInit()
       .then((initialUser) => {
         if (!isMounted) return;
-        
+
         setUser(initialUser);
         setLoading(false);
 
@@ -67,4 +67,3 @@ export async function signOut() {
     throw error;
   }
 }
-

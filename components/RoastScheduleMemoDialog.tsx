@@ -38,7 +38,6 @@ function RoastScheduleMemoDialogInner({
   onDelete,
   onCancel,
 }: RoastScheduleMemoDialogProps) {
-
   // 時間を時・分に分割
   const parseTime = (timeStr: string) => {
     if (!timeStr) return { hour: '', minute: '' };
@@ -66,9 +65,9 @@ function RoastScheduleMemoDialogInner({
   const [blendRatio1, setBlendRatio1] = useState<string>(initialBlendRatio.ratio1);
   const [blendRatio2, setBlendRatio2] = useState<string>(initialBlendRatio.ratio2);
   const [weight, setWeight] = useState<200 | 300 | 500 | ''>(schedule?.weight || '');
-  const [roastLevel, setRoastLevel] = useState<
-    '浅煎り' | '中煎り' | '中深煎り' | '深煎り' | ''
-  >(schedule?.roastLevel || '');
+  const [roastLevel, setRoastLevel] = useState<'浅煎り' | '中煎り' | '中深煎り' | '深煎り' | ''>(
+    schedule?.roastLevel || ''
+  );
   const [roastCount, setRoastCount] = useState(schedule?.roastCount?.toString() || '');
   const [bagCount, setBagCount] = useState<1 | 2 | ''>(schedule?.bagCount || '');
 
@@ -164,10 +163,7 @@ function RoastScheduleMemoDialogInner({
   };
 
   return (
-    <div
-      className="fixed inset-0 bg-black/20 flex items-center justify-center z-[100] p-4"
-      onClick={onCancel}
-    >
+    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-[100] p-4" onClick={onCancel}>
       <div
         className="rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto border-2 bg-overlay border-edge-strong"
         onClick={(e) => e.stopPropagation()}
@@ -177,13 +173,7 @@ function RoastScheduleMemoDialogInner({
           <h3 className="text-2xl md:text-2xl font-semibold text-ink">
             {schedule ? 'スケジュールを編集' : 'スケジュールを追加'}
           </h3>
-          <IconButton
-            variant="ghost"
-            size="md"
-            onClick={onCancel}
-            rounded
-            aria-label="閉じる"
-          >
+          <IconButton variant="ghost" size="md" onClick={onCancel} rounded aria-label="閉じる">
             <HiX className="h-6 w-6 md:h-7 md:w-7" />
           </IconButton>
         </div>
@@ -210,7 +200,7 @@ function RoastScheduleMemoDialogInner({
                     max={23}
                     required={!isAfterPurge}
                     placeholder="時"
-                            className="w-20 md:w-24 text-center"
+                    className="w-20 md:w-24 text-center"
                   />
                   <span className="text-lg md:text-xl text-ink-sub">:</span>
                   <NumberInput
@@ -225,7 +215,7 @@ function RoastScheduleMemoDialogInner({
                     max={59}
                     required={!isAfterPurge}
                     placeholder="分"
-                            className="w-20 md:w-24 text-center"
+                    className="w-20 md:w-24 text-center"
                   />
                 </div>
               </div>
@@ -238,7 +228,7 @@ function RoastScheduleMemoDialogInner({
               isAfterPurge={isAfterPurge}
               isChaffCleaning={isChaffCleaning}
               onTypeChange={handleMemoTypeChange}
-              />
+            />
 
             {/* 焙煎機予熱用フィールド */}
             {isRoasterOn && (
@@ -255,7 +245,7 @@ function RoastScheduleMemoDialogInner({
                 onBlendRatio2Change={setBlendRatio2}
                 onWeightChange={setWeight}
                 onRoastLevelChange={setRoastLevel}
-                  />
+              />
             )}
 
             {/* ロースト用フィールド */}
@@ -265,7 +255,7 @@ function RoastScheduleMemoDialogInner({
                 bagCount={bagCount}
                 onRoastCountChange={setRoastCount}
                 onBagCountChange={setBagCount}
-                  />
+              />
             )}
 
             {/* プレビュー */}
@@ -282,25 +272,16 @@ function RoastScheduleMemoDialogInner({
               roastLevel={roastLevel}
               roastCount={roastCount}
               bagCount={bagCount}
-              />
+            />
 
             {/* フッター */}
             <div className="flex gap-3 md:gap-4 pt-4 md:pt-5 border-t justify-center border-edge">
               {schedule && onDelete && (
-                <Button
-                  type="button"
-                  variant="danger"
-                  size="lg"
-                  onClick={handleDelete}
-                      >
+                <Button type="button" variant="danger" size="lg" onClick={handleDelete}>
                   削除
                 </Button>
               )}
-              <Button
-                type="submit"
-                variant="primary"
-                size="lg"
-                  >
+              <Button type="submit" variant="primary" size="lg">
                 保存
               </Button>
             </div>
@@ -310,4 +291,3 @@ function RoastScheduleMemoDialogInner({
     </div>
   );
 }
-

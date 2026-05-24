@@ -123,12 +123,7 @@ function TastingPageContent() {
         <FloatingNav backHref="/tasting" />
         <div className="max-w-lg mx-auto w-full">
           <main>
-            <TastingSessionForm
-              session={session}
-              onSave={handleSave}
-              onCancel={handleCancel}
-              onDelete={handleDelete}
-            />
+            <TastingSessionForm session={session} onSave={handleSave} onCancel={handleCancel} onDelete={handleDelete} />
           </main>
         </div>
       </div>
@@ -289,7 +284,6 @@ function TastingPageContent() {
         }
       />
       <div className="max-w-7xl mx-auto w-full flex flex-col flex-1 min-h-0">
-
         <main>
           <TastingSessionList
             data={data}

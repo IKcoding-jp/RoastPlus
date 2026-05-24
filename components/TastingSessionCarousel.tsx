@@ -53,9 +53,10 @@ const getRoastBadgeStyle = (level: string) => {
 
 const formatDate = (dateStr: string) => {
   const date = new Date(dateStr);
-  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(
-    date.getDate()
-  ).padStart(2, '0')}`;
+  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(
+    2,
+    '0'
+  )}`;
 };
 
 export function TastingSessionCarousel({
@@ -96,10 +97,9 @@ export function TastingSessionCarousel({
 
   // 横スクロールの追跡
   useEffect(() => {
-    const containers = [
-      desktopScrollContainerRef.current,
-      mobileScrollContainerRef.current,
-    ].filter((container): container is HTMLDivElement => container !== null);
+    const containers = [desktopScrollContainerRef.current, mobileScrollContainerRef.current].filter(
+      (container): container is HTMLDivElement => container !== null
+    );
 
     const cleanups = containers.map((container) => {
       const handleScroll = () => {
@@ -133,9 +133,7 @@ export function TastingSessionCarousel({
   if (sessions.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="font-serif italic text-ink-muted">
-          試飲セッションがありません
-        </p>
+        <p className="font-serif italic text-ink-muted">試飲セッションがありません</p>
       </div>
     );
   }
@@ -180,9 +178,7 @@ export function TastingSessionCarousel({
             <div
               key={index}
               className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                index === activeIndex
-                  ? 'bg-spot scale-125'
-                  : 'bg-spot/30'
+                index === activeIndex ? 'bg-spot scale-125' : 'bg-spot/30'
               }`}
             />
           ))}
@@ -221,9 +217,7 @@ export function TastingSessionCarousel({
             <div
               key={index}
               className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${
-                index === activeIndex
-                  ? 'bg-spot scale-125'
-                  : 'bg-spot/30'
+                index === activeIndex ? 'bg-spot scale-125' : 'bg-spot/30'
               }`}
             />
           ))}

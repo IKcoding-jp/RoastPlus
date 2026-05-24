@@ -44,11 +44,11 @@ export function DefectBeanDetail({
 
   return (
     <>
-      <div className={`${isCompareMode ? 'p-0' : 'border-t border-gray-200 p-4'} ${isCompareMode ? 'space-y-3' : 'space-y-3 sm:space-y-4'}`}>
+      <div
+        className={`${isCompareMode ? 'p-0' : 'border-t border-gray-200 p-4'} ${isCompareMode ? 'space-y-3' : 'space-y-3 sm:space-y-4'}`}
+      >
         {/* 名前 */}
-        <h3 className="text-xl font-bold text-gray-800 text-center">
-          {defectBean.name}
-        </h3>
+        <h3 className="text-xl font-bold text-gray-800 text-center">{defectBean.name}</h3>
 
         {/* 画像（拡大表示可能） */}
         <div
@@ -68,7 +68,7 @@ export function DefectBeanDetail({
               alt={defectBean.name}
               fill
               className="object-cover"
-              sizes={isCompareMode ? "(max-width: 768px) 280px, 320px" : "(max-width: 768px) 100vw, 320px"}
+              sizes={isCompareMode ? '(max-width: 768px) 280px, 320px' : '(max-width: 768px) 100vw, 320px'}
               unoptimized
             />
           </div>
@@ -78,23 +78,17 @@ export function DefectBeanDetail({
         <div className={isCompareMode ? 'space-y-2.5' : 'space-y-3'}>
           <div>
             <h4 className="text-sm font-semibold text-gray-700 mb-1">特徴</h4>
-            <p className="text-sm text-gray-600 whitespace-pre-wrap leading-relaxed">
-              {defectBean.characteristics}
-            </p>
+            <p className="text-sm text-gray-600 whitespace-pre-wrap leading-relaxed">{defectBean.characteristics}</p>
           </div>
 
           <div>
             <h4 className="text-sm font-semibold text-gray-700 mb-1">味への影響</h4>
-            <p className="text-sm text-gray-600 whitespace-pre-wrap leading-relaxed">
-              {defectBean.tasteImpact}
-            </p>
+            <p className="text-sm text-gray-600 whitespace-pre-wrap leading-relaxed">{defectBean.tasteImpact}</p>
           </div>
 
           <div>
             <h4 className="text-sm font-semibold text-gray-700 mb-1">省く理由</h4>
-            <p className="text-sm text-gray-600 whitespace-pre-wrap leading-relaxed">
-              {defectBean.removalReason}
-            </p>
+            <p className="text-sm text-gray-600 whitespace-pre-wrap leading-relaxed">{defectBean.removalReason}</p>
           </div>
         </div>
 
@@ -106,9 +100,7 @@ export function DefectBeanDetail({
               variant={shouldRemove === true ? 'danger' : 'secondary'}
               size="sm"
               className={`flex-1 gap-2 ${
-                shouldRemove === true
-                  ? 'bg-red-500 hover:bg-red-600'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                shouldRemove === true ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
               }`}
             >
               <HiXCircle className="h-5 w-5" />
@@ -118,11 +110,7 @@ export function DefectBeanDetail({
               onClick={() => handleToggleSetting(false)}
               variant={shouldRemove === false ? 'success' : 'secondary'}
               size="sm"
-              className={`flex-1 gap-2 ${
-                shouldRemove === false
-                  ? ''
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
+              className={`flex-1 gap-2 ${shouldRemove === false ? '' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
             >
               <HiCheck className="h-5 w-5" />
               省かない
@@ -132,13 +120,7 @@ export function DefectBeanDetail({
 
         {/* 削除ボタン（ユーザー追加データのみ） */}
         {onDelete && (
-          <Button
-            onClick={() => setShowDeleteConfirm(true)}
-            variant="danger"
-            size="sm"
-            fullWidth
-            className="gap-2"
-          >
+          <Button onClick={() => setShowDeleteConfirm(true)} variant="danger" size="sm" fullWidth className="gap-2">
             <HiTrash className="h-5 w-5" />
             削除
           </Button>
@@ -190,12 +172,8 @@ export function DefectBeanDetail({
       {showDeleteConfirm && (
         <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              削除の確認
-            </h3>
-            <p className="text-gray-600 mb-4">
-              この欠点豆を削除しますか？この操作は取り消せません。
-            </p>
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">削除の確認</h3>
+            <p className="text-gray-600 mb-4">この欠点豆を削除しますか？この操作は取り消せません。</p>
             <div className="flex gap-3">
               <Button
                 onClick={() => setShowDeleteConfirm(false)}
@@ -205,12 +183,7 @@ export function DefectBeanDetail({
               >
                 キャンセル
               </Button>
-              <Button
-                onClick={handleDelete}
-                variant="danger"
-                size="sm"
-                className="flex-1"
-              >
+              <Button onClick={handleDelete} variant="danger" size="sm" className="flex-1">
                 削除
               </Button>
             </div>
@@ -220,4 +193,3 @@ export function DefectBeanDetail({
     </>
   );
 }
-

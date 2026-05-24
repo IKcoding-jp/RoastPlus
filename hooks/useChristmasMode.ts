@@ -13,21 +13,24 @@ import { useTheme } from 'next-themes';
  * 既存コードを修正せずにテーマシステムに移行可能。
  */
 export function useChristmasMode() {
-    const { resolvedTheme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
 
-    const isChristmasMode = resolvedTheme === 'christmas';
+  const isChristmasMode = resolvedTheme === 'christmas';
 
-    const setChristmasMode = useCallback((enabled: boolean) => {
-        setTheme(enabled ? 'christmas' : 'default');
-    }, [setTheme]);
+  const setChristmasMode = useCallback(
+    (enabled: boolean) => {
+      setTheme(enabled ? 'christmas' : 'default');
+    },
+    [setTheme]
+  );
 
-    const toggleChristmasMode = useCallback(() => {
-        setTheme(isChristmasMode ? 'default' : 'christmas');
-    }, [isChristmasMode, setTheme]);
+  const toggleChristmasMode = useCallback(() => {
+    setTheme(isChristmasMode ? 'default' : 'christmas');
+  }, [isChristmasMode, setTheme]);
 
-    return {
-        isChristmasMode,
-        setChristmasMode,
-        toggleChristmasMode,
-    };
+  return {
+    isChristmasMode,
+    setChristmasMode,
+    toggleChristmasMode,
+  };
 }

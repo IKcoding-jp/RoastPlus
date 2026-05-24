@@ -6,7 +6,8 @@ export default {
       description: '生の <button> 要素の使用を禁止し、@/components/ui の Button/IconButton を推奨',
     },
     messages: {
-      noRawButton: '生の <button> を使用しないでください。@/components/ui の Button または IconButton を使用してください。',
+      noRawButton:
+        '生の <button> を使用しないでください。@/components/ui の Button または IconButton を使用してください。',
     },
     schema: [],
   },

@@ -1,12 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen } from '@testing-library/react';
-import {
-  FilterModal,
-  FilterOptionButton,
-  FilterSearchInput,
-  FilterSection,
-  FilterSortOption,
-} from './FilterModal';
+import { FilterModal, FilterOptionButton, FilterSearchInput, FilterSection, FilterSortOption } from './FilterModal';
 
 describe('FilterModal', () => {
   it('共通のフィルターモーダル構造を表示する', () => {
@@ -35,7 +29,9 @@ describe('FilterModal', () => {
         footer={
           <>
             <FilterOptionButton onClick={onCancel}>キャンセル</FilterOptionButton>
-            <FilterOptionButton selected onClick={onApply}>適用</FilterOptionButton>
+            <FilterOptionButton selected onClick={onApply}>
+              適用
+            </FilterOptionButton>
           </>
         }
       />

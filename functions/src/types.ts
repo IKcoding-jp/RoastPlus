@@ -31,4 +31,3 @@ export interface RoastSchedule {
   roastCount?: number;
   order?: number;
 }
-

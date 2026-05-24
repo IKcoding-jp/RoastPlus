@@ -16,14 +16,32 @@ import { DebugPanel } from '@/components/coffee-quiz/DebugPanel';
 
 // アイコン
 const ArrowLeftIcon = () => (
-  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <path d="m12 19-7-7 7-7" />
     <path d="M19 12H5" />
   </svg>
 );
 
 const ChartBarIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <line x1="12" y1="20" x2="12" y2="10" />
     <line x1="18" y1="20" x2="18" y2="4" />
     <line x1="6" y1="20" x2="6" y2="16" />
@@ -31,7 +49,14 @@ const ChartBarIcon = () => (
 );
 
 export default function StatsPage() {
-  const { progress, loading: quizLoading, questionsStats, categoryMasteryStats, difficultyMasteryStats, resetProgress } = useQuizData();
+  const {
+    progress,
+    loading: quizLoading,
+    questionsStats,
+    categoryMasteryStats,
+    difficultyMasteryStats,
+    resetProgress,
+  } = useQuizData();
   const { isEnabled: isDeveloperMode } = useDeveloperMode();
   const [showResetDialog, setShowResetDialog] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
