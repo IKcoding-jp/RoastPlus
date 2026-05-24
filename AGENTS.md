@@ -195,9 +195,23 @@ npm run build
 npm run lint
 npm run test
 npm run test:run
+npm run test:rules
 npm run test:coverage
 npm run test:e2e
 ```
+
+### TDD の運用方針
+
+ロジック変更、バグ修正、Firestore Rules、Cloud Functions、データ変換・集計処理では、原則として Kent Beck の Test-Driven Development に準拠し、Red / Green / Refactor の順で進める。
+
+- Red: まず失敗するテストで、期待する振る舞いを表現する。
+- Green: 最小限の実装で、そのテストを通す。
+- Refactor: テストが通った状態を保ちながら、命名、重複、責務分担を整える。
+- テストを後付けの確認作業だけにしない。
+- 実装詳細を過度に固定するテストや、意味の薄いカバレッジ稼ぎは避ける。
+- UIだけの微修正、文言修正、設定変更などTDDが不自然な場合は、理由を明示し、代わりの検証方法を示す。
+
+特に `lib/`, `hooks/`, `functions/`, `tests/rules/` に関わる変更では、既存テストを確認し、必要に応じて先にテストを追加・更新する。
 
 補足:
 
@@ -206,7 +220,6 @@ npm run test:e2e
 - functions/ を変更した場合は、Functions側の build/test も確認する。
 - Lint は Husky pre-commit でも実行されるが、必要に応じて npm run lint を手動実行する。
 - ロジック変更では、既存テストを優先して更新・追加する。
-- lib/, hooks/, components/ のロジック変更はTDDを基本とする。
 - 検証できない場合は、未検証の理由とユーザーが実行すべきコマンドを報告する。
 
 ## Git運用
