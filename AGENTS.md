@@ -200,6 +200,33 @@ npm run test:coverage
 npm run test:e2e
 ```
 
+### SDD の運用方針
+
+大きめの機能追加、業務フロー変更、データ構造変更、認証・認可・Firestore Rules・Storage Rules・Cloud Functions に関わる変更では、実装前に Spec-Driven Development を行う。
+
+RoastPlus における SDD は、GitHub Spec Kit 型の Spec-Driven Development と、Gojko Adzic の Specification by Example を参照点とする。
+
+実装前に、以下を仕様として短く整理する。
+
+- 目的
+- 背景となる問題
+- 対象ユーザー
+- 現在の挙動
+- 期待する挙動
+- 受け入れ条件
+- 具体例
+- 影響する画面
+- 影響するデータ
+- 認証・認可・Firestore Rules・Storage Rules への影響
+- Cloud Functions への影響
+- やらないこと
+- 未決事項
+- 検証方法
+
+未決事項が仕様、データ、安全性、本番環境、費用に影響する場合は、実装に進まない。ユーザーが仕様を確認し、「この仕様で実装してよい」と明示した後に、実装計画へ進む。
+
+TDD が必要な変更では、受け入れ条件をテストに対応づけてから実装する。
+
 ### TDD の運用方針
 
 ロジック変更、バグ修正、Firestore Rules、Cloud Functions、データ変換・集計処理では、原則として Kent Beck の Test-Driven Development に準拠し、Red / Green / Refactor の順で進める。
