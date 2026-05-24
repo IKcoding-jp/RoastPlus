@@ -1,7 +1,6 @@
 import type { FirebaseApp } from 'firebase/app';
 import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 
-
 interface AppCheckOptions {
   siteKey?: string;
 }
@@ -13,7 +12,7 @@ declare global {
 }
 
 function getRecaptchaSiteKey(siteKey?: string): string {
-  return (siteKey ?? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? String()).trim();
+  return (siteKey ?? process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY ?? '').trim();
 }
 
 export function initializeRoastPlusAppCheck(app: FirebaseApp, options: AppCheckOptions = {}): void {

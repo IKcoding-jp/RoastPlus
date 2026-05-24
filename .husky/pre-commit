@@ -1,1 +1,9 @@
 npx lint-staged
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "gitleaks is required for secret scanning. Install it before committing."
+  echo "Windows: winget install Gitleaks.Gitleaks"
+  exit 1
+fi
+
+npm run secrets:scan:staged
