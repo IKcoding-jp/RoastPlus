@@ -33,7 +33,10 @@ export function TimeEditDialog({
 
   return (
     <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-[100] p-4" onClick={onCancel}>
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full border-2 border-gray-300" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="bg-white rounded-lg shadow-xl max-w-md w-full border-2 border-gray-300"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* ヘッダー */}
         <div className="sticky top-0 bg-white border-b border-gray-200 px-4 md:px-6 py-3 md:py-5 flex items-center justify-between">
           <h3 className="text-2xl md:text-2xl font-semibold text-gray-800">時間を編集</h3>

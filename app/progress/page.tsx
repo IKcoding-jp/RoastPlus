@@ -51,7 +51,8 @@ export default function ProgressPage() {
 
     const filtered = workProgresses.filter((wp) => {
       if (wp.archivedAt) return false;
-      if (filterTaskName && wp.taskName && !wp.taskName.toLowerCase().includes(filterTaskName.toLowerCase())) return false;
+      if (filterTaskName && wp.taskName && !wp.taskName.toLowerCase().includes(filterTaskName.toLowerCase()))
+        return false;
       if (filterStatus !== 'all' && wp.status !== filterStatus) return false;
       return true;
     });
@@ -63,7 +64,12 @@ export default function ProgressPage() {
       if (wp.groupName) {
         const key = wp.groupName;
         if (!groups.has(key)) {
-          groups.set(key, { groupName: wp.groupName, taskName: wp.taskName || '', weight: wp.weight || '', workProgresses: [] });
+          groups.set(key, {
+            groupName: wp.groupName,
+            taskName: wp.taskName || '',
+            weight: wp.weight || '',
+            workProgresses: [],
+          });
         }
         groups.get(key)!.workProgresses.push(wp);
       } else {
@@ -73,7 +79,8 @@ export default function ProgressPage() {
 
     const sortFn = (a: WorkProgress, b: WorkProgress) => {
       if (sortOption === 'createdAt') return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-      if (sortOption === 'beanName') return (a.groupName || a.taskName || '').localeCompare(b.groupName || b.taskName || '', 'ja');
+      if (sortOption === 'beanName')
+        return (a.groupName || a.taskName || '').localeCompare(b.groupName || b.taskName || '', 'ja');
       if (sortOption === 'status') {
         const order: Record<WorkProgressStatus, number> = { pending: 0, in_progress: 1, completed: 2 };
         return order[a.status] - order[b.status];
@@ -93,12 +100,15 @@ export default function ProgressPage() {
   const archivedWorkProgressesByDate = useMemo(() => {
     const workProgresses = data?.workProgresses || [];
     const archived = workProgresses.filter((wp) => wp.archivedAt);
-    const grouped = archived.reduce((acc, wp) => {
-      const date = new Date(wp.archivedAt!).toLocaleDateString('ja-JP');
-      if (!acc[date]) acc[date] = [];
-      acc[date].push(wp);
-      return acc;
-    }, {} as Record<string, WorkProgress[]>);
+    const grouped = archived.reduce(
+      (acc, wp) => {
+        const date = new Date(wp.archivedAt!).toLocaleDateString('ja-JP');
+        if (!acc[date]) acc[date] = [];
+        acc[date].push(wp);
+        return acc;
+      },
+      {} as Record<string, WorkProgress[]>
+    );
 
     return Object.entries(grouped)
       .map(([date, wps]) => ({
@@ -108,7 +118,11 @@ export default function ProgressPage() {
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [data]);
 
-  const showEmptyState = groupedWorkProgresses.groups.length === 0 && groupedWorkProgresses.ungrouped.length === 0 && !filterTaskName && filterStatus === 'all';
+  const showEmptyState =
+    groupedWorkProgresses.groups.length === 0 &&
+    groupedWorkProgresses.ungrouped.length === 0 &&
+    !filterTaskName &&
+    filterStatus === 'all';
   const isEmpty = groupedWorkProgresses.groups.length === 0 && groupedWorkProgresses.ungrouped.length === 0;
   const hasFilters = filterTaskName !== '' || filterStatus !== 'all';
 
@@ -143,7 +157,10 @@ export default function ProgressPage() {
             expandedHistoryIds={actions.expandedHistoryIds}
             onSetShowAddForm={() => setShowAddForm(true)}
             onSetShowAddGroupForm={() => setShowAddGroupForm(true)}
-            onClearFilters={() => { setFilterTaskName(''); setFilterStatus('all'); }}
+            onClearFilters={() => {
+              setFilterTaskName('');
+              setFilterStatus('all');
+            }}
             onEditWorkProgress={setEditingWorkProgressId}
             onStatusChange={actions.handleStatusChange}
             onArchive={actions.handleArchiveWorkProgress}
@@ -152,7 +169,10 @@ export default function ProgressPage() {
             onEditHistory={actions.handleEditHistory}
             onEditGroupName={setEditingGroupName}
             onDeleteGroup={actions.handleDeleteGroup}
-            onAddToGroup={(groupName) => { setAddingToGroupName(groupName); setShowAddForm(true); }}
+            onAddToGroup={(groupName) => {
+              setAddingToGroupName(groupName);
+              setShowAddForm(true);
+            }}
             onShowArchived={() => setViewMode('archived')}
           />
         ) : (
@@ -180,8 +200,14 @@ export default function ProgressPage() {
       {showModeSelectDialog && (
         <ModeSelectDialog
           onClose={() => setShowModeSelectDialog(false)}
-          onAddWork={() => { setShowModeSelectDialog(false); setShowAddForm(true); }}
-          onAddGroup={() => { setShowModeSelectDialog(false); setShowAddGroupForm(true); }}
+          onAddWork={() => {
+            setShowModeSelectDialog(false);
+            setShowAddForm(true);
+          }}
+          onAddGroup={() => {
+            setShowModeSelectDialog(false);
+            setShowAddGroupForm(true);
+          }}
         />
       )}
 
@@ -189,15 +215,21 @@ export default function ProgressPage() {
       {(showAddForm || editingWorkProgressId) && (
         <WorkProgressFormDialog
           isOpen={true}
-          onClose={() => { setShowAddForm(false); setEditingWorkProgressId(null); setAddingToGroupName(null); }}
-          onSubmit={editingWorkProgressId
-            ? (formData) => actions.handleUpdateWorkProgress(editingWorkProgressId, formData)
-            : actions.handleAddWorkProgress
+          onClose={() => {
+            setShowAddForm(false);
+            setEditingWorkProgressId(null);
+            setAddingToGroupName(null);
+          }}
+          onSubmit={
+            editingWorkProgressId
+              ? (formData) => actions.handleUpdateWorkProgress(editingWorkProgressId, formData)
+              : actions.handleAddWorkProgress
           }
           onDelete={editingWorkProgressId ? () => actions.handleDeleteWorkProgress(editingWorkProgressId) : undefined}
-          initialData={editingWorkProgressId
-            ? data?.workProgresses?.find(wp => wp.id === editingWorkProgressId)
-            : { groupName: addingToGroupName || undefined }
+          initialData={
+            editingWorkProgressId
+              ? data?.workProgresses?.find((wp) => wp.id === editingWorkProgressId)
+              : { groupName: addingToGroupName || undefined }
           }
           isEditing={!!editingWorkProgressId}
           defaultGroupName={addingToGroupName}
@@ -242,27 +274,37 @@ export default function ProgressPage() {
       )}
 
       {/* 履歴編集ダイアログ */}
-      {actions.editingHistoryWorkProgressId && actions.editingHistoryEntryId && (() => {
-        const workProgress = data?.workProgresses?.find((wp) => wp.id === actions.editingHistoryWorkProgressId);
-        const entry = workProgress?.progressHistory?.find((e) => e.id === actions.editingHistoryEntryId);
-        if (!workProgress || !entry) return null;
+      {actions.editingHistoryWorkProgressId &&
+        actions.editingHistoryEntryId &&
+        (() => {
+          const workProgress = data?.workProgresses?.find((wp) => wp.id === actions.editingHistoryWorkProgressId);
+          const entry = workProgress?.progressHistory?.find((e) => e.id === actions.editingHistoryEntryId);
+          if (!workProgress || !entry) return null;
 
-        return (
-          <ProgressHistoryEditDialog
-            isOpen={true}
-            onClose={actions.clearEditingHistory}
-            entry={entry}
-            unit={extractUnit(workProgress.weight)}
-            isCountMode={workProgress.targetAmount === undefined}
-            onUpdate={async (amount: number, memo?: string) => {
-              await actions.handleUpdateProgressHistory(actions.editingHistoryWorkProgressId!, actions.editingHistoryEntryId!, amount, memo);
-            }}
-            onDelete={async () => {
-              await actions.handleDeleteProgressHistory(actions.editingHistoryWorkProgressId!, actions.editingHistoryEntryId!);
-            }}
-          />
-        );
-      })()}
+          return (
+            <ProgressHistoryEditDialog
+              isOpen={true}
+              onClose={actions.clearEditingHistory}
+              entry={entry}
+              unit={extractUnit(workProgress.weight)}
+              isCountMode={workProgress.targetAmount === undefined}
+              onUpdate={async (amount: number, memo?: string) => {
+                await actions.handleUpdateProgressHistory(
+                  actions.editingHistoryWorkProgressId!,
+                  actions.editingHistoryEntryId!,
+                  amount,
+                  memo
+                );
+              }}
+              onDelete={async () => {
+                await actions.handleDeleteProgressHistory(
+                  actions.editingHistoryWorkProgressId!,
+                  actions.editingHistoryEntryId!
+                );
+              }}
+            />
+          );
+        })()}
     </div>
   );
 }

@@ -52,7 +52,6 @@ describe('uploadDefectBeanImage', () => {
     expect(url).toBe('https://example.com/image.jpg');
   });
 
-
   it('ユーザーIDが空の場合はアップロードを拒否する', async () => {
     const mockFile = new File([''], 'test.jpg', { type: 'image/jpeg' });
 
@@ -66,9 +65,7 @@ describe('uploadDefectBeanImage', () => {
   it('画像以外のファイルはアップロードを拒否する', async () => {
     const mockFile = new File(['hello'], 'memo.txt', { type: 'text/plain' });
 
-    await expect(uploadDefectBeanImage('uid123', 'beanId123', mockFile)).rejects.toThrow(
-      'アップロードできる画像形式'
-    );
+    await expect(uploadDefectBeanImage('uid123', 'beanId123', mockFile)).rejects.toThrow('アップロードできる画像形式');
     expect(mockUploadBytes).not.toHaveBeenCalled();
   });
 
@@ -77,9 +74,7 @@ describe('uploadDefectBeanImage', () => {
       type: 'image/jpeg',
     });
 
-    await expect(uploadDefectBeanImage('uid123', 'beanId123', mockFile)).rejects.toThrow(
-      '5MB以下'
-    );
+    await expect(uploadDefectBeanImage('uid123', 'beanId123', mockFile)).rejects.toThrow('5MB以下');
     expect(mockUploadBytes).not.toHaveBeenCalled();
   });
 
@@ -89,8 +84,6 @@ describe('uploadDefectBeanImage', () => {
 
     const mockFile = new File([''], 'test.jpg', { type: 'image/jpeg' });
 
-    await expect(uploadDefectBeanImage('uid123', 'beanId123', mockFile)).rejects.toThrow(
-      'Storage permission denied'
-    );
+    await expect(uploadDefectBeanImage('uid123', 'beanId123', mockFile)).rejects.toThrow('Storage permission denied');
   });
 });

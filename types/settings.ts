@@ -26,10 +26,10 @@ export interface TableSettings {
 
 // ユーザー同意情報
 export interface UserConsent {
-  hasAgreed: boolean;              // 同意済みフラグ
-  agreedAt: string;                // 同意日時（ISO 8601）
-  agreedTermsVersion: string;      // 同意した利用規約バージョン
-  agreedPrivacyVersion: string;    // 同意したプライバシーポリシーバージョン
+  hasAgreed: boolean; // 同意済みフラグ
+  agreedAt: string; // 同意日時（ISO 8601）
+  agreedTermsVersion: string; // 同意した利用規約バージョン
+  agreedPrivacyVersion: string; // 同意したプライバシーポリシーバージョン
 }
 
 // 統合アプリデータ型

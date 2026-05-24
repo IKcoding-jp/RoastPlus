@@ -120,12 +120,14 @@ describe('normalizeAppData', () => {
 
   it('tastingSessionsのaiAnalysis関連フィールド保持', () => {
     const result = normalizeAppData({
-      tastingSessions: [{
-        id: 's1',
-        aiAnalysis: 'テスト分析',
-        aiAnalysisUpdatedAt: '2026-02-11T00:00:00Z',
-        aiAnalysisRecordCount: 5,
-      }],
+      tastingSessions: [
+        {
+          id: 's1',
+          aiAnalysis: 'テスト分析',
+          aiAnalysisUpdatedAt: '2026-02-11T00:00:00Z',
+          aiAnalysisRecordCount: 5,
+        },
+      ],
     } as never);
     expect(result.tastingSessions[0].aiAnalysis).toBe('テスト分析');
     expect(result.tastingSessions[0].aiAnalysisUpdatedAt).toBe('2026-02-11T00:00:00Z');
@@ -139,7 +141,6 @@ describe('normalizeAppData', () => {
         taskLabelHeaderTextLeft: '  左ヘッダー  ',
         homeHiddenFeatureKeys: ['dev-stories', 'settings', 'dev-stories', 'unknown'],
         roastTimerSettings: {
-
           timerSoundEnabled: false,
           timerSoundFile: '/sounds/roasttimer/bell.mp3',
           timerSoundVolume: 0.8,
@@ -159,7 +160,6 @@ describe('normalizeAppData', () => {
     const result = normalizeAppData({
       userSettings: {
         roastTimerSettings: {
-
           timerSoundEnabled: true,
           timerSoundFile: '/sounds/alarm/bell.mp3', // 旧パス
           timerSoundVolume: 0.5,

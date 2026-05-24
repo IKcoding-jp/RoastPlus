@@ -59,11 +59,7 @@ type SortOption = 'default' | 'difficulty';
  * 2. シャッフル10問 - ランダム10問出題
  * 3. 全問連続 - カテゴリ全問題を出題
  */
-export function CategoryQuestionList({
-  category,
-  questions,
-  cards,
-}: CategoryQuestionListProps) {
+export function CategoryQuestionList({ category, questions, cards }: CategoryQuestionListProps) {
   const router = useRouter();
   const [sortBy, setSortBy] = useState<SortOption>('default');
 
@@ -109,10 +105,10 @@ export function CategoryQuestionList({
   // 個別問題を解く（クリックした問題から連続出題）
   const handleQuestionClick = (questionId: string) => {
     // クリックした問題のインデックスを取得
-    const clickedIndex = sortedQuestions.findIndex(q => q.id === questionId);
+    const clickedIndex = sortedQuestions.findIndex((q) => q.id === questionId);
     // クリックした問題から最後までの問題IDリストを作成
     const remainingQuestions = sortedQuestions.slice(clickedIndex);
-    const ids = remainingQuestions.map(q => q.id).join(',');
+    const ids = remainingQuestions.map((q) => q.id).join(',');
     const returnUrl = encodeURIComponent(`/coffee-trivia/category/${category}`);
     router.push(`/coffee-trivia/quiz?mode=sequential&questionIds=${ids}&returnUrl=${returnUrl}`);
   };
@@ -138,12 +134,8 @@ export function CategoryQuestionList({
       {/* ヘッダー */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-ink">
-            {CATEGORY_LABELS[category]}
-          </h2>
-          <p className="text-sm text-ink-muted">
-            全{questions.length}問
-          </p>
+          <h2 className="text-lg font-bold text-ink">{CATEGORY_LABELS[category]}</h2>
+          <p className="text-sm text-ink-muted">全{questions.length}問</p>
         </div>
       </div>
 
@@ -191,7 +183,6 @@ export function CategoryQuestionList({
           {[
             { value: 'default', label: '順番' },
             { value: 'difficulty', label: '難易度' },
-
           ].map((option) => (
             <Button
               key={option.value}
@@ -200,9 +191,10 @@ export function CategoryQuestionList({
               size="sm"
               className={`
                 !text-xs !px-2 !py-1 !rounded-md !min-h-0 !font-normal
-                ${sortBy === option.value
-                  ? 'bg-surface text-spot border border-spot/30'
-                  : 'bg-edge-subtle text-ink-muted hover:text-ink-sub'
+                ${
+                  sortBy === option.value
+                    ? 'bg-surface text-spot border border-spot/30'
+                    : 'bg-edge-subtle text-ink-muted hover:text-ink-sub'
                 }
               `}
             >

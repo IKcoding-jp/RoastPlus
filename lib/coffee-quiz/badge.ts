@@ -43,10 +43,7 @@ export function checkNewBadges(context: BadgeCheckContext): BadgeType[] {
   checkBadge('master-history', context.stats.categoryStats.history.masteredCount >= 20);
 
   // パーフェクト
-  checkBadge(
-    'perfect-session',
-    context.sessionTotal >= 10 && context.sessionCorrect === context.sessionTotal
-  );
+  checkBadge('perfect-session', context.sessionTotal >= 10 && context.sessionCorrect === context.sessionTotal);
 
   // 初挑戦
   checkBadge('first-quiz', context.stats.totalQuestions >= 1);
@@ -54,9 +51,7 @@ export function checkNewBadges(context: BadgeCheckContext): BadgeType[] {
   // スピードデーモン（10問を2分以内）
   checkBadge(
     'speed-demon',
-    context.sessionTotal >= 10 &&
-      context.sessionCorrect === context.sessionTotal &&
-      context.sessionTimeMs < 120000
+    context.sessionTotal >= 10 && context.sessionCorrect === context.sessionTotal && context.sessionTimeMs < 120000
   );
 
   // 時間帯バッジ（デバッグモード対応）
@@ -70,10 +65,7 @@ export function checkNewBadges(context: BadgeCheckContext): BadgeType[] {
 /**
  * バッジを獲得済みリストに追加
  */
-export function earnBadges(
-  existingBadges: EarnedBadge[],
-  newBadgeTypes: BadgeType[]
-): EarnedBadge[] {
+export function earnBadges(existingBadges: EarnedBadge[], newBadgeTypes: BadgeType[]): EarnedBadge[] {
   const now = new Date().toISOString();
   const newBadges: EarnedBadge[] = newBadgeTypes.map((type) => ({
     type,

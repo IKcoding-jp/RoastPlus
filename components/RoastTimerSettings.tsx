@@ -2,11 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Loading } from '@/components/Loading';
-import {
-  loadRoastTimerSettings,
-  saveRoastTimerSettings,
-  clearRoastTimerSettingsCache,
-} from '@/lib/roastTimerSettings';
+import { loadRoastTimerSettings, saveRoastTimerSettings, clearRoastTimerSettingsCache } from '@/lib/roastTimerSettings';
 import { playTimerSound, stopTimerSound } from '@/lib/sounds';
 import { roastTimerSoundFiles } from '@/lib/soundFiles';
 import type { RoastTimerSettings } from '@/types';
@@ -171,14 +167,9 @@ export function RoastTimerSettings({ onClose }: RoastTimerSettingsProps) {
                     timerSoundEnabled: e.target.checked,
                   })
                 }
-                  />
+              />
               {settings.timerSoundEnabled && (
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={handleTestSound}
-                  disabled={isTestingSound}
-                      >
+                <Button variant="primary" size="sm" onClick={handleTestSound} disabled={isTestingSound}>
                   {isTestingSound ? '再生中...' : 'テスト'}
                 </Button>
               )}
@@ -199,7 +190,7 @@ export function RoastTimerSettings({ onClose }: RoastTimerSettingsProps) {
                   })
                 }
                 options={roastTimerSoundFiles as SelectOption[]}
-                  />
+              />
             )}
 
             {settings.timerSoundEnabled && (
@@ -228,23 +219,13 @@ export function RoastTimerSettings({ onClose }: RoastTimerSettingsProps) {
       </div>
 
       <div className="flex gap-3 sm:gap-4 justify-end mt-6 pt-6 border-t border-edge">
-        <Button
-          variant="secondary"
-          size="md"
-          onClick={onClose}
-        >
+        <Button variant="secondary" size="md" onClick={onClose}>
           キャンセル
         </Button>
-        <Button
-          variant="primary"
-          size="md"
-          onClick={handleSave}
-          disabled={isSaving}
-        >
+        <Button variant="primary" size="md" onClick={handleSave} disabled={isSaving}>
           {isSaving ? '保存中...' : '保存'}
         </Button>
       </div>
     </div>
   );
 }
-

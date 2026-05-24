@@ -14,12 +14,7 @@ const BAG_COUNT_OPTIONS = [
   { value: '2', label: '2袋' },
 ];
 
-export function RoastFields({
-  roastCount,
-  bagCount,
-  onRoastCountChange,
-  onBagCountChange,
-}: RoastFieldsProps) {
+export function RoastFields({ roastCount, bagCount, onRoastCountChange, onBagCountChange }: RoastFieldsProps) {
   return (
     <div className="space-y-3 md:space-y-4 border-t pt-3 md:pt-4 border-edge">
       <NumberInput

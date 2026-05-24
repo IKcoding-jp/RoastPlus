@@ -45,9 +45,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const isPasswordField = type === 'password' && showPasswordToggle;
     const inputType = isPasswordField && showPassword ? 'text' : type;
 
-    const baseStyles = 'w-full rounded-lg border-2 px-4 py-3.5 text-lg transition-all duration-200 shadow-sm min-h-[44px]';
+    const baseStyles =
+      'w-full rounded-lg border-2 px-4 py-3.5 text-lg transition-all duration-200 shadow-sm min-h-[44px]';
 
-    const themeStyles = 'bg-field border-edge text-ink placeholder:text-ink-muted hover:border-edge-strong focus:border-spot focus:bg-field focus:outline-none focus:ring-2 focus:ring-spot-subtle';
+    const themeStyles =
+      'bg-field border-edge text-ink placeholder:text-ink-muted hover:border-edge-strong focus:border-spot focus:bg-field focus:outline-none focus:ring-2 focus:ring-spot-subtle';
 
     const errorStyles = 'border-error focus:border-error focus:ring-error-ring';
 
@@ -59,7 +61,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       error ? errorStyles : '',
       props.disabled ? disabledStyles : '',
       className,
-    ].filter(Boolean).join(' ');
+    ]
+      .filter(Boolean)
+      .join(' ');
 
     const labelStyles = 'block text-sm font-medium text-ink mb-2';
 
@@ -91,11 +95,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               className={`absolute right-3 top-1/2 -translate-y-1/2 p-1 transition-colors ${toggleButtonStyles}`}
               aria-label={showPassword ? 'パスワードを非表示' : 'パスワードを表示'}
             >
-              {showPassword ? (
-                <HiEyeOff className="h-5 w-5" />
-              ) : (
-                <HiEye className="h-5 w-5" />
-              )}
+              {showPassword ? <HiEyeOff className="h-5 w-5" /> : <HiEye className="h-5 w-5" />}
             </button>
           )}
         </div>

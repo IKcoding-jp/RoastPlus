@@ -151,10 +151,7 @@ describe('clockSettings', () => {
 
       setClockSettings(customSettings);
 
-      expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        'roastplus_clock_settings',
-        JSON.stringify(customSettings)
-      );
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('roastplus_clock_settings', JSON.stringify(customSettings));
     });
 
     it('設定を保存後、getClockSettingsで取得できる', () => {

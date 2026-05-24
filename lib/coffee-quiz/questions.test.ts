@@ -194,22 +194,19 @@ describe('questions', () => {
         if (url.includes('roasting')) {
           return Promise.resolve({
             ok: true,
-            json: () =>
-              Promise.resolve({ category: 'roasting', questions: mockRoastingQuestions }),
+            json: () => Promise.resolve({ category: 'roasting', questions: mockRoastingQuestions }),
           });
         }
         if (url.includes('brewing')) {
           return Promise.resolve({
             ok: true,
-            json: () =>
-              Promise.resolve({ category: 'brewing', questions: mockBrewingQuestions }),
+            json: () => Promise.resolve({ category: 'brewing', questions: mockBrewingQuestions }),
           });
         }
         if (url.includes('history')) {
           return Promise.resolve({
             ok: true,
-            json: () =>
-              Promise.resolve({ category: 'history', questions: mockHistoryQuestions }),
+            json: () => Promise.resolve({ category: 'history', questions: mockHistoryQuestions }),
           });
         }
         return Promise.resolve({ ok: false, status: 404 });
@@ -230,8 +227,7 @@ describe('questions', () => {
         if (url.includes('roasting')) {
           return Promise.resolve({
             ok: true,
-            json: () =>
-              Promise.resolve({ category: 'roasting', questions: mockRoastingQuestions }),
+            json: () => Promise.resolve({ category: 'roasting', questions: mockRoastingQuestions }),
           });
         }
         return Promise.resolve({
@@ -395,9 +391,7 @@ describe('questions', () => {
     it('複数カテゴリでフィルタできる', async () => {
       const questions = await getRandomQuestions(10, ['basics', 'roasting']);
 
-      expect(
-        questions.every((q) => q.category === 'basics' || q.category === 'roasting')
-      ).toBe(true);
+      expect(questions.every((q) => q.category === 'basics' || q.category === 'roasting')).toBe(true);
     });
   });
 
@@ -421,9 +415,7 @@ describe('questions', () => {
     it('カテゴリでフィルタできる', async () => {
       const questions = await getDailyQuestions(10, ['basics', 'roasting']);
 
-      expect(
-        questions.every((q) => q.category === 'basics' || q.category === 'roasting')
-      ).toBe(true);
+      expect(questions.every((q) => q.category === 'basics' || q.category === 'roasting')).toBe(true);
     });
 
     it('マスター済み問題よりも未マスター問題を優先する', async () => {

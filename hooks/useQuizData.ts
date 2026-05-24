@@ -75,13 +75,12 @@ export function useQuizData() {
 
   // 問題の統計情報と全問題を読み込み
   useEffect(() => {
-    Promise.all([
-      getQuestionsStats(),
-      loadAllQuestions(),
-    ]).then(([stats, questions]) => {
-      setQuestionsStats(stats);
-      setAllQuestions(questions);
-    }).catch(console.error);
+    Promise.all([getQuestionsStats(), loadAllQuestions()])
+      .then(([stats, questions]) => {
+        setQuestionsStats(stats);
+        setAllQuestions(questions);
+      })
+      .catch(console.error);
   }, []);
 
   // localStorageからデータを読み込み
@@ -96,52 +95,45 @@ export function useQuizData() {
       } else {
         // 初期データを作成
         const initialProgress = createInitialProgress();
-         
+
         setProgress(initialProgress);
         saveToLocalStorage(initialProgress);
       }
     } catch (err) {
       console.error('Failed to load quiz progress:', err);
-       
+
       setError(err as Error);
     }
-     
+
     setLoading(false);
   }, [isHydrated]);
 
   // デバウンス付き保存
-  const saveProgress = useCallback(
-    (newProgress: QuizProgress) => {
-      pendingSaveRef.current = newProgress;
-      setProgress(newProgress);
+  const saveProgress = useCallback((newProgress: QuizProgress) => {
+    pendingSaveRef.current = newProgress;
+    setProgress(newProgress);
 
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = setTimeout(() => {
+      try {
+        saveToLocalStorage({
+          ...newProgress,
+          updatedAt: new Date().toISOString(),
+        });
+        pendingSaveRef.current = null;
+      } catch (err) {
+        console.error('Failed to save quiz progress:', err);
+        setError(err as Error);
       }
-
-      saveTimeoutRef.current = setTimeout(() => {
-        try {
-          saveToLocalStorage({
-            ...newProgress,
-            updatedAt: new Date().toISOString(),
-          });
-          pendingSaveRef.current = null;
-        } catch (err) {
-          console.error('Failed to save quiz progress:', err);
-          setError(err as Error);
-        }
-      }, SAVE_DEBOUNCE_MS);
-    },
-    []
-  );
+    }, SAVE_DEBOUNCE_MS);
+  }, []);
 
   // 回答を記録
   const recordAnswer = useCallback(
-    async (
-      questionId: string,
-      selectedOptionId: string,
-      responseTimeMs: number
-    ): Promise<AnswerResult | null> => {
+    async (questionId: string, selectedOptionId: string, responseTimeMs: number): Promise<AnswerResult | null> => {
       if (!progress) return null;
 
       // 問題を取得
@@ -201,12 +193,7 @@ export function useQuizData() {
       );
 
       // デイリーゴール更新
-      const newDailyGoals = updateDailyGoal(
-        progress.dailyGoals,
-        isCorrect,
-        xpEarned,
-        progress.settings.dailyGoal
-      );
+      const newDailyGoals = updateDailyGoal(progress.dailyGoals, isCorrect, xpEarned, progress.settings.dailyGoal);
 
       // バッジチェック
       const todayGoal = getTodayGoal(newDailyGoals);
@@ -277,14 +264,19 @@ export function useQuizData() {
     [progress, saveProgress]
   );
 
-
   // 今日のゴール
   const todayGoal = progress ? getTodayGoal(progress.dailyGoals) : null;
 
   // カテゴリ別平均定着率と定着済み問題数を計算
-  const categoryMasteryStats: Record<QuizCategory, { averageMastery: number; masteredCount: number; answeredCorrectlyCount: number }> = (() => {
+  const categoryMasteryStats: Record<
+    QuizCategory,
+    { averageMastery: number; masteredCount: number; answeredCorrectlyCount: number }
+  > = (() => {
     const categories: QuizCategory[] = ['basics', 'roasting', 'brewing', 'history'];
-    const result: Record<QuizCategory, { averageMastery: number; masteredCount: number; answeredCorrectlyCount: number }> = {
+    const result: Record<
+      QuizCategory,
+      { averageMastery: number; masteredCount: number; answeredCorrectlyCount: number }
+    > = {
       basics: { averageMastery: 0, masteredCount: 0, answeredCorrectlyCount: 0 },
       roasting: { averageMastery: 0, masteredCount: 0, answeredCorrectlyCount: 0 },
       brewing: { averageMastery: 0, masteredCount: 0, answeredCorrectlyCount: 0 },
@@ -295,14 +287,10 @@ export function useQuizData() {
 
     for (const category of categories) {
       // このカテゴリの問題IDを取得
-      const categoryQuestionIds = allQuestions
-        .filter((q) => q.category === category)
-        .map((q) => q.id);
+      const categoryQuestionIds = allQuestions.filter((q) => q.category === category).map((q) => q.id);
 
       // このカテゴリのカードを取得
-      const categoryCards = progress.cards.filter((c) =>
-        categoryQuestionIds.includes(c.questionId)
-      );
+      const categoryCards = progress.cards.filter((c) => categoryQuestionIds.includes(c.questionId));
 
       if (categoryQuestionIds.length === 0) {
         result[category] = { averageMastery: 0, masteredCount: 0, answeredCorrectlyCount: 0 };
@@ -310,18 +298,11 @@ export function useQuizData() {
       }
 
       // 平均定着率を計算（未学習の問題も含めた全問題数で計算）
-      const totalMastery = categoryCards.reduce(
-        (sum, card) => sum + getCardMastery(card),
-        0
-      );
+      const totalMastery = categoryCards.reduce((sum, card) => sum + getCardMastery(card), 0);
       // 定着済み問題数を計算（67%以上で定着済み＝マスター）
-      const masteredCount = categoryCards.filter(
-        (card) => getCardMastery(card) >= 67
-      ).length;
+      const masteredCount = categoryCards.filter((card) => getCardMastery(card) >= 67).length;
       // 一度でも正解した問題数を計算（X/75問の表示用）
-      const answeredCorrectlyCount = categoryCards.filter(
-        (card) => card.hasAnsweredCorrectly === true
-      ).length;
+      const answeredCorrectlyCount = categoryCards.filter((card) => card.hasAnsweredCorrectly === true).length;
 
       result[category] = {
         averageMastery: Math.round(totalMastery / categoryQuestionIds.length),
@@ -334,9 +315,15 @@ export function useQuizData() {
   })();
 
   // 難易度別平均定着率と定着済み問題数を計算
-  const difficultyMasteryStats: Record<QuizDifficulty, { averageMastery: number; masteredCount: number; answeredCorrectlyCount: number }> = (() => {
+  const difficultyMasteryStats: Record<
+    QuizDifficulty,
+    { averageMastery: number; masteredCount: number; answeredCorrectlyCount: number }
+  > = (() => {
     const difficulties: QuizDifficulty[] = ['beginner', 'intermediate', 'advanced'];
-    const result: Record<QuizDifficulty, { averageMastery: number; masteredCount: number; answeredCorrectlyCount: number }> = {
+    const result: Record<
+      QuizDifficulty,
+      { averageMastery: number; masteredCount: number; answeredCorrectlyCount: number }
+    > = {
       beginner: { averageMastery: 0, masteredCount: 0, answeredCorrectlyCount: 0 },
       intermediate: { averageMastery: 0, masteredCount: 0, answeredCorrectlyCount: 0 },
       advanced: { averageMastery: 0, masteredCount: 0, answeredCorrectlyCount: 0 },
@@ -346,14 +333,10 @@ export function useQuizData() {
 
     for (const difficulty of difficulties) {
       // この難易度の問題IDを取得
-      const difficultyQuestionIds = allQuestions
-        .filter((q) => q.difficulty === difficulty)
-        .map((q) => q.id);
+      const difficultyQuestionIds = allQuestions.filter((q) => q.difficulty === difficulty).map((q) => q.id);
 
       // この難易度のカードを取得
-      const difficultyCards = progress.cards.filter((c) =>
-        difficultyQuestionIds.includes(c.questionId)
-      );
+      const difficultyCards = progress.cards.filter((c) => difficultyQuestionIds.includes(c.questionId));
 
       if (difficultyQuestionIds.length === 0) {
         result[difficulty] = { averageMastery: 0, masteredCount: 0, answeredCorrectlyCount: 0 };
@@ -361,18 +344,11 @@ export function useQuizData() {
       }
 
       // 平均定着率を計算（未学習の問題も含めた全問題数で計算）
-      const totalMastery = difficultyCards.reduce(
-        (sum, card) => sum + getCardMastery(card),
-        0
-      );
+      const totalMastery = difficultyCards.reduce((sum, card) => sum + getCardMastery(card), 0);
       // 定着済み問題数を計算（67%以上で定着済み＝マスター）
-      const masteredCount = difficultyCards.filter(
-        (card) => getCardMastery(card) >= 67
-      ).length;
+      const masteredCount = difficultyCards.filter((card) => getCardMastery(card) >= 67).length;
       // 一度でも正解した問題数を計算
-      const answeredCorrectlyCount = difficultyCards.filter(
-        (card) => card.hasAnsweredCorrectly === true
-      ).length;
+      const answeredCorrectlyCount = difficultyCards.filter((card) => card.hasAnsweredCorrectly === true).length;
 
       result[difficulty] = {
         averageMastery: Math.round(totalMastery / difficultyQuestionIds.length),

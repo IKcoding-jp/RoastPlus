@@ -44,9 +44,7 @@ test.describe('担当表フロー', () => {
     test.skip(isLogin, '認証が必要なためスキップ');
 
     // ページ内に表示されているボタンやリンクを確認
-    const interactiveElements = page.locator(
-      'button:visible, a:visible, [role="button"]:visible'
-    );
+    const interactiveElements = page.locator('button:visible, a:visible, [role="button"]:visible');
     const count = await interactiveElements.count();
     expect(count).toBeGreaterThan(0);
   });

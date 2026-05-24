@@ -11,9 +11,7 @@ import {
   validateContactForm,
 } from './contactForm';
 
-const createValidFormData = (
-  overrides: Partial<ContactFormData> = {}
-): ContactFormData => ({
+const createValidFormData = (overrides: Partial<ContactFormData> = {}): ContactFormData => ({
   name: '山田 太郎',
   email: 'test@example.com',
   type: 'question',
@@ -23,20 +21,14 @@ const createValidFormData = (
 
 describe('validateContactForm', () => {
   it('長すぎる名前を拒否する', () => {
-    const result = validateContactForm(
-      createValidFormData({ name: 'あ'.repeat(CONTACT_FORM_LIMITS.name + 1) })
-    );
+    const result = validateContactForm(createValidFormData({ name: 'あ'.repeat(CONTACT_FORM_LIMITS.name + 1) }));
 
     expect(result.isValid).toBe(false);
-    expect(result.errors.name).toBe(
-      `お名前は${CONTACT_FORM_LIMITS.name}文字以内で入力してください`
-    );
+    expect(result.errors.name).toBe(`お名前は${CONTACT_FORM_LIMITS.name}文字以内で入力してください`);
   });
 
   it('不正なメールアドレスを拒否する', () => {
-    const result = validateContactForm(
-      createValidFormData({ email: 'invalid-email' })
-    );
+    const result = validateContactForm(createValidFormData({ email: 'invalid-email' }));
 
     expect(result.isValid).toBe(false);
     expect(result.errors.email).toBe('有効なメールアドレスを入力してください');
@@ -50,18 +42,14 @@ describe('validateContactForm', () => {
     );
 
     expect(result.isValid).toBe(false);
-    expect(result.errors.email).toBe(
-      `メールアドレスは${CONTACT_FORM_LIMITS.email}文字以内で入力してください`
-    );
+    expect(result.errors.email).toBe(`メールアドレスは${CONTACT_FORM_LIMITS.email}文字以内で入力してください`);
   });
 
   it('短すぎる本文を拒否する', () => {
     const result = validateContactForm(createValidFormData({ message: '短い' }));
 
     expect(result.isValid).toBe(false);
-    expect(result.errors.message).toBe(
-      `お問い合わせ内容は${CONTACT_FORM_LIMITS.messageMin}文字以上で入力してください`
-    );
+    expect(result.errors.message).toBe(`お問い合わせ内容は${CONTACT_FORM_LIMITS.messageMin}文字以上で入力してください`);
   });
 
   it('長すぎる本文を拒否する', () => {
@@ -72,9 +60,7 @@ describe('validateContactForm', () => {
     );
 
     expect(result.isValid).toBe(false);
-    expect(result.errors.message).toBe(
-      `お問い合わせ内容は${CONTACT_FORM_LIMITS.messageMax}文字以内で入力してください`
-    );
+    expect(result.errors.message).toBe(`お問い合わせ内容は${CONTACT_FORM_LIMITS.messageMax}文字以内で入力してください`);
   });
 
   it('有効な内容を受け付ける', () => {

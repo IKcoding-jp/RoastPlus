@@ -37,9 +37,7 @@ const createLocalStorageMock = () => {
   };
 };
 
-const createRoastTimerState = (
-  overrides: Partial<RoastTimerState> = {}
-): RoastTimerState => ({
+const createRoastTimerState = (overrides: Partial<RoastTimerState> = {}): RoastTimerState => ({
   status: 'idle',
   duration: 180,
   elapsed: 0,
@@ -49,9 +47,7 @@ const createRoastTimerState = (
   ...overrides,
 });
 
-const createQuizProgress = (
-  overrides: Partial<QuizProgress> = {}
-): QuizProgress => ({
+const createQuizProgress = (overrides: Partial<QuizProgress> = {}): QuizProgress => ({
   userId: 'user-123',
   cards: [],
   checkmarks: [],
@@ -116,10 +112,7 @@ describe('localStorage', () => {
     it('メンバーIDを保存できる', () => {
       setSelectedMemberId('user-123');
 
-      expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        'roastplus_selected_member_id',
-        'user-123'
-      );
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('roastplus_selected_member_id', 'user-123');
     });
 
     it('メンバーIDを取得できる', () => {
@@ -133,9 +126,7 @@ describe('localStorage', () => {
       setSelectedMemberId('user-123');
       setSelectedMemberId(null);
 
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
-        'roastplus_selected_member_id'
-      );
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('roastplus_selected_member_id');
     });
 
     it('メンバーIDが存在しない場合はnullを返す', () => {
@@ -167,10 +158,7 @@ describe('localStorage', () => {
         remaining: 60,
       });
 
-      localStorageMock.setItem(
-        'roastplus_roast_timer_state',
-        JSON.stringify({ version: 1, state })
-      );
+      localStorageMock.setItem('roastplus_roast_timer_state', JSON.stringify({ version: 1, state }));
 
       const retrieved = getRoastTimerState();
       expect(retrieved).toEqual(state);
@@ -183,10 +171,7 @@ describe('localStorage', () => {
         remaining: 60,
       });
 
-      localStorageMock.setItem(
-        'roastplus_roast_timer_state',
-        JSON.stringify(state)
-      );
+      localStorageMock.setItem('roastplus_roast_timer_state', JSON.stringify(state));
 
       const retrieved = getRoastTimerState();
       expect(retrieved).toEqual(state);
@@ -195,17 +180,13 @@ describe('localStorage', () => {
     it('タイマー状態がnullの場合は削除される', () => {
       setRoastTimerState(null);
 
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
-        'roastplus_roast_timer_state'
-      );
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('roastplus_roast_timer_state');
     });
 
     it('タイマー状態がundefinedの場合は削除される', () => {
       setRoastTimerState(undefined);
 
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
-        'roastplus_roast_timer_state'
-      );
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('roastplus_roast_timer_state');
     });
 
     it('無効なJSONの場合はnullを返す', () => {
@@ -220,7 +201,6 @@ describe('localStorage', () => {
   describe('ローストタイマー設定', () => {
     it('タイマー設定を保存できる（バージョニング付き）', () => {
       const settings: RoastTimerSettings = {
-
         timerSoundEnabled: true,
         timerSoundFile: '/sounds/alarm.mp3',
         timerSoundVolume: 1,
@@ -240,7 +220,6 @@ describe('localStorage', () => {
 
     it('バージョニング付きタイマー設定を取得できる', () => {
       const settings: RoastTimerSettings = {
-
         timerSoundEnabled: false,
         timerSoundFile: '/sounds/bell.mp3',
         timerSoundVolume: 0.5,
@@ -250,10 +229,7 @@ describe('localStorage', () => {
         settingsVersion: 1,
       };
 
-      localStorageMock.setItem(
-        'roastplus_roast_timer_settings',
-        JSON.stringify({ version: 1, settings })
-      );
+      localStorageMock.setItem('roastplus_roast_timer_settings', JSON.stringify({ version: 1, settings }));
 
       const retrieved = getRoastTimerSettings();
       expect(retrieved).toEqual(settings);
@@ -261,7 +237,6 @@ describe('localStorage', () => {
 
     it('レガシーデータ（version未設定）を取得できる', () => {
       const settings: RoastTimerSettings = {
-
         timerSoundEnabled: false,
         timerSoundFile: '/sounds/bell.mp3',
         timerSoundVolume: 0.5,
@@ -271,10 +246,7 @@ describe('localStorage', () => {
         settingsVersion: 1,
       };
 
-      localStorageMock.setItem(
-        'roastplus_roast_timer_settings',
-        JSON.stringify(settings)
-      );
+      localStorageMock.setItem('roastplus_roast_timer_settings', JSON.stringify(settings));
 
       const retrieved = getRoastTimerSettings();
       expect(retrieved).toEqual(settings);
@@ -283,9 +255,7 @@ describe('localStorage', () => {
     it('タイマー設定がnullの場合は削除される', () => {
       setRoastTimerSettings(null);
 
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
-        'roastplus_roast_timer_settings'
-      );
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('roastplus_roast_timer_settings');
     });
   });
 
@@ -334,10 +304,7 @@ describe('localStorage', () => {
     it('味わい選択を保存できる', () => {
       setLast46Taste('さっぱり');
 
-      expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        'roastplus_last_46_taste',
-        'さっぱり'
-      );
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('roastplus_last_46_taste', 'さっぱり');
     });
 
     it('味わい選択を取得できる', () => {
@@ -350,9 +317,7 @@ describe('localStorage', () => {
     it('味わい選択がnullの場合は削除される', () => {
       setLast46Taste(null);
 
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
-        'roastplus_last_46_taste'
-      );
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('roastplus_last_46_taste');
     });
 
     it('味わい選択が存在しない場合はnullを返す', () => {
@@ -365,10 +330,7 @@ describe('localStorage', () => {
     it('濃度選択を保存できる', () => {
       setLast46Strength('濃いめ');
 
-      expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        'roastplus_last_46_strength',
-        '濃いめ'
-      );
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('roastplus_last_46_strength', '濃いめ');
     });
 
     it('濃度選択を取得できる', () => {
@@ -381,9 +343,7 @@ describe('localStorage', () => {
     it('濃度選択がnullの場合は削除される', () => {
       setLast46Strength(null);
 
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
-        'roastplus_last_46_strength'
-      );
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('roastplus_last_46_strength');
     });
 
     it('濃度選択が存在しない場合はnullを返す', () => {
@@ -440,10 +400,7 @@ describe('localStorage', () => {
         progress,
       };
 
-      localStorageMock.setItem(
-        'roastplus_quiz_progress',
-        JSON.stringify(stored)
-      );
+      localStorageMock.setItem('roastplus_quiz_progress', JSON.stringify(stored));
 
       const retrieved = getQuizProgress();
       expect(retrieved).toEqual(progress);
@@ -452,9 +409,7 @@ describe('localStorage', () => {
     it('クイズ進捗がnullの場合は削除される', () => {
       setQuizProgress(null);
 
-      expect(localStorageMock.removeItem).toHaveBeenCalledWith(
-        'roastplus_quiz_progress'
-      );
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('roastplus_quiz_progress');
     });
 
     it('バージョンが一致しない場合はnullを返す', () => {
@@ -463,10 +418,7 @@ describe('localStorage', () => {
         progress: { userId: 'user-123' },
       };
 
-      localStorageMock.setItem(
-        'roastplus_quiz_progress',
-        JSON.stringify(stored)
-      );
+      localStorageMock.setItem('roastplus_quiz_progress', JSON.stringify(stored));
 
       const retrieved = getQuizProgress();
       expect(retrieved).toBeNull();
@@ -689,10 +641,7 @@ describe('localStorage', () => {
       const deviceId = getDeviceId();
 
       expect(deviceId).toMatch(/^device_/);
-      expect(localStorageMock.setItem).toHaveBeenCalledWith(
-        'roastplus_device_id',
-        deviceId
-      );
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('roastplus_device_id', deviceId);
     });
   });
 });

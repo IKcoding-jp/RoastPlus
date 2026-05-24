@@ -4,9 +4,7 @@ import dynamic from 'next/dynamic';
 import { Modal, IconButton } from '@/components/ui';
 import { HiX } from 'react-icons/hi';
 
-const DefectBeanDetail = dynamic(
-  () => import('./DefectBeanDetail').then(mod => ({ default: mod.DefectBeanDetail })),
-);
+const DefectBeanDetail = dynamic(() => import('./DefectBeanDetail').then((mod) => ({ default: mod.DefectBeanDetail })));
 import type { DefectBean } from '@/types';
 
 interface DefectBeanCompareProps {
@@ -15,11 +13,7 @@ interface DefectBeanCompareProps {
   onClose: () => void;
 }
 
-export function DefectBeanCompare({
-  defectBeans,
-  settings,
-  onClose,
-}: DefectBeanCompareProps) {
+export function DefectBeanCompare({ defectBeans, settings, onClose }: DefectBeanCompareProps) {
   if (defectBeans.length === 0) {
     return null;
   }
@@ -33,14 +27,8 @@ export function DefectBeanCompare({
     >
       {/* ヘッダー */}
       <div className="sticky top-0 p-4 flex items-center justify-between z-10 border-b bg-surface border-edge">
-        <h2 className="text-xl font-semibold text-ink">
-          比較 ({defectBeans.length}件)
-        </h2>
-        <IconButton
-          onClick={onClose}
-          rounded
-          aria-label="閉じる"
-        >
+        <h2 className="text-xl font-semibold text-ink">比較 ({defectBeans.length}件)</h2>
+        <IconButton onClick={onClose} rounded aria-label="閉じる">
           <HiX className="h-6 w-6" />
         </IconButton>
       </div>
@@ -52,8 +40,8 @@ export function DefectBeanCompare({
             defectBeans.length === 1
               ? 'grid-cols-1'
               : defectBeans.length === 2
-              ? 'grid-cols-1 md:grid-cols-2'
-              : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                ? 'grid-cols-1 md:grid-cols-2'
+                : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
           }`}
         >
           {defectBeans.map((defectBean) => (

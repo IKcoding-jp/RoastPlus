@@ -57,15 +57,7 @@ const animationPatterns: AnimationPattern[] = [
   },
 ];
 
-function DemoModal({
-  show,
-  onClose,
-  pattern,
-}: {
-  show: boolean;
-  onClose: () => void;
-  pattern: AnimationPattern;
-}) {
+function DemoModal({ show, onClose, pattern }: { show: boolean; onClose: () => void; pattern: AnimationPattern }) {
   return (
     <AnimatePresence>
       {show && (
@@ -113,9 +105,7 @@ export default function ModalAnimations() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-bold text-ink mb-1">
-          Modalアニメーション比較
-        </h2>
+        <h2 className="text-xl font-bold text-ink mb-1">Modalアニメーション比較</h2>
         <p className="text-sm text-ink-muted">
           各パターンの「開く」ボタンをクリックして、アニメーションを比較してください。
         </p>
@@ -130,19 +120,11 @@ export default function ModalAnimations() {
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 mb-1">
                 <span className="font-semibold text-ink">{pattern.name}</span>
-                {index === 0 && (
-                  <span className="text-xs bg-accent/20 text-accent px-2 py-0.5 rounded-full">
-                    現行
-                  </span>
-                )}
+                {index === 0 && <span className="text-xs bg-accent/20 text-accent px-2 py-0.5 rounded-full">現行</span>}
               </div>
               <p className="text-sm text-ink-muted">{pattern.description}</p>
             </div>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setOpenIndex(index)}
-            >
+            <Button variant="secondary" size="sm" onClick={() => setOpenIndex(index)}>
               開く
             </Button>
           </div>
@@ -150,12 +132,7 @@ export default function ModalAnimations() {
       </div>
 
       {animationPatterns.map((pattern, index) => (
-        <DemoModal
-          key={pattern.name}
-          show={openIndex === index}
-          onClose={() => setOpenIndex(null)}
-          pattern={pattern}
-        />
+        <DemoModal key={pattern.name} show={openIndex === index} onClose={() => setOpenIndex(null)} pattern={pattern} />
       ))}
     </div>
   );

@@ -9,12 +9,7 @@ import type { BeanName } from '@/lib/beanConfig';
 import type { RoastLevel } from '@/lib/constants';
 
 interface SetupPanelProps {
-  onStart: (
-    duration: number,
-    beanName?: BeanName,
-    weight?: Weight,
-    roastLevel?: RoastLevel
-  ) => Promise<void>;
+  onStart: (duration: number, beanName?: BeanName, weight?: Weight, roastLevel?: RoastLevel) => Promise<void>;
   isLoading: boolean;
   /** 選択中の重さが変わったときに親へ通知 */
   onWeightSelect?: (weight: Weight) => void;
@@ -74,9 +69,7 @@ export function SetupPanel({ onStart, isLoading, onWeightSelect }: SetupPanelPro
                 padding: '16px 8px 14px',
                 border: `2px solid ${isSelected ? 'var(--spot)' : 'var(--edge)'}`,
                 background: isSelected ? 'var(--spot-surface)' : 'var(--surface)',
-                boxShadow: isSelected
-                  ? '0 0 0 3px var(--spot-subtle), 0 4px 16px var(--spot-subtle)'
-                  : 'none',
+                boxShadow: isSelected ? '0 0 0 3px var(--spot-subtle), 0 4px 16px var(--spot-subtle)' : 'none',
                 transition: 'border-color 0.15s, background 0.15s, box-shadow 0.15s, transform 0.15s',
                 WebkitTapHighlightColor: 'transparent',
               }}
@@ -147,9 +140,7 @@ export function SetupPanel({ onStart, isLoading, onWeightSelect }: SetupPanelPro
         <svg width={17} height={17} viewBox="0 0 24 24" fill="var(--on-spot)" className="flex-shrink-0 relative">
           <polygon points="5 3 19 12 5 21 5 3" />
         </svg>
-        <span className="text-[15px] font-bold tracking-[0.04em] relative">
-          スタート
-        </span>
+        <span className="text-[15px] font-bold tracking-[0.04em] relative">スタート</span>
       </Button>
     </div>
   );

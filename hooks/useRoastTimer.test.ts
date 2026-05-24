@@ -168,10 +168,7 @@ describe('useRoastTimer', () => {
         await new Promise((resolve) => setTimeout(resolve, 10));
       });
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith(
-        'Failed to initialize roast timer time-sync:',
-        error
-      );
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to initialize roast timer time-sync:', error);
 
       consoleErrorSpy.mockRestore();
     });

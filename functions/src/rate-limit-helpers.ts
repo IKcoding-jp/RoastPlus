@@ -5,10 +5,7 @@ interface DefaultAdminAppDependencies<TApp> {
   initializeApp: () => TApp;
 }
 
-export function getDefaultAdminApp<TApp>({
-  getApp,
-  initializeApp,
-}: DefaultAdminAppDependencies<TApp>): TApp {
+export function getDefaultAdminApp<TApp>({ getApp, initializeApp }: DefaultAdminAppDependencies<TApp>): TApp {
   try {
     return getApp();
   } catch (error) {
@@ -31,9 +28,5 @@ export function getUsageDocId(
   date = new Date(),
   timeZone = DEFAULT_TIME_ZONE
 ): string {
-  return [
-    encodeURIComponent(uid),
-    encodeURIComponent(functionName),
-    getUsageWindowId(date, timeZone),
-  ].join('_');
+  return [encodeURIComponent(uid), encodeURIComponent(functionName), getUsageWindowId(date, timeZone)].join('_');
 }

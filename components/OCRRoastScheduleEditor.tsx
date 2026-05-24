@@ -121,12 +121,12 @@ export function OCRRoastScheduleEditor({
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
                       {schedule.time && (
-                        <span className="rounded-md border border-edge bg-overlay px-2 py-1 text-sm font-bold text-ink shadow-sm">{schedule.time}</span>
+                        <span className="rounded-md border border-edge bg-overlay px-2 py-1 text-sm font-bold text-ink shadow-sm">
+                          {schedule.time}
+                        </span>
                       )}
                       {getScheduleTypeIcon(schedule)}
-                      <span className="text-sm font-semibold text-ink">
-                        {getScheduleTypeLabel(schedule)}
-                      </span>
+                      <span className="text-sm font-semibold text-ink">{getScheduleTypeLabel(schedule)}</span>
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {schedule.beanName && (
@@ -165,16 +165,9 @@ export function OCRRoastScheduleEditor({
                       aria-label={isExpanded ? '詳細を閉じる' : '詳細を開く'}
                       className="text-ink-muted"
                     >
-                      <HiChevronDown
-                        className={`h-3.5 w-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                      />
+                      <HiChevronDown className={`h-3.5 w-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                     </IconButton>
-                    <IconButton
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleEdit(schedule)}
-                      aria-label="編集"
-                    >
+                    <IconButton variant="ghost" size="sm" onClick={() => handleEdit(schedule)} aria-label="編集">
                       <HiPencil className="h-4 w-4" />
                     </IconButton>
                     <IconButton
@@ -192,7 +185,9 @@ export function OCRRoastScheduleEditor({
                 {isExpanded && (
                   <div className="mt-1.5 pt-1.5 border-t border-edge text-xs text-ink-sub space-y-1">
                     {schedule.beanName2 && schedule.blendRatio && (
-                      <div>副豆比率: {schedule.beanName2}（{schedule.blendRatio}）</div>
+                      <div>
+                        副豆比率: {schedule.beanName2}（{schedule.blendRatio}）
+                      </div>
                     )}
                     {schedule.isAfterPurge && <div>アフターパージ: 前のローストの時間を引き継ぎ</div>}
                     {schedule.isChaffCleaning && <div>チャフのお掃除</div>}
@@ -204,12 +199,7 @@ export function OCRRoastScheduleEditor({
           })
         )}
 
-        <Button
-          onClick={handleAdd}
-          variant="primary"
-          size="sm"
-          className="w-full !px-3 !py-2 !min-h-[36px] !text-sm"
-        >
+        <Button onClick={handleAdd} variant="primary" size="sm" className="w-full !px-3 !py-2 !min-h-[36px] !text-sm">
           <HiPlus className="h-5 w-5" />
           <span>ローストスケジュールを追加</span>
         </Button>

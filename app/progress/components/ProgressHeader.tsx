@@ -51,23 +51,14 @@ export function ProgressHeader({
                   <HiArchive className="h-4 w-4" />
                 </Button>
               )}
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={onShowModeSelect}
-                className="shadow-md"
-              >
+              <Button variant="primary" size="sm" onClick={onShowModeSelect} className="shadow-md">
                 <HiPlus className="h-4 w-4" />
                 <span className="hidden sm:inline ml-2">追加</span>
               </Button>
             </>
           )}
           {viewMode === 'archived' && (
-            <Button
-              variant="surface"
-              size="sm"
-              onClick={onBackToNormal}
-            >
+            <Button variant="surface" size="sm" onClick={onBackToNormal}>
               <MdTimeline className="h-4 w-4" />
               <span className="hidden sm:inline ml-2">一覧に戻る</span>
             </Button>

@@ -99,8 +99,7 @@ export const EPISODE_CHARACTER_PAIRS: Record<string, CharacterPairInfo> = {
       name: 'フカイリ',
       emoji: '🕶️',
       subtitle: 'クール気取りの不器用な努力家',
-      description:
-        '無口で皮肉っぽいけど、内心はめちゃくちゃ真面目。実はアサイリをすごく信頼してる、情に厚い仲間想い。',
+      description: '無口で皮肉っぽいけど、内心はめちゃくちゃ真面目。実はアサイリをすごく信頼してる、情に厚い仲間想い。',
     },
     relationship:
       '🤝 幼なじみの相棒タイプ\n言葉が少なくても通じ合う二人。アサイリが日常担当、フカイリが裏方・決断担当。\nどちらかが欠けると成立しない、自然体の信頼関係。',
@@ -171,33 +170,26 @@ export const EPISODE_CHARACTER_PAIRS: Record<string, CharacterPairInfo> = {
       name: 'プレス',
       emoji: '🏺',
       subtitle: 'シンプルで直球、本質を絞り出す効率主義者',
-      description:
-        'ストレートにグイッと押し込む。複雑なことをシンプルに捉えたがる。',
+      description: 'ストレートにグイッと押し込む。複雑なことをシンプルに捉えたがる。',
     },
     right: {
       id: 'siphon',
       name: 'サイフォン',
       emoji: '🔬',
       subtitle: '知的で詩的、科学と美を語るロマンチスト',
-      description:
-        '科学的で美しいプロセスを大切にする。技術の進化を楽しむ。',
+      description: '科学的で美しいプロセスを大切にする。技術の進化を楽しむ。',
     },
-    relationship:
-      '🔧 シンプル vs 深遠\nプレスが「要するに？」と聞き、サイフォンが詳しく解説する。',
+    relationship: '🔧 シンプル vs 深遠\nプレスが「要するに？」と聞き、サイフォンが詳しく解説する。',
   },
 };
 
 // エピソードIDからキャラクターペアを取得
-export const getCharacterPairByEpisodeId = (
-  episodeId: string
-): CharacterPairInfo | undefined => {
+export const getCharacterPairByEpisodeId = (episodeId: string): CharacterPairInfo | undefined => {
   return EPISODE_CHARACTER_PAIRS[episodeId];
 };
 
 // エピソードIDから左右のキャラクターを取得
-export const getCharactersByEpisodeId = (
-  episodeId: string
-): { left: Character; right: Character } | undefined => {
+export const getCharactersByEpisodeId = (episodeId: string): { left: Character; right: Character } | undefined => {
   const pair = EPISODE_CHARACTER_PAIRS[episodeId];
   if (!pair) return undefined;
 

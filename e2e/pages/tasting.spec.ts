@@ -28,9 +28,7 @@ test.describe('テイスティングページ', () => {
     const isLogin = await isRedirectedToLogin(page);
     test.skip(isLogin, '認証が必要なためスキップ');
 
-    const createButton = page
-      .locator('[aria-label="新規セッション作成"]')
-      .or(page.getByText('セッションを作成'));
+    const createButton = page.locator('[aria-label="新規セッション作成"]').or(page.getByText('セッションを作成'));
     await expect(createButton.first()).toBeVisible({ timeout: 10000 });
   });
 
@@ -41,10 +39,7 @@ test.describe('テイスティングページ', () => {
     });
     await page.waitForLoadState('load');
     const criticalErrors = errors.filter(
-      (e) =>
-        !e.includes('Firebase') &&
-        !e.includes('firestore') &&
-        !e.includes('auth/')
+      (e) => !e.includes('Firebase') && !e.includes('firestore') && !e.includes('auth/')
     );
     expect(criticalErrors).toHaveLength(0);
   });

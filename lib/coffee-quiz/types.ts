@@ -64,15 +64,28 @@ export interface LevelInfo {
 // バッジの種類
 export type BadgeType =
   // ストリーク系
-  | 'streak-3' | 'streak-7' | 'streak-30' | 'streak-100'
+  | 'streak-3'
+  | 'streak-7'
+  | 'streak-30'
+  | 'streak-100'
   // 正解数系
-  | 'correct-10' | 'correct-50' | 'correct-100' | 'correct-500'
+  | 'correct-10'
+  | 'correct-50'
+  | 'correct-100'
+  | 'correct-500'
   // カテゴリマスタリー
-  | 'master-basics' | 'master-roasting' | 'master-brewing' | 'master-history'
+  | 'master-basics'
+  | 'master-roasting'
+  | 'master-brewing'
+  | 'master-history'
   // パーフェクト
-  | 'perfect-session' | 'perfect-week'
+  | 'perfect-session'
+  | 'perfect-week'
   // その他
-  | 'first-quiz' | 'early-bird' | 'night-owl' | 'speed-demon';
+  | 'first-quiz'
+  | 'early-bird'
+  | 'night-owl'
+  | 'speed-demon';
 
 // 獲得バッジ
 export interface EarnedBadge {
@@ -153,9 +166,9 @@ export interface QuizSettings {
 
 export interface QuestionCheckmark {
   questionId: string;
-  blueCheck: number;  // 0-3: 正解履歴
-  redCheck: number;   // 0-3: 不正解履歴
-  updatedAt: string;  // ISO 8601
+  blueCheck: number; // 0-3: 正解履歴
+  redCheck: number; // 0-3: 不正解履歴
+  updatedAt: string; // ISO 8601
 }
 
 // ========================================
@@ -165,7 +178,7 @@ export interface QuestionCheckmark {
 export interface QuizProgress {
   userId: string;
   cards: QuizCard[];
-  checkmarks?: QuestionCheckmark[];  // 正解/間違いチェックマーク（廃止予定）
+  checkmarks?: QuestionCheckmark[]; // 正解/間違いチェックマーク（廃止予定）
   streak: StreakInfo;
   level: LevelInfo;
   earnedBadges: EarnedBadge[];
@@ -253,28 +266,100 @@ export const DIFFICULTY_LABELS: Record<QuizDifficulty, string> = {
 
 export const BADGE_DEFINITIONS: BadgeDefinition[] = [
   // ストリーク系
-  { type: 'streak-3', name: '3日連続', description: '3日連続でクイズに挑戦', icon: '🔥', requirement: '3日連続ログイン' },
+  {
+    type: 'streak-3',
+    name: '3日連続',
+    description: '3日連続でクイズに挑戦',
+    icon: '🔥',
+    requirement: '3日連続ログイン',
+  },
   { type: 'streak-7', name: '1週間', description: '7日連続でクイズに挑戦', icon: '🔥', requirement: '7日連続ログイン' },
-  { type: 'streak-30', name: '1ヶ月', description: '30日連続でクイズに挑戦', icon: '🔥', requirement: '30日連続ログイン' },
-  { type: 'streak-100', name: '100日達成', description: '100日連続でクイズに挑戦', icon: '💯', requirement: '100日連続ログイン' },
+  {
+    type: 'streak-30',
+    name: '1ヶ月',
+    description: '30日連続でクイズに挑戦',
+    icon: '🔥',
+    requirement: '30日連続ログイン',
+  },
+  {
+    type: 'streak-100',
+    name: '100日達成',
+    description: '100日連続でクイズに挑戦',
+    icon: '💯',
+    requirement: '100日連続ログイン',
+  },
   // 正解数系
   { type: 'correct-10', name: '10問正解', description: '累計10問正解', icon: '✅', requirement: '累計10問正解' },
   { type: 'correct-50', name: '50問正解', description: '累計50問正解', icon: '✅', requirement: '累計50問正解' },
   { type: 'correct-100', name: '100問正解', description: '累計100問正解', icon: '🎯', requirement: '累計100問正解' },
   { type: 'correct-500', name: '500問正解', description: '累計500問正解', icon: '🏆', requirement: '累計500問正解' },
   // カテゴリマスタリー
-  { type: 'master-basics', name: '基礎マスター', description: '基礎知識を20問マスター', icon: '☕', requirement: '基礎カテゴリ20問マスター' },
-  { type: 'master-roasting', name: '焙煎マスター', description: '焙煎理論を20問マスター', icon: '🫘', requirement: '焙煎カテゴリ20問マスター' },
-  { type: 'master-brewing', name: '抽出マスター', description: '抽出理論を20問マスター', icon: '☕', requirement: '抽出カテゴリ20問マスター' },
-  { type: 'master-history', name: '歴史マスター', description: '歴史と文化を20問マスター', icon: '📚', requirement: '歴史カテゴリ20問マスター' },
+  {
+    type: 'master-basics',
+    name: '基礎マスター',
+    description: '基礎知識を20問マスター',
+    icon: '☕',
+    requirement: '基礎カテゴリ20問マスター',
+  },
+  {
+    type: 'master-roasting',
+    name: '焙煎マスター',
+    description: '焙煎理論を20問マスター',
+    icon: '🫘',
+    requirement: '焙煎カテゴリ20問マスター',
+  },
+  {
+    type: 'master-brewing',
+    name: '抽出マスター',
+    description: '抽出理論を20問マスター',
+    icon: '☕',
+    requirement: '抽出カテゴリ20問マスター',
+  },
+  {
+    type: 'master-history',
+    name: '歴史マスター',
+    description: '歴史と文化を20問マスター',
+    icon: '📚',
+    requirement: '歴史カテゴリ20問マスター',
+  },
   // パーフェクト
-  { type: 'perfect-session', name: 'パーフェクト', description: '1セッション全問正解', icon: '⭐', requirement: '10問連続正解' },
-  { type: 'perfect-week', name: 'パーフェクトウィーク', description: '1週間全問正解', icon: '🌟', requirement: '1週間のクイズで全問正解' },
+  {
+    type: 'perfect-session',
+    name: 'パーフェクト',
+    description: '1セッション全問正解',
+    icon: '⭐',
+    requirement: '10問連続正解',
+  },
+  {
+    type: 'perfect-week',
+    name: 'パーフェクトウィーク',
+    description: '1週間全問正解',
+    icon: '🌟',
+    requirement: '1週間のクイズで全問正解',
+  },
   // その他
   { type: 'first-quiz', name: '初挑戦', description: '初めてクイズに挑戦', icon: '🎉', requirement: '初回クイズ完了' },
-  { type: 'early-bird', name: 'アーリーバード', description: '朝6時前にクイズ', icon: '🌅', requirement: '午前6時前にクイズ完了' },
-  { type: 'night-owl', name: 'ナイトオウル', description: '深夜0時以降にクイズ', icon: '🦉', requirement: '午前0時以降にクイズ完了' },
-  { type: 'speed-demon', name: 'スピードデーモン', description: '10問を2分以内に回答', icon: '⚡', requirement: '10問を2分以内に完了' },
+  {
+    type: 'early-bird',
+    name: 'アーリーバード',
+    description: '朝6時前にクイズ',
+    icon: '🌅',
+    requirement: '午前6時前にクイズ完了',
+  },
+  {
+    type: 'night-owl',
+    name: 'ナイトオウル',
+    description: '深夜0時以降にクイズ',
+    icon: '🦉',
+    requirement: '午前0時以降にクイズ完了',
+  },
+  {
+    type: 'speed-demon',
+    name: 'スピードデーモン',
+    description: '10問を2分以内に回答',
+    icon: '⚡',
+    requirement: '10問を2分以内に完了',
+  },
 ];
 
 // ========================================

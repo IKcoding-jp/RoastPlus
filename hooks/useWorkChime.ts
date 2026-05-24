@@ -68,39 +68,42 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
     });
   }, []);
 
-  const testWorkChime = useCallback((kind: WorkChimeKind) => {
-    const testTime = now ?? new Date();
-    const hours = String(testTime.getHours()).padStart(2, '0');
-    const minutes = String(testTime.getMinutes()).padStart(2, '0');
-    const time = `${hours}:${minutes}`;
-    const chime: DueWorkChime = {
-      period: {
-        id: `test-${kind}`,
-        start: time,
-        end: time,
-        kind: kind === 'break' ? 'break' : kind === 'cleanup-start' ? 'cleanup' : 'work',
-      },
-      time,
-      kind,
-      label: getTestChimeLabel(kind),
-      playKey: `test-${kind}-${Date.now()}`,
-      message: getWorkChimeMessage(kind),
-    };
+  const testWorkChime = useCallback(
+    (kind: WorkChimeKind) => {
+      const testTime = now ?? new Date();
+      const hours = String(testTime.getHours()).padStart(2, '0');
+      const minutes = String(testTime.getMinutes()).padStart(2, '0');
+      const time = `${hours}:${minutes}`;
+      const chime: DueWorkChime = {
+        period: {
+          id: `test-${kind}`,
+          start: time,
+          end: time,
+          kind: kind === 'break' ? 'break' : kind === 'cleanup-start' ? 'cleanup' : 'work',
+        },
+        time,
+        kind,
+        label: getTestChimeLabel(kind),
+        playKey: `test-${kind}-${Date.now()}`,
+        message: getWorkChimeMessage(kind),
+      };
 
-    if (timerRef.current) clearTimeout(timerRef.current);
+      if (timerRef.current) clearTimeout(timerRef.current);
 
-    setIsAudioEnabled(true);
-    setActiveChime(chime);
+      setIsAudioEnabled(true);
+      setActiveChime(chime);
 
-    if (settings.soundEnabled) {
-      playWorkChime(kind, { volume: settings.volume });
-    }
+      if (settings.soundEnabled) {
+        playWorkChime(kind, { volume: settings.volume });
+      }
 
-    timerRef.current = setTimeout(() => {
-      setActiveChime(null);
-      timerRef.current = null;
-    }, 5000);
-  }, [now, settings.soundEnabled, settings.volume]);
+      timerRef.current = setTimeout(() => {
+        setActiveChime(null);
+        timerRef.current = null;
+      }, 5000);
+    },
+    [now, settings.soundEnabled, settings.volume]
+  );
 
   const currentPeriod = now ? getCurrentWorkChimePeriod(now, settings) : null;
   const nextChime = now ? getNextWorkChime(now, settings) : null;

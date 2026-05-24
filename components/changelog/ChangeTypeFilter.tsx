@@ -11,11 +11,7 @@ interface ChangeTypeFilterProps {
   onClear: () => void;
 }
 
-export const ChangeTypeFilter: React.FC<ChangeTypeFilterProps> = ({
-  selectedTypes,
-  onToggle,
-  onClear,
-}) => {
+export const ChangeTypeFilter: React.FC<ChangeTypeFilterProps> = ({ selectedTypes, onToggle, onClear }) => {
   return (
     <div className="flex flex-wrap gap-2 items-center">
       <span className="text-sm text-ink-muted mr-1">フィルター:</span>

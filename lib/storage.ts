@@ -36,11 +36,7 @@ function sanitizeFileName(fileName: string): string {
  * @param file 画像ファイル
  * @returns ダウンロードURL
  */
-export async function uploadDefectBeanImage(
-  userId: string,
-  defectBeanId: string,
-  file: File
-): Promise<string> {
+export async function uploadDefectBeanImage(userId: string, defectBeanId: string, file: File): Promise<string> {
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
   const timeoutPromise = new Promise<never>((_, reject) => {
@@ -83,24 +79,24 @@ export async function uploadDefectBeanImage(
 export async function deleteDefectBeanImage(imageUrl: string): Promise<void> {
   try {
     const storageInstance = getStorageInstance();
-    
+
     // URLからStorage参照を取得
     // URL形式: https://firebasestorage.googleapis.com/v0/b/{bucket}/o/{encodedPath}?alt=media&token={token}
     // または: https://firebasestorage.googleapis.com/v0/b/{bucket}/o/{encodedPath}?alt=media
     const url = new URL(imageUrl);
-    
+
     // パス部分を抽出（/o/ の後の部分）
     // クエリパラメータの有無に関わらず動作するように改善
     const pathMatch = url.pathname.match(/\/o\/(.+)$/);
-    
+
     if (!pathMatch || !pathMatch[1]) {
       throw new Error(`Invalid image URL format: ${imageUrl}`);
     }
-    
+
     // URLデコード（%2F -> / など）
     const decodedPath = decodeURIComponent(pathMatch[1]);
     const storageRef = ref(storageInstance, decodedPath);
-    
+
     // 画像を削除
     await deleteObject(storageRef);
   } catch (error) {
@@ -108,4 +104,3 @@ export async function deleteDefectBeanImage(imageUrl: string): Promise<void> {
     throw error;
   }
 }
-

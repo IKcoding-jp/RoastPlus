@@ -4,8 +4,8 @@ import { useRouter } from 'next/navigation';
 import type { AppData } from '@/types';
 import dynamic from 'next/dynamic';
 
-const TastingRadarChart = dynamic(
-  () => import('./TastingRadarChart').then(mod => ({ default: mod.TastingRadarChart })),
+const TastingRadarChart = dynamic(() =>
+  import('./TastingRadarChart').then((mod) => ({ default: mod.TastingRadarChart }))
 );
 import { StarRating } from './StarRating';
 import { HiTrash } from 'react-icons/hi';
@@ -66,24 +66,15 @@ export function TastingRecordList({ data, onUpdate }: TastingRecordListProps) {
     <div className="space-y-4">
       {sortedRecords.map((record) => {
         return (
-          <Card
-            key={record.id}
-            variant="hoverable"
-            className="p-6"
-            onClick={() => handleCardClick(record.id)}
-          >
+          <Card key={record.id} variant="hoverable" className="p-6" onClick={() => handleCardClick(record.id)}>
             <div className="flex flex-col md:flex-row gap-4">
               {/* 左側: 豆名と基本情報 */}
               <div className="flex-1">
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-xl font-semibold text-ink">
-                    {record.beanName}
-                  </h3>
+                  <h3 className="text-xl font-semibold text-ink">{record.beanName}</h3>
                   <div className="flex items-center gap-2">
                     <RoastLevelBadge level={record.roastLevel} size="sm" />
-                    <span className="text-sm text-ink-sub">
-                      {formatDate(record.tastingDate)}
-                    </span>
+                    <span className="text-sm text-ink-sub">{formatDate(record.tastingDate)}</span>
                     <IconButton
                       variant="danger"
                       onClick={(e) => {
@@ -104,9 +95,7 @@ export function TastingRecordList({ data, onUpdate }: TastingRecordListProps) {
 
                 {/* コメント */}
                 {record.overallImpression && (
-                  <p className="text-sm line-clamp-2 text-ink-sub">
-                    {record.overallImpression}
-                  </p>
+                  <p className="text-sm line-clamp-2 text-ink-sub">{record.overallImpression}</p>
                 )}
               </div>
 
@@ -121,4 +110,3 @@ export function TastingRecordList({ data, onUpdate }: TastingRecordListProps) {
     </div>
   );
 }
-

@@ -4,8 +4,21 @@ import { ArrowLeft, ArrowCounterClockwise, Play, X, Drop, Timer } from 'phosphor
 
 // --- Mock Data ---
 const MOCK_STEPS = [
-  { id: '1', title: '蒸らし（味：40%）', description: '粉全体にまんべんなく注いで、均一に湿らせます', startTimeSec: 0, targetTotalWater: 30, note: '蒸らしのお湯を入れたタイミングでタイマーを開始してください。' },
-  { id: '2', title: '2投目（味：40%）', description: '中心から外へ円を描くように注ぐ', startTimeSec: 45, targetTotalWater: 60 },
+  {
+    id: '1',
+    title: '蒸らし（味：40%）',
+    description: '粉全体にまんべんなく注いで、均一に湿らせます',
+    startTimeSec: 0,
+    targetTotalWater: 30,
+    note: '蒸らしのお湯を入れたタイミングでタイマーを開始してください。',
+  },
+  {
+    id: '2',
+    title: '2投目（味：40%）',
+    description: '中心から外へ円を描くように注ぐ',
+    startTimeSec: 45,
+    targetTotalWater: 60,
+  },
   { id: '3', title: '濃度調整（60%）', description: '中心に細く注ぐ', startTimeSec: 90, targetTotalWater: 150 },
 ];
 const MOCK_CURRENT_TIME = 30;
@@ -39,9 +52,7 @@ export default function TimerPatternG() {
             <button className="p-1 text-ink/60">
               <ArrowLeft size={20} weight="bold" />
             </button>
-            <span className="text-sm font-medium text-ink truncate max-w-[160px]">
-              {MOCK_RECIPE_NAME}
-            </span>
+            <span className="text-sm font-medium text-ink truncate max-w-[160px]">{MOCK_RECIPE_NAME}</span>
           </div>
           <span className="text-sm font-semibold text-spot">
             Step {MOCK_CURRENT_STEP_INDEX + 1}/{MOCK_STEPS.length}
@@ -66,9 +77,7 @@ export default function TimerPatternG() {
               <div className="w-6 h-6 rounded-full bg-spot flex items-center justify-center">
                 <Drop size={14} weight="fill" className="text-white" />
               </div>
-              <span className="text-base font-bold text-ink">
-                {currentStep.title}
-              </span>
+              <span className="text-base font-bold text-ink">{currentStep.title}</span>
             </div>
             {currentStep.targetTotalWater && (
               <div className="mb-1.5">
@@ -81,14 +90,8 @@ export default function TimerPatternG() {
                 <span className="text-sm text-ink/50 ml-1">まで注ぐ</span>
               </div>
             )}
-            <p className="text-sm text-ink/70 leading-relaxed">
-              {currentStep.description}
-            </p>
-            {currentStep.note && (
-              <p className="text-xs text-ink/40 mt-1.5 italic">
-                {currentStep.note}
-              </p>
-            )}
+            <p className="text-sm text-ink/70 leading-relaxed">{currentStep.description}</p>
+            {currentStep.note && <p className="text-xs text-ink/40 mt-1.5 italic">{currentStep.note}</p>}
           </div>
 
           {/* Countdown to Next Step - 主役 */}
@@ -106,7 +109,8 @@ export default function TimerPatternG() {
                       className="text-2xl font-bold text-spot tabular-nums"
                       style={{ fontFamily: 'var(--font-nunito), sans-serif' }}
                     >
-                      {secondsUntilNext}<span className="text-sm font-semibold">秒</span>
+                      {secondsUntilNext}
+                      <span className="text-sm font-semibold">秒</span>
                     </span>
                   </div>
                   {/* プログレスバー（残り時間を視覚化） */}
@@ -122,17 +126,11 @@ export default function TimerPatternG() {
               {/* 次のステップ情報 */}
               <div className="flex items-center gap-2 pl-11">
                 <div className="w-5 h-5 rounded-full bg-ink/10 flex items-center justify-center flex-shrink-0">
-                  <span className="text-[10px] font-bold text-ink/50">
-                    {MOCK_CURRENT_STEP_INDEX + 2}
-                  </span>
+                  <span className="text-[10px] font-bold text-ink/50">{MOCK_CURRENT_STEP_INDEX + 2}</span>
                 </div>
-                <span className="text-sm font-semibold text-ink/60">
-                  {nextStep.title}
-                </span>
+                <span className="text-sm font-semibold text-ink/60">{nextStep.title}</span>
                 {nextStep.targetTotalWater && (
-                  <span className="text-xs text-ink/40">
-                    / {nextStep.targetTotalWater}gまで
-                  </span>
+                  <span className="text-xs text-ink/40">/ {nextStep.targetTotalWater}gまで</span>
                 )}
               </div>
             </div>
@@ -149,18 +147,11 @@ export default function TimerPatternG() {
         {/* Progress Bar */}
         <div className="flex-none px-4 pb-1">
           <div className="w-full h-1.5 rounded-full bg-surface overflow-hidden">
-            <div
-              className="h-full rounded-full bg-spot/40"
-              style={{ width: `${overallProgress * 100}%` }}
-            />
+            <div className="h-full rounded-full bg-spot/40" style={{ width: `${overallProgress * 100}%` }} />
           </div>
           <div className="flex justify-between mt-1 px-0.5">
-            <span className="text-[10px] text-ink/30 tabular-nums">
-              {formatTime(MOCK_CURRENT_TIME)}
-            </span>
-            <span className="text-[10px] text-ink/30 tabular-nums">
-              {formatTime(MOCK_TOTAL_DURATION)}
-            </span>
+            <span className="text-[10px] text-ink/30 tabular-nums">{formatTime(MOCK_CURRENT_TIME)}</span>
+            <span className="text-[10px] text-ink/30 tabular-nums">{formatTime(MOCK_TOTAL_DURATION)}</span>
           </div>
         </div>
 

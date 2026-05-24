@@ -18,7 +18,13 @@ interface WorkProgressFormDialogProps {
 }
 
 export function WorkProgressFormDialog({
-  isOpen, onClose, onSubmit, onDelete, initialData, isEditing, defaultGroupName
+  isOpen,
+  onClose,
+  onSubmit,
+  onDelete,
+  initialData,
+  isEditing,
+  defaultGroupName,
 }: WorkProgressFormDialogProps) {
   const initialWeight = initialData?.weight || '';
   const initialAmount = initialWeight ? extractTargetAmount(initialWeight) : undefined;
@@ -69,9 +75,7 @@ export function WorkProgressFormDialog({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
       <div className="bg-overlay rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh] animate-scale-in border border-edge">
         <div className="px-6 py-4 border-b border-edge flex justify-between items-center bg-ground">
-          <h3 className="font-bold text-ink text-lg">
-            {isEditing ? '作業を編集' : '新しい作業を追加'}
-          </h3>
+          <h3 className="font-bold text-ink text-lg">{isEditing ? '作業を編集' : '新しい作業を追加'}</h3>
           <IconButton variant="ghost" size="md" rounded onClick={onClose} aria-label="閉じる">
             <HiX className="h-5 w-5" />
           </IconButton>
@@ -122,8 +126,8 @@ export function WorkProgressFormDialog({
                 />
               </div>
               <p className="text-xs text-ink-muted mt-1.5">
-                ※ 数値と単位を入力すると進捗バーが表示されます（例: 10kg）。<br />
-                ※ 空欄の場合は完成数のみをカウントするモードになります。
+                ※ 数値と単位を入力すると進捗バーが表示されます（例: 10kg）。
+                <br />※ 空欄の場合は完成数のみをカウントするモードになります。
               </p>
             </div>
 
@@ -151,14 +155,7 @@ export function WorkProgressFormDialog({
 
           <div className="mt-8 flex gap-3">
             {isEditing && onDelete && (
-              <Button
-                type="button"
-                variant="danger"
-                size="md"
-                onClick={onDelete}
-                className="!rounded-xl"
-                title="削除"
-              >
+              <Button type="button" variant="danger" size="md" onClick={onDelete} className="!rounded-xl" title="削除">
                 <HiTrash className="h-5 w-5" />
               </Button>
             )}
@@ -170,7 +167,7 @@ export function WorkProgressFormDialog({
               loading={isSubmitting}
               className="flex-1 shadow-md hover:shadow-lg !rounded-xl"
             >
-              {isSubmitting ? '保存中...' : (isEditing ? '更新する' : '追加する')}
+              {isSubmitting ? '保存中...' : isEditing ? '更新する' : '追加する'}
             </Button>
           </div>
         </form>

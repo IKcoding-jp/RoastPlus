@@ -101,14 +101,11 @@ function runRulesTests(java: JavaCandidate) {
   };
 
   const command = `firebase emulators:exec --project ${PROJECT_ID} --only firestore,storage "${TEST_COMMAND}"`;
-  const result = spawnSync(
-    command,
-    {
-      env,
-      shell: true,
-      stdio: 'inherit',
-    }
-  );
+  const result = spawnSync(command, {
+    env,
+    shell: true,
+    stdio: 'inherit',
+  });
 
   if (result.error) {
     console.error(result.error.message);

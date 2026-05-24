@@ -30,7 +30,9 @@ export function ArchivedView({ archivedWorkProgressesByDate, onUnarchive }: Arch
           <div key={group.date} className="bg-surface rounded-xl shadow-card border border-edge overflow-hidden">
             <div className="bg-ground px-4 py-3 border-b border-edge">
               <h2 className="font-bold text-ink flex items-center gap-2">
-                <span className="text-spot">{new Date(group.date).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                <span className="text-spot">
+                  {new Date(group.date).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })}
+                </span>
                 <span className="text-xs font-normal text-ink-sub bg-surface px-2 py-0.5 rounded-full border border-edge">
                   {group.workProgresses.length}件
                 </span>
@@ -54,7 +56,8 @@ export function ArchivedView({ archivedWorkProgressesByDate, onUnarchive }: Arch
                         <div className="text-sm text-ink-sub mb-2">
                           {wp.targetAmount !== undefined ? (
                             <span>
-                              {formatAmount(wp.currentAmount || 0, unit)} / {formatAmount(wp.targetAmount, unit)}{unit}
+                              {formatAmount(wp.currentAmount || 0, unit)} / {formatAmount(wp.targetAmount, unit)}
+                              {unit}
                               <span className="text-ink-muted mx-2">|</span>
                               達成率: {calculateProgressPercentage(wp).toFixed(0)}%
                             </span>
@@ -68,11 +71,7 @@ export function ArchivedView({ archivedWorkProgressesByDate, onUnarchive }: Arch
                           </p>
                         )}
                       </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onUnarchive(wp.id)}
-                      >
+                      <Button variant="outline" size="sm" onClick={() => onUnarchive(wp.id)}>
                         戻す
                       </Button>
                     </div>

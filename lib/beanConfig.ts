@@ -108,4 +108,3 @@ export function getRoastMachineModeForBlend(
   // 割合が同じ場合（5:5など）：数字が小さい方のG設定を採用
   return MODE_PRIORITY[mode1] <= MODE_PRIORITY[mode2] ? mode1 : mode2;
 }
-

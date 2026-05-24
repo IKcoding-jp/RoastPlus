@@ -81,7 +81,10 @@ async function formatScheduleWithGPT(imageBase64: string): Promise<OCRScheduleRe
   const apiKey = process.env.OPENAI_API_KEY?.trim();
 
   if (!apiKey) {
-    throw new HttpsError('failed-precondition', 'OPENAI_API_KEYが設定されていません。firebase functions:secrets:set OPENAI_API_KEY で設定してください。');
+    throw new HttpsError(
+      'failed-precondition',
+      'OPENAI_API_KEYが設定されていません。firebase functions:secrets:set OPENAI_API_KEY で設定してください。'
+    );
   }
 
   const openai = new OpenAI({
@@ -295,7 +298,12 @@ JSONのみを返してください。説明文・注釈・前文は不要です�
           errorMessage = 'OpenAI APIのレート制限に達しました。しばらく待ってから再度お試しください。';
         } else if (httpStatus === 500 || httpStatus === 502 || httpStatus === 503) {
           errorMessage = 'OpenAI APIサーバーエラーが発生しました。しばらく待ってから再度お試しください。';
-        } else if (openAiError.message?.includes('Connection') || openAiError.message?.includes('network') || openAiError.message?.includes('ECONNREFUSED') || openAiError.message?.includes('ETIMEDOUT')) {
+        } else if (
+          openAiError.message?.includes('Connection') ||
+          openAiError.message?.includes('network') ||
+          openAiError.message?.includes('ECONNREFUSED') ||
+          openAiError.message?.includes('ETIMEDOUT')
+        ) {
           errorMessage = 'OpenAI APIへの接続エラーが発生しました。ネットワーク接続を確認してください。';
         } else if (openAiError.message?.includes('timeout') || openAiError.message?.includes('TIMEOUT')) {
           errorMessage = 'OpenAI APIへのリクエストがタイムアウトしました。しばらく待ってから再度お試しください。';

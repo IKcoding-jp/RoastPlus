@@ -1,10 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  calculateXPForNextLevel,
-  calculateLevelFromTotalXP,
-  addXP,
-  createInitialLevelInfo,
-} from './level';
+import { calculateXPForNextLevel, calculateLevelFromTotalXP, addXP, createInitialLevelInfo } from './level';
 import { LEVEL_CONFIG } from './types';
 
 describe('calculateXPForNextLevel', () => {
@@ -19,10 +14,7 @@ describe('calculateXPForNextLevel', () => {
   });
 
   it('レベル5の必要XP', () => {
-    const expected = Math.floor(
-      LEVEL_CONFIG.baseXP * Math.pow(5, LEVEL_CONFIG.exponent) +
-        LEVEL_CONFIG.baseXP * 5
-    );
+    const expected = Math.floor(LEVEL_CONFIG.baseXP * Math.pow(5, LEVEL_CONFIG.exponent) + LEVEL_CONFIG.baseXP * 5);
     expect(calculateXPForNextLevel(5)).toBe(expected);
   });
 

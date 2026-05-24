@@ -19,7 +19,7 @@ import { needsConsent } from '@/lib/consent';
 import type { HomeFeatureKey } from '@/lib/homeFeatures';
 import dynamic from 'next/dynamic';
 
-const Snowfall = dynamic(() => import('@/components/Snowfall').then(mod => ({ default: mod.Snowfall })), {
+const Snowfall = dynamic(() => import('@/components/Snowfall').then((mod) => ({ default: mod.Snowfall })), {
   ssr: false,
 });
 import { FaTree, FaGift, FaSnowflake, FaStar } from 'react-icons/fa';
@@ -101,7 +101,6 @@ const ACTIONS: Action[] = [
     description: '淹れ方の手順',
     href: '/drip-guide',
     icon: MdCoffeeMaker,
-    
   },
   {
     key: 'coffee-trivia',
@@ -116,7 +115,6 @@ const ACTIONS: Action[] = [
     description: '開発の裏話を覗く',
     href: '/dev-stories',
     icon: RiLightbulbFlashFill,
-    
   },
   {
     key: 'settings',
@@ -241,15 +239,19 @@ export default function HomePage(_props: HomePageProps = {}) {
   }
 
   return (
-    <div className={`h-dvh flex flex-col overflow-hidden animate-home-page relative transition-colors duration-1000 bg-page text-ink ${isChristmasMode
-      ? 'bg-[radial-gradient(circle_at_center,_#0a2f1a_0%,_#051a0e_100%)]'
-      : ''
-      }`}>
+    <div
+      className={`h-dvh flex flex-col overflow-hidden animate-home-page relative transition-colors duration-1000 bg-page text-ink ${
+        isChristmasMode ? 'bg-[radial-gradient(circle_at_center,_#0a2f1a_0%,_#051a0e_100%)]' : ''
+      }`}
+    >
       {isChristmasMode && <Snowfall />}
 
       {/* ノイズテクスチャ (高級感の演出) */}
       {isChristmasMode && (
-        <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0" style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/carbon-fibre.png")' }}></div>
+        <div
+          className="fixed inset-0 pointer-events-none opacity-[0.03] z-0"
+          style={{ backgroundImage: 'url("https://www.transparenttextures.com/patterns/carbon-fibre.png")' }}
+        ></div>
       )}
 
       {/* ヘッダー */}
@@ -257,13 +259,12 @@ export default function HomePage(_props: HomePageProps = {}) {
 
       {/* メインコンテンツ */}
       <main className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-2 pb-2 sm:px-6 sm:pt-3 sm:pb-3 flex-1 min-h-0">
-
         <div
           className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4"
           style={cardHeight ? { gridAutoRows: `${cardHeight}px` } : { gridAutoRows: '1fr' }}
         >
           {visibleActions.map(({ key, title, description, href, icon: DefaultIcon, badge }, index) => {
-            const Icon = isChristmasMode ? (CHRISTMAS_ICONS[key] || DefaultIcon) : DefaultIcon;
+            const Icon = isChristmasMode ? CHRISTMAS_ICONS[key] || DefaultIcon : DefaultIcon;
 
             return (
               <ActionCard

@@ -51,9 +51,7 @@ export async function loadAllQuestions(): Promise<QuizQuestion[]> {
 /**
  * カテゴリ別の問題を取得
  */
-export async function getQuestionsByCategory(
-  category: QuizCategory
-): Promise<QuizQuestion[]> {
+export async function getQuestionsByCategory(category: QuizCategory): Promise<QuizQuestion[]> {
   const allQuestions = await loadAllQuestions();
   return allQuestions.filter((q) => q.category === category);
 }
@@ -61,9 +59,7 @@ export async function getQuestionsByCategory(
 /**
  * 難易度別の問題を取得
  */
-export async function getQuestionsByDifficulty(
-  difficulty: QuizDifficulty
-): Promise<QuizQuestion[]> {
+export async function getQuestionsByDifficulty(difficulty: QuizDifficulty): Promise<QuizQuestion[]> {
   const allQuestions = await loadAllQuestions();
   return allQuestions.filter((q) => q.difficulty === difficulty);
 }
@@ -81,11 +77,9 @@ export async function getQuestionById(id: string): Promise<QuizQuestion | undefi
  */
 export async function getQuestionsByIds(ids: string[]): Promise<QuizQuestion[]> {
   const allQuestions = await loadAllQuestions();
-  const questionMap = new Map(allQuestions.map(q => [q.id, q]));
+  const questionMap = new Map(allQuestions.map((q) => [q.id, q]));
   // IDの順番を維持して返す
-  return ids
-    .map(id => questionMap.get(id))
-    .filter((q): q is QuizQuestion => q !== undefined);
+  return ids.map((id) => questionMap.get(id)).filter((q): q is QuizQuestion => q !== undefined);
 }
 
 /**
@@ -129,7 +123,7 @@ export async function getDailyQuestions(
   cards?: QuizCard[]
 ): Promise<QuizQuestion[]> {
   const categories = enabledCategories || ['basics', 'roasting', 'brewing', 'history'];
-  
+
   // すべての有効カテゴリから問題を取得
   const allQuestions: QuizQuestion[] = [];
   for (const category of categories) {
@@ -139,13 +133,11 @@ export async function getDailyQuestions(
 
   // カード情報からマスター済み問題IDを取得（定着率67%以上）
   const masteredIds = new Set(
-    (cards ?? [])
-      .filter(card => getCardMastery(card) >= 67)
-      .map(card => card.questionId)
+    (cards ?? []).filter((card) => getCardMastery(card) >= 67).map((card) => card.questionId)
   );
 
   // 未マスター問題を優先的に選択
-  const nonMasteredQuestions = allQuestions.filter(q => !masteredIds.has(q.id));
+  const nonMasteredQuestions = allQuestions.filter((q) => !masteredIds.has(q.id));
 
   let selected: QuizQuestion[];
 
@@ -154,10 +146,10 @@ export async function getDailyQuestions(
     selected = shuffleArray(nonMasteredQuestions).slice(0, count);
   } else {
     // 不足分はマスター問題から補充
-    const masteredQuestions = allQuestions.filter(q => masteredIds.has(q.id));
+    const masteredQuestions = allQuestions.filter((q) => masteredIds.has(q.id));
     selected = [
       ...nonMasteredQuestions,
-      ...shuffleArray(masteredQuestions).slice(0, count - nonMasteredQuestions.length)
+      ...shuffleArray(masteredQuestions).slice(0, count - nonMasteredQuestions.length),
     ];
     selected = shuffleArray(selected);
   }

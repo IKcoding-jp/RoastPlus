@@ -125,7 +125,7 @@ export function useTimerNotifications(): UseTimerNotificationsReturn {
         audio.currentTime = 0;
         audio.loop = false;
         // すべてのイベントリスナーを削除
-        audio.removeEventListener('error', () => { });
+        audio.removeEventListener('error', () => {});
         // Audioオブジェクトを完全に停止
         audio.src = '';
         audio.load(); // リソースを解放

@@ -38,10 +38,7 @@ export function TastingSessionCardMobile({
 
   return (
     <>
-      <div
-        className="flex-shrink-0 w-[calc(100vw-2rem)] h-full snap-center"
-        style={{ scrollSnapStop: 'always' }}
-      >
+      <div className="flex-shrink-0 w-[calc(100vw-2rem)] h-full snap-center" style={{ scrollSnapStop: 'always' }}>
         <Link href={`/tasting?sessionId=${session.id}`} className="block h-full">
           <Card variant="hoverable" className="p-0 flex flex-col h-full overflow-hidden shadow-lg">
             <div className="relative z-10 flex flex-col h-full">
@@ -50,7 +47,9 @@ export function TastingSessionCardMobile({
                 <div className={`flex-shrink-0 p-5 pb-4 border-b border-dashed ${cardBorderClass}`}>
                   <div className="flex items-center gap-3">
                     <div className="flex-1 min-w-0">
-                      <h3 className={`text-2xl font-serif font-bold ${textPrimaryClass} tracking-tight leading-tight truncate mb-2`}>
+                      <h3
+                        className={`text-2xl font-serif font-bold ${textPrimaryClass} tracking-tight leading-tight truncate mb-2`}
+                      >
                         {session.beanName}
                       </h3>
                       <div className="flex items-center gap-2">
@@ -63,9 +62,7 @@ export function TastingSessionCardMobile({
                         >
                           {session.roastLevel}
                         </span>
-                        <span className={`text-[10px] ${textMutedClass}`}>
-                          {formatDate(session.createdAt)}
-                        </span>
+                        <span className={`text-[10px] ${textMutedClass}`}>{formatDate(session.createdAt)}</span>
                       </div>
                     </div>
                   </div>
@@ -78,30 +75,28 @@ export function TastingSessionCardMobile({
                     <div className="flex items-center gap-2 mb-2">
                       <Quotes size={16} weight="fill" className={textPrimaryClass} />
                       <h4 className={`text-sm font-bold ${textPrimaryClass}`}>感想</h4>
-                      <span className={`text-[10px] font-bold ${textMutedClass} ml-auto`}>
-                        {recordCount}件の記録
-                      </span>
+                      <span className={`text-[10px] font-bold ${textMutedClass} ml-auto`}>{recordCount}件の記録</span>
                     </div>
 
                     <div className="relative h-[calc(100%-28px)]">
                       <div className="h-full overflow-y-auto pr-2 pb-3 [scrollbar-width:thin] [scrollbar-color:var(--edge-strong)_var(--ground)] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-ground [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-edge-strong">
-                      {comments.length > 0 ? (
-                        <ul className="space-y-2">
-                          {comments.map((comment, commentIndex) => (
-                            <li
-                              key={commentIndex}
-                              className={`text-[13px] italic ${textSecondaryClass} leading-snug pl-3 border-l-2 ${cardBorderClass}`}
-                            >
-                              {comment}
-                            </li>
-                          ))}
-                        </ul>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center h-full opacity-40">
-                          <Coffee size={32} weight="thin" className={textMutedClass} />
-                          <p className={`text-xs ${textMutedClass} italic`}>まだ感想がありません</p>
-                        </div>
-                      )}
+                        {comments.length > 0 ? (
+                          <ul className="space-y-2">
+                            {comments.map((comment, commentIndex) => (
+                              <li
+                                key={commentIndex}
+                                className={`text-[13px] italic ${textSecondaryClass} leading-snug pl-3 border-l-2 ${cardBorderClass}`}
+                              >
+                                {comment}
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center h-full opacity-40">
+                            <Coffee size={32} weight="thin" className={textMutedClass} />
+                            <p className={`text-xs ${textMutedClass} italic`}>まだ感想がありません</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -167,9 +162,7 @@ export function TastingSessionCardMobile({
                       >
                         <div className="flex items-center gap-2">
                           <Notepad size={16} weight="fill" className={iconAccentClass} />
-                          <span className={`text-xs font-bold ${textPrimaryClass}`}>
-                            AIコーヒーマイスター
-                          </span>
+                          <span className={`text-xs font-bold ${textPrimaryClass}`}>AIコーヒーマイスター</span>
                         </div>
                         <CaretRight size={16} weight="bold" className={textMutedClass} />
                       </Button>
@@ -224,11 +217,7 @@ export function TastingSessionCardMobile({
 
               {/* 閉じるボタン */}
               <div className="p-4 border-t border-edge bg-ground">
-                <Button
-                  variant="primary"
-                  onClick={() => setAiModalSession(null)}
-                  fullWidth
-                >
+                <Button variant="primary" onClick={() => setAiModalSession(null)} fullWidth>
                   閉じる
                 </Button>
               </div>

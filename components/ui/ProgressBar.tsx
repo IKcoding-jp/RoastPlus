@@ -73,12 +73,8 @@ export const ProgressBar = forwardRef<HTMLDivElement, ProgressBarProps>(
       <div ref={ref} className={className} {...props}>
         {(label || showValue) && (
           <div className="flex justify-between items-center mb-1">
-            {label && (
-              <span className="text-sm font-medium text-ink">{label}</span>
-            )}
-            {showValue && (
-              <span className="text-sm text-ink-sub">{Math.round(percentage)}%</span>
-            )}
+            {label && <span className="text-sm font-medium text-ink">{label}</span>}
+            {showValue && <span className="text-sm text-ink-sub">{Math.round(percentage)}%</span>}
           </div>
         )}
         <div

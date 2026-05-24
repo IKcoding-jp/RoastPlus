@@ -10,16 +10,19 @@ describe('useMediaQuery', () => {
     listeners = [];
     matchesMock = false;
 
-    vi.stubGlobal('matchMedia', vi.fn((query: string) => ({
-      matches: matchesMock,
-      media: query,
-      addEventListener: (_event: string, cb: () => void) => {
-        listeners.push(cb);
-      },
-      removeEventListener: (_event: string, cb: () => void) => {
-        listeners = listeners.filter((l) => l !== cb);
-      },
-    })));
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn((query: string) => ({
+        matches: matchesMock,
+        media: query,
+        addEventListener: (_event: string, cb: () => void) => {
+          listeners.push(cb);
+        },
+        removeEventListener: (_event: string, cb: () => void) => {
+          listeners = listeners.filter((l) => l !== cb);
+        },
+      }))
+    );
   });
 
   afterEach(() => {

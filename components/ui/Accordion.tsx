@@ -39,15 +39,13 @@ function useAccordionItemContext() {
 // Accordion Root
 export type AccordionProps = React.HTMLAttributes<HTMLDivElement>;
 
-export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(
-  ({ children, className = '', ...props }, ref) => {
-    return (
-      <div ref={ref} className={`divide-y divide-edge ${className}`} {...props}>
-        {children}
-      </div>
-    );
-  }
-);
+export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(({ children, className = '', ...props }, ref) => {
+  return (
+    <div ref={ref} className={`divide-y divide-edge ${className}`} {...props}>
+      {children}
+    </div>
+  );
+});
 Accordion.displayName = 'Accordion';
 
 // AccordionItem
@@ -109,11 +107,7 @@ export const AccordionContent = forwardRef<HTMLDivElement, AccordionContentProps
     }
 
     return (
-      <div
-        ref={ref}
-        className={`pb-4 text-ink-sub ${className}`}
-        {...props}
-      >
+      <div ref={ref} className={`pb-4 text-ink-sub ${className}`} {...props}>
         {children}
       </div>
     );

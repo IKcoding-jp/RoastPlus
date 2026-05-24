@@ -39,17 +39,16 @@ export const Card = forwardRef<HTMLDivElement, CardProps>(
     // バリアントスタイル（CSS変数ベース）
     const variantStyles = {
       default: 'bg-surface rounded-2xl shadow-card border border-edge p-4',
-      hoverable: 'bg-surface rounded-2xl shadow-card border border-edge p-4 hover:shadow-card-hover hover:border-edge-strong transition-all cursor-pointer',
-      action: 'bg-surface rounded-2xl shadow-card-glow p-5 hover:shadow-card-hover hover:-translate-y-2 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-spot focus-visible:ring-offset-2',
+      hoverable:
+        'bg-surface rounded-2xl shadow-card border border-edge p-4 hover:shadow-card-hover hover:border-edge-strong transition-all cursor-pointer',
+      action:
+        'bg-surface rounded-2xl shadow-card-glow p-5 hover:shadow-card-hover hover:-translate-y-2 transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-spot focus-visible:ring-offset-2',
       coffee: 'bg-[#211714] text-white rounded-2xl shadow-md p-4',
       table: 'bg-overlay rounded-xl shadow-card border border-edge overflow-hidden',
       guide: 'bg-overlay rounded-xl shadow-card border border-edge p-6 text-center',
     };
 
-    const cardStyles = [
-      variantStyles[variant],
-      className,
-    ].filter(Boolean).join(' ');
+    const cardStyles = [variantStyles[variant], className].filter(Boolean).join(' ');
 
     return (
       <div ref={ref} className={cardStyles} {...props}>

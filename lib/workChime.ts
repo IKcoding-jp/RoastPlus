@@ -121,10 +121,12 @@ function normalizeSettings(value: unknown): WorkChimeSettings {
 
   return {
     enabled: typeof partial.enabled === 'boolean' ? partial.enabled : DEFAULT_WORK_CHIME_SETTINGS.enabled,
-    soundEnabled: typeof partial.soundEnabled === 'boolean' ? partial.soundEnabled : DEFAULT_WORK_CHIME_SETTINGS.soundEnabled,
-    voiceAnnouncementEnabled: typeof partial.voiceAnnouncementEnabled === 'boolean'
-      ? partial.voiceAnnouncementEnabled
-      : DEFAULT_WORK_CHIME_SETTINGS.voiceAnnouncementEnabled,
+    soundEnabled:
+      typeof partial.soundEnabled === 'boolean' ? partial.soundEnabled : DEFAULT_WORK_CHIME_SETTINGS.soundEnabled,
+    voiceAnnouncementEnabled:
+      typeof partial.voiceAnnouncementEnabled === 'boolean'
+        ? partial.voiceAnnouncementEnabled
+        : DEFAULT_WORK_CHIME_SETTINGS.voiceAnnouncementEnabled,
     volume: clampVolume(partial.volume),
     periods: normalizePeriods(partial.periods),
   };
@@ -189,17 +191,13 @@ export function setWorkChimeSettings(settings: WorkChimeSettings): void {
   localStorage.setItem(WORK_CHIME_SETTINGS_KEY, JSON.stringify(normalizeSettings(settings)));
 }
 
-export function getCurrentWorkChimePeriod(
-  now: Date,
-  settings: WorkChimeSettings
-): CurrentWorkChimePeriod | null {
+export function getCurrentWorkChimePeriod(now: Date, settings: WorkChimeSettings): CurrentWorkChimePeriod | null {
   if (!settings.enabled) return null;
 
   const currentMinutes = minutesFromDate(now);
-  const period = getSortedPeriods(settings).find((candidate) => (
-    minutesFromTime(candidate.start) <= currentMinutes &&
-    currentMinutes < minutesFromTime(candidate.end)
-  ));
+  const period = getSortedPeriods(settings).find(
+    (candidate) => minutesFromTime(candidate.start) <= currentMinutes && currentMinutes < minutesFromTime(candidate.end)
+  );
 
   if (!period) return null;
 
@@ -225,17 +223,11 @@ export function getNextWorkChime(now: Date, settings: WorkChimeSettings): NextWo
     time: period.start,
     kind,
     label: getBoundaryLabel(kind),
-    minutesUntil: todayPeriod
-      ? periodStartMinutes - currentMinutes
-      : 24 * 60 - currentMinutes + periodStartMinutes,
+    minutesUntil: todayPeriod ? periodStartMinutes - currentMinutes : 24 * 60 - currentMinutes + periodStartMinutes,
   };
 }
 
-export function getDueWorkChime(
-  now: Date,
-  settings: WorkChimeSettings,
-  playedKeys: string[]
-): DueWorkChime | null {
+export function getDueWorkChime(now: Date, settings: WorkChimeSettings, playedKeys: string[]): DueWorkChime | null {
   if (!settings.enabled) return null;
 
   const currentTime = timeKey(now);

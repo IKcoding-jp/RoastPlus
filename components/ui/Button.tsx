@@ -50,7 +50,17 @@ import { forwardRef } from 'react';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** ボタンのスタイルバリエーション */
-  variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'warning' | 'info' | 'outline' | 'ghost' | 'coffee' | 'surface';
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'danger'
+    | 'success'
+    | 'warning'
+    | 'info'
+    | 'outline'
+    | 'ghost'
+    | 'coffee'
+    | 'surface';
   /** ボタンのサイズ */
   size?: 'sm' | 'md' | 'lg';
   /** ローディング状態 */
@@ -77,7 +87,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     // ベーススタイル
-    const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-lg transition-colors min-h-[44px]';
+    const baseStyles =
+      'inline-flex items-center justify-center font-semibold rounded-lg transition-colors min-h-[44px]';
 
     // サイズスタイル
     const sizeStyles = {
@@ -107,16 +118,19 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const fullWidthStyles = fullWidth ? 'w-full' : '';
 
     // バッジスタイル
-    const badgeStyles = 'absolute -top-1.5 -right-1.5 bg-spot text-page rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-black shadow-sm ring-2 ring-white';
+    const badgeStyles =
+      'absolute -top-1.5 -right-1.5 bg-spot text-page rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-black shadow-sm ring-2 ring-white';
 
     const buttonStyles = [
       baseStyles,
       sizeStyles[size],
       variantStyles[variant],
-      (disabled || loading) ? disabledStyles : '',
+      disabled || loading ? disabledStyles : '',
       fullWidthStyles,
       className,
-    ].filter(Boolean).join(' ');
+    ]
+      .filter(Boolean)
+      .join(' ');
 
     const showBadge = badge !== undefined && badge > 0;
 
@@ -136,14 +150,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             viewBox="0 0 24 24"
             aria-hidden="true"
           >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path
               className="opacity-75"
               fill="currentColor"

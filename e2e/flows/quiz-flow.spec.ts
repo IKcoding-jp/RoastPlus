@@ -67,7 +67,10 @@ test.describe('クイズシステムフロー', () => {
 
       // 次へボタンがあればクリック
       const nextButton = page.locator('button').filter({ hasText: /次へ|→/ });
-      const hasNext = await nextButton.first().isVisible({ timeout: 2000 }).catch(() => false);
+      const hasNext = await nextButton
+        .first()
+        .isVisible({ timeout: 2000 })
+        .catch(() => false);
       if (hasNext) {
         await nextButton.first().click();
       }

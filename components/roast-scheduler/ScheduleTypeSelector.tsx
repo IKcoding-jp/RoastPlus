@@ -31,18 +31,9 @@ export function ScheduleTypeSelector({
           }`}
         >
           {/* eslint-disable-next-line local/no-raw-checkbox -- sr-onlyのトグルUI。Checkboxコンポーネントは視覚的表示が異なるため不適合 */}
-          <input
-            type="checkbox"
-            checked={isRoasterOn}
-            onChange={() => onTypeChange('roasterOn')}
-            className="sr-only"
-          />
-          <HiFire className={`text-3xl md:text-4xl ${
-            isRoasterOn ? 'text-orange-500' : 'text-ink-muted'
-          }`} />
-          <span className={`text-base md:text-lg font-medium ${
-            isRoasterOn ? 'text-orange-700' : 'text-ink-sub'
-          }`}>
+          <input type="checkbox" checked={isRoasterOn} onChange={() => onTypeChange('roasterOn')} className="sr-only" />
+          <HiFire className={`text-3xl md:text-4xl ${isRoasterOn ? 'text-orange-500' : 'text-ink-muted'}`} />
+          <span className={`text-base md:text-lg font-medium ${isRoasterOn ? 'text-orange-700' : 'text-ink-sub'}`}>
             焙煎機予熱
           </span>
         </label>
@@ -52,18 +43,9 @@ export function ScheduleTypeSelector({
           }`}
         >
           {/* eslint-disable-next-line local/no-raw-checkbox -- sr-onlyのトグルUI。Checkboxコンポーネントは視覚的表示が異なるため不適合 */}
-          <input
-            type="checkbox"
-            checked={isRoast}
-            onChange={() => onTypeChange('roast')}
-            className="sr-only"
-          />
-          <PiCoffeeBeanFill className={`text-3xl md:text-4xl ${
-            isRoast ? 'text-amber-700' : 'text-ink-muted'
-          }`} />
-          <span className={`text-base md:text-lg font-medium ${
-            isRoast ? 'text-amber-700' : 'text-ink-sub'
-          }`}>
+          <input type="checkbox" checked={isRoast} onChange={() => onTypeChange('roast')} className="sr-only" />
+          <PiCoffeeBeanFill className={`text-3xl md:text-4xl ${isRoast ? 'text-amber-700' : 'text-ink-muted'}`} />
+          <span className={`text-base md:text-lg font-medium ${isRoast ? 'text-amber-700' : 'text-ink-sub'}`}>
             ロースト
           </span>
         </label>
@@ -79,12 +61,8 @@ export function ScheduleTypeSelector({
             onChange={() => onTypeChange('afterPurge')}
             className="sr-only"
           />
-          <FaSnowflake className={`text-3xl md:text-4xl ${
-            isAfterPurge ? 'text-blue-500' : 'text-ink-muted'
-          }`} />
-          <span className={`text-base md:text-lg font-medium ${
-            isAfterPurge ? 'text-blue-700' : 'text-ink-sub'
-          }`}>
+          <FaSnowflake className={`text-3xl md:text-4xl ${isAfterPurge ? 'text-blue-500' : 'text-ink-muted'}`} />
+          <span className={`text-base md:text-lg font-medium ${isAfterPurge ? 'text-blue-700' : 'text-ink-sub'}`}>
             アフターパージ
           </span>
         </label>
@@ -100,12 +78,8 @@ export function ScheduleTypeSelector({
             onChange={() => onTypeChange('chaffCleaning')}
             className="sr-only"
           />
-          <FaBroom className={`text-3xl md:text-4xl ${
-            isChaffCleaning ? 'text-gray-700' : 'text-ink-muted'
-          }`} />
-          <span className={`text-base md:text-lg font-medium ${
-            isChaffCleaning ? 'text-gray-700' : 'text-ink-sub'
-          }`}>
+          <FaBroom className={`text-3xl md:text-4xl ${isChaffCleaning ? 'text-gray-700' : 'text-ink-muted'}`} />
+          <span className={`text-base md:text-lg font-medium ${isChaffCleaning ? 'text-gray-700' : 'text-ink-sub'}`}>
             チャフのお掃除
           </span>
         </label>
