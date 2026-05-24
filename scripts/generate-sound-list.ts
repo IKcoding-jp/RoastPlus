@@ -3,7 +3,7 @@
  * フォルダ内の .mp3 ファイルをスキャンして TypeScript の定数ファイルを生成
  */
 
-import { readdir, writeFile } from 'fs/promises';
+import { readFile, readdir, writeFile } from 'fs/promises';
 import { join } from 'path';
 
 interface SoundFile {
@@ -75,6 +75,28 @@ async function generateSoundFilesConstant() {
   // roasttimer フォルダから音声ファイル一覧を取得
   const roastTimerFiles = await getSoundFilesFromDirectory(join(baseDir, 'roasttimer'), '/sounds/roasttimer');
 
+  const roastTimerFilesContent =
+    roastTimerFiles.length === 0
+      ? '[]'
+      : `[
+${roastTimerFiles
+  .map(
+    (file) => `  {
+    value: '${file.value}',
+    label: '${file.label}',
+  }`
+  )
+  .join(',\n')},
+]`;
+
+  let lineEnding = '\n';
+  try {
+    const existingContent = await readFile(outputFile, 'utf-8');
+    lineEnding = existingContent.includes('\r\n') ? '\r\n' : '\n';
+  } catch {
+    // 既存ファイルがない場合は LF で生成する
+  }
+
   // TypeScript の定数ファイルを生成
   const tsContent = `/**
  * 音声ファイル一覧（自動生成）
@@ -87,8 +109,8 @@ export interface SoundFile {
   label: string;
 }
 
-export const roastTimerSoundFiles: SoundFile[] = ${JSON.stringify(roastTimerFiles, null, 2)};
-`;
+export const roastTimerSoundFiles: SoundFile[] = ${roastTimerFilesContent};
+`.replace(/\n/g, lineEnding);
 
   await writeFile(outputFile, tsContent, 'utf-8');
 
