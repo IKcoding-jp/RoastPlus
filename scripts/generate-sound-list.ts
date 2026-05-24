@@ -3,8 +3,9 @@
  * フォルダ内の .mp3 ファイルをスキャンして TypeScript の定数ファイルを生成
  */
 
-import { readdir, writeFile } from 'fs/promises';
+import { readFile, readdir, writeFile } from 'fs/promises';
 import { join } from 'path';
+import { pathToFileURL } from 'url';
 
 interface SoundFile {
   value: string;
@@ -35,6 +36,11 @@ function naturalSort(a: string, b: string): number {
   }
 
   return 0;
+}
+
+export function formatTsStringLiteral(value: string): string {
+  const escapedContent = JSON.stringify(value).slice(1, -1).replace(/'/g, "\\'");
+  return `'${escapedContent}'`;
 }
 
 /**
@@ -75,6 +81,28 @@ async function generateSoundFilesConstant() {
   // roasttimer フォルダから音声ファイル一覧を取得
   const roastTimerFiles = await getSoundFilesFromDirectory(join(baseDir, 'roasttimer'), '/sounds/roasttimer');
 
+  const roastTimerFilesContent =
+    roastTimerFiles.length === 0
+      ? '[]'
+      : `[
+${roastTimerFiles
+  .map(
+    (file) => `  {
+    value: ${formatTsStringLiteral(file.value)},
+    label: ${formatTsStringLiteral(file.label)},
+  }`
+  )
+  .join(',\n')},
+]`;
+
+  let lineEnding = '\n';
+  try {
+    const existingContent = await readFile(outputFile, 'utf-8');
+    lineEnding = existingContent.includes('\r\n') ? '\r\n' : '\n';
+  } catch {
+    // 既存ファイルがない場合は LF で生成する
+  }
+
   // TypeScript の定数ファイルを生成
   const tsContent = `/**
  * 音声ファイル一覧（自動生成）
@@ -87,8 +115,8 @@ export interface SoundFile {
   label: string;
 }
 
-export const roastTimerSoundFiles: SoundFile[] = ${JSON.stringify(roastTimerFiles, null, 2)};
-`;
+export const roastTimerSoundFiles: SoundFile[] = ${roastTimerFilesContent};
+`.replace(/\n/g, lineEnding);
 
   await writeFile(outputFile, tsContent, 'utf-8');
 
@@ -97,8 +125,10 @@ export const roastTimerSoundFiles: SoundFile[] = ${JSON.stringify(roastTimerFile
   console.log('Sound files constant generated successfully');
 }
 
-// スクリプト実行
-generateSoundFilesConstant().catch((error) => {
-  console.error('Failed to generate sound files constant:', error);
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  // スクリプト実行
+  generateSoundFilesConstant().catch((error) => {
+    console.error('Failed to generate sound files constant:', error);
+    process.exit(1);
+  });
+}
