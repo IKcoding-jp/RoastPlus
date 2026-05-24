@@ -1,6 +1,7 @@
 // Service Worker for PWA
 const CACHE_NAME = 'roast-plus-v6';
-const RUNTIME_CACHE = 'roast-plus-runtime-v6';
+const RUNTIME_CACHE = 'roast-plus-runtime-v7';
+const MAX_RUNTIME_CACHE_ENTRIES = 80;
 
 // キャッシュするリソース
 const PRECACHE_URLS = [
@@ -45,9 +46,39 @@ function putInRuntimeCache(requests, response) {
 
   return caches
     .open(RUNTIME_CACHE)
-    .then((cache) => Promise.all(cacheEntries.map(({ request, response }) => cache.put(request, response))))
+    .then((cache) =>
+      Promise.all(cacheEntries.map(({ request, response }) => cache.put(request, response))).then(() =>
+        trimRuntimeCache(cache)
+      )
+    )
     .catch((error) => {
       console.error('Service Worker cache put failed:', error);
+    });
+}
+
+function trimRuntimeCache(cache) {
+  return cache
+    .keys()
+    .then((requests) => {
+      const deleteCount = requests.length - MAX_RUNTIME_CACHE_ENTRIES;
+
+      if (deleteCount <= 0) {
+        return undefined;
+      }
+
+      const requestsToDelete = requests.slice(0, deleteCount);
+
+      return Promise.all(
+        requestsToDelete.map((request) =>
+          cache.delete(request).catch((error) => {
+            console.error('Service Worker runtime cache delete failed:', error);
+            return false;
+          })
+        )
+      ).then(() => undefined);
+    })
+    .catch((error) => {
+      console.error('Service Worker runtime cache trim failed:', error);
     });
 }
 
