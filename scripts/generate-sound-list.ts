@@ -5,6 +5,7 @@
 
 import { readFile, readdir, writeFile } from 'fs/promises';
 import { join } from 'path';
+import { pathToFileURL } from 'url';
 
 interface SoundFile {
   value: string;
@@ -35,6 +36,11 @@ function naturalSort(a: string, b: string): number {
   }
 
   return 0;
+}
+
+export function formatTsStringLiteral(value: string): string {
+  const escapedContent = JSON.stringify(value).slice(1, -1).replace(/'/g, "\\'");
+  return `'${escapedContent}'`;
 }
 
 /**
@@ -82,8 +88,8 @@ async function generateSoundFilesConstant() {
 ${roastTimerFiles
   .map(
     (file) => `  {
-    value: '${file.value}',
-    label: '${file.label}',
+    value: ${formatTsStringLiteral(file.value)},
+    label: ${formatTsStringLiteral(file.label)},
   }`
   )
   .join(',\n')},
@@ -119,8 +125,10 @@ export const roastTimerSoundFiles: SoundFile[] = ${roastTimerFilesContent};
   console.log('Sound files constant generated successfully');
 }
 
-// スクリプト実行
-generateSoundFilesConstant().catch((error) => {
-  console.error('Failed to generate sound files constant:', error);
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  // スクリプト実行
+  generateSoundFilesConstant().catch((error) => {
+    console.error('Failed to generate sound files constant:', error);
+    process.exit(1);
+  });
+}
