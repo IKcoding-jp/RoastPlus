@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { User, onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
 import { auth } from './firebase';
+import { getE2EUser, isE2EMode, isE2ESignedIn, signOutE2EUser } from './e2eMode';
 
 /**
  * Firebase Authenticationの初期化を待機するPromiseを返す
@@ -23,6 +24,15 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (isE2EMode()) {
+      const timeoutId = window.setTimeout(() => {
+        setUser(isE2ESignedIn() ? getE2EUser() : null);
+        setLoading(false);
+      }, 0);
+
+      return () => window.clearTimeout(timeoutId);
+    }
+
     let isMounted = true;
     let unsubscribe: (() => void) | null = null;
 
@@ -60,6 +70,11 @@ export function useAuth() {
 }
 
 export async function signOut() {
+  if (isE2EMode()) {
+    signOutE2EUser();
+    return;
+  }
+
   try {
     await firebaseSignOut(auth);
   } catch (error) {

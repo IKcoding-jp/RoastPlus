@@ -1,5 +1,6 @@
 import type { FirebaseApp } from 'firebase/app';
 import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
+import { isE2EMode } from '@/lib/e2eMode';
 
 interface AppCheckOptions {
   siteKey?: string;
@@ -17,6 +18,10 @@ function getRecaptchaSiteKey(siteKey?: string): string {
 
 export function initializeRoastPlusAppCheck(app: FirebaseApp, options: AppCheckOptions = {}): void {
   if (typeof window === 'undefined') {
+    return;
+  }
+
+  if (isE2EMode()) {
     return;
   }
 

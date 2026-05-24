@@ -1,5 +1,6 @@
 import { getFirestore, doc, setDoc, getDocFromServer, serverTimestamp, Timestamp } from 'firebase/firestore';
 import app from './firebase';
+import { isE2EMode } from './e2eMode';
 
 const SYNC_INTERVAL_MS = 5 * 60 * 1000; // refresh offset every 5 minutes
 const META_FIELD = '__meta';
@@ -34,6 +35,13 @@ export function setTimeSyncUser(userId: string | null) {
 }
 
 async function syncServerTime(force = false): Promise<void> {
+  if (isE2EMode()) {
+    timeOffsetMs = 0;
+    hasSyncedOnce = true;
+    lastSyncedAt = Date.now();
+    return;
+  }
+
   if (!currentUserId) {
     // Fallback to local clock when user session is not ready yet.
     hasSyncedOnce = false;
