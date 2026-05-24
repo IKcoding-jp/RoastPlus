@@ -40,9 +40,7 @@ for (const [viewportName, viewport] of viewportEntries) {
         expect(hasHorizontalScroll).toBe(false);
       });
 
-      test(`${page_.name}ページのインタラクティブ要素がタップ可能なサイズ`, async ({
-        page,
-      }) => {
+      test(`${page_.name}ページのインタラクティブ要素がタップ可能なサイズ`, async ({ page }) => {
         await page.goto(page_.path);
         await page.waitForLoadState('domcontentloaded');
 

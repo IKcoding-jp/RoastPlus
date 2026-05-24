@@ -48,8 +48,7 @@ vi.mock('@/lib/firestore', () => ({
   getUserData: (userId: string) => mockGetUserData(userId),
   saveUserData: (userId: string, data: AppData, options?: { syncWorkProgresses?: boolean }) =>
     mockSaveUserData(userId, data, options),
-  subscribeUserData: (userId: string, callback: (data: AppData) => void) =>
-    mockSubscribeUserData(userId, callback),
+  subscribeUserData: (userId: string, callback: (data: AppData) => void) => mockSubscribeUserData(userId, callback),
   SAVE_USER_DATA_DEBOUNCE_MS: 500,
 }));
 
@@ -140,10 +139,7 @@ describe('useAppData', () => {
         await vi.runAllTimersAsync();
       });
 
-      expect(mockSubscribeUserData).toHaveBeenCalledWith(
-        'test-user-id',
-        expect.any(Function)
-      );
+      expect(mockSubscribeUserData).toHaveBeenCalledWith('test-user-id', expect.any(Function));
     });
 
     it('アンマウント時に購読を解除する', async () => {
@@ -211,9 +207,13 @@ describe('useAppData', () => {
         await vi.runAllTimersAsync();
       });
 
-      expect(mockSaveUserData).toHaveBeenCalledWith('test-user-id', expect.objectContaining({
-        encouragementCount: 5,
-      }), { syncWorkProgresses: false });
+      expect(mockSaveUserData).toHaveBeenCalledWith(
+        'test-user-id',
+        expect.objectContaining({
+          encouragementCount: 5,
+        }),
+        { syncWorkProgresses: false }
+      );
       expect(result.current.data.encouragementCount).toBe(5);
     });
 
@@ -355,10 +355,7 @@ describe('useAppData', () => {
         subscriptionCallback?.(emptyData);
       });
 
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('Data loss prevention:'),
-        expect.any(Object)
-      );
+      expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('Data loss prevention:'), expect.any(Object));
 
       // データが空に上書きされていないことを確認
       expect(result.current.data.roastSchedules).toHaveLength(1);
@@ -564,26 +561,20 @@ describe('useAppData', () => {
         await result.current.updateData((current) => ({
           ...current,
           roastSchedules: current.roastSchedules.map((schedule) =>
-            schedule.id === 'schedule-new'
-              ? { ...schedule, beanName: '更新された豆' }
-              : schedule
+            schedule.id === 'schedule-new' ? { ...schedule, beanName: '更新された豆' } : schedule
           ),
         }));
         await vi.runAllTimersAsync();
       });
 
-      const updatedSchedule = result.current.data.roastSchedules.find(
-        (s) => s.id === 'schedule-new'
-      );
+      const updatedSchedule = result.current.data.roastSchedules.find((s) => s.id === 'schedule-new');
       expect(updatedSchedule?.beanName).toBe('更新された豆');
 
       // 4. データ削除
       await act(async () => {
         await result.current.updateData((current) => ({
           ...current,
-          roastSchedules: current.roastSchedules.filter(
-            (schedule) => schedule.id !== 'schedule-new'
-          ),
+          roastSchedules: current.roastSchedules.filter((schedule) => schedule.id !== 'schedule-new'),
         }));
         await vi.runAllTimersAsync();
       });

@@ -79,23 +79,15 @@ export default function ConsentPage() {
         <Card className="p-6 sm:p-8">
           {/* ヘッダー */}
           <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-ink mb-2">
-              ご利用の前に
-            </h1>
-            <p className="text-ink-sub">
-              RoastPlusをご利用いただくには、以下の規約に同意していただく必要があります。
-            </p>
+            <h1 className="text-2xl font-bold text-ink mb-2">ご利用の前に</h1>
+            <p className="text-ink-sub">RoastPlusをご利用いただくには、以下の規約に同意していただく必要があります。</p>
           </div>
 
           {/* チェックボックス */}
           <div className="space-y-4 mb-6">
             {/* 利用規約 */}
             <label className="flex items-start gap-3 cursor-pointer group">
-              <Checkbox
-                checked={termsAgreed}
-                onChange={(e) => setTermsAgreed(e.target.checked)}
-                className="!gap-0"
-              />
+              <Checkbox checked={termsAgreed} onChange={(e) => setTermsAgreed(e.target.checked)} className="!gap-0" />
               <span className="text-ink group-hover:text-ink">
                 <Link
                   href="/terms"
@@ -131,20 +123,12 @@ export default function ConsentPage() {
           </div>
 
           {/* 同意ボタン */}
-          <Button
-            onClick={handleSubmit}
-            disabled={!canSubmit}
-            variant="primary"
-            fullWidth
-            loading={isSubmitting}
-          >
+          <Button onClick={handleSubmit} disabled={!canSubmit} variant="primary" fullWidth loading={isSubmitting}>
             {isSubmitting ? '処理中...' : '同意して続ける'}
           </Button>
 
           {/* 注意書き */}
-          <p className="mt-4 text-xs text-ink-muted text-center">
-            同意しない場合、本サービスをご利用いただけません。
-          </p>
+          <p className="mt-4 text-xs text-ink-muted text-center">同意しない場合、本サービスをご利用いただけません。</p>
         </Card>
       </div>
     </div>

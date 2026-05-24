@@ -66,12 +66,7 @@ export function RoastRecordFilters({
             ]}
           />
         </div>
-        <Button
-          variant="surface"
-          size="md"
-          onClick={onShowFiltersToggle}
-          className="whitespace-nowrap"
-        >
+        <Button variant="surface" size="md" onClick={onShowFiltersToggle} className="whitespace-nowrap">
           {showFilters ? 'フィルタを閉じる' : 'フィルタ'}
         </Button>
       </div>
@@ -82,32 +77,18 @@ export function RoastRecordFilters({
           {/* 日付範囲 */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-sm font-medium mb-1 text-ink-sub">
-                開始日
-              </label>
-              <Input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => onDateFromChange(e.target.value)}
-              />
+              <label className="block text-sm font-medium mb-1 text-ink-sub">開始日</label>
+              <Input type="date" value={dateFrom} onChange={(e) => onDateFromChange(e.target.value)} />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 text-ink-sub">
-                終了日
-              </label>
-              <Input
-                type="date"
-                value={dateTo}
-                onChange={(e) => onDateToChange(e.target.value)}
-              />
+              <label className="block text-sm font-medium mb-1 text-ink-sub">終了日</label>
+              <Input type="date" value={dateTo} onChange={(e) => onDateToChange(e.target.value)} />
             </div>
           </div>
 
           {/* 焙煎度合い */}
           <div>
-            <label className="block text-sm font-medium mb-2 text-ink-sub">
-              焙煎度合い
-            </label>
+            <label className="block text-sm font-medium mb-2 text-ink-sub">焙煎度合い</label>
             <div className="flex flex-wrap gap-3">
               {ROAST_LEVELS.map((level) => (
                 <Checkbox
@@ -122,9 +103,7 @@ export function RoastRecordFilters({
 
           {/* 重さ */}
           <div>
-            <label className="block text-sm font-medium mb-2 text-ink-sub">
-              重さ
-            </label>
+            <label className="block text-sm font-medium mb-2 text-ink-sub">重さ</label>
             <div className="flex flex-wrap gap-3">
               {WEIGHTS.map((weight) => (
                 <Checkbox
@@ -138,15 +117,8 @@ export function RoastRecordFilters({
           </div>
 
           {/* フィルタリセット */}
-          {(dateFrom ||
-            dateTo ||
-            selectedRoastLevels.length > 0 ||
-            selectedWeights.length > 0) && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onResetFilters}
-            >
+          {(dateFrom || dateTo || selectedRoastLevels.length > 0 || selectedWeights.length > 0) && (
+            <Button variant="ghost" size="sm" onClick={onResetFilters}>
               フィルタをリセット
             </Button>
           )}

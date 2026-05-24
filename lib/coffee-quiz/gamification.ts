@@ -9,12 +9,7 @@ import type {
   QuizStats,
   QuizCategory,
 } from './types';
-import {
-  XP_CONFIG,
-  LEVEL_CONFIG,
-  INITIAL_LEVEL_INFO,
-  INITIAL_STREAK_INFO,
-} from './types';
+import { XP_CONFIG, LEVEL_CONFIG, INITIAL_LEVEL_INFO, INITIAL_STREAK_INFO } from './types';
 import { getDebugTodayDateString, isDebugMode, getCurrentDate } from './debug';
 
 // ========================================
@@ -57,16 +52,11 @@ export function calculateXP(params: XPCalculationParams): number {
 
   // ストリーク倍率（連続正解ボーナス）
   const streakMultiplier = isCorrect
-    ? Math.min(
-        1 + consecutiveCorrect * XP_CONFIG.streakMultiplierPerCorrect,
-        XP_CONFIG.maxStreakMultiplier
-      )
+    ? Math.min(1 + consecutiveCorrect * XP_CONFIG.streakMultiplierPerCorrect, XP_CONFIG.maxStreakMultiplier)
     : 1;
 
   // 合計XP
-  const totalXP = Math.floor(
-    (baseXP * difficultyMultiplier + speedBonus + firstTimeBonus) * streakMultiplier
-  );
+  const totalXP = Math.floor((baseXP * difficultyMultiplier + speedBonus + firstTimeBonus) * streakMultiplier);
 
   return totalXP;
 }
@@ -81,10 +71,7 @@ export function calculateXP(params: XPCalculationParams): number {
 export function calculateXPForNextLevel(level: number): number {
   if (level >= LEVEL_CONFIG.maxLevel) return Infinity;
 
-  return Math.floor(
-    LEVEL_CONFIG.baseXP * Math.pow(level, LEVEL_CONFIG.exponent) +
-      LEVEL_CONFIG.baseXP * level
-  );
+  return Math.floor(LEVEL_CONFIG.baseXP * Math.pow(level, LEVEL_CONFIG.exponent) + LEVEL_CONFIG.baseXP * level);
 }
 
 /**
@@ -117,7 +104,10 @@ export function calculateLevelFromTotalXP(totalXP: number): LevelInfo {
 /**
  * XPを追加してレベル情報を更新
  */
-export function addXP(levelInfo: LevelInfo, xpGained: number): {
+export function addXP(
+  levelInfo: LevelInfo,
+  xpGained: number
+): {
   newLevelInfo: LevelInfo;
   leveledUp: boolean;
   newLevel?: number;
@@ -260,10 +250,7 @@ export function checkNewBadges(context: BadgeCheckContext): BadgeType[] {
   checkBadge('master-history', context.stats.categoryStats.history.masteredCount >= 20);
 
   // パーフェクト
-  checkBadge(
-    'perfect-session',
-    context.sessionTotal >= 10 && context.sessionCorrect === context.sessionTotal
-  );
+  checkBadge('perfect-session', context.sessionTotal >= 10 && context.sessionCorrect === context.sessionTotal);
 
   // 初挑戦
   checkBadge('first-quiz', context.stats.totalQuestions >= 1);
@@ -271,9 +258,7 @@ export function checkNewBadges(context: BadgeCheckContext): BadgeType[] {
   // スピードデーモン（10問を2分以内）
   checkBadge(
     'speed-demon',
-    context.sessionTotal >= 10 &&
-      context.sessionCorrect === context.sessionTotal &&
-      context.sessionTimeMs < 120000
+    context.sessionTotal >= 10 && context.sessionCorrect === context.sessionTotal && context.sessionTimeMs < 120000
   );
 
   // 時間帯バッジ（デバッグモード対応）
@@ -287,10 +272,7 @@ export function checkNewBadges(context: BadgeCheckContext): BadgeType[] {
 /**
  * バッジを獲得済みリストに追加
  */
-export function earnBadges(
-  existingBadges: EarnedBadge[],
-  newBadgeTypes: BadgeType[]
-): EarnedBadge[] {
+export function earnBadges(existingBadges: EarnedBadge[], newBadgeTypes: BadgeType[]): EarnedBadge[] {
   const now = new Date().toISOString();
   const newBadges: EarnedBadge[] = newBadgeTypes.map((type) => ({
     type,
@@ -389,9 +371,7 @@ export function updateStats(
 
   // 正解率を計算
   newStats.averageAccuracy =
-    newStats.totalQuestions > 0
-      ? Math.round((newStats.totalCorrect / newStats.totalQuestions) * 100)
-      : 0;
+    newStats.totalQuestions > 0 ? Math.round((newStats.totalCorrect / newStats.totalQuestions) * 100) : 0;
 
   // カテゴリ統計
   const catStat = newStats.categoryStats[category];
@@ -399,9 +379,7 @@ export function updateStats(
     total: catStat.total + 1,
     correct: catStat.correct + (isCorrect ? 1 : 0),
     accuracy:
-      catStat.total + 1 > 0
-        ? Math.round(((catStat.correct + (isCorrect ? 1 : 0)) / (catStat.total + 1)) * 100)
-        : 0,
+      catStat.total + 1 > 0 ? Math.round(((catStat.correct + (isCorrect ? 1 : 0)) / (catStat.total + 1)) * 100) : 0,
     masteredCount: catStat.masteredCount + (isMastered ? 1 : 0),
   };
 
@@ -411,9 +389,7 @@ export function updateStats(
     total: diffStat.total + 1,
     correct: diffStat.correct + (isCorrect ? 1 : 0),
     accuracy:
-      diffStat.total + 1 > 0
-        ? Math.round(((diffStat.correct + (isCorrect ? 1 : 0)) / (diffStat.total + 1)) * 100)
-        : 0,
+      diffStat.total + 1 > 0 ? Math.round(((diffStat.correct + (isCorrect ? 1 : 0)) / (diffStat.total + 1)) * 100) : 0,
   };
 
   // 週間アクティビティ
@@ -422,8 +398,7 @@ export function updateStats(
     newStats.weeklyActivity[todayActivityIndex] = {
       ...newStats.weeklyActivity[todayActivityIndex],
       questionsAnswered: newStats.weeklyActivity[todayActivityIndex].questionsAnswered + 1,
-      correctAnswers:
-        newStats.weeklyActivity[todayActivityIndex].correctAnswers + (isCorrect ? 1 : 0),
+      correctAnswers: newStats.weeklyActivity[todayActivityIndex].correctAnswers + (isCorrect ? 1 : 0),
     };
   } else {
     // 最新7日間のみ保持

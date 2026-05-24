@@ -35,14 +35,11 @@ export async function requestNotificationPermission(): Promise<boolean> {
 
 /**
  * 通知を表示
- * 
+ *
  * @param title 通知のタイトル
  * @param options 通知のオプション
  */
-export async function showNotification(
-  title: string,
-  options?: NotificationOptions
-): Promise<void> {
+export async function showNotification(title: string, options?: NotificationOptions): Promise<void> {
   try {
     const hasPermission = await requestNotificationPermission();
     if (!hasPermission) {
@@ -76,14 +73,11 @@ export async function showNotification(
 
 /**
  * スケジュール通知を設定
- * 
+ *
  * @param notificationId 通知ID（2=手動、3=おすすめ）
  * @param scheduledTime 通知を表示する時刻（ミリ秒）
  */
-export async function scheduleNotification(
-  notificationId: number,
-  scheduledTime: number
-): Promise<void> {
+export async function scheduleNotification(notificationId: number, scheduledTime: number): Promise<void> {
   try {
     const hasPermission = await requestNotificationPermission();
     if (!hasPermission) {
@@ -96,11 +90,11 @@ export async function scheduleNotification(
     if ('serviceWorker' in navigator && 'Notification' in window) {
       try {
         await navigator.serviceWorker.ready;
-        
+
         // 通知をスケジュール（実際の実装はService Worker側で行う）
         // ここでは通知IDを記録
         scheduledNotificationIds.add(notificationId);
-        
+
         // タイマー完了時刻に通知を表示するための処理
         // 実際の実装では、Service WorkerのpostMessageを使用
         const delay = scheduledTime - Date.now();
@@ -145,4 +139,3 @@ export async function notifyRoastTimerComplete(): Promise<void> {
     requireInteraction: true,
   });
 }
-

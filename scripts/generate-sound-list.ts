@@ -17,14 +17,14 @@ interface SoundFile {
 function naturalSort(a: string, b: string): number {
   const aParts = a.match(/(\d+|\D+)/g) || [];
   const bParts = b.match(/(\d+|\D+)/g) || [];
-  
+
   for (let i = 0; i < Math.max(aParts.length, bParts.length); i++) {
     const aPart = aParts[i] || '';
     const bPart = bParts[i] || '';
-    
+
     const aIsNum = /^\d+$/.test(aPart);
     const bIsNum = /^\d+$/.test(bPart);
-    
+
     if (aIsNum && bIsNum) {
       const diff = parseInt(aPart, 10) - parseInt(bPart, 10);
       if (diff !== 0) return diff;
@@ -33,39 +33,34 @@ function naturalSort(a: string, b: string): number {
       if (diff !== 0) return diff;
     }
   }
-  
+
   return 0;
 }
 
 /**
  * 指定されたディレクトリから音声ファイル一覧を取得
  */
-async function getSoundFilesFromDirectory(
-  soundsDir: string,
-  basePath: string
-): Promise<SoundFile[]> {
+async function getSoundFilesFromDirectory(soundsDir: string, basePath: string): Promise<SoundFile[]> {
   try {
     console.log('Scanning sound files in:', soundsDir);
-    
+
     // ディレクトリ内のファイルを取得
     const files = await readdir(soundsDir);
-    
+
     // .mp3 ファイルのみをフィルタリング
-    const mp3Files = files
-      .filter(file => file.toLowerCase().endsWith('.mp3'))
-      .sort(naturalSort);
-    
+    const mp3Files = files.filter((file) => file.toLowerCase().endsWith('.mp3')).sort(naturalSort);
+
     console.log(`Found ${mp3Files.length} sound files:`, mp3Files);
-    
+
     // SoundFile 形式に変換（拡張子を除去）
-    const soundFiles: SoundFile[] = mp3Files.map(file => {
+    const soundFiles: SoundFile[] = mp3Files.map((file) => {
       const labelWithoutExt = file.replace(/\.mp3$/i, '');
       return {
         value: `${basePath}/${file}`,
         label: labelWithoutExt,
       };
     });
-    
+
     return soundFiles;
   } catch (error) {
     console.error(`Failed to scan sound files in ${soundsDir}:`, error);
@@ -78,10 +73,7 @@ async function generateSoundFilesConstant() {
   const outputFile = join(process.cwd(), 'lib', 'soundFiles.ts');
 
   // roasttimer フォルダから音声ファイル一覧を取得
-  const roastTimerFiles = await getSoundFilesFromDirectory(
-    join(baseDir, 'roasttimer'),
-    '/sounds/roasttimer'
-  );
+  const roastTimerFiles = await getSoundFilesFromDirectory(join(baseDir, 'roasttimer'), '/sounds/roasttimer');
 
   // TypeScript の定数ファイルを生成
   const tsContent = `/**
@@ -110,4 +102,3 @@ generateSoundFilesConstant().catch((error) => {
   console.error('Failed to generate sound files constant:', error);
   process.exit(1);
 });
-

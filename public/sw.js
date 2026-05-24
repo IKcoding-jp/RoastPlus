@@ -18,17 +18,17 @@ const PRECACHE_URLS = [
 function getHtmlPath(url) {
   const urlObj = new URL(url);
   const pathname = urlObj.pathname.replace(/\/+$/, '') || '/';
-  
+
   // 既に.htmlで終わっているか、拡張子がある場合はそのまま返す
   if (pathname.endsWith('.html') || pathname.match(/\.[a-zA-Z0-9]+$/)) {
     return pathname;
   }
-  
+
   // ルートパスの場合はindex.html
   if (pathname === '/') {
     return '/index.html';
   }
-  
+
   // その他のルートパスはindex.htmlを追加
   return `${pathname}/index.html`;
 }
@@ -43,17 +43,17 @@ function putInRuntimeCache(requests, response) {
     response: response.clone(),
   }));
 
-  return caches.open(RUNTIME_CACHE)
-    .then((cache) => Promise.all(
-      cacheEntries.map(({ request, response }) => cache.put(request, response))
-    ))
+  return caches
+    .open(RUNTIME_CACHE)
+    .then((cache) => Promise.all(cacheEntries.map(({ request, response }) => cache.put(request, response))))
     .catch((error) => {
       console.error('Service Worker cache put failed:', error);
     });
 }
 
 function getNavigationFallback() {
-  return caches.match('/index.html')
+  return caches
+    .match('/index.html')
     .then((cachedResponse) => cachedResponse || caches.match('/'))
     .then((cachedResponse) => cachedResponse || Response.error());
 }
@@ -61,7 +61,8 @@ function getNavigationFallback() {
 // インストール時の処理
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
+    caches
+      .open(CACHE_NAME)
       .then((cache) => {
         return cache.addAll(PRECACHE_URLS);
       })
@@ -74,20 +75,22 @@ self.addEventListener('install', (event) => {
 // アクティベート時の処理
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((cacheName) => {
-            return cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE;
-          })
-          .map((cacheName) => {
-            return caches.delete(cacheName);
-          })
-      );
-    })
-    .then(() => {
-      return self.clients.claim();
-    })
+    caches
+      .keys()
+      .then((cacheNames) => {
+        return Promise.all(
+          cacheNames
+            .filter((cacheName) => {
+              return cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE;
+            })
+            .map((cacheName) => {
+              return caches.delete(cacheName);
+            })
+        );
+      })
+      .then(() => {
+        return self.clients.claim();
+      })
   );
 });
 
@@ -111,13 +114,12 @@ self.addEventListener('fetch', (event) => {
   }
 
   const requestUrl = new URL(event.request.url);
-  const isDocumentRequest = event.request.destination === 'document' || 
-                            event.request.mode === 'navigate';
+  const isDocumentRequest = event.request.destination === 'document' || event.request.mode === 'navigate';
 
   // ドキュメントリクエストの場合、ルートパスをHTMLファイルパスに変換
   if (isDocumentRequest) {
     const htmlPath = getHtmlPath(event.request.url);
-    
+
     // HTMLファイルパスが元のパスと異なる場合、新しいリクエストを作成
     if (htmlPath !== requestUrl.pathname) {
       const htmlUrl = new URL(htmlPath, event.request.url);
@@ -183,7 +185,7 @@ self.addEventListener('fetch', (event) => {
           if (cachedResponse) {
             return cachedResponse;
           }
-          
+
           // ドキュメントリクエストの場合、HTMLファイルパスに変換して再試行
           if (isDocumentRequest) {
             const htmlPath = getHtmlPath(event.request.url);
@@ -199,10 +201,9 @@ self.addEventListener('fetch', (event) => {
             // HTMLファイルパスが同じ場合は、index.htmlを返す（SPAフォールバック）
             return getNavigationFallback();
           }
-          
+
           return Response.error();
         });
       })
   );
 });
-

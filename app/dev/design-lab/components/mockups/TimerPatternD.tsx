@@ -55,9 +55,7 @@ export default function TimerPatternD() {
   const nextStep = MOCK_STEPS[MOCK_CURRENT_STEP_INDEX + 1];
   const totalSteps = MOCK_STEPS.length;
   const progress =
-    ((MOCK_CURRENT_TIME - currentStep.startTimeSec) /
-      (nextStep.startTimeSec - currentStep.startTimeSec)) *
-    100;
+    ((MOCK_CURRENT_TIME - currentStep.startTimeSec) / (nextStep.startTimeSec - currentStep.startTimeSec)) * 100;
   const nextStepCountdown = nextStep.startTimeSec - MOCK_CURRENT_TIME;
 
   return (
@@ -65,9 +63,7 @@ export default function TimerPatternD() {
       {/* ヘッダー */}
       <div className="flex items-center gap-2 px-4 py-3 bg-spot-subtle border-b border-edge/30">
         <ArrowLeft size={20} className="text-ink-muted" />
-        <span className="text-sm font-medium text-ink">
-          {MOCK_RECIPE_NAME}
-        </span>
+        <span className="text-sm font-medium text-ink">{MOCK_RECIPE_NAME}</span>
       </div>
 
       {/* 上半分: 現在のステップ（アクセントカラー背景） */}
@@ -84,18 +80,12 @@ export default function TimerPatternD() {
         <div className="mt-4 text-center">
           <div className="flex items-center justify-center gap-2">
             <span className="w-2 h-2 rounded-full bg-spot" />
-            <span className="text-base font-semibold text-ink">
-              {currentStep.title}
-            </span>
+            <span className="text-base font-semibold text-ink">{currentStep.title}</span>
           </div>
           {currentStep.targetTotalWater && (
-            <p className="text-sm text-ink-muted mt-1">
-              {currentStep.targetTotalWater}gまで注ぐ
-            </p>
+            <p className="text-sm text-ink-muted mt-1">{currentStep.targetTotalWater}gまで注ぐ</p>
           )}
-          <p className="text-xs text-ink-muted mt-0.5">
-            {currentStep.description}
-          </p>
+          <p className="text-xs text-ink-muted mt-0.5">{currentStep.description}</p>
         </div>
 
         {/* 進捗バー */}
@@ -116,27 +106,19 @@ export default function TimerPatternD() {
       <div className="flex-1 bg-surface flex flex-col px-6 pt-5 pb-4">
         {/* 次のステップ情報 */}
         <div className="flex-1">
-          <p className="text-xs font-medium text-ink-muted uppercase tracking-wider">
-            次のステップ
-          </p>
+          <p className="text-xs font-medium text-ink-muted uppercase tracking-wider">次のステップ</p>
           <div className="mt-2 flex items-center gap-1.5 text-sm text-ink-muted">
             <span>{formatTime(nextStep.startTimeSec)}</span>
             <span>から</span>
           </div>
-          <p className="text-base font-semibold text-ink mt-1">
-            {nextStep.title}
-          </p>
+          <p className="text-base font-semibold text-ink mt-1">{nextStep.title}</p>
           {nextStep.targetTotalWater && (
-            <p className="text-sm text-ink-muted mt-0.5">
-              {nextStep.targetTotalWater}gまで注ぐ
-            </p>
+            <p className="text-sm text-ink-muted mt-0.5">{nextStep.targetTotalWater}gまで注ぐ</p>
           )}
 
           {/* カウントダウン */}
           <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-ground">
-            <span className="text-sm font-bold text-spot">
-              あと {nextStepCountdown}秒
-            </span>
+            <span className="text-sm font-bold text-spot">あと {nextStepCountdown}秒</span>
           </div>
         </div>
 

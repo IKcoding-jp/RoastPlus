@@ -34,13 +34,7 @@ const TICK_MINOR_INNER_R = 132;
  * - ステート別リング色（idle=edge-strong / running=spot / completed=success）
  * - rAFベースの60fpsアニメーション
  */
-export function TimerDisplay({
-  state,
-  isRunning,
-  isPaused,
-  isCompleted,
-  idleDuration = 480,
-}: TimerDisplayProps) {
+export function TimerDisplay({ state, isRunning, isPaused, isCompleted, idleDuration = 480 }: TimerDisplayProps) {
   const progressCircleRef = useRef<SVGCircleElement>(null);
   const remainingTextRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
@@ -50,12 +44,14 @@ export function TimerDisplay({
   // ティックマークを静的に生成
   const ticks = useMemo(() => {
     const result: Array<{
-      x1: number; y1: number;
-      x2: number; y2: number;
+      x1: number;
+      y1: number;
+      x2: number;
+      y2: number;
       isMajor: boolean;
     }> = [];
     for (let i = 0; i < TICK_COUNT; i++) {
-      const angle = ((i * 6) - 90) * (Math.PI / 180);
+      const angle = (i * 6 - 90) * (Math.PI / 180);
       const isMajor = i % 5 === 0;
       const innerR = isMajor ? TICK_MAJOR_INNER_R : TICK_MINOR_INNER_R;
       result.push({
@@ -152,10 +148,7 @@ export function TimerDisplay({
 
   return (
     <div className="relative w-[290px] h-[290px] md:w-[85%] md:max-w-[340px] md:h-auto md:aspect-square">
-      <svg
-        viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`}
-        className="w-full h-full overflow-visible"
-      >
+      <svg viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`} className="w-full h-full overflow-visible">
         {/* グロー用フィルター */}
         <defs>
           <filter id="ring-glow">

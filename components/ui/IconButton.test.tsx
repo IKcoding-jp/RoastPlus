@@ -94,7 +94,11 @@ describe('IconButton', () => {
   describe('disabled状態', () => {
     it('disabled時はクリックできない', () => {
       const handleClick = vi.fn();
-      render(<IconButton disabled onClick={handleClick}>X</IconButton>);
+      render(
+        <IconButton disabled onClick={handleClick}>
+          X
+        </IconButton>
+      );
 
       fireEvent.click(screen.getByRole('button'));
       expect(handleClick).not.toHaveBeenCalled();

@@ -8,24 +8,15 @@ export default function PrivacyPolicyPage() {
       <div className="max-w-3xl mx-auto">
         <main>
           <Card className="p-6 sm:p-8">
-            <p className="text-sm text-ink-muted mb-6">
-              最終更新日: {PRIVACY_POLICY_LAST_UPDATED}
-            </p>
+            <p className="text-sm text-ink-muted mb-6">最終更新日: {PRIVACY_POLICY_LAST_UPDATED}</p>
 
             <div className="space-y-8">
               {PRIVACY_POLICY_SECTIONS.map((section, index) => (
                 <section key={index}>
-                  <h2 className="text-lg font-semibold text-ink mb-3">
-                    {section.title}
-                  </h2>
+                  <h2 className="text-lg font-semibold text-ink mb-3">{section.title}</h2>
                   <div className="space-y-2">
                     {section.content.map((paragraph, pIndex) => (
-                      <p
-                        key={pIndex}
-                        className={`text-ink-sub leading-relaxed ${
-                          paragraph === '' ? 'h-2' : ''
-                        }`}
-                      >
+                      <p key={pIndex} className={`text-ink-sub leading-relaxed ${paragraph === '' ? 'h-2' : ''}`}>
                         {paragraph}
                       </p>
                     ))}
@@ -35,9 +26,7 @@ export default function PrivacyPolicyPage() {
             </div>
 
             <div className="mt-8 pt-6 border-t border-edge">
-              <p className="text-sm text-ink-muted text-center">
-                以上
-              </p>
+              <p className="text-sm text-ink-muted text-center">以上</p>
             </div>
           </Card>
         </main>

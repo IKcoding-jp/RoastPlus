@@ -13,13 +13,7 @@ interface DatePickerModalProps {
   getTodayString: () => string;
 }
 
-export function DatePickerModal({
-  selectedDate,
-  onSelect,
-  onCancel,
-  isWeekend,
-  getTodayString,
-}: DatePickerModalProps) {
+export function DatePickerModal({ selectedDate, onSelect, onCancel, isWeekend, getTodayString }: DatePickerModalProps) {
   const {
     currentMonth,
     viewMode,
@@ -44,10 +38,7 @@ export function DatePickerModal({
   } = useDatePicker({ selectedDate, isWeekend, getTodayString });
 
   return (
-    <div
-      className="fixed inset-0 bg-black/20 flex items-center justify-center z-50 p-4"
-      onClick={onCancel}
-    >
+    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50 p-4" onClick={onCancel}>
       <div
         className="bg-white rounded-lg shadow-xl max-w-md w-full border-2 border-gray-300"
         onClick={(e) => e.stopPropagation()}
@@ -76,9 +67,7 @@ export function DatePickerModal({
                   onClick={handleNextMonth}
                   disabled={!canGoToNextMonth}
                   className={`min-w-[44px] ${
-                    !canGoToNextMonth
-                      ? 'text-gray-300'
-                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                    !canGoToNextMonth ? 'text-gray-300' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                   aria-label="次月"
                 >
@@ -111,9 +100,7 @@ export function DatePickerModal({
               >
                 <HiChevronLeft className="h-5 w-5" />
               </IconButton>
-              <h3 className="text-xl md:text-2xl font-semibold text-gray-800">
-                {selectedYear}年の月を選択
-              </h3>
+              <h3 className="text-xl md:text-2xl font-semibold text-gray-800">{selectedYear}年の月を選択</h3>
             </div>
           )}
           <IconButton

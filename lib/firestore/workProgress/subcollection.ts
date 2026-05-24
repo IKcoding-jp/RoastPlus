@@ -1,11 +1,4 @@
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  type DocumentData,
-  type QuerySnapshot,
-} from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, type DocumentData, type QuerySnapshot } from 'firebase/firestore';
 import { getDb, normalizeAppData } from '../common';
 import type { WorkProgress } from '@/types';
 

@@ -9,12 +9,7 @@ interface StarRatingProps {
   className?: string;
 }
 
-export function StarRating({ 
-  rating, 
-  size = 'md',
-  showValue = true,
-  className = '',
-}: StarRatingProps) {
+export function StarRating({ rating, size = 'md', showValue = true, className = '' }: StarRatingProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -77,27 +72,24 @@ export function StarRating({
 
   // 星の配列を生成（順番にアニメーションするため）
   const stars: Array<{ type: 'full' | 'half' | 'empty'; index: number }> = [];
-  
+
   // 満点の星
   for (let i = 0; i < fullStars; i++) {
     stars.push({ type: 'full', index: i });
   }
-  
+
   // 半星
   if (hasHalfStar) {
     stars.push({ type: 'half', index: fullStars });
   }
-  
+
   // 空の星
   for (let i = 0; i < emptyStars; i++) {
     stars.push({ type: 'empty', index: fullStars + (hasHalfStar ? 1 : 0) + i });
   }
 
   return (
-    <div 
-      ref={containerRef} 
-      className={`flex items-center ${gapClass} ${className}`}
-    >
+    <div ref={containerRef} className={`flex items-center ${gapClass} ${className}`}>
       {stars.map((star, index) => {
         const starChar = star.type === 'full' ? '★' : star.type === 'half' ? '☆' : '★';
         const starColor = star.type === 'empty' ? 'text-gray-300' : 'text-yellow-400';
@@ -110,9 +102,7 @@ export function StarRating({
             style={{
               opacity: isVisible ? 1 : 0,
               transform: isVisible ? 'scale(1)' : 'scale(0)',
-              transition: isVisible
-                ? `opacity 0.3s ease-out ${delay}s, transform 0.3s ease-out ${delay}s`
-                : 'none',
+              transition: isVisible ? `opacity 0.3s ease-out ${delay}s, transform 0.3s ease-out ${delay}s` : 'none',
             }}
           >
             {starChar}
@@ -124,9 +114,7 @@ export function StarRating({
           className={`${marginClass} text-sm font-semibold text-gray-700`}
           style={{
             opacity: isVisible ? 1 : 0,
-            transition: isVisible
-              ? `opacity 0.3s ease-out ${stars.length * 0.1 + 0.1}s`
-              : 'none',
+            transition: isVisible ? `opacity 0.3s ease-out ${stars.length * 0.1 + 0.1}s` : 'none',
           }}
         >
           {rating.toFixed(1)}
@@ -135,4 +123,3 @@ export function StarRating({
     </div>
   );
 }
-

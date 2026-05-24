@@ -56,9 +56,7 @@ export default function TimerPatternE() {
   const prevStep = MOCK_STEPS[MOCK_CURRENT_STEP_INDEX - 1];
   const nextStep = MOCK_STEPS[MOCK_CURRENT_STEP_INDEX + 1];
   const progress = MOCK_CURRENT_TIME / MOCK_TOTAL_DURATION;
-  const timeUntilNext = nextStep
-    ? nextStep.startTimeSec - MOCK_CURRENT_TIME
-    : 0;
+  const timeUntilNext = nextStep ? nextStep.startTimeSec - MOCK_CURRENT_TIME : 0;
 
   return (
     <div className="max-w-sm mx-auto">
@@ -69,9 +67,7 @@ export default function TimerPatternE() {
             <button className="p-1 text-ink/60 hover:text-ink">
               <ArrowLeft size={20} weight="bold" />
             </button>
-            <span className="text-sm font-medium text-ink truncate max-w-[160px]">
-              {MOCK_RECIPE_NAME}
-            </span>
+            <span className="text-sm font-medium text-ink truncate max-w-[160px]">{MOCK_RECIPE_NAME}</span>
           </div>
         </div>
 
@@ -87,11 +83,7 @@ export default function TimerPatternE() {
             <span className="text-sm font-semibold text-spot">
               Step {MOCK_CURRENT_STEP_INDEX + 1}/{MOCK_STEPS.length}
             </span>
-            {nextStep && (
-              <p className="text-xs text-ink/50 mt-0.5">
-                次のステップまで {timeUntilNext}秒
-              </p>
-            )}
+            {nextStep && <p className="text-xs text-ink/50 mt-0.5">次のステップまで {timeUntilNext}秒</p>}
           </div>
         </div>
 
@@ -118,9 +110,7 @@ export default function TimerPatternE() {
                 <div className="w-7 h-7 rounded-full bg-spot flex items-center justify-center">
                   <Drop size={16} weight="fill" className="text-white" />
                 </div>
-                <span className="text-base font-bold text-ink">
-                  {currentStep.title}
-                </span>
+                <span className="text-base font-bold text-ink">{currentStep.title}</span>
               </div>
               {currentStep.targetTotalWater && (
                 <div className="mb-3">
@@ -133,14 +123,8 @@ export default function TimerPatternE() {
                   <span className="text-sm text-ink/50 ml-1">まで注ぐ</span>
                 </div>
               )}
-              <p className="text-sm text-ink/70 leading-relaxed">
-                {currentStep.description}
-              </p>
-              {currentStep.note && (
-                <p className="text-xs text-ink/50 mt-2 italic">
-                  {currentStep.note}
-                </p>
-              )}
+              <p className="text-sm text-ink/70 leading-relaxed">{currentStep.description}</p>
+              {currentStep.note && <p className="text-xs text-ink/50 mt-2 italic">{currentStep.note}</p>}
 
               {/* Dot Indicator */}
               <div className="flex items-center justify-center gap-1.5 mt-4">
@@ -163,9 +147,7 @@ export default function TimerPatternE() {
             {nextStep ? (
               <div className="w-[60px] min-w-[60px] rounded-xl border border-edge bg-surface/60 p-2 flex flex-col justify-center opacity-50">
                 <div className="w-5 h-5 rounded-full bg-ink/15 flex items-center justify-center mx-auto mb-1">
-                  <span className="text-[10px] font-semibold text-ink/50">
-                    {MOCK_CURRENT_STEP_INDEX + 2}
-                  </span>
+                  <span className="text-[10px] font-semibold text-ink/50">{MOCK_CURRENT_STEP_INDEX + 2}</span>
                 </div>
                 <p className="text-[10px] font-medium text-ink/50 text-center leading-tight truncate">
                   {nextStep.title}
@@ -180,18 +162,11 @@ export default function TimerPatternE() {
         {/* Progress Bar */}
         <div className="px-4 pb-1">
           <div className="w-full h-2 rounded-full bg-ground overflow-hidden">
-            <div
-              className="h-full rounded-full bg-spot transition-all"
-              style={{ width: `${progress * 100}%` }}
-            />
+            <div className="h-full rounded-full bg-spot transition-all" style={{ width: `${progress * 100}%` }} />
           </div>
           <div className="flex justify-between mt-1 px-0.5">
-            <span className="text-[10px] text-ink/40">
-              {formatTime(MOCK_CURRENT_TIME)}
-            </span>
-            <span className="text-[10px] text-ink/40">
-              {formatTime(MOCK_TOTAL_DURATION)}
-            </span>
+            <span className="text-[10px] text-ink/40">{formatTime(MOCK_CURRENT_TIME)}</span>
+            <span className="text-[10px] text-ink/40">{formatTime(MOCK_TOTAL_DURATION)}</span>
           </div>
         </div>
 

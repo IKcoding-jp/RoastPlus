@@ -30,10 +30,10 @@ export interface RoastLevelBadgeProps extends Omit<React.HTMLAttributes<HTMLSpan
 
 // 焙煎度ごとの背景色（コーヒー豆の色を再現）
 const ROAST_COLORS: Record<string, { bg: string; text: string }> = {
-  '深煎り': { bg: '#120C0A', text: '#FFFFFF' },
-  '中深煎り': { bg: '#4E3526', text: '#FFFFFF' },
-  '中煎り': { bg: '#745138', text: '#FFFFFF' },
-  '浅煎り': { bg: '#C78F5D', text: '#FFFFFF' },
+  深煎り: { bg: '#120C0A', text: '#FFFFFF' },
+  中深煎り: { bg: '#4E3526', text: '#FFFFFF' },
+  中煎り: { bg: '#745138', text: '#FFFFFF' },
+  浅煎り: { bg: '#C78F5D', text: '#FFFFFF' },
 };
 
 // デフォルトの色（不明な焙煎度の場合）
@@ -56,15 +56,12 @@ export const RoastLevelBadge = forwardRef<HTMLSpanElement, RoastLevelBadgeProps>
       sizeStyles[size],
       'shadow-sm',
       className,
-    ].filter(Boolean).join(' ');
+    ]
+      .filter(Boolean)
+      .join(' ');
 
     return (
-      <span
-        ref={ref}
-        className={badgeStyles}
-        style={{ backgroundColor: colors.bg, color: colors.text }}
-        {...props}
-      >
+      <span ref={ref} className={badgeStyles} style={{ backgroundColor: colors.bg, color: colors.text }} {...props}>
         {level}
       </span>
     );

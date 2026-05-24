@@ -61,19 +61,11 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
       <div className="p-6 bg-black bg-opacity-50 flex items-center justify-center gap-4">
         {capturedImage ? (
           <>
-            <Button
-              onClick={retakePhoto}
-              variant="secondary"
-              className="gap-2"
-            >
+            <Button onClick={retakePhoto} variant="secondary" className="gap-2">
               <HiX className="h-5 w-5" />
               やり直す
             </Button>
-            <Button
-              onClick={confirmCapture}
-              variant="coffee"
-              className="gap-2 bg-amber-600 hover:bg-amber-700"
-            >
+            <Button onClick={confirmCapture} variant="coffee" className="gap-2 bg-amber-600 hover:bg-amber-700">
               <HiCheck className="h-5 w-5" />
               確定
             </Button>

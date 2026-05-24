@@ -144,7 +144,6 @@ describe('Button', () => {
       const button = screen.getByText('フィルター');
       expect(button.querySelector('span[aria-label*="件"]')).not.toBeInTheDocument();
     });
-
   });
 
   describe('カスタムクラス', () => {

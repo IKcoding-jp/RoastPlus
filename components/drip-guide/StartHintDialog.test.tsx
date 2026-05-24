@@ -5,9 +5,7 @@ import { StartHintDialog } from './StartHintDialog';
 vi.mock('framer-motion', () => ({
   AnimatePresence: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   motion: {
-    div: ({ children, ...props }: React.HTMLProps<HTMLDivElement>) => (
-      <div {...props}>{children}</div>
-    ),
+    div: ({ children, ...props }: React.HTMLProps<HTMLDivElement>) => <div {...props}>{children}</div>,
   },
 }));
 

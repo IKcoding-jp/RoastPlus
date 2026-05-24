@@ -4,12 +4,7 @@
 
 export { getDb, getUserDocRef, removeUndefinedFields, normalizeAppData, defaultData } from './common';
 export { getUserData, saveUserData, subscribeUserData, SAVE_USER_DATA_DEBOUNCE_MS } from './userData';
-export {
-  getDefectBeanMasterData,
-  saveDefectBean,
-  deleteDefectBean,
-  updateDefectBeanSetting,
-} from './defectBeans';
+export { getDefectBeanMasterData, saveDefectBean, deleteDefectBean, updateDefectBeanSetting } from './defectBeans';
 export {
   extractTargetAmount,
   extractUnitFromWeight,

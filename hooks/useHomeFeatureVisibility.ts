@@ -22,9 +22,10 @@ export function useHomeFeatureVisibility() {
   const [localHiddenKeys, setLocalHiddenKeys] = useState<HomeFeatureKey[]>(loadHiddenKeys);
   const hasMigratedLocalStorageRef = useRef(false);
   const accountHiddenKeys = useMemo(
-    () => (!isLoading && data.userSettings && 'homeHiddenFeatureKeys' in data.userSettings
-      ? normalizeHiddenHomeFeatureKeys(data.userSettings.homeHiddenFeatureKeys)
-      : null),
+    () =>
+      !isLoading && data.userSettings && 'homeHiddenFeatureKeys' in data.userSettings
+        ? normalizeHiddenHomeFeatureKeys(data.userSettings.homeHiddenFeatureKeys)
+        : null,
     [data.userSettings, isLoading]
   );
   const hiddenKeys = accountHiddenKeys ?? localHiddenKeys;
@@ -51,24 +52,25 @@ export function useHomeFeatureVisibility() {
     }));
   }, [accountHiddenKeys, isLoading, localHiddenKeys, updateData]);
 
-  const updateFeatureHidden = useCallback((key: HomeFeatureKey, hidden: boolean) => {
-    const currentKeys = hiddenKeys;
-    const nextKeys = normalizeHiddenHomeFeatureKeys(
-      hidden
-        ? [...currentKeys, key]
-        : currentKeys.filter((currentKey) => currentKey !== key)
-    );
+  const updateFeatureHidden = useCallback(
+    (key: HomeFeatureKey, hidden: boolean) => {
+      const currentKeys = hiddenKeys;
+      const nextKeys = normalizeHiddenHomeFeatureKeys(
+        hidden ? [...currentKeys, key] : currentKeys.filter((currentKey) => currentKey !== key)
+      );
 
-    setLocalHiddenKeys(nextKeys);
-    setHiddenHomeFeatureKeys(nextKeys);
-    updateData((currentData: AppData) => ({
-      ...currentData,
-      userSettings: {
-        ...currentData.userSettings,
-        homeHiddenFeatureKeys: nextKeys,
-      },
-    }));
-  }, [hiddenKeys, updateData]);
+      setLocalHiddenKeys(nextKeys);
+      setHiddenHomeFeatureKeys(nextKeys);
+      updateData((currentData: AppData) => ({
+        ...currentData,
+        userSettings: {
+          ...currentData.userSettings,
+          homeHiddenFeatureKeys: nextKeys,
+        },
+      }));
+    },
+    [hiddenKeys, updateData]
+  );
 
   const resetVisibility = useCallback(() => {
     setHiddenHomeFeatureKeys([]);
@@ -82,10 +84,7 @@ export function useHomeFeatureVisibility() {
     }));
   }, [updateData]);
 
-  const isVisible = useCallback(
-    (key: HomeFeatureKey) => !hiddenKeys.includes(key),
-    [hiddenKeys]
-  );
+  const isVisible = useCallback((key: HomeFeatureKey) => !hiddenKeys.includes(key), [hiddenKeys]);
 
   return {
     hiddenKeys,

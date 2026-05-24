@@ -52,10 +52,13 @@ describe('workChime', () => {
   });
 
   it('部分設定をデフォルト値とマージする', () => {
-    localStorage.setItem('roastplus_work_chime_settings', JSON.stringify({
-      enabled: false,
-      volume: 0.4,
-    }));
+    localStorage.setItem(
+      'roastplus_work_chime_settings',
+      JSON.stringify({
+        enabled: false,
+        volume: 0.4,
+      })
+    );
 
     expect(getWorkChimeSettings()).toEqual({
       ...DEFAULT_WORK_CHIME_SETTINGS,

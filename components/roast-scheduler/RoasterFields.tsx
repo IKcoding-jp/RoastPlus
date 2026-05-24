@@ -47,10 +47,7 @@ export function RoasterFields({
   onRoastLevelChange,
 }: RoasterFieldsProps) {
   // 豆の選択肢を生成
-  const beanOptions = useMemo(
-    () => ALL_BEANS.map((bean) => ({ value: bean, label: bean })),
-    []
-  );
+  const beanOptions = useMemo(() => ALL_BEANS.map((bean) => ({ value: bean, label: bean })), []);
 
   // 2種類目の豆の選択肢（1種類目で選択した豆を除外）
   const bean2Options = useMemo(
@@ -101,7 +98,6 @@ export function RoasterFields({
         onChange={handleBeanNameChange}
         options={beanOptions}
         placeholder="選択してください"
-
       />
 
       <Select
@@ -110,7 +106,6 @@ export function RoasterFields({
         onChange={handleBeanName2Change}
         options={bean2Options}
         placeholder="なし"
-
       />
 
       {beanName2 && (
@@ -126,7 +121,6 @@ export function RoasterFields({
               min={0}
               max={10}
               placeholder="5"
-      
             />
             <NumberInput
               label={`${beanName2}の割合`}
@@ -135,7 +129,6 @@ export function RoasterFields({
               min={0}
               max={10}
               placeholder="5"
-      
             />
           </div>
           <p className="mt-1 md:mt-2 text-sm md:text-base text-ink-muted">
@@ -150,7 +143,6 @@ export function RoasterFields({
         onChange={(e) => onWeightChange(e.target.value ? (parseInt(e.target.value, 10) as 200 | 300 | 500) : '')}
         options={WEIGHT_OPTIONS}
         placeholder="選択してください"
-
       />
 
       <Select
@@ -159,7 +151,6 @@ export function RoasterFields({
         onChange={(e) => onRoastLevelChange(e.target.value as '浅煎り' | '中煎り' | '中深煎り' | '深煎り' | '')}
         options={ROAST_LEVEL_OPTIONS}
         placeholder="選択してください"
-
       />
     </div>
   );

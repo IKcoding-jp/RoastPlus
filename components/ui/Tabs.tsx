@@ -66,15 +66,13 @@ Tabs.displayName = 'Tabs';
 // TabsList
 export type TabsListProps = React.HTMLAttributes<HTMLDivElement>;
 
-export const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
-  ({ children, className = '', ...props }, ref) => {
-    return (
-      <div ref={ref} className={`flex rounded-lg bg-ground p-1 ${className}`} role="tablist" {...props}>
-        {children}
-      </div>
-    );
-  }
-);
+export const TabsList = forwardRef<HTMLDivElement, TabsListProps>(({ children, className = '', ...props }, ref) => {
+  return (
+    <div ref={ref} className={`flex rounded-lg bg-ground p-1 ${className}`} role="tablist" {...props}>
+      {children}
+    </div>
+  );
+});
 TabsList.displayName = 'TabsList';
 
 // TabsTrigger
@@ -90,9 +88,7 @@ export const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(
 
     const baseStyles = 'flex-1 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 min-h-[40px]';
 
-    const variantStyles = isSelected
-      ? 'tab-active shadow-sm'
-      : 'text-ink-sub hover:text-ink hover:bg-ground';
+    const variantStyles = isSelected ? 'tab-active shadow-sm' : 'text-ink-sub hover:text-ink hover:bg-ground';
 
     return (
       <button

@@ -27,11 +27,7 @@ interface UseQuizSoundOptions {
  * クイズの効果音・バイブレーションを管理するフック
  */
 export function useQuizSound(options: UseQuizSoundOptions = {}) {
-  const {
-    soundEnabled = true,
-    vibrationEnabled = true,
-    volume = 0.3,
-  } = options;
+  const { soundEnabled = true, vibrationEnabled = true, volume = 0.3 } = options;
 
   // AudioContextの初期化
   useEffect(() => {

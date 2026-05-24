@@ -35,13 +35,7 @@ export function CameraPreview({
   return (
     <div ref={containerRef} className="flex-1 relative flex items-center justify-center overflow-hidden">
       {capturedImage ? (
-        <Image
-          src={capturedImage}
-          alt="Captured"
-          fill
-          className="object-contain"
-          unoptimized
-        />
+        <Image src={capturedImage} alt="Captured" fill className="object-contain" unoptimized />
       ) : (
         <>
           <video
@@ -73,7 +67,7 @@ export function CameraPreview({
                   style={{
                     width: `${guideSize.left}px`,
                     top: `${guideSize.top}px`,
-                    bottom: `${guideSize.containerHeight - (guideSize.top + guideSize.height)}px`
+                    bottom: `${guideSize.containerHeight - (guideSize.top + guideSize.height)}px`,
                   }}
                 />
                 {/* 右側のオーバーレイ */}
@@ -82,7 +76,7 @@ export function CameraPreview({
                   style={{
                     width: `${guideSize.containerWidth - (guideSize.left + guideSize.width)}px`,
                     top: `${guideSize.top}px`,
-                    bottom: `${guideSize.containerHeight - (guideSize.top + guideSize.height)}px`
+                    bottom: `${guideSize.containerHeight - (guideSize.top + guideSize.height)}px`,
                   }}
                 />
               </>

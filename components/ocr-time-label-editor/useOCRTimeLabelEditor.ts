@@ -14,7 +14,10 @@ export function useOCRTimeLabelEditor({ timeLabels, onUpdate }: UseOCRTimeLabelE
   // 新フィールド用の状態
   const [editingAssignee, setEditingAssignee] = useState<string>('');
   const [editingSubTasks, setEditingSubTasks] = useState<SubTask[]>([]);
-  const [editingContinuesUntil, setEditingContinuesUntil] = useState<{ hour: string; minute: string }>({ hour: '', minute: '' });
+  const [editingContinuesUntil, setEditingContinuesUntil] = useState<{ hour: string; minute: string }>({
+    hour: '',
+    minute: '',
+  });
 
   const handleEdit = (label: TimeLabel) => {
     setEditingId(label.id);
@@ -84,11 +87,7 @@ export function useOCRTimeLabelEditor({ timeLabels, onUpdate }: UseOCRTimeLabelE
 
   // サブタスク更新
   const handleUpdateSubTask = (subTaskId: string, updates: Partial<SubTask>) => {
-    setEditingSubTasks(
-      editingSubTasks.map((st) =>
-        st.id === subTaskId ? { ...st, ...updates } : st
-      )
-    );
+    setEditingSubTasks(editingSubTasks.map((st) => (st.id === subTaskId ? { ...st, ...updates } : st)));
   };
 
   const handleAdd = () => {

@@ -101,10 +101,7 @@ describe('useTableEditing - 上限チェック', () => {
       });
 
       expect(onAddTeam).not.toHaveBeenCalled();
-      expect(mockShowToast).toHaveBeenCalledWith(
-        expect.stringContaining(`${MAX_TEAMS}`),
-        'warning'
-      );
+      expect(mockShowToast).toHaveBeenCalledWith(expect.stringContaining(`${MAX_TEAMS}`), 'warning');
     });
 
     it('最後の班を追加するとinfo通知が表示される', async () => {
@@ -125,10 +122,7 @@ describe('useTableEditing - 上限チェック', () => {
       });
 
       expect(onAddTeam).toHaveBeenCalledTimes(1);
-      expect(mockShowToast).toHaveBeenCalledWith(
-        expect.stringContaining(`${MAX_TEAMS}`),
-        'info'
-      );
+      expect(mockShowToast).toHaveBeenCalledWith(expect.stringContaining(`${MAX_TEAMS}`), 'info');
     });
   });
 
@@ -171,10 +165,7 @@ describe('useTableEditing - 上限チェック', () => {
       });
 
       expect(onAddTaskLabel).not.toHaveBeenCalled();
-      expect(mockShowToast).toHaveBeenCalledWith(
-        expect.stringContaining(`${MAX_TASK_LABELS}`),
-        'warning'
-      );
+      expect(mockShowToast).toHaveBeenCalledWith(expect.stringContaining(`${MAX_TASK_LABELS}`), 'warning');
     });
 
     it('最後の作業ラベルを追加するとinfo通知が表示される', async () => {
@@ -195,10 +186,7 @@ describe('useTableEditing - 上限チェック', () => {
       });
 
       expect(onAddTaskLabel).toHaveBeenCalledTimes(1);
-      expect(mockShowToast).toHaveBeenCalledWith(
-        expect.stringContaining(`${MAX_TASK_LABELS}`),
-        'info'
-      );
+      expect(mockShowToast).toHaveBeenCalledWith(expect.stringContaining(`${MAX_TASK_LABELS}`), 'info');
     });
   });
 
@@ -243,10 +231,7 @@ describe('useTableEditing - 上限チェック', () => {
       });
 
       expect(onAddMember).not.toHaveBeenCalled();
-      expect(mockShowToast).toHaveBeenCalledWith(
-        expect.stringContaining(`${MAX_MEMBERS}`),
-        'warning'
-      );
+      expect(mockShowToast).toHaveBeenCalledWith(expect.stringContaining(`${MAX_MEMBERS}`), 'warning');
     });
 
     it('最後のメンバーを追加するとinfo通知が表示される', async () => {
@@ -269,10 +254,7 @@ describe('useTableEditing - 上限チェック', () => {
       });
 
       expect(onAddMember).toHaveBeenCalledTimes(1);
-      expect(mockShowToast).toHaveBeenCalledWith(
-        expect.stringContaining(`${MAX_MEMBERS}`),
-        'info'
-      );
+      expect(mockShowToast).toHaveBeenCalledWith(expect.stringContaining(`${MAX_MEMBERS}`), 'info');
     });
   });
 });

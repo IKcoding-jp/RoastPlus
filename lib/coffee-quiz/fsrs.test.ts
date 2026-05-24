@@ -205,9 +205,7 @@ describe('fsrs', () => {
     });
 
     it('dueが未設定のカードを含める', () => {
-      const cards: QuizCard[] = [
-        { ...createQuizCard('q1'), due: undefined as unknown as Date },
-      ];
+      const cards: QuizCard[] = [{ ...createQuizCard('q1'), due: undefined as unknown as Date }];
 
       const dueCards = getDueCards(cards, mockNow);
       expect(dueCards).toHaveLength(1);
@@ -345,9 +343,7 @@ describe('fsrs', () => {
     });
 
     it('全問題がカードにある場合は空配列を返す', () => {
-      const existingCards: QuizCard[] = mockQuestions.map((q) =>
-        createQuizCard(q.id)
-      );
+      const existingCards: QuizCard[] = mockQuestions.map((q) => createQuizCard(q.id));
 
       const newCards = getNewCards(existingCards, mockQuestions, 10);
       expect(newCards).toHaveLength(0);

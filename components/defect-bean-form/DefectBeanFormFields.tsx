@@ -51,9 +51,7 @@ export function DefectBeanFormFields({
     <>
       {/* 画像選択 */}
       <div className="px-6 pt-6">
-        <label className={labelClass}>
-          画像 {mode === 'add' && <span className="text-red-500">*</span>}
-        </label>
+        <label className={labelClass}>画像 {mode === 'add' && <span className="text-red-500">*</span>}</label>
         {imagePreview ? (
           <div className="flex justify-center">
             <div className="relative w-full max-w-xs">
@@ -91,12 +89,7 @@ export function DefectBeanFormFields({
             <div className="text-center text-sm text-ink-muted">または</div>
             <label className="block w-full px-4 py-3 border-2 rounded-lg transition-colors cursor-pointer text-center min-h-[44px] flex items-center justify-center border-edge-strong hover:border-spot hover:bg-ground text-ink-sub">
               <span className="font-medium">ファイルを選択</span>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={onFileSelect}
-                className="hidden"
-              />
+              <input type="file" accept="image/*" onChange={onFileSelect} className="hidden" />
             </label>
           </div>
         )}
@@ -104,7 +97,6 @@ export function DefectBeanFormFields({
 
       {/* フォーム */}
       <form onSubmit={onSubmit} className="p-6 space-y-6">
-
         {/* 名称 */}
         <div>
           <label className={labelClass}>
@@ -121,9 +113,7 @@ export function DefectBeanFormFields({
 
         {/* 特徴 */}
         <div>
-          <label className={labelClass}>
-            特徴（見た目の説明）
-          </label>
+          <label className={labelClass}>特徴（見た目の説明）</label>
           <Textarea
             value={characteristics}
             onChange={(e) => onCharacteristicsChange(e.target.value)}
@@ -134,9 +124,7 @@ export function DefectBeanFormFields({
 
         {/* 味への影響 */}
         <div>
-          <label className={labelClass}>
-            味への影響
-          </label>
+          <label className={labelClass}>味への影響</label>
           <Textarea
             value={tasteImpact}
             onChange={(e) => onTasteImpactChange(e.target.value)}
@@ -147,9 +135,7 @@ export function DefectBeanFormFields({
 
         {/* 省く理由 */}
         <div>
-          <label className={labelClass}>
-            省く理由
-          </label>
+          <label className={labelClass}>省く理由</label>
           <Textarea
             value={removalReason}
             onChange={(e) => onRemovalReasonChange(e.target.value)}
@@ -159,40 +145,21 @@ export function DefectBeanFormFields({
         </div>
 
         {/* ボタン */}
-        <div className={`flex gap-3 pt-4 border-t border-edge ${mode === 'edit' && onDelete ? 'justify-between' : 'justify-end'}`}>
+        <div
+          className={`flex gap-3 pt-4 border-t border-edge ${mode === 'edit' && onDelete ? 'justify-between' : 'justify-end'}`}
+        >
           {mode === 'edit' && onDelete && (
-            <Button
-              type="button"
-              variant="danger"
-              onClick={onDelete}
-              disabled={isSubmitting || isDeleting}
-            >
+            <Button type="button" variant="danger" onClick={onDelete} disabled={isSubmitting || isDeleting}>
               <HiTrash className="h-5 w-5" />
               {isDeleting ? '削除中...' : '削除'}
             </Button>
           )}
           <div className="flex gap-3">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={onCancel}
-              disabled={isSubmitting || isDeleting}
-            >
+            <Button type="button" variant="secondary" onClick={onCancel} disabled={isSubmitting || isDeleting}>
               キャンセル
             </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={isSubmitting || isDeleting}
-              loading={isSubmitting}
-            >
-              {isSubmitting
-                ? mode === 'edit'
-                  ? '更新中...'
-                  : '追加中...'
-                : mode === 'edit'
-                  ? '更新'
-                  : '追加'}
+            <Button type="submit" variant="primary" disabled={isSubmitting || isDeleting} loading={isSubmitting}>
+              {isSubmitting ? (mode === 'edit' ? '更新中...' : '追加中...') : mode === 'edit' ? '更新' : '追加'}
             </Button>
           </div>
         </div>

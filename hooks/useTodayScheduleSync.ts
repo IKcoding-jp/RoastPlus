@@ -8,12 +8,7 @@ interface UseTodayScheduleSyncOptions {
   currentSchedule: TodaySchedule;
 }
 
-export function useTodayScheduleSync({
-  data,
-  onUpdate,
-  selectedDate,
-  currentSchedule,
-}: UseTodayScheduleSyncOptions) {
+export function useTodayScheduleSync({ data, onUpdate, selectedDate, currentSchedule }: UseTodayScheduleSyncOptions) {
   const [isComposing, setIsComposing] = useState(false);
   const [localTimeLabels, setLocalTimeLabels] = useState<TimeLabel[]>(currentSchedule.timeLabels || []);
   const [newHour, setNewHour] = useState<string>('');
@@ -180,7 +175,8 @@ export function useTodayScheduleSync({
 
         if (currentSelectedDate !== selectedDate) return;
 
-        const hasChanges = currentTimeLabels.length !== originalTimeLabels.length ||
+        const hasChanges =
+          currentTimeLabels.length !== originalTimeLabels.length ||
           currentTimeLabels.some((label, index) => {
             const original = originalTimeLabels[index];
             return (
@@ -283,9 +279,7 @@ export function useTodayScheduleSync({
   };
 
   const updateTimeLabel = (id: string, updates: Partial<TimeLabel>) => {
-    setLocalTimeLabels(
-      localTimeLabels.map((label) => (label.id === id ? { ...label, ...updates } : label))
-    );
+    setLocalTimeLabels(localTimeLabels.map((label) => (label.id === id ? { ...label, ...updates } : label)));
   };
 
   return {

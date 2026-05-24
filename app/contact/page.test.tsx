@@ -113,9 +113,7 @@ describe('ContactPage', () => {
     fillContactForm();
     fireEvent.click(screen.getByRole('button', { name: '送信する' }));
 
-    expect(
-      await screen.findByText(/少し時間をおいて再度お試しください/)
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/少し時間をおいて再度お試しください/)).toBeInTheDocument();
     expect(mocks.sendContactEmail).not.toHaveBeenCalled();
   });
 });

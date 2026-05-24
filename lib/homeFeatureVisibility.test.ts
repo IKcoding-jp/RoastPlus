@@ -1,10 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import {
-  getHiddenHomeFeatureKeys,
-  isHomeFeatureVisible,
-  setHomeFeatureHidden,
-} from './homeFeatureVisibility';
+import { getHiddenHomeFeatureKeys, isHomeFeatureVisible, setHomeFeatureHidden } from './homeFeatureVisibility';
 
 const createLocalStorageMock = () => {
   const store: Record<string, string> = {};

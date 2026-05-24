@@ -14,7 +14,8 @@ export const EPISODE_003: DevStoryEpisode = {
     {
       id: 'msg-003-2',
       characterId: 'mill',
-      content: 'そうなんだ。Flutterっていうのは、1つのコードでiPhoneとAndroid両方のアプリが作れるフレームワーク（開発ツール）なんだよね。',
+      content:
+        'そうなんだ。Flutterっていうのは、1つのコードでiPhoneとAndroid両方のアプリが作れるフレームワーク（開発ツール）なんだよね。',
     },
     {
       id: 'msg-003-3',
@@ -34,7 +35,8 @@ export const EPISODE_003: DevStoryEpisode = {
     {
       id: 'msg-003-6',
       characterId: 'mill',
-      content: 'そうなんだ。開発中のテスト環境では動いてたのに、実際にユーザーが使う本番環境では動かなくなっちゃって...',
+      content:
+        'そうなんだ。開発中のテスト環境では動いてたのに、実際にユーザーが使う本番環境では動かなくなっちゃって...',
     },
     {
       id: 'msg-003-7',
@@ -54,7 +56,8 @@ export const EPISODE_003: DevStoryEpisode = {
     {
       id: 'msg-003-10',
       characterId: 'mill',
-      content: 'まさにそう！\nFlutterとFirebase（データを保存するサービス）の認証の組み合わせが複雑で、どこで問題が起きてるか追跡しづらかったんだ。',
+      content:
+        'まさにそう！\nFlutterとFirebase（データを保存するサービス）の認証の組み合わせが複雑で、どこで問題が起きてるか追跡しづらかったんだ。',
     },
     {
       id: 'msg-003-11',
@@ -64,7 +67,8 @@ export const EPISODE_003: DevStoryEpisode = {
     {
       id: 'msg-003-12',
       characterId: 'mill',
-      content: 'そうなんだ。修正し続けるより、最初から作り直した方が早いし確実だと判断したっていうわけ。\n苦渋の決断だったけどね。',
+      content:
+        'そうなんだ。修正し続けるより、最初から作り直した方が早いし確実だと判断したっていうわけ。\n苦渋の決断だったけどね。',
     },
     {
       id: 'msg-003-13',
@@ -74,7 +78,8 @@ export const EPISODE_003: DevStoryEpisode = {
     {
       id: 'msg-003-14',
       characterId: 'mill',
-      content: 'Next.jsは、ウェブアプリを作るためのフレームワークなんだ。\nReact（リアクト）っていう有名な技術をベースにしてるんだよ。',
+      content:
+        'Next.jsは、ウェブアプリを作るためのフレームワークなんだ。\nReact（リアクト）っていう有名な技術をベースにしてるんだよ。',
     },
     {
       id: 'msg-003-15',
@@ -89,7 +94,8 @@ export const EPISODE_003: DevStoryEpisode = {
     {
       id: 'msg-003-17',
       characterId: 'mill',
-      content: 'それと、Flutterはアプリストアからダウンロードが必要だけど、ウェブアプリならURLにアクセスするだけで使えるんだ。',
+      content:
+        'それと、Flutterはアプリストアからダウンロードが必要だけど、ウェブアプリならURLにアクセスするだけで使えるんだ。',
     },
     {
       id: 'msg-003-18',
@@ -109,7 +115,8 @@ export const EPISODE_003: DevStoryEpisode = {
     {
       id: 'msg-003-21',
       characterId: 'mill',
-      content: 'もちろん！React Native（リアクトネイティブ）とか、Flutter Webとか色々検討したんだ。\nでも、ローストプラスの使い方を考えると、ウェブアプリが一番合ってたっていうわけ。',
+      content:
+        'もちろん！React Native（リアクトネイティブ）とか、Flutter Webとか色々検討したんだ。\nでも、ローストプラスの使い方を考えると、ウェブアプリが一番合ってたっていうわけ。',
     },
     {
       id: 'msg-003-22',
@@ -119,7 +126,8 @@ export const EPISODE_003: DevStoryEpisode = {
     {
       id: 'msg-003-23',
       characterId: 'mill',
-      content: 'まず、ログインが安定したんだ！\n以前みたいに「あれ、ログインできない...」っていうストレスがなくなったっていうわけ。',
+      content:
+        'まず、ログインが安定したんだ！\n以前みたいに「あれ、ログインできない...」っていうストレスがなくなったっていうわけ。',
     },
     {
       id: 'msg-003-24',
@@ -144,7 +152,8 @@ export const EPISODE_003: DevStoryEpisode = {
     {
       id: 'msg-003-28',
       characterId: 'mill',
-      content: 'でも、バイブコーディングのおかげで思ったより早く形になったんだ。\nAIと一緒に開発できる時代でよかったよ。',
+      content:
+        'でも、バイブコーディングのおかげで思ったより早く形になったんだ。\nAIと一緒に開発できる時代でよかったよ。',
     },
     {
       id: 'msg-003-29',

@@ -1,9 +1,9 @@
 /**
  * 4:6メソッド（粕谷 哲）の文言定義
- * 
+ *
  * 要件: docs/drip-guide-46-content-requirements.md
  * コピードラフト: docs/drip-guide-46-content-copy.md
- * 
+ *
  * 要点はPHILOCOFFEA公式ページ由来だが、文章は"言い換え/要約"を前提にする。
  */
 
@@ -36,7 +36,8 @@ export const RECIPE46_DESCRIPTION = [
 export const RECIPE46_DESCRIPTION_SECTIONS = [
   {
     title: 'コンセプト',
-    content: '総湯量を40%と60%に分け、前半40%で「味」を、後半60%で「濃度」を調整します。数字で管理する、再現性の高い抽出メソッドです。',
+    content:
+      '総湯量を40%と60%に分け、前半40%で「味」を、後半60%で「濃度」を調整します。数字で管理する、再現性の高い抽出メソッドです。',
     icon: 'target',
   },
   {
@@ -46,7 +47,8 @@ export const RECIPE46_DESCRIPTION_SECTIONS = [
   },
   {
     title: '注ぐタイミング',
-    content: '【重要】次を注ぐのは「前のお湯がほとんど落ち切ってから」です。タイマーは目安とし、落ち切りを優先してください。',
+    content:
+      '【重要】次を注ぐのは「前のお湯がほとんど落ち切ってから」です。タイマーは目安とし、落ち切りを優先してください。',
     icon: 'timer',
   },
   {
@@ -59,25 +61,20 @@ export const RECIPE46_DESCRIPTION_SECTIONS = [
 /**
  * 全ステップ共通の短文ヒント（Runnerのヒント枠で使用）
  */
-export const RECIPE46_COMMON_NOTE =
-  '次を注ぐタイミングは「前の湯がほとんど落ち切ってから」。時刻は目安です。';
+export const RECIPE46_COMMON_NOTE = '次を注ぐタイミングは「前の湯がほとんど落ち切ってから」。時刻は目安です。';
 
 /**
  * ステップ別の説明テンプレート
  */
 export const RECIPE46_STEP_TEXT = {
   bloom: {
-    description:
-      '粉全体にまんべんなく注いで、均一に湿らせます（ここから味の40%）。',
-    note:
-      '蒸らしのお湯を入れたタイミングでタイマーを開始してください。',
+    description: '粉全体にまんべんなく注いで、均一に湿らせます（ここから味の40%）。',
+    note: '蒸らしのお湯を入れたタイミングでタイマーを開始してください。',
   },
   taste2: {
-    description:
-      '味わい（甘さ／明るさ）の方向性を決める注湯です（味の40%）。',
+    description: '味わい（甘さ／明るさ）の方向性を決める注湯です（味の40%）。',
   },
   strength: {
-    description:
-      '濃度を調整する注湯です（濃度の60%）。投数が多いほど濃くなります。',
+    description: '濃度を調整する注湯です（濃度の60%）。投数が多いほど濃くなります。',
   },
 } as const;

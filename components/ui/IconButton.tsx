@@ -34,18 +34,7 @@ export interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonEl
 }
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
-  (
-    {
-      variant = 'default',
-      size = 'md',
-      rounded = false,
-      className = '',
-      disabled,
-      children,
-      ...props
-    },
-    ref
-  ) => {
+  ({ variant = 'default', size = 'md', rounded = false, className = '', disabled, children, ...props }, ref) => {
     // サイズスタイル
     const sizeStyles = {
       sm: 'p-1.5',
@@ -63,7 +52,8 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       surface: 'bg-surface text-ink shadow-card hover:bg-ground border border-edge',
     };
 
-    const baseStyles = 'inline-flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
+    const baseStyles =
+      'inline-flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
     const focusRingStyles = 'focus:ring-spot/50';
     const borderRadiusStyles = rounded ? 'rounded-full' : 'rounded-lg';
     const disabledStyles = 'opacity-50 cursor-not-allowed';
@@ -76,15 +66,12 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       focusRingStyles,
       disabled ? disabledStyles : '',
       className,
-    ].filter(Boolean).join(' ');
+    ]
+      .filter(Boolean)
+      .join(' ');
 
     return (
-      <button
-        ref={ref}
-        className={buttonStyles}
-        disabled={disabled}
-        {...props}
-      >
+      <button ref={ref} className={buttonStyles} disabled={disabled} {...props}>
         {children}
       </button>
     );

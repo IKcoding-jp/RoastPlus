@@ -1,11 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-  getTodayDateString,
-  getDaysDifference,
-  updateStreak,
-  isStreakAtRisk,
-  createInitialStreakInfo,
-} from './streak';
+import { getTodayDateString, getDaysDifference, updateStreak, isStreakAtRisk, createInitialStreakInfo } from './streak';
 import type { StreakInfo } from './types';
 
 vi.mock('./debug', () => ({

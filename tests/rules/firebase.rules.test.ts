@@ -21,15 +21,11 @@ function readRules(fileName: string) {
 }
 
 function firestoreFor(uid?: string) {
-  return uid
-    ? testEnv.authenticatedContext(uid).firestore()
-    : testEnv.unauthenticatedContext().firestore();
+  return uid ? testEnv.authenticatedContext(uid).firestore() : testEnv.unauthenticatedContext().firestore();
 }
 
 function storageFor(uid?: string) {
-  return uid
-    ? testEnv.authenticatedContext(uid).storage()
-    : testEnv.unauthenticatedContext().storage();
+  return uid ? testEnv.authenticatedContext(uid).storage() : testEnv.unauthenticatedContext().storage();
 }
 
 function putStorageObject(uid: string | undefined, objectPath: string, bytes: Uint8Array, contentType: string) {

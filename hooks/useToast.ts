@@ -43,4 +43,3 @@ export function useToast(): UseToastReturn {
 
   return { toasts, showToast, removeToast };
 }
-

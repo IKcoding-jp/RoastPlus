@@ -101,21 +101,12 @@ export function CategoryPageContent({ category }: CategoryPageContentProps) {
       {/* ヘッダー */}
       <header className="sticky top-0 z-50 bg-surface/80 backdrop-blur-xl border-b border-edge">
         <div className="max-w-md mx-auto px-4 py-3 flex items-center gap-3">
-          <IconButton
-            variant="ghost"
-            size="sm"
-            onClick={() => router.push('/coffee-trivia')}
-            className="-ml-2"
-          >
+          <IconButton variant="ghost" size="sm" onClick={() => router.push('/coffee-trivia')} className="-ml-2">
             <ArrowLeftIcon size={24} className="text-ink-sub" />
           </IconButton>
           <div>
-            <h1 className="text-lg font-bold text-ink">
-              {CATEGORY_LABELS[category]}
-            </h1>
-            <p className="text-xs text-ink-muted">
-              問題一覧
-            </p>
+            <h1 className="text-lg font-bold text-ink">{CATEGORY_LABELS[category]}</h1>
+            <p className="text-xs text-ink-muted">問題一覧</p>
           </div>
         </div>
       </header>
@@ -123,11 +114,7 @@ export function CategoryPageContent({ category }: CategoryPageContentProps) {
       {/* コンテンツ */}
       <main className="max-w-md mx-auto px-4 py-6">
         {questions.length > 0 ? (
-          <CategoryQuestionList
-            category={category}
-            questions={questions}
-            cards={cards}
-          />
+          <CategoryQuestionList category={category} questions={questions} cards={cards} />
         ) : (
           <div className="text-center py-12">
             <p className="text-ink-muted">問題がありません</p>

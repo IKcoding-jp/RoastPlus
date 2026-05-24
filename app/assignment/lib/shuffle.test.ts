@@ -55,15 +55,12 @@ describe('calculateAssignment - crossTeamShuffle', () => {
       const { teams, taskLabels, members } = createTestData();
       const targetDate = '2026-03-07';
 
-      const result = calculateAssignment(
-        teams, taskLabels, members, [], targetDate,
-        undefined, undefined, false
-      );
+      const result = calculateAssignment(teams, taskLabels, members, [], targetDate, undefined, undefined, false);
 
       // 各アサインメントで、メンバーが自分の班のスロットに配置されていることを検証
       for (const assignment of result) {
         if (assignment.memberId) {
-          const member = members.find(m => m.id === assignment.memberId);
+          const member = members.find((m) => m.id === assignment.memberId);
           expect(member).toBeDefined();
           expect(assignment.teamId).toBe(member!.teamId);
         }
@@ -74,14 +71,11 @@ describe('calculateAssignment - crossTeamShuffle', () => {
       const { teams, taskLabels, members } = createThreeTeamData();
       const targetDate = '2026-03-07';
 
-      const result = calculateAssignment(
-        teams, taskLabels, members, [], targetDate,
-        undefined, undefined, false
-      );
+      const result = calculateAssignment(teams, taskLabels, members, [], targetDate, undefined, undefined, false);
 
       for (const assignment of result) {
         if (assignment.memberId) {
-          const member = members.find(m => m.id === assignment.memberId);
+          const member = members.find((m) => m.id === assignment.memberId);
           expect(member).toBeDefined();
           expect(assignment.teamId).toBe(member!.teamId);
         }
@@ -97,14 +91,11 @@ describe('calculateAssignment - crossTeamShuffle', () => {
       // 複数回実行して、少なくとも1回は班をまたいだ配置があることを検証
       let hasCrossTeam = false;
       for (let i = 0; i < 50; i++) {
-        const result = calculateAssignment(
-          teams, taskLabels, members, [], targetDate,
-          undefined, undefined, true
-        );
+        const result = calculateAssignment(teams, taskLabels, members, [], targetDate, undefined, undefined, true);
 
         for (const assignment of result) {
           if (assignment.memberId) {
-            const member = members.find(m => m.id === assignment.memberId);
+            const member = members.find((m) => m.id === assignment.memberId);
             if (member && assignment.teamId !== member.teamId) {
               hasCrossTeam = true;
               break;
@@ -125,14 +116,11 @@ describe('calculateAssignment - crossTeamShuffle', () => {
       const targetDate = '2026-03-07';
 
       // crossTeamShuffle を渡さない場合
-      const result = calculateAssignment(
-        teams, taskLabels, members, [], targetDate,
-        undefined, undefined
-      );
+      const result = calculateAssignment(teams, taskLabels, members, [], targetDate, undefined, undefined);
 
       for (const assignment of result) {
         if (assignment.memberId) {
-          const member = members.find(m => m.id === assignment.memberId);
+          const member = members.find((m) => m.id === assignment.memberId);
           expect(member).toBeDefined();
           expect(assignment.teamId).toBe(member!.teamId);
         }
@@ -152,13 +140,10 @@ describe('calculateAssignment - crossTeamShuffle', () => {
         { id: 'm2', name: 'メンバー2', teamId: 'teamA', excludedTaskLabelIds: [], active: true },
       ];
 
-      const result = calculateAssignment(
-        teams, taskLabels, members, [], '2026-03-07',
-        undefined, undefined, false
-      );
+      const result = calculateAssignment(teams, taskLabels, members, [], '2026-03-07', undefined, undefined, false);
 
       // 全メンバーが班Aのスロットに配置される（制約の意味がないが正常動作）
-      const assignedMembers = result.filter(a => a.memberId !== null);
+      const assignedMembers = result.filter((a) => a.memberId !== null);
       expect(assignedMembers.length).toBe(2);
       for (const assignment of assignedMembers) {
         expect(assignment.teamId).toBe('teamA');
@@ -174,15 +159,12 @@ describe('calculateAssignment - crossTeamShuffle', () => {
         { id: 'ex1', memberId1: 'm1', memberId2: 'm2', createdAt: { seconds: 0, nanoseconds: 0 } },
       ];
 
-      const result = calculateAssignment(
-        teams, taskLabels, members, [], targetDate,
-        undefined, pairExclusions, false
-      );
+      const result = calculateAssignment(teams, taskLabels, members, [], targetDate, undefined, pairExclusions, false);
 
       // 班内制約: 全メンバーが元の班に留まる
       for (const assignment of result) {
         if (assignment.memberId) {
-          const member = members.find(m => m.id === assignment.memberId);
+          const member = members.find((m) => m.id === assignment.memberId);
           expect(member).toBeDefined();
           expect(assignment.teamId).toBe(member!.teamId);
         }
@@ -264,8 +246,15 @@ describe('calculateAssignment - priority（制約優先順位）', () => {
       // 複数回実行して全て行回避を確認（ランダム性があるため）
       for (let i = 0; i < 20; i++) {
         const result = calculateAssignment(
-          teams, taskLabels, members, history, '2026-03-07',
-          undefined, undefined, true, 'row'
+          teams,
+          taskLabels,
+          members,
+          history,
+          '2026-03-07',
+          undefined,
+          undefined,
+          true,
+          'row'
         );
 
         const rowGroups = getRowGroups(result);
@@ -292,8 +281,15 @@ describe('calculateAssignment - priority（制約優先順位）', () => {
 
       for (let i = 0; i < 20; i++) {
         const result = calculateAssignment(
-          teams, taskLabels, members, history, '2026-03-07',
-          undefined, pairExclusions, true, 'row'
+          teams,
+          taskLabels,
+          members,
+          history,
+          '2026-03-07',
+          undefined,
+          pairExclusions,
+          true,
+          'row'
         );
 
         const rowGroups = getRowGroups(result);
@@ -314,8 +310,15 @@ describe('calculateAssignment - priority（制約優先順位）', () => {
 
       for (let i = 0; i < 20; i++) {
         const result = calculateAssignment(
-          teams, taskLabels, members, history, '2026-03-07',
-          undefined, undefined, true, 'pair'
+          teams,
+          taskLabels,
+          members,
+          history,
+          '2026-03-07',
+          undefined,
+          undefined,
+          true,
+          'pair'
         );
 
         const rowGroups = getRowGroups(result);
@@ -338,8 +341,14 @@ describe('calculateAssignment - priority（制約優先順位）', () => {
       for (let i = 0; i < 20; i++) {
         // priority引数なし（9番目のパラメータを省略）
         const result = calculateAssignment(
-          teams, taskLabels, members, history, '2026-03-07',
-          undefined, undefined, true
+          teams,
+          taskLabels,
+          members,
+          history,
+          '2026-03-07',
+          undefined,
+          undefined,
+          true
         );
 
         const rowGroups = getRowGroups(result);
@@ -358,12 +367,8 @@ describe('calculateAssignment - priority（制約優先順位）', () => {
 
 // ヘルパー: 全アクティブメンバーが結果に含まれることを検証
 const expectAllMembersAssigned = (result: Assignment[], members: Member[]) => {
-  const assignedMemberIds = new Set(
-    result.filter(a => a.memberId !== null).map(a => a.memberId)
-  );
-  const activeMemberIds = new Set(
-    members.filter(m => m.active !== false).map(m => m.id)
-  );
+  const assignedMemberIds = new Set(result.filter((a) => a.memberId !== null).map((a) => a.memberId));
+  const activeMemberIds = new Set(members.filter((m) => m.active !== false).map((m) => m.id));
   expect(assignedMemberIds).toEqual(activeMemberIds);
 };
 
@@ -374,10 +379,7 @@ describe('calculateAssignment - メンバー完全配置保証（#330）', () =>
 
       // ランダム性があるため50回試行して全回パスを確認
       for (let i = 0; i < 50; i++) {
-        const result = calculateAssignment(
-          teams, taskLabels, members, [], '2026-03-11',
-          undefined, undefined, false
-        );
+        const result = calculateAssignment(teams, taskLabels, members, [], '2026-03-11', undefined, undefined, false);
         expectAllMembersAssigned(result, members);
       }
     });
@@ -386,10 +388,7 @@ describe('calculateAssignment - メンバー完全配置保証（#330）', () =>
       const { teams, taskLabels, members } = createThreeTeamData();
 
       for (let i = 0; i < 50; i++) {
-        const result = calculateAssignment(
-          teams, taskLabels, members, [], '2026-03-11',
-          undefined, undefined, false
-        );
+        const result = calculateAssignment(teams, taskLabels, members, [], '2026-03-11', undefined, undefined, false);
         expectAllMembersAssigned(result, members);
       }
     });
@@ -412,10 +411,7 @@ describe('calculateAssignment - メンバー完全配置保証（#330）', () =>
       ];
 
       for (let i = 0; i < 50; i++) {
-        const result = calculateAssignment(
-          teams, taskLabels, members, [], '2026-03-11',
-          undefined, undefined, false
-        );
+        const result = calculateAssignment(teams, taskLabels, members, [], '2026-03-11', undefined, undefined, false);
         expectAllMembersAssigned(result, members);
       }
     });
@@ -429,8 +425,14 @@ describe('calculateAssignment - メンバー完全配置保証（#330）', () =>
 
       for (let i = 0; i < 50; i++) {
         const result = calculateAssignment(
-          teams, taskLabels, members, [], '2026-03-11',
-          undefined, pairExclusions, false
+          teams,
+          taskLabels,
+          members,
+          [],
+          '2026-03-11',
+          undefined,
+          pairExclusions,
+          false
         );
         expectAllMembersAssigned(result, members);
       }
@@ -455,10 +457,7 @@ describe('calculateAssignment - メンバー完全配置保証（#330）', () =>
       ];
 
       for (let i = 0; i < 50; i++) {
-        const result = calculateAssignment(
-          teams, taskLabels, members, [], '2026-03-11',
-          undefined, undefined, false
-        );
+        const result = calculateAssignment(teams, taskLabels, members, [], '2026-03-11', undefined, undefined, false);
         expectAllMembersAssigned(result, members);
       }
     });
@@ -486,8 +485,14 @@ describe('calculateAssignment - メンバー完全配置保証（#330）', () =>
 
       for (let i = 0; i < 50; i++) {
         const result = calculateAssignment(
-          teams, taskLabels, members, history, '2026-03-11',
-          undefined, undefined, false
+          teams,
+          taskLabels,
+          members,
+          history,
+          '2026-03-11',
+          undefined,
+          undefined,
+          false
         );
         expectAllMembersAssigned(result, members);
       }
@@ -499,10 +504,7 @@ describe('calculateAssignment - メンバー完全配置保証（#330）', () =>
       const { teams, taskLabels, members } = createTestData();
 
       for (let i = 0; i < 50; i++) {
-        const result = calculateAssignment(
-          teams, taskLabels, members, [], '2026-03-11',
-          undefined, undefined, true
-        );
+        const result = calculateAssignment(teams, taskLabels, members, [], '2026-03-11', undefined, undefined, true);
         expectAllMembersAssigned(result, members);
       }
     });

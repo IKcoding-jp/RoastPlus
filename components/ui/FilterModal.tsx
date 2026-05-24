@@ -89,12 +89,7 @@ export interface FilterOptionButtonProps extends ButtonProps {
   selected?: boolean;
 }
 
-export function FilterOptionButton({
-  selected = false,
-  className = '',
-  children,
-  ...props
-}: FilterOptionButtonProps) {
+export function FilterOptionButton({ selected = false, className = '', children, ...props }: FilterOptionButtonProps) {
   return (
     <Button
       variant={selected ? 'ghost' : 'surface'}

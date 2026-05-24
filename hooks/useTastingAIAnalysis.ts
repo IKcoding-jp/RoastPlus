@@ -14,21 +14,12 @@ interface UseTastingAIAnalysisProps {
   onUpdateSession?: (sessionId: string, aiAnalysis: string, recordCount: number) => void;
 }
 
-export function useTastingAIAnalysis({
-  sessions,
-  sessionData,
-  onUpdateSession,
-}: UseTastingAIAnalysisProps) {
+export function useTastingAIAnalysis({ sessions, sessionData, onUpdateSession }: UseTastingAIAnalysisProps) {
   const [isAnalyzing, setIsAnalyzing] = useState<{ [key: string]: boolean }>({});
   const [analyzedIds, setAnalyzedIds] = useState<Set<string>>(new Set());
 
   const triggerAutoAnalysis = useCallback(
-    async (
-      session: TastingSession,
-      comments: string[],
-      averageScores: AverageScores,
-      recordCount: number
-    ) => {
+    async (session: TastingSession, comments: string[], averageScores: AverageScores, recordCount: number) => {
       if (isAnalyzing[session.id] || analyzedIds.has(session.id)) return;
 
       setIsAnalyzing((prev) => ({ ...prev, [session.id]: true }));
@@ -54,9 +45,7 @@ export function useTastingAIAnalysis({
     if (!onUpdateSession || sessions.length === 0) return;
 
     sessionData.forEach(({ session, recordCount, averageScores, comments }) => {
-      const needsReanalysis =
-        recordCount > 0 &&
-        (!session.aiAnalysis || session.aiAnalysisRecordCount !== recordCount);
+      const needsReanalysis = recordCount > 0 && (!session.aiAnalysis || session.aiAnalysisRecordCount !== recordCount);
 
       if (needsReanalysis && !isAnalyzing[session.id] && !analyzedIds.has(session.id)) {
         triggerAutoAnalysis(session, comments, averageScores, recordCount);

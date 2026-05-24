@@ -1,9 +1,6 @@
 'use client';
 
-import {
-  categoryLabels,
-  getComponentsByCategory,
-} from '@/components/ui/registry';
+import { categoryLabels, getComponentsByCategory } from '@/components/ui/registry';
 import { Card, Badge } from '@/components/ui';
 
 export default function ComponentGallery() {
@@ -18,27 +15,20 @@ export default function ComponentGallery() {
 
         return (
           <div key={category}>
-            <h3 className="text-lg font-semibold text-ink mb-4">
-              {categoryLabels[category]}
-            </h3>
+            <h3 className="text-lg font-semibold text-ink mb-4">{categoryLabels[category]}</h3>
             <div className="grid grid-cols-1 gap-6">
               {items.map((item) => (
-                <Card
-                  key={item.name}
-                  variant="default"
-                >
+                <Card key={item.name} variant="default">
                   <div className="p-5">
                     <div className="flex items-center gap-2 mb-1">
-                      <h4 className="text-base font-semibold text-ink">
-                        {item.name}
-                      </h4>
+                      <h4 className="text-base font-semibold text-ink">{item.name}</h4>
                       {item.isNew && (
-                        <Badge variant="success" size="sm">New</Badge>
+                        <Badge variant="success" size="sm">
+                          New
+                        </Badge>
                       )}
                     </div>
-                    <p className="text-sm text-ink-sub mb-4">
-                      {item.description}
-                    </p>
+                    <p className="text-sm text-ink-sub mb-4">{item.description}</p>
                     <div className="p-4 rounded-lg bg-ground">
                       <item.Demo />
                     </div>

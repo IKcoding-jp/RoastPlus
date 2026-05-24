@@ -92,16 +92,11 @@ export default function DesignLabPage() {
       <div className="flex">
         {/* サイドナビ（タブ切り替え） */}
         <aside className="w-52 shrink-0 sticky top-0 self-start h-screen border-r border-edge bg-surface px-3 flex flex-col justify-center overflow-y-auto">
-          <SectionNav
-            activeSection={activeSection}
-            onSectionClick={setActiveSection}
-          />
+          <SectionNav activeSection={activeSection} onSectionClick={setActiveSection} />
         </aside>
 
         {/* コンテンツエリア */}
-        <main className="flex-1 max-w-4xl mx-auto px-6 py-6 pt-14">
-          {renderContent()}
-        </main>
+        <main className="flex-1 max-w-4xl mx-auto px-6 py-6 pt-14">{renderContent()}</main>
       </div>
     </div>
   );

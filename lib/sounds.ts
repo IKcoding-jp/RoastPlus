@@ -38,7 +38,7 @@ export async function playTimerSound(
     // iOS/Safari向けに明示しておく
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (audio as any).playsInline = true;
-    
+
     // エラーハンドリングを追加（参照を保持して削除可能にする）
     timerErrorHandler = () => {
       const error = audio.error;
@@ -60,10 +60,10 @@ export async function playTimerSound(
 
     audio.loop = false;
     audio.volume = Math.max(0, Math.min(1, volume));
-    
+
     await audio.play();
     timerAudio = audio;
-    
+
     return audio;
   } catch (error) {
     console.error('Failed to play timer sound:', error);
@@ -105,10 +105,7 @@ export function stopTimerSound(): void {
 /**
  * 通知音を再生
  */
-export async function playNotificationSound(
-  soundFile: string,
-  volume: number
-): Promise<HTMLAudioElement | null> {
+export async function playNotificationSound(soundFile: string, volume: number): Promise<HTMLAudioElement | null> {
   try {
     // 既存の音声を停止
     if (notificationAudio) {
@@ -127,7 +124,7 @@ export async function playNotificationSound(
     const version = process.env.NEXT_PUBLIC_APP_VERSION || '0.5.5';
     audioPath = `${audioPath}?v=${version}`;
     const audio = new Audio(audioPath);
-    
+
     // エラーハンドリングを追加（参照を保持して削除可能にする）
     notificationErrorHandler = () => {
       const error = audio.error;
@@ -163,10 +160,10 @@ export async function playNotificationSound(
 
     audio.loop = false;
     audio.volume = Math.max(0, Math.min(1, volume));
-    
+
     await audio.play();
     notificationAudio = audio;
-    
+
     return audio;
   } catch (error) {
     console.error('Failed to play notification sound:', error);
@@ -217,4 +214,3 @@ export function stopAudio(audio: HTMLAudioElement | null | undefined): void {
     }
   }
 }
-

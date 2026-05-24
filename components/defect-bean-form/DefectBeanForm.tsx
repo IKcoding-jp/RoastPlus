@@ -146,12 +146,7 @@ export function DefectBeanForm({
   };
 
   if (showCamera) {
-    return (
-      <CameraCapture
-        onCapture={handleCameraCapture}
-        onCancel={() => setShowCamera(false)}
-      />
-    );
+    return <CameraCapture onCapture={handleCameraCapture} onCancel={() => setShowCamera(false)} />;
   }
 
   return (
@@ -163,14 +158,8 @@ export function DefectBeanForm({
     >
       {/* ヘッダー */}
       <div className="sticky top-0 p-4 flex items-center justify-between z-20 border-b bg-surface border-edge">
-        <h2 className="text-xl font-semibold text-ink">
-          {mode === 'edit' ? '欠点豆を編集' : '欠点豆を追加'}
-        </h2>
-        <IconButton
-          onClick={onCancel}
-          rounded
-          aria-label="閉じる"
-        >
+        <h2 className="text-xl font-semibold text-ink">{mode === 'edit' ? '欠点豆を編集' : '欠点豆を追加'}</h2>
+        <IconButton onClick={onCancel} rounded aria-label="閉じる">
           <HiX className="h-6 w-6" />
         </IconButton>
       </div>

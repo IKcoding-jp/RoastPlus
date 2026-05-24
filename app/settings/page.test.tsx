@@ -74,10 +74,7 @@ describe('SettingsPage', () => {
   it('ホーム表示設定への入口を表示する', () => {
     render(<SettingsPage />);
 
-    expect(screen.getByRole('link', { name: /ホーム表示設定/ })).toHaveAttribute(
-      'href',
-      '/settings/home'
-    );
+    expect(screen.getByRole('link', { name: /ホーム表示設定/ })).toHaveAttribute('href', '/settings/home');
   });
 
   it('ホーム表示設定は他の設定カードと同じ横幅で表示する', () => {

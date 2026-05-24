@@ -31,10 +31,7 @@ test.describe('ホームページ', () => {
     await page.waitForLoadState('load');
     // Firebase初期化エラーはE2E環境で想定内なので除外
     const criticalErrors = errors.filter(
-      (e) =>
-        !e.includes('Firebase') &&
-        !e.includes('firestore') &&
-        !e.includes('auth/')
+      (e) => !e.includes('Firebase') && !e.includes('firestore') && !e.includes('auth/')
     );
     expect(criticalErrors).toHaveLength(0);
   });

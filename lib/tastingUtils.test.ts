@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  calculateAverageScores,
-  getRecordsBySessionId,
-  getRecordCountBySessionId,
-} from './tastingUtils';
+import { calculateAverageScores, getRecordsBySessionId, getRecordCountBySessionId } from './tastingUtils';
 import type { TastingRecord } from '@/types';
 
 function createRecord(overrides: Partial<TastingRecord> = {}): TastingRecord {
@@ -41,9 +37,7 @@ describe('calculateAverageScores', () => {
   });
 
   it('1件 → そのまま', () => {
-    const records = [
-      createRecord({ bitterness: 4, acidity: 2, body: 5, sweetness: 3, aroma: 4, overallRating: 4 }),
-    ];
+    const records = [createRecord({ bitterness: 4, acidity: 2, body: 5, sweetness: 3, aroma: 4, overallRating: 4 })];
     const result = calculateAverageScores(records);
     expect(result.bitterness).toBe(4);
     expect(result.acidity).toBe(2);

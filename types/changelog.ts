@@ -22,15 +22,7 @@ export interface ChangelogEntry {
 // ========================================
 
 // キャラクターID
-export type CharacterId =
-  | 'asairi'
-  | 'fukairi'
-  | 'dori'
-  | 'server'
-  | 'mill'
-  | 'kettle'
-  | 'press'
-  | 'siphon';
+export type CharacterId = 'asairi' | 'fukairi' | 'dori' | 'server' | 'mill' | 'kettle' | 'press' | 'siphon';
 
 // エピソードIDとキャラクターペアのマッピング
 export type EpisodeCharacterPair = {

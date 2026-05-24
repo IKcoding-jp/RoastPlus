@@ -30,9 +30,7 @@ export function SliderInput({
     : 'bg-surface border-edge hover:border-spot hover:shadow-sm';
 
   return (
-    <div
-      className={`p-3 rounded-lg border transition-all duration-200 ${containerClass}`}
-    >
+    <div className={`p-3 rounded-lg border transition-all duration-200 ${containerClass}`}>
       <div className="flex items-start justify-between mb-2.5">
         <div className="flex items-center gap-2">
           <div className={`p-1.5 rounded-md ${colorClass}`}>{icon}</div>
@@ -42,11 +40,7 @@ export function SliderInput({
           </div>
         </div>
         <div className="flex flex-col items-end">
-          <span
-            className={`text-xl font-black tabular-nums leading-none ${accentColor}`}
-          >
-            {value.toFixed(1)}
-          </span>
+          <span className={`text-xl font-black tabular-nums leading-none ${accentColor}`}>{value.toFixed(1)}</span>
         </div>
       </div>
 

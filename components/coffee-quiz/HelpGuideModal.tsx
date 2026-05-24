@@ -23,14 +23,11 @@ function RetentionGauge() {
     <div className="flex items-center justify-center gap-4">
       <div className="relative w-14 h-14 flex-shrink-0">
         <svg width="56" height="56" viewBox="0 0 56 56" className="-rotate-90">
-          <circle
-            cx="28" cy="28" r={radius}
-            fill="none"
-            strokeWidth="5"
-            style={{ stroke: 'var(--edge)' }}
-          />
+          <circle cx="28" cy="28" r={radius} fill="none" strokeWidth="5" style={{ stroke: 'var(--edge)' }} />
           <motion.circle
-            cx="28" cy="28" r={radius}
+            cx="28"
+            cy="28"
+            r={radius}
             fill="none"
             strokeWidth="5"
             strokeLinecap="round"
@@ -70,9 +67,7 @@ function MasteryBadge() {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.2 + i * 0.1, type: 'spring', stiffness: 280, damping: 18 }}
           className={`flex flex-col items-center gap-1 flex-1 py-2 rounded-xl border ${
-            item.active
-              ? 'bg-surface border-spot/30'
-              : 'bg-surface border-edge'
+            item.active ? 'bg-surface border-spot/30' : 'bg-surface border-edge'
           }`}
         >
           <span className="text-lg">{item.icon}</span>
@@ -127,9 +122,7 @@ function ModeIcons() {
           className="flex flex-col items-center gap-1.5 w-14"
         >
           <span className="text-2xl">{mode.icon}</span>
-          <span className="text-[10px] text-ink-sub text-center leading-tight whitespace-pre-line">
-            {mode.label}
-          </span>
+          <span className="text-[10px] text-ink-sub text-center leading-tight whitespace-pre-line">{mode.label}</span>
         </motion.div>
       ))}
     </div>
@@ -151,28 +144,32 @@ const STEPS: Step[] = [
     icon: '🎯',
     label: '定着率',
     title: '記憶がどれだけ定着しているか',
-    description: '各問題の記憶定着度をパーセンテージで表します。正解するほど上がり、67%以上で「定着済み」に。全75問を定着済みにしよう！',
+    description:
+      '各問題の記憶定着度をパーセンテージで表します。正解するほど上がり、67%以上で「定着済み」に。全75問を定着済みにしよう！',
     visual: <RetentionGauge />,
   },
   {
     icon: '⭐',
     label: '習得度',
     title: '正解した問題がわかる',
-    description: '一度でも正解すると「正解済み」カウント。定着率67%以上でマスターラベルが付きます。全75問の正解を目指そう！',
+    description:
+      '一度でも正解すると「正解済み」カウント。定着率67%以上でマスターラベルが付きます。全75問の正解を目指そう！',
     visual: <MasteryBadge />,
   },
   {
     icon: '📈',
     label: 'レベルとXP',
     title: 'クイズでXPを獲得してレベルアップ',
-    description: 'クイズに答えるたびにXP（経験値）獲得。正解すればするほど多くのXPがもらえます。レベルが上がるほど達成感UP！',
+    description:
+      'クイズに答えるたびにXP（経験値）獲得。正解すればするほど多くのXPがもらえます。レベルが上がるほど達成感UP！',
     visual: <XPBar />,
   },
   {
     icon: '📚',
     label: '学習モード',
     title: '3つのモードで効率的に学習',
-    description: '「今日のクイズ」はランダム出題、「復習」は忘れかけを重点出題、「カテゴリ別」は好きな分野を集中学習できます。',
+    description:
+      '「今日のクイズ」はランダム出題、「復習」は忘れかけを重点出題、「カテゴリ別」は好きな分野を集中学習できます。',
     visual: <ModeIcons />,
   },
 ];
@@ -217,10 +214,7 @@ export function HelpGuideModal({ show, onClose }: HelpGuideModalProps) {
   const current = STEPS[step];
 
   return (
-    <Modal
-      show={show}
-      onClose={handleClose}
-    >
+    <Modal show={show} onClose={handleClose}>
       <div className="relative flex flex-col">
         {/* 閉じるボタン */}
         <IconButton
@@ -231,7 +225,15 @@ export function HelpGuideModal({ show, onClose }: HelpGuideModalProps) {
           className="absolute top-3 right-3 z-10 w-8 h-8 !p-0 !min-h-0 !min-w-0 bg-surface/80 text-ink-muted hover:text-ink"
           aria-label="閉じる"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          >
             <line x1="18" y1="6" x2="6" y2="18" />
             <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
@@ -315,9 +317,7 @@ export function HelpGuideModal({ show, onClose }: HelpGuideModalProps) {
             >
               <div
                 className={`h-2 rounded-full transition-all duration-300 ${
-                  i === step
-                    ? 'w-6 bg-spot'
-                    : 'w-2 bg-edge hover:bg-ink-muted'
+                  i === step ? 'w-6 bg-spot' : 'w-2 bg-edge hover:bg-ink-muted'
                 }`}
               />
             </IconButton>
@@ -327,28 +327,16 @@ export function HelpGuideModal({ show, onClose }: HelpGuideModalProps) {
         {/* ナビゲーション */}
         <div className="px-6 pb-6 flex gap-2">
           {!isFirst && (
-            <Button
-              variant="outline"
-              onClick={() => goTo(step - 1)}
-              className="flex-none"
-            >
+            <Button variant="outline" onClick={() => goTo(step - 1)} className="flex-none">
               ← 前へ
             </Button>
           )}
           {isLast ? (
-            <Button
-              variant="primary"
-              onClick={handleClose}
-              className="flex-1"
-            >
+            <Button variant="primary" onClick={handleClose} className="flex-1">
               はじめる 🎉
             </Button>
           ) : (
-            <Button
-              variant="primary"
-              onClick={() => goTo(step + 1)}
-              className="flex-1"
-            >
+            <Button variant="primary" onClick={() => goTo(step + 1)} className="flex-1">
               次へ →
             </Button>
           )}

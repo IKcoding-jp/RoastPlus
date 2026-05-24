@@ -15,12 +15,7 @@ describe('EmptyState', () => {
     });
 
     it('descriptionが表示される', () => {
-      render(
-        <EmptyState
-          title="データがありません"
-          description="新しいアイテムを追加してください。"
-        />
-      );
+      render(<EmptyState title="データがありません" description="新しいアイテムを追加してください。" />);
       expect(screen.getByText('新しいアイテムを追加してください。')).toBeInTheDocument();
     });
 
@@ -32,12 +27,7 @@ describe('EmptyState', () => {
 
   describe('アイコン', () => {
     it('iconが表示される', () => {
-      render(
-        <EmptyState
-          title="データがありません"
-          icon={<span data-testid="test-icon">📁</span>}
-        />
-      );
+      render(<EmptyState title="データがありません" icon={<span data-testid="test-icon">📁</span>} />);
       expect(screen.getByTestId('test-icon')).toBeInTheDocument();
     });
 
@@ -51,12 +41,7 @@ describe('EmptyState', () => {
 
   describe('アクション', () => {
     it('actionが表示される', () => {
-      render(
-        <EmptyState
-          title="データがありません"
-          action={<button type="button">追加する</button>}
-        />
-      );
+      render(<EmptyState title="データがありません" action={<button type="button">追加する</button>} />);
       expect(screen.getByRole('button', { name: '追加する' })).toBeInTheDocument();
     });
 
@@ -65,7 +50,11 @@ describe('EmptyState', () => {
       render(
         <EmptyState
           title="データがありません"
-          action={<button type="button" onClick={handleClick}>追加する</button>}
+          action={
+            <button type="button" onClick={handleClick}>
+              追加する
+            </button>
+          }
         />
       );
 
@@ -108,9 +97,7 @@ describe('EmptyState', () => {
 
   describe('カスタムクラス', () => {
     it('classNameで追加のスタイルを指定できる', () => {
-      const { container } = render(
-        <EmptyState title="テスト" className="custom-class" />
-      );
+      const { container } = render(<EmptyState title="テスト" className="custom-class" />);
       expect(container.firstChild).toHaveClass('custom-class');
     });
   });

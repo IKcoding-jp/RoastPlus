@@ -61,13 +61,16 @@ describe('compressImage', () => {
 
     // Imageのモック: 600x400（800px以下）
     const mockImage = createMockImage(600, 400);
-    vi.stubGlobal('Image', class {
-      constructor() {
-        Object.assign(this, mockImage);
-        queueMicrotask(() => mockImage.onload?.());
-        return mockImage as unknown as HTMLImageElement;
+    vi.stubGlobal(
+      'Image',
+      class {
+        constructor() {
+          Object.assign(this, mockImage);
+          queueMicrotask(() => mockImage.onload?.());
+          return mockImage as unknown as HTMLImageElement;
+        }
       }
-    });
+    );
 
     const result = await compressImage(file);
 
@@ -84,13 +87,16 @@ describe('compressImage', () => {
 
     // Imageのモック: 1600x1200（長辺1600px）
     const mockImage = createMockImage(1600, 1200);
-    vi.stubGlobal('Image', class {
-      constructor() {
-        Object.assign(this, mockImage);
-        queueMicrotask(() => mockImage.onload?.());
-        return mockImage as unknown as HTMLImageElement;
+    vi.stubGlobal(
+      'Image',
+      class {
+        constructor() {
+          Object.assign(this, mockImage);
+          queueMicrotask(() => mockImage.onload?.());
+          return mockImage as unknown as HTMLImageElement;
+        }
       }
-    });
+    );
 
     const result = await compressImage(file);
 
@@ -105,13 +111,16 @@ describe('compressImage', () => {
 
     // Imageのモック: 900x1200（長辺1200px）
     const mockImage = createMockImage(900, 1200);
-    vi.stubGlobal('Image', class {
-      constructor() {
-        Object.assign(this, mockImage);
-        queueMicrotask(() => mockImage.onload?.());
-        return mockImage as unknown as HTMLImageElement;
+    vi.stubGlobal(
+      'Image',
+      class {
+        constructor() {
+          Object.assign(this, mockImage);
+          queueMicrotask(() => mockImage.onload?.());
+          return mockImage as unknown as HTMLImageElement;
+        }
       }
-    });
+    );
 
     const result = await compressImage(file);
 
@@ -125,13 +134,16 @@ describe('compressImage', () => {
     const file = createTestFile(1_000_000, 'my-photo.png', 'image/png');
 
     const mockImage = createMockImage(400, 300);
-    vi.stubGlobal('Image', class {
-      constructor() {
-        Object.assign(this, mockImage);
-        queueMicrotask(() => mockImage.onload?.());
-        return mockImage as unknown as HTMLImageElement;
+    vi.stubGlobal(
+      'Image',
+      class {
+        constructor() {
+          Object.assign(this, mockImage);
+          queueMicrotask(() => mockImage.onload?.());
+          return mockImage as unknown as HTMLImageElement;
+        }
       }
-    });
+    );
 
     const result = await compressImage(file);
 
@@ -142,13 +154,16 @@ describe('compressImage', () => {
     const file = createTestFile(1000, 'broken.jpg');
 
     const mockImage = createMockImage(0, 0);
-    vi.stubGlobal('Image', class {
-      constructor() {
-        Object.assign(this, mockImage);
-        queueMicrotask(() => mockImage.onerror?.(new Error('Load failed')));
-        return mockImage as unknown as HTMLImageElement;
+    vi.stubGlobal(
+      'Image',
+      class {
+        constructor() {
+          Object.assign(this, mockImage);
+          queueMicrotask(() => mockImage.onerror?.(new Error('Load failed')));
+          return mockImage as unknown as HTMLImageElement;
+        }
       }
-    });
+    );
 
     await expect(compressImage(file)).rejects.toThrow('画像の読み込みに失敗しました');
   });
@@ -157,13 +172,16 @@ describe('compressImage', () => {
     const file = createTestFile(1000, 'test.jpg');
 
     const mockImage = createMockImage(400, 300);
-    vi.stubGlobal('Image', class {
-      constructor() {
-        Object.assign(this, mockImage);
-        queueMicrotask(() => mockImage.onload?.());
-        return mockImage as unknown as HTMLImageElement;
+    vi.stubGlobal(
+      'Image',
+      class {
+        constructor() {
+          Object.assign(this, mockImage);
+          queueMicrotask(() => mockImage.onload?.());
+          return mockImage as unknown as HTMLImageElement;
+        }
       }
-    });
+    );
 
     // toBlobがnullを返すようにモック
     mockCanvas.toBlob = vi.fn((callback: BlobCallback) => {
@@ -177,13 +195,16 @@ describe('compressImage', () => {
     const file = createTestFile(2_000_000, 'large.jpg');
 
     const mockImage = createMockImage(2000, 1000);
-    vi.stubGlobal('Image', class {
-      constructor() {
-        Object.assign(this, mockImage);
-        queueMicrotask(() => mockImage.onload?.());
-        return mockImage as unknown as HTMLImageElement;
+    vi.stubGlobal(
+      'Image',
+      class {
+        constructor() {
+          Object.assign(this, mockImage);
+          queueMicrotask(() => mockImage.onload?.());
+          return mockImage as unknown as HTMLImageElement;
+        }
       }
-    });
+    );
 
     const result = await compressImage(file, { maxSize: 500 });
 
@@ -196,20 +217,19 @@ describe('compressImage', () => {
     const file = createTestFile(1_000_000, 'test.jpg');
 
     const mockImage = createMockImage(400, 300);
-    vi.stubGlobal('Image', class {
-      constructor() {
-        Object.assign(this, mockImage);
-        queueMicrotask(() => mockImage.onload?.());
-        return mockImage as unknown as HTMLImageElement;
+    vi.stubGlobal(
+      'Image',
+      class {
+        constructor() {
+          Object.assign(this, mockImage);
+          queueMicrotask(() => mockImage.onload?.());
+          return mockImage as unknown as HTMLImageElement;
+        }
       }
-    });
+    );
 
     await compressImage(file, { quality: 0.5 });
 
-    expect(mockCanvas.toBlob).toHaveBeenCalledWith(
-      expect.any(Function),
-      'image/jpeg',
-      0.5
-    );
+    expect(mockCanvas.toBlob).toHaveBeenCalledWith(expect.any(Function), 'image/jpeg', 0.5);
   });
 });

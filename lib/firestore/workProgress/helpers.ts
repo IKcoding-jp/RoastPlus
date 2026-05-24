@@ -106,10 +106,16 @@ export function recalculateFromHistory(
 
   if (existing.targetAmount !== undefined) {
     // 進捗量モード
-    currentAmount = Math.max(0, updatedHistory.reduce((sum, entry) => sum + entry.amount, 0));
+    currentAmount = Math.max(
+      0,
+      updatedHistory.reduce((sum, entry) => sum + entry.amount, 0)
+    );
   } else {
     // 完成数モード
-    completedCount = Math.max(0, updatedHistory.reduce((sum, entry) => sum + entry.amount, 0));
+    completedCount = Math.max(
+      0,
+      updatedHistory.reduce((sum, entry) => sum + entry.amount, 0)
+    );
   }
 
   // ステータス自動変更

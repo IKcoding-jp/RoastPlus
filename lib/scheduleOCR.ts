@@ -48,7 +48,7 @@ export async function extractScheduleFromImage(
       details: scheduleError?.details,
       stack: scheduleError?.stack,
     });
-    
+
     // Firebase Functionsのエラーを適切に処理
     if (scheduleError?.code) {
       // Firebase Functionsのエラーコードをそのまま伝播
@@ -58,7 +58,7 @@ export async function extractScheduleFromImage(
       newError.details = scheduleError.details;
       throw newError;
     }
-    
+
     // ネットワークエラーやFunctionsが存在しない場合
     if (scheduleError?.message?.includes('not-found') || scheduleError?.message?.includes('404')) {
       const newError = new Error('Firebase Functionsが見つかりません。デプロイを確認してください。') as Error & {
@@ -67,7 +67,7 @@ export async function extractScheduleFromImage(
       newError.code = 'functions/not-found';
       throw newError;
     }
-    
+
     throw error;
   }
 }
@@ -205,4 +205,3 @@ function canvasToBlob(canvas: HTMLCanvasElement, quality: number): Promise<Blob>
     );
   });
 }
-

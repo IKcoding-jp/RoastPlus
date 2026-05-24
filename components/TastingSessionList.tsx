@@ -161,15 +161,9 @@ export function TastingSessionList({
     // eslint-disable-next-line react-hooks/set-state-in-effect -- ハイドレーション後のポータル有効化に必要
     setMounted(true);
     const updateContainers = () => {
-      const desktopEl = filterButtonContainerId
-        ? document.getElementById(filterButtonContainerId)
-        : null;
-      const sampleEl = sampleButtonContainerId
-        ? document.getElementById(sampleButtonContainerId)
-        : null;
-      const mobileEl = filterButtonContainerIdMobile
-        ? document.getElementById(filterButtonContainerIdMobile)
-        : null;
+      const desktopEl = filterButtonContainerId ? document.getElementById(filterButtonContainerId) : null;
+      const sampleEl = sampleButtonContainerId ? document.getElementById(sampleButtonContainerId) : null;
+      const mobileEl = filterButtonContainerIdMobile ? document.getElementById(filterButtonContainerIdMobile) : null;
 
       setContainers({
         sample: sampleEl && sampleEl.getBoundingClientRect().width > 0 ? sampleEl : null,
@@ -312,10 +306,7 @@ export function TastingSessionList({
       aria-label="フィルター"
       className="!px-3 !py-2 gap-1.5"
     >
-      <Faders
-        size={20}
-        weight={activeFilterCount > 0 ? 'fill' : 'bold'}
-      />
+      <Faders size={20} weight={activeFilterCount > 0 ? 'fill' : 'bold'} />
       <span className="text-xs sm:text-sm whitespace-nowrap">フィルター</span>
     </Button>
   );
@@ -334,38 +325,22 @@ export function TastingSessionList({
           </span>
         </Button>
       )}
-      <Button
-        variant="surface"
-        size="sm"
-        onClick={handleAddSampleData}
-        className="!px-3 !py-2 gap-1.5"
-      >
+      <Button variant="surface" size="sm" onClick={handleAddSampleData} className="!px-3 !py-2 gap-1.5">
         <span className="text-xs sm:text-sm whitespace-nowrap">テストデータを追加</span>
       </Button>
     </div>
   ) : null;
 
   const filterButtonMobile = (
-    <IconButton
-      variant="surface"
-      onClick={() => setIsFilterModalOpen(true)}
-      aria-label="フィルター"
-    >
-      <Faders
-        size={22}
-        weight={activeFilterCount > 0 ? 'fill' : 'bold'}
-      />
+    <IconButton variant="surface" onClick={() => setIsFilterModalOpen(true)} aria-label="フィルター">
+      <Faders size={22} weight={activeFilterCount > 0 ? 'fill' : 'bold'} />
     </IconButton>
   );
 
   if (visibleTastingSessions.length === 0) {
     return (
       <div className="min-h-[calc(100dvh-96px)] flex items-center justify-center px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full"
-        >
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full">
           <EmptyState
             size="md"
             className="mx-auto max-w-sm"
@@ -396,12 +371,7 @@ export function TastingSessionList({
                 )}
 
                 {showDevDataButtons && !isEmptyPreview && (
-                  <Button
-                    variant="surface"
-                    size="sm"
-                    onClick={handleAddSampleData}
-                    className="justify-center"
-                  >
+                  <Button variant="surface" size="sm" onClick={handleAddSampleData} className="justify-center">
                     テストデータを追加
                   </Button>
                 )}

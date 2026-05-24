@@ -17,9 +17,7 @@ export interface ContactFormValidationResult {
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export function normalizeContactFormData(
-  formData: ContactFormData
-): ContactFormData {
+export function normalizeContactFormData(formData: ContactFormData): ContactFormData {
   return {
     ...formData,
     name: formData.name.trim(),
@@ -28,9 +26,7 @@ export function normalizeContactFormData(
   };
 }
 
-export function validateContactForm(
-  formData: ContactFormData
-): ContactFormValidationResult {
+export function validateContactForm(formData: ContactFormData): ContactFormValidationResult {
   const errors: Partial<Record<keyof ContactFormData, string>> = {};
   const normalizedFormData = normalizeContactFormData(formData);
 
@@ -60,10 +56,7 @@ export function validateContactForm(
   };
 }
 
-export function getContactCooldownWaitSeconds(
-  lastSuccessAt: number | null,
-  now = Date.now()
-): number {
+export function getContactCooldownWaitSeconds(lastSuccessAt: number | null, now = Date.now()): number {
   if (!lastSuccessAt || !Number.isFinite(lastSuccessAt)) {
     return 0;
   }
@@ -84,10 +77,7 @@ export function getStoredContactCooldownWaitSeconds(
 
   try {
     const storedValue = storage.getItem(CONTACT_FORM_COOLDOWN_STORAGE_KEY);
-    return getContactCooldownWaitSeconds(
-      storedValue ? Number(storedValue) : null,
-      now
-    );
+    return getContactCooldownWaitSeconds(storedValue ? Number(storedValue) : null, now);
   } catch {
     return 0;
   }

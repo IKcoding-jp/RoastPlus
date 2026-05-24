@@ -6,7 +6,8 @@ export default {
       description: '生の <input type="checkbox"> の使用を禁止し、@/components/ui の Checkbox を推奨',
     },
     messages: {
-      noRawCheckbox: '生の <input type="checkbox"> を使用しないでください。@/components/ui の Checkbox を使用してください。',
+      noRawCheckbox:
+        '生の <input type="checkbox"> を使用しないでください。@/components/ui の Checkbox を使用してください。',
     },
     schema: [],
   },

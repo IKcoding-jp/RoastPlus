@@ -1,9 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  formatTime,
-  formatTimeAsMinutes,
-  formatTimeAsMinutesAndSeconds,
-} from './roastTimerUtils';
+import { formatTime, formatTimeAsMinutes, formatTimeAsMinutesAndSeconds } from './roastTimerUtils';
 
 describe('formatTime', () => {
   it('0秒 → "00:00"', () => {

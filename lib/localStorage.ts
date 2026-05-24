@@ -37,7 +37,7 @@ const parseJson = <T>(value: string): T | null => {
  */
 export function setSelectedMemberId(memberId: string | null): void {
   if (typeof window === 'undefined') return;
-  
+
   if (memberId === null) {
     localStorage.removeItem(SELECTED_MEMBER_ID_KEY);
   } else {
@@ -50,7 +50,7 @@ export function setSelectedMemberId(memberId: string | null): void {
  */
 export function getSelectedMemberId(): string | null {
   if (typeof window === 'undefined') return null;
-  
+
   return localStorage.getItem(SELECTED_MEMBER_ID_KEY);
 }
 
@@ -138,15 +138,15 @@ export function getDeviceId(): string {
     // SSR時は一時的なIDを返す（実際には使用されない）
     return `device_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
-  
+
   let deviceId = localStorage.getItem(DEVICE_ID_KEY);
-  
+
   if (!deviceId) {
     // デバイスIDが存在しない場合は生成
     deviceId = `device_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     localStorage.setItem(DEVICE_ID_KEY, deviceId);
   }
-  
+
   return deviceId;
 }
 
@@ -155,7 +155,7 @@ export function getDeviceId(): string {
  */
 export function setLast46Taste(taste: string | null): void {
   if (typeof window === 'undefined') return;
-  
+
   if (taste === null) {
     localStorage.removeItem(LAST_46_TASTE_KEY);
   } else {
@@ -168,7 +168,7 @@ export function setLast46Taste(taste: string | null): void {
  */
 export function getLast46Taste(): string | null {
   if (typeof window === 'undefined') return null;
-  
+
   return localStorage.getItem(LAST_46_TASTE_KEY);
 }
 
@@ -177,7 +177,7 @@ export function getLast46Taste(): string | null {
  */
 export function setLast46Strength(strength: string | null): void {
   if (typeof window === 'undefined') return;
-  
+
   if (strength === null) {
     localStorage.removeItem(LAST_46_STRENGTH_KEY);
   } else {
@@ -190,10 +190,9 @@ export function setLast46Strength(strength: string | null): void {
  */
 export function getLast46Strength(): string | null {
   if (typeof window === 'undefined') return null;
-  
+
   return localStorage.getItem(LAST_46_STRENGTH_KEY);
 }
-
 
 // =============================================
 // クイズ進捗管理
@@ -218,7 +217,7 @@ interface ExportedQuizProgress {
  */
 export function setQuizProgress(progress: QuizProgress | null): void {
   if (typeof window === 'undefined') return;
-  
+
   if (progress === null) {
     localStorage.removeItem(QUIZ_PROGRESS_KEY);
   } else {
@@ -235,13 +234,13 @@ export function setQuizProgress(progress: QuizProgress | null): void {
  */
 export function getQuizProgress(): QuizProgress | null {
   if (typeof window === 'undefined') return null;
-  
+
   const stored = localStorage.getItem(QUIZ_PROGRESS_KEY);
   if (!stored) return null;
-  
+
   const parsed = parseJson<StoredQuizProgress>(stored);
   if (!parsed || parsed.version !== QUIZ_PROGRESS_VERSION) return null;
-  
+
   return parsed.progress;
 }
 
@@ -250,16 +249,16 @@ export function getQuizProgress(): QuizProgress | null {
  */
 export function exportQuizProgress(): string | null {
   if (typeof window === 'undefined') return null;
-  
+
   const progress = getQuizProgress();
   if (!progress) return null;
-  
+
   const exported: ExportedQuizProgress = {
     exportedAt: new Date().toISOString(),
     version: QUIZ_PROGRESS_VERSION,
     progress,
   };
-  
+
   return JSON.stringify(exported, null, 2);
 }
 
@@ -270,26 +269,28 @@ export function importQuizProgress(jsonString: string): { success: boolean; erro
   if (typeof window === 'undefined') {
     return { success: false, error: 'ブラウザ環境でのみ使用可能です' };
   }
-  
+
   try {
     const imported = JSON.parse(jsonString) as ExportedQuizProgress;
-    
+
     // バージョンチェック
     if (imported.version !== QUIZ_PROGRESS_VERSION) {
-      return { success: false, error: `バージョンが一致しません (期待: ${QUIZ_PROGRESS_VERSION}, 実際: ${imported.version})` };
+      return {
+        success: false,
+        error: `バージョンが一致しません (期待: ${QUIZ_PROGRESS_VERSION}, 実際: ${imported.version})`,
+      };
     }
-    
+
     // 必須フィールドチェック
     if (!imported.progress || !imported.progress.userId) {
       return { success: false, error: '無効なデータ形式です' };
     }
-    
+
     // 保存
     setQuizProgress(imported.progress);
-    
+
     return { success: true };
   } catch {
     return { success: false, error: 'JSONの解析に失敗しました' };
   }
 }
-

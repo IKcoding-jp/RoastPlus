@@ -9,4 +9,3 @@ import EditTastingSessionPageClient from './EditTastingSessionPageClient';
 export default function EditTastingSessionPage() {
   return <EditTastingSessionPageClient />;
 }
-

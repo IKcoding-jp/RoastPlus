@@ -42,7 +42,8 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
 
     const baseStyles = 'rounded-lg border-2 px-4 py-2 text-lg transition-all duration-200 min-h-[44px] text-center';
 
-    const themeStyles = 'bg-field border-edge text-ink placeholder:text-ink-muted hover:border-edge-strong focus:border-spot focus:bg-field focus:outline-none focus:ring-2 focus:ring-spot-subtle';
+    const themeStyles =
+      'bg-field border-edge text-ink placeholder:text-ink-muted hover:border-edge-strong focus:border-spot focus:bg-field focus:outline-none focus:ring-2 focus:ring-spot-subtle';
 
     const errorStyles = 'border-error focus:border-error focus:ring-error-ring';
 
@@ -55,7 +56,9 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
       props.disabled ? disabledStyles : '',
       suffix ? '' : 'w-full',
       className,
-    ].filter(Boolean).join(' ');
+    ]
+      .filter(Boolean)
+      .join(' ');
 
     const labelStyles = 'block text-sm font-medium text-ink mb-2';
 
@@ -80,9 +83,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
             aria-describedby={error ? `${inputId}-error` : undefined}
             {...props}
           />
-          {suffix && (
-            <span className={suffixStyles}>{suffix}</span>
-          )}
+          {suffix && <span className={suffixStyles}>{suffix}</span>}
         </div>
         {error && (
           <p id={`${inputId}-error`} className={errorTextStyles} role="alert">

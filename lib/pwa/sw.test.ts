@@ -85,9 +85,9 @@ describe('PWA Service Worker navigation paths', () => {
   });
 
   it('manifestのicon参照はpublic配下の実ファイルを指す', () => {
-    const manifest = JSON.parse(
-      readFileSync(join(process.cwd(), 'public', 'site.webmanifest'), 'utf8')
-    ) as { icons: Array<{ src: string }> };
+    const manifest = JSON.parse(readFileSync(join(process.cwd(), 'public', 'site.webmanifest'), 'utf8')) as {
+      icons: Array<{ src: string }>;
+    };
 
     const missingIcons = manifest.icons
       .map((icon) => ({

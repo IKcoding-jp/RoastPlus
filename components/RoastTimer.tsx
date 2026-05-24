@@ -37,15 +37,11 @@ const DESKTOP_PANEL_TRANSITION = {
 
 export function RoastTimer() {
   const { data, updateData, isLoading } = useAppData();
-  const {
-    state,
-    startTimer,
-    pauseTimer,
-    resumeTimer,
-    resetTimer,
-    skipTimer,
-    stopSound,
-  } = useRoastTimer({ data, updateData, isLoading });
+  const { state, startTimer, pauseTimer, resumeTimer, resetTimer, skipTimer, stopSound } = useRoastTimer({
+    data,
+    updateData,
+    isLoading,
+  });
 
   const [showSettings, setShowSettings] = useState(false);
   const [idleDuration, setIdleDuration] = useState(DEFAULT_DURATIONS[200] * 60);
@@ -62,18 +58,18 @@ export function RoastTimer() {
     };
   }, [stopSound]);
 
-  const handleStart = async (
-    duration: number,
-    beanName?: BeanName,
-    weight?: Weight,
-    roastLevel?: RoastLevel
-  ) => {
+  const handleStart = async (duration: number, beanName?: BeanName, weight?: Weight, roastLevel?: RoastLevel) => {
     await startTimer(duration, beanName, weight, roastLevel);
   };
 
   const handlePause = () => pauseTimer();
-  const handleResume = async () => { await resumeTimer(); };
-  const handleReset = () => { stopSound(); resetTimer(); };
+  const handleResume = async () => {
+    await resumeTimer();
+  };
+  const handleReset = () => {
+    stopSound();
+    resetTimer();
+  };
   const handleSkip = () => skipTimer();
 
   const handleWeightSelect = useCallback((weight: Weight) => {
@@ -82,14 +78,8 @@ export function RoastTimer() {
 
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
-  const panelVariants = useMemo(
-    () => isDesktop ? DESKTOP_PANEL_VARIANTS : MOBILE_PANEL_VARIANTS,
-    [isDesktop]
-  );
-  const panelTransition = useMemo(
-    () => isDesktop ? DESKTOP_PANEL_TRANSITION : MOBILE_PANEL_TRANSITION,
-    [isDesktop]
-  );
+  const panelVariants = useMemo(() => (isDesktop ? DESKTOP_PANEL_VARIANTS : MOBILE_PANEL_VARIANTS), [isDesktop]);
+  const panelTransition = useMemo(() => (isDesktop ? DESKTOP_PANEL_TRANSITION : MOBILE_PANEL_TRANSITION), [isDesktop]);
 
   const isRunning = state?.status === 'running';
   const isPaused = state?.status === 'paused';
@@ -107,10 +97,7 @@ export function RoastTimer() {
   return (
     <div className="h-full flex flex-col">
       {/* ヘッダー: 設定ボタン（FloatingNavはpage.tsxが提供） */}
-      <div
-        className="flex items-center justify-end shrink-0"
-        style={{ height: 56, padding: '12px 12px 0' }}
-      >
+      <div className="flex items-center justify-end shrink-0" style={{ height: 56, padding: '12px 12px 0' }}>
         <Button
           variant="surface"
           type="button"
@@ -170,11 +157,7 @@ export function RoastTimer() {
                 transition={panelTransition}
                 className="flex-1 flex flex-col min-h-0"
               >
-                <SetupPanel
-                  onStart={handleStart}
-                  isLoading={isLoading}
-                  onWeightSelect={handleWeightSelect}
-                />
+                <SetupPanel onStart={handleStart} isLoading={isLoading} onWeightSelect={handleWeightSelect} />
               </motion.div>
             )}
 
