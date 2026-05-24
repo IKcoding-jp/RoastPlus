@@ -43,6 +43,25 @@ describe('initializeRoastPlusAppCheck', () => {
     expect(window.__ROASTPLUS_APP_CHECK_INITIALIZED__).toBe(true);
   });
 
+  it('環境変数のサイトキーでApp Checkを初期化する', async () => {
+    vi.stubEnv('NEXT_PUBLIC_RECAPTCHA_SITE_KEY', 'env-site-key');
+    const { initializeRoastPlusAppCheck } = await import('./appCheck');
+
+    initializeRoastPlusAppCheck(mockFirebaseApp);
+
+    expect(mockReCaptchaV3Provider).toHaveBeenCalledWith('env-site-key');
+    expect(mockInitializeAppCheck).toHaveBeenCalled();
+  });
+
+  it('サイトキーがない場合は初期化しない', async () => {
+    const { initializeRoastPlusAppCheck } = await import('./appCheck');
+
+    initializeRoastPlusAppCheck(mockFirebaseApp);
+
+    expect(mockInitializeAppCheck).not.toHaveBeenCalled();
+    expect(window.__ROASTPLUS_APP_CHECK_INITIALIZED__).toBe(false);
+  });
+
   it('Functions Emulator利用時は初期化しない', async () => {
     vi.stubEnv('NEXT_PUBLIC_FIREBASE_FUNCTIONS_EMULATOR', 'true');
     const { initializeRoastPlusAppCheck } = await import('./appCheck');

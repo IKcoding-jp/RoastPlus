@@ -198,6 +198,7 @@ npm run test:run
 npm run test:rules
 npm run test:coverage
 npm run test:e2e
+npm run secrets:scan
 ```
 
 ### SDD の運用方針
@@ -246,6 +247,8 @@ TDD が必要な変更では、受け入れ条件をテストに対応づけて�
 - UI/E2E変更では必要に応じて npm run test:e2e を実行する。
 - functions/ を変更した場合は、Functions側の build/test も確認する。
 - Lint は Husky pre-commit でも実行されるが、必要に応じて npm run lint を手動実行する。
+- 秘密情報の混入確認には Gitleaks を使い、手動確認では npm run secrets:scan を実行する。
+- pre-commit では Husky 経由で npm run secrets:scan:staged が実行される。
 - ロジック変更では、既存テストを優先して更新・追加する。
 - 検証できない場合は、未検証の理由とユーザーが実行すべきコマンドを報告する。
 
