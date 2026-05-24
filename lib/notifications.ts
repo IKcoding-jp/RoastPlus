@@ -3,6 +3,8 @@
  * Web Notifications APIを使用
  */
 
+import { isE2EMode } from './e2eMode';
+
 // スケジュールされた通知IDの管理
 const scheduledNotificationIds = new Set<number>();
 
@@ -10,6 +12,10 @@ const scheduledNotificationIds = new Set<number>();
  * 通知権限をリクエスト
  */
 export async function requestNotificationPermission(): Promise<boolean> {
+  if (isE2EMode()) {
+    return false;
+  }
+
   if (!('Notification' in window)) {
     console.warn('This browser does not support notifications');
     return false;

@@ -2,6 +2,7 @@
 
 import { setDoc, getDoc, onSnapshot } from 'firebase/firestore';
 import { getUserDocRef, removeUndefinedFields, normalizeAppData, defaultData } from '../common';
+import { isE2EMode, loadE2EAppData, saveE2EAppData } from '@/lib/e2eMode';
 import type { AppData } from '@/types';
 import {
   getDataSplitsDocRef,
@@ -14,6 +15,10 @@ import {
 import { writeQueues, SAVE_USER_DATA_DEBOUNCE_MS, executeWrite, type SaveUserDataOptions } from './write-queue';
 
 export async function getUserData(userId: string): Promise<AppData> {
+  if (isE2EMode()) {
+    return loadE2EAppData(defaultData);
+  }
+
   try {
     const userDocRef = getUserDocRef(userId);
     const userDoc = await getDoc(userDocRef);
@@ -52,6 +57,11 @@ export async function getUserData(userId: string): Promise<AppData> {
 }
 
 export async function saveUserData(userId: string, data: AppData, options: SaveUserDataOptions = {}): Promise<void> {
+  if (isE2EMode()) {
+    saveE2EAppData(data);
+    return;
+  }
+
   // キューが存在しない場合は初期化
   if (!writeQueues.has(userId)) {
     writeQueues.set(userId, {
@@ -107,6 +117,11 @@ export async function saveUserData(userId: string, data: AppData, options: SaveU
 }
 
 export function subscribeUserData(userId: string, callback: (data: AppData) => void): () => void {
+  if (isE2EMode()) {
+    queueMicrotask(() => callback(loadE2EAppData(defaultData)));
+    return () => {};
+  }
+
   const userDocRef = getUserDocRef(userId);
   const workProgressesCollectionRef = getWorkProgressesCollectionRef(userId);
   const dataSplitsDocRef = getDataSplitsDocRef(userId);

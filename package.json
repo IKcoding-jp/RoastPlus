@@ -24,8 +24,8 @@
     "deadcode": "knip",
     "maintenance": "npm run complexity && npm run security && npm run deadcode && npm run skill:validate",
     "skill:validate": "tsx scripts/validate-ui-skill.ts",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
+    "test:e2e": "env-cmd -f e2e/e2e.env playwright test",
+    "test:e2e:ui": "env-cmd -f e2e/e2e.env playwright test --ui",
     "test:e2e:report": "playwright show-report",
     "remotion:studio": "npx remotion studio remotion/index.ts",
     "remotion:render": "npx remotion render remotion/index.ts RoastPlusIntro out/roastplus-intro.mp4"

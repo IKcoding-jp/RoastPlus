@@ -6,6 +6,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { Loading } from '@/components/Loading';
 import { Input, Button } from '@/components/ui';
+import { E2E_EMAIL, E2E_PASSWORD, isE2EMode, signInE2EUser } from '@/lib/e2eMode';
 import { getSafeReturnUrl } from '@/lib/returnUrl';
 
 function LoginForm() {
@@ -23,6 +24,18 @@ function LoginForm() {
     setLoading(true);
 
     try {
+      if (isE2EMode()) {
+        if (email !== E2E_EMAIL || password !== E2E_PASSWORD) {
+          setError('メールアドレスもしくはパスワードが違います');
+          return;
+        }
+
+        signInE2EUser();
+        const redirectUrl = getSafeReturnUrl(searchParams.get('returnUrl'), '/');
+        router.push(redirectUrl);
+        return;
+      }
+
       await signInWithEmailAndPassword(auth, email, password);
       // returnUrlがあればそのURLに、なければホームにリダイレクト
       const redirectUrl = getSafeReturnUrl(searchParams.get('returnUrl'), '/');
