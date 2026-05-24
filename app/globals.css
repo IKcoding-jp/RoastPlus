@@ -42,20 +42,20 @@
     /* テキスト */
     --ink: #1f2937;
     --ink-sub: #4b5563;
-    --ink-muted: #9ca3af;
+    --ink-muted: #6b7280;
     /* ボーダー */
     --edge: #e5e7eb;
     --edge-strong: #d1d5db;
     --edge-subtle: #f3f4f6;
     /* アクセント */
-    --spot: #d97706;
-    --spot-hover: #b45309;
+    --spot: #b45309;
+    --spot-hover: #92400e;
     --spot-subtle: #f0f0f0;
     --spot-surface: #f7f7f7;
     --on-spot: #ffffff;
     /* ボタン */
-    --btn-primary: #d97706;
-    --btn-primary-hover: #b45309;
+    --btn-primary: #b45309;
+    --btn-primary-hover: #92400e;
     /* ステータスカラー */
     --danger: #dc2626;
     --danger-subtle: #fee2e2;

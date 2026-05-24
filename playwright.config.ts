@@ -27,6 +27,13 @@ export default defineConfig({
       },
       dependencies: ['setup'],
     },
+    {
+      name: 'a11y',
+      testMatch: /accessibility\/a11y\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+      },
+    },
   ],
   webServer: {
     command: 'env-cmd -f e2e/e2e.env npm run dev -- --port 3100',

@@ -132,7 +132,12 @@ export default function SettingsPage() {
                 <p className="text-sm text-ink-sub">開発者向けの機能を有効化します</p>
               </div>
               <div className="ml-4">
-                <Switch size="lg" checked={isEnabled} onChange={(e) => handleToggleChange(e.target.checked)} />
+                <Switch
+                  size="lg"
+                  checked={isEnabled}
+                  onChange={(e) => handleToggleChange(e.target.checked)}
+                  aria-label="開発者モードを切り替える"
+                />
               </div>
             </div>
           </Card>

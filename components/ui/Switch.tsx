@@ -91,6 +91,8 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(
           id={switchId}
           type="checkbox"
           className="sr-only"
+          aria-label={label ? undefined : ariaLabel}
+          aria-labelledby={label ? `${switchId}-label` : undefined}
           checked={checked}
           onChange={props.onChange || (() => {})}
           disabled={disabled}
