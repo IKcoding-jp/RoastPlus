@@ -45,7 +45,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
     // バリアントスタイル（CSS変数ベース）
     const variantStyles = {
       default: 'text-ink-sub hover:text-ink hover:bg-ground',
-      primary: 'bg-btn-primary text-btn-primary-text hover:bg-btn-primary-hover',
+      primary: 'bg-btn-primary text-white hover:bg-btn-primary-hover',
       danger: 'text-danger hover:text-danger/80 hover:bg-danger-subtle',
       success: 'text-success hover:text-success/80 hover:bg-success-subtle',
       ghost: 'text-ink-muted hover:text-ink-sub hover:bg-ground',
