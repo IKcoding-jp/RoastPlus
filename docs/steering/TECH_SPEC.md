@@ -1,12 +1,12 @@
 # Technical Specification
 
-**最終更新**: 2026-02-21
+**最終更新**: 2026-05-26
 
 ---
 
 ## アーキテクチャ概要
 
-RoastPlusは、**PWA（Progressive Web App）** として設計されたモバイルファーストのコーヒー焙煎・抽出業務支援アプリです。フロントエンドはNext.js 16（App Router）で構築し、バックエンドはFirebase（BaaS）を使用。AI機能はFirebase Cloud Functions v2経由でOpenAI GPT-4oを呼び出します。
+RoastPlusは、**PWA（Progressive Web App）** として設計されたモバイルファーストのコーヒー焙煎・抽出業務支援アプリです。フロントエンドはNext.js 16（App Router）で構築し、バックエンドはFirebase（BaaS）を使用。AI機能はFirebase Cloud Functions v2経由でOpenAI APIを呼び出します。
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -28,7 +28,7 @@ RoastPlusは、**PWA（Progressive Web App）** として設計されたモバ�
                    ↓
 ┌─────────────────────────────────────────────────┐
 │             AI Services                          │
-│   OpenAI GPT-4o（Cloud Functions経由のみ）      │
+│   OpenAI API（Cloud Functions経由のみ）        │
 │   - ocrScheduleFromImage（Vision OCR）          │
 │   - analyzeTastingSession（テキスト分析）        │
 │                                                  │
@@ -47,14 +47,14 @@ RoastPlusは、**PWA（Progressive Web App）** として設計されたモバ�
 ## フロントエンド
 
 ### Next.js 16（App Router）
-- **バージョン**: ^16.0.8
+- **バージョン**: `package.json` の指定と `package-lock.json` の解決済みバージョンを正とする
 - **ルーティング**: App Router（`app/` ディレクトリ）
 - **ビルド**: 静的エクスポート（`output: 'export'`）
 - **設定**: `trailingSlash: true`, `images.unoptimized: true`
 - **レンダリング**: Client Components中心（`'use client'`）。静的エクスポートのためSSR/RSCは限定的
 
 ### React 19
-- **バージョン**: 19.2.0
+- **バージョン**: `package.json` の `react` / `react-dom` を正とする
 - **状態管理**: `useState` のみ使用（外部ライブラリ不使用）
 - **機能活用**: Suspense, useTransition
 
@@ -115,7 +115,7 @@ CSS変数は `@theme inline` でTailwindユーティリティとして自動登�
 CSS変数の使い分け（`bg-surface` vs `bg-overlay` 等）は `docs/steering/FEATURES.md`「テーマシステム」セクション参照。
 
 ### Framer Motion
-- **バージョン**: ^12.23.24
+- **バージョン**: `package.json` の `framer-motion` を正とする
 - **用途**: ページトランジション、コンポーネントアニメーション、ジェスチャー
 - **テーマ連動**: 7テーマのアンビエントアニメーション（湯気/炎/粒子/葉/光波/雪/星）+ `useReducedMotion` 対応
 
@@ -130,7 +130,7 @@ CSS変数の使い分け（`bg-surface` vs `bg-overlay` 等）は `docs/steering
 
 ### Firebase
 
-**バージョン**: firebase ^12.10.0
+**バージョン**: `package.json` の `firebase` を正とする
 
 #### Authentication
 - **認証方法**: Google, Email/Password
@@ -154,10 +154,9 @@ Firestore
 │   │   ├── roastSchedules                  # 焙煎スケジュール
 │   │   ├── tastingSessions                 # テイスティングセッション
 │   │   ├── tastingRecords                  # テイスティング記録
-│   │   ├── workProgresses                  # 作業進捗
 │   │   ├── roastTimerRecords               # 焙煎タイマー記録
 │   │   └── dripRecipes                     # ドリップレシピ
-│   ├── (subcollections - 担当表機能)
+│   ├── (subcollections)
 │   │   ├── teams/{teamId}                  # チーム
 │   │   ├── members/{memberId}              # メンバー
 │   │   ├── taskLabels/{labelId}            # タスクラベル
@@ -166,7 +165,9 @@ Firestore
 │   │   ├── shuffleHistory/{historyId}      # シャッフル履歴
 │   │   ├── assignmentSettings/{settingId}  # 担当設定
 │   │   ├── managers/{managerId}            # 管理者
-│   │   └── pairExclusions/{exclusionId}    # ペア除外設定
+│   │   ├── pairExclusions/{exclusionId}    # ペア除外設定
+│   │   ├── workProgresses/{workProgressId} # 作業進捗
+│   │   └── _meta/{document}                # 分割データ移行メタ情報
 │
 ├── quiz_progress/{userId}                  # クイズ進捗データ
 │
@@ -176,26 +177,29 @@ Firestore
 ```
 
 #### Storage
-- **用途**: 画像アップロード（スケジュール画像のOCR用）
-- **パス構造**: `users/{userId}/{collection}/{fileId}`
+- **用途**: 欠点豆画像アップロード、マスター画像参照
+- **ユーザー追加画像**: `defect-beans/{userId}/{defectBeanId}/{fileName}`
+- **マスター画像**: `defect-beans-master/{fileName}`（クライアントから編集不可）
+- **OCR画像**: Cloud FunctionsへBase64で渡し、Storageへ保存しない
 
 #### Hosting
-- **本番**: Firebase Hosting（`roastplus.web.app`）
-- **代替**: Vercel（git push自動デプロイ）
+- **本番**: Firebase Hosting（`firebase.json` の `hosting.public` は `out`）
+- **ビルド**: productionでは `next.config.ts` の `output: 'export'` により静的エクスポート
 - **環境**: default（本番）, development（開発）
 
 ### Cloud Functions v2
 
 **ディレクトリ**: `functions/`
-**ランタイム**: Node.js（TypeScript）
-**SDKバージョン**: `firebase-functions/v2/https`
+**ランタイム**: Node.js 20（`firebase.json` と `functions/package.json`）
+**SDK**: `firebase-functions` / `firebase-admin` は `functions/package.json` を正とする
+**実装**: Callable Functions v2（`firebase-functions/v2/https`）
 
 | 関数名 | 用途 | AIモデル |
 |--------|------|---------|
 | `ocrScheduleFromImage` | ホワイトボード画像のOCR（スケジュール読み取り） | GPT-4o Vision |
-| `analyzeTastingSession` | テイスティングセッションのAI分析 | GPT-4o |
+| `analyzeTastingSession` | テイスティングセッションのAI分析 | gpt-4o-mini |
 
-**重要**: AI処理はすべてCloud Functions経由。クライアントからOpenAI APIを直接呼び出さない。
+**重要**: AI処理はすべてCloud Functions経由。クライアントからOpenAI APIを直接呼び出さない。`OPENAI_API_KEY` は Firebase Secret Manager で管理し、値はドキュメントやログに出さない。
 
 ---
 
@@ -204,7 +208,7 @@ Firestore
 ### Service Worker
 - **実装**: カスタム手書きService Worker（`public/sw.js`）
 - **next-pwa**: 不使用（ADR-007参照）
-- **キャッシュ名**: `roast-plus-v3`
+- **キャッシュ名**: 最新値は `public/sw.js` の `CACHE_NAME` / `RUNTIME_CACHE` を参照
 - **キャッシュ戦略**: Network First
 
 ### オフライン対応
@@ -224,10 +228,10 @@ Firestore
 
 AI機能はFirebase Cloud Functions v2経由でOpenAI APIを呼び出す。
 
-- **モデル**: OpenAI GPT-4o（Geminiは不使用）
+- **モデル**: OCRは `gpt-4o`、テイスティング分析は `gpt-4o-mini`
 - **APIキー管理**: Firebase Secret Manager（`OPENAI_API_KEY`）
 - **クライアント側**: Cloud Functionsの `httpsCallable` で呼び出し
-- **パッケージ**: `openai` ^6.16.0（Cloud Functions内のみ）
+- **パッケージ**: `functions/package.json` の `openai` を正とする（Cloud Functions内のみ）
 
 ### OCR（スケジュール画像解析）
 
@@ -240,7 +244,7 @@ AI機能はFirebase Cloud Functions v2経由でOpenAI APIを呼び出す。
 
 - **関数**: `analyzeTastingSession`
 - **入力**: テイスティングセッションの評価データ
-- **処理**: GPT-4oでフレーバー分析 → テキスト生成
+- **処理**: gpt-4o-miniでフレーバー分析 → テキスト生成
 - **出力**: 分析結果テキスト（フレーバーノート、改善提案）
 - **トリガー**: セッション保存時に自動実行（ADR-005参照）
 
@@ -250,36 +254,36 @@ AI機能はFirebase Cloud Functions v2経由でOpenAI APIを呼び出す。
 
 ### ユニットテスト・コンポーネントテスト（Vitest）
 
-- **バージョン**: Vitest ^4.0.18
+- **バージョン**: `package.json` の `vitest` を正とする
 - **環境**: jsdom（ブラウザ環境シミュレーション）
-- **カバレッジ**: `@vitest/coverage-v8` ^4.0.18（text, html形式）
+- **カバレッジ**: `@vitest/coverage-v8`（text, html形式。バージョンは `package.json` を正とする）
 - **設定**: `vitest.config.ts`（パスエイリアス `@/`）
-- **UIテスト**: `@testing-library/react` ^16.3.2, `@testing-library/jest-dom` ^6.9.1
-- **Reactプラグイン**: `@vitejs/plugin-react` ^5.1.2
+- **UIテスト**: `@testing-library/react`, `@testing-library/jest-dom`（バージョンは `package.json` を正とする）
+- **Reactプラグイン**: `@vitejs/plugin-react` は `package.json` を正とする
 
 ### テストファイル構成
 
-| カテゴリ | ファイル数 | 内容 |
-|---------|----------|------|
-| `lib/` テスト | 28 | ビジネスロジックのユニットテスト |
-| `hooks/` テスト | 6 | カスタムフックのテスト |
-| `components/` テスト | 24 | UIコンポーネントテスト |
-| `__tests__/scripts/` テスト | 1 | GitHub Actionsスクリプトのユニットテスト（Node環境） |
-| `eslint-rules/` テスト | 6 | ESLintカスタムルールのテスト |
+| カテゴリ | 内容 |
+|---------|------|
+| `lib/` テスト | ビジネスロジックのユニットテスト |
+| `hooks/` テスト | カスタムフックのテスト |
+| `components/` テスト | UIコンポーネントテスト |
+| `app/` テスト | ページ・機能単位のテスト |
+| `functions/src/` テスト | Cloud Functionsの補助ロジック・制限処理のテスト |
+| `tests/rules/` テスト | Firestore Security Rulesテスト |
 
 ### カバレッジ目標・実績
 
-| 対象 | 目標 | 実績（2026-02-21時点） |
-|------|------|----------------------|
-| 全体 | 75%以上 | 76.19% |
-| lib/ | 90%以上 | 89.44% |
-| hooks/ | 85%以上 | 87.9% |
+固定値は古くなりやすいため、最新のテスト数・カバレッジは以下で確認する。
 
-- **総テスト数**: 1176テスト（100%合格）
+```bash
+npm run test:run
+npm run test:coverage
+```
 
 ### E2Eテスト（Playwright）
 
-- **バージョン**: Playwright ^1.58.2
+- **バージョン**: `package.json` の `@playwright/test` を正とする
 - **ブラウザ**: Chromium
 - **設定**: `playwright.config.ts`
 
@@ -302,11 +306,10 @@ AI機能はFirebase Cloud Functions v2経由でOpenAI APIを呼び出す。
 - **Husky**: ^9.1.7（Git pre-commit hook）
 - **lint-staged**: コミット前にESLintを自動実行
 - **対象**: `*.ts`, `*.tsx`, `*.js`, `*.jsx`
-
-**注意**: Gitleaks（シークレット検出）は未導入。
+- **シークレット検出**: pre-commitで `npm run secrets:scan:staged` を実行。Gitleaks CLIが必要
 
 #### ESLint
-- **バージョン**: ESLint ^9
+- **バージョン**: `package.json` の `eslint` を正とする
 - **設定**: `eslint-config-next`（core-web-vitals + typescript）
 - **ポリシー**: Lintエラー・warningは常にゼロを維持
 - **カスタムルール**: `eslint-rules/` ディレクトリに独自ルールを実装
@@ -315,30 +318,23 @@ AI機能はFirebase Cloud Functions v2経由でOpenAI APIを呼び出す。
   - `no-raw-select`: 生の `<select>` 要素の使用を検出（`Select` を使用すべき）
 
 #### Knip
-- **バージョン**: ^5.82.1
+- **バージョン**: `package.json` を正とする
 - **用途**: デッドコード・未使用依存関係の検出
 
 ### デプロイ
 
 | デプロイ先 | コマンド | 備考 |
 |-----------|---------|------|
-| Firebase Hosting | `npm run build && firebase deploy --only hosting` | 手動デプロイ |
-| Vercel | `git push`（自動デプロイ） | Git連携 |
+| Firebase Hosting | `npm run build && firebase deploy --only hosting` | 手動デプロイ時。通常はworkflow経由 |
+| Cloud Functions | `cd functions && npm run build` → `firebase deploy --only functions` | 本番影響があるため明示確認後のみ |
+| Firestore Rules | `npm run test:rules` → `firebase deploy --only firestore:rules` | workflowではrules変更時だけテスト後にdeploy |
 
 ### GitHub Actions（実装済）
 
 | ワークフロー | トリガー | 内容 |
 |------------|---------|------|
-| `changelog-suggest.yml` | PR作成時（main向け） | 「ユーザー向け更新内容」が空なら、OpenAI gpt-4o-miniでドラフトを生成しPRコメントに投稿 |
-| `changelog-update.yml` | PRマージ時（main向け） | ブランチ種別でバージョンをインクリメント（feat→minor, fix/style→patch）し、changelog・package.jsonを自動更新（`[skip ci]`） |
-| `auto-fix-issue.yml` | （既存） | — |
-| `ci.yml` | （既存） | — |
-| `firebase-hosting-merge.yml` | （既存） | Firebase Hosting自動デプロイ |
-| `firebase-hosting-preview.yml` | （既存） | Firebaseプレビューチャンネル |
-
-### 計画中
-
-- **GitHub Actions**: PR作成時のテスト自動実行
+| `ci.yml` | main向けPR | secrets-scan、typecheck、lint、format、unit tests、rules tests、E2E、build |
+| `firebase-hosting-merge.yml` | main向けPRのmerge / 手動実行 | 変更ファイルからHosting、Functions、Firestore Rulesのdeploy対象を判定。Firestore Rulesはテスト後にdeploy |
 
 ---
 
@@ -358,10 +354,11 @@ AI機能はFirebase Cloud Functions v2経由でOpenAI APIを呼び出す。
 |------|------|---------|
 | `NEXT_PUBLIC_FIREBASE_*`（6個） | Firebase設定 | `.env.local` |
 | `NEXT_PUBLIC_EMAILJS_*`（3個） | EmailJS設定 | `.env.local` |
+| `NEXT_PUBLIC_RECAPTCHA_SITE_KEY` | Firebase App Check | `.env.local` / GitHub Secrets |
 | `NEXT_PUBLIC_APP_VERSION` | アプリバージョン | `package.json` から自動取得 |
-| `OPENAI_API_KEY` | OpenAI APIキー | Firebase Secret Manager（Cloud Functions専用）/ GitHub Secrets（changelog-suggest.yml） |
+| `OPENAI_API_KEY` | OpenAI APIキー | Firebase Secret Manager（Cloud Functions専用） |
 
-**重要**: `OPENAI_API_KEY` はクライアントに公開しない。Cloud Functions内またはGitHub Actions内でのみ使用。
+**重要**: `OPENAI_API_KEY` はクライアントに公開しない。Cloud Functions内でのみ使用する。
 
 ---
 
@@ -472,7 +469,7 @@ AI機能はFirebase Cloud Functions v2経由でOpenAI APIを呼び出す。
   - 静的エクスポート（`output: 'export'`）との互換性
   - キャッシュ戦略の完全な制御（Network First）
   - `next-pwa`の依存関係・メンテナンスリスクを回避
-  - シンプルな要件（キャッシュ名: `roast-plus-v3`）に対して軽量
+  - シンプルな要件に対して軽量。現在のキャッシュ名は `public/sw.js` を参照
 
 ### ADR-008: ロゴを画像からテキストベースに変更
 
