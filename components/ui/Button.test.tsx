@@ -63,6 +63,7 @@ describe('Button', () => {
       const button = screen.getByText('プライマリ');
 
       expect(button.className).toContain('bg-btn-primary');
+      expect(button.className).toContain('text-btn-primary-text');
     });
 
     it('secondaryバリアントのスタイルが適用される', () => {

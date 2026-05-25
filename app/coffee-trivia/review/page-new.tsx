@@ -265,7 +265,7 @@ export default function ReviewPage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   onClick={handleNext}
-                  className="w-full mt-4 flex items-center justify-center gap-2 bg-spot hover:bg-spot-hover text-white py-3.5 px-5 rounded-xl font-semibold transition-colors"
+                  className="w-full mt-4 flex items-center justify-center gap-2 bg-spot hover:bg-spot-hover text-on-spot py-3.5 px-5 rounded-xl font-semibold transition-colors"
                 >
                   {currentIndex + 1 >= totalQuestions ? (
                     '結果を見る'

@@ -110,7 +110,7 @@ export default function BadgesPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-spot via-spot-hover to-spot rounded-2xl p-6 text-white text-center shadow-lg"
+          className="bg-gradient-to-r from-spot via-spot-hover to-spot rounded-2xl p-6 text-on-spot text-center shadow-lg"
         >
           <motion.div
             initial={{ scale: 0 }}

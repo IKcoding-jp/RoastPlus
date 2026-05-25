@@ -280,7 +280,7 @@ function QuizPageContent() {
                 <p className="text-ink-muted text-sm mb-4">+{sessionStats.totalXP} XP獲得</p>
                 <Link
                   href={returnUrl}
-                  className="inline-block bg-spot hover:bg-spot-hover text-white py-2.5 px-6 rounded-xl font-semibold transition-colors"
+                  className="inline-block bg-spot hover:bg-spot-hover text-on-spot py-2.5 px-6 rounded-xl font-semibold transition-colors"
                 >
                   問題一覧に戻る
                 </Link>
@@ -314,7 +314,7 @@ function QuizPageContent() {
                   // Singleモード: 直接一覧に戻るボタン
                   <Link
                     href={returnUrl}
-                    className="w-full mt-4 flex items-center justify-center gap-2 bg-spot hover:bg-spot-hover text-white py-3.5 px-5 rounded-xl font-semibold transition-colors"
+                    className="w-full mt-4 flex items-center justify-center gap-2 bg-spot hover:bg-spot-hover text-on-spot py-3.5 px-5 rounded-xl font-semibold transition-colors"
                   >
                     <ArrowLeftIcon />
                     一覧に戻る
@@ -328,7 +328,7 @@ function QuizPageContent() {
                         // 最後の問題
                         <Link
                           href={returnUrl}
-                          className="w-full flex items-center justify-center gap-2 bg-spot hover:bg-spot-hover text-white py-3.5 px-5 rounded-xl font-semibold transition-colors"
+                          className="w-full flex items-center justify-center gap-2 bg-spot hover:bg-spot-hover text-on-spot py-3.5 px-5 rounded-xl font-semibold transition-colors"
                         >
                           <ArrowLeftIcon />
                           問題一覧に戻る
@@ -336,7 +336,7 @@ function QuizPageContent() {
                       ) : (
                         // 自動遷移中の表示
                         <>
-                          <div className="w-full flex items-center justify-center gap-2 bg-spot/80 text-white py-3.5 px-5 rounded-xl font-semibold">
+                          <div className="w-full flex items-center justify-center gap-2 bg-spot/80 text-on-spot py-3.5 px-5 rounded-xl font-semibold">
                             <div className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
                             次の問題へ移動中...
                           </div>
@@ -355,7 +355,7 @@ function QuizPageContent() {
                         {currentIndex + 1 < totalQuestions && (
                           <motion.button
                             onClick={handleNext}
-                            className="w-full flex items-center justify-center gap-2 bg-spot hover:bg-spot-hover text-white py-3.5 px-5 rounded-xl font-semibold transition-colors"
+                            className="w-full flex items-center justify-center gap-2 bg-spot hover:bg-spot-hover text-on-spot py-3.5 px-5 rounded-xl font-semibold transition-colors"
                           >
                             次の問題へ
                             <ArrowRightIcon />
@@ -365,7 +365,7 @@ function QuizPageContent() {
                           href={returnUrl}
                           className={`w-full flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-medium transition-colors ${
                             currentIndex + 1 >= totalQuestions
-                              ? 'bg-spot hover:bg-spot-hover text-white font-semibold py-3.5'
+                              ? 'bg-spot hover:bg-spot-hover text-on-spot font-semibold py-3.5'
                               : 'bg-edge-subtle hover:bg-edge text-ink-sub border border-edge'
                           }`}
                         >
@@ -380,7 +380,7 @@ function QuizPageContent() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     onClick={handleNext}
-                    className="w-full mt-4 flex items-center justify-center gap-2 bg-spot hover:bg-spot-hover text-white py-3.5 px-5 rounded-xl font-semibold transition-colors"
+                    className="w-full mt-4 flex items-center justify-center gap-2 bg-spot hover:bg-spot-hover text-on-spot py-3.5 px-5 rounded-xl font-semibold transition-colors"
                   >
                     {currentIndex + 1 >= totalQuestions ? (
                       '結果を見る'

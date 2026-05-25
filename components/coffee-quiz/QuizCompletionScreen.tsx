@@ -25,7 +25,7 @@ export function QuizCompletionScreen({ correct, totalXP, returnUrl }: QuizComple
       <p className="text-ink-muted text-sm mb-4">+{totalXP} XP獲得</p>
       <Link
         href={returnUrl}
-        className="inline-block bg-spot hover:bg-spot-hover text-white py-2.5 px-6 rounded-xl font-semibold transition-colors"
+        className="inline-block bg-spot hover:bg-spot-hover text-on-spot py-2.5 px-6 rounded-xl font-semibold transition-colors"
       >
         問題一覧に戻る
       </Link>

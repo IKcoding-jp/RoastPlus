@@ -176,7 +176,7 @@ export default function TimerPatternH5() {
             <ArrowCounterClockwise size={22} weight="bold" />
           </button>
           {/* 再生ボタン: オレンジのまま（ブラウン背景で映える） */}
-          <button className="w-[60px] h-[60px] rounded-full bg-spot text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform">
+          <button className="w-[60px] h-[60px] rounded-full bg-spot text-on-spot flex items-center justify-center shadow-lg active:scale-95 transition-transform">
             <Play size={24} weight="fill" className="ml-0.5" />
           </button>
           <button className="p-3 rounded-full text-white/40 transition-colors hover:text-white/70 active:scale-95">

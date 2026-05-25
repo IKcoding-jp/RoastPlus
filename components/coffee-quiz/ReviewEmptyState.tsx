@@ -30,7 +30,7 @@ export function ReviewEmptyState() {
       </p>
       <Link
         href="/coffee-trivia"
-        className="inline-block bg-spot hover:bg-spot-hover text-white py-2.5 px-6 rounded-xl font-semibold transition-colors"
+        className="inline-block bg-spot hover:bg-spot-hover text-on-spot py-2.5 px-6 rounded-xl font-semibold transition-colors"
       >
         ダッシュボードへ戻る
       </Link>
