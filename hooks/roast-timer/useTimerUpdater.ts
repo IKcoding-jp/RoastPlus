@@ -16,7 +16,7 @@ type UpdateAppDataFn = (
 
 const UPDATE_INTERVAL = 250; // 250msごとに更新（CSS transitionと同期）
 
-export interface UseTimerUpdaterArgs {
+interface UseTimerUpdaterArgs {
   user: { uid: string } | null;
   updateData: UpdateAppDataFn;
   isLoading: boolean;

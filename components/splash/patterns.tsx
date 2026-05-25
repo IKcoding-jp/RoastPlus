@@ -2,7 +2,7 @@
 
 // ─── スプラッシュアニメーションパターン ───
 
-export interface PatternProps {
+interface PatternProps {
   phase: number;
   compact?: boolean; // プレビューカード用の小さいサイズ
 }
