@@ -10,7 +10,7 @@ export const CONTACT_FORM_LIMITS = {
 export const CONTACT_FORM_COOLDOWN_MS = 2 * 60 * 1000;
 export const CONTACT_FORM_COOLDOWN_STORAGE_KEY = 'roastplus-contact-last-success-at';
 
-export interface ContactFormValidationResult {
+interface ContactFormValidationResult {
   isValid: boolean;
   errors: Partial<Record<keyof ContactFormData, string>>;
 }

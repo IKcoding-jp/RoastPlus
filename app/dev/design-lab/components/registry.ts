@@ -1,4 +1,4 @@
-export interface LabSection {
+interface LabSection {
   id: string;
   title: string;
   description: string;

@@ -2,7 +2,7 @@ import { collection, doc, getDoc, getDocs, type DocumentData, type QuerySnapshot
 import { getDb, normalizeAppData } from '../common';
 import type { WorkProgress } from '@/types';
 
-export interface WorkProgressSplitState {
+interface WorkProgressSplitState {
   workProgresses: WorkProgress[];
   isMigrated: boolean;
 }

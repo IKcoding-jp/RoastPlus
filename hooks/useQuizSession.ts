@@ -10,7 +10,7 @@ import {
 } from '@/lib/coffee-quiz/questions';
 import { useQuizData } from './useQuizData';
 
-export type QuizMode = 'daily' | 'review' | 'category' | 'random' | 'single' | 'shuffle' | 'sequential';
+type QuizMode = 'daily' | 'review' | 'category' | 'random' | 'single' | 'shuffle' | 'sequential';
 
 interface UseQuizSessionOptions {
   mode?: QuizMode;
