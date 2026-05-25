@@ -48,14 +48,15 @@
     --edge-strong: #d1d5db;
     --edge-subtle: #f3f4f6;
     /* アクセント */
-    --spot: #b45309;
-    --spot-hover: #92400e;
+    --spot: #d97706;
+    --spot-hover: #d67a00;
     --spot-subtle: #f0f0f0;
     --spot-surface: #f7f7f7;
-    --on-spot: #ffffff;
+    --on-spot: #211714;
     /* ボタン */
-    --btn-primary: #b45309;
-    --btn-primary-hover: #92400e;
+    --btn-primary: #d97706;
+    --btn-primary-hover: #d67a00;
+    --btn-primary-text: #211714;
     /* ステータスカラー */
     --danger: #dc2626;
     --danger-subtle: #fee2e2;
@@ -111,10 +112,11 @@
     --spot-hover: #e8c65f;
     --spot-subtle: rgba(212, 175, 55, 0.15);
     --spot-surface: rgba(212, 175, 55, 0.05);
-    --on-spot: #ffffff;
+    --on-spot: #051a0e;
     /* ボタン */
     --btn-primary: #6d1a1a;
     --btn-primary-hover: #8b2323;
+    --btn-primary-text: #ffffff;
     /* ステータスカラー */
     --danger: #991b1b;
     --danger-subtle: rgba(127, 29, 29, 0.5);
@@ -165,10 +167,11 @@
     --spot-hover: #dab86c;
     --spot-subtle: rgba(200, 160, 80, 0.15);
     --spot-surface: rgba(200, 160, 80, 0.05);
-    --on-spot: #ffffff;
+    --on-spot: #0d0b09;
     /* ボタン */
     --btn-primary: #c8a050;
     --btn-primary-hover: #dab86c;
+    --btn-primary-text: #0d0b09;
     /* ステータスカラー */
     --danger: #ef4444;
     --danger-subtle: rgba(239, 68, 68, 0.15);
@@ -219,10 +222,11 @@
     --spot-hover: #a87b15;
     --spot-subtle: rgba(214, 165, 53, 0.15);
     --spot-surface: rgba(214, 165, 53, 0.06);
-    --on-spot: #ffffff;
+    --on-spot: #3d3229;
     /* ボタン */
     --btn-primary: #c69320;
     --btn-primary-hover: #a87b15;
+    --btn-primary-text: #3d3229;
     /* ステータスカラー */
     --danger: #dc2626;
     --danger-subtle: #fee2e2;
@@ -273,10 +277,11 @@
     --spot-hover: #95c774;
     --spot-subtle: rgba(125, 179, 88, 0.15);
     --spot-surface: rgba(125, 179, 88, 0.05);
-    --on-spot: #ffffff;
+    --on-spot: #0f1f15;
     /* ボタン */
     --btn-primary: #7db358;
     --btn-primary-hover: #95c774;
+    --btn-primary-text: #0f1f15;
     /* ステータスカラー */
     --danger: #ef4444;
     --danger-subtle: rgba(239, 68, 68, 0.15);
@@ -327,10 +332,11 @@
     --spot-hover: #e5a54d;
     --spot-subtle: rgba(212, 146, 58, 0.15);
     --spot-surface: rgba(212, 146, 58, 0.05);
-    --on-spot: #ffffff;
+    --on-spot: #1a120d;
     /* ボタン */
     --btn-primary: #d4923a;
     --btn-primary-hover: #e5a54d;
+    --btn-primary-text: #1a120d;
     /* ステータスカラー */
     --danger: #ef4444;
     --danger-subtle: rgba(239, 68, 68, 0.15);
@@ -378,13 +384,14 @@
     --edge-subtle: rgba(255, 255, 255, 0.06);
     /* アクセント（既存オレンジ維持） */
     --spot: #d97706;
-    --spot-hover: #b45309;
+    --spot-hover: #d67a00;
     --spot-subtle: rgba(217, 119, 6, 0.15);
     --spot-surface: rgba(217, 119, 6, 0.05);
-    --on-spot: #ffffff;
+    --on-spot: #0f0f0f;
     /* ボタン */
     --btn-primary: #d97706;
-    --btn-primary-hover: #b45309;
+    --btn-primary-hover: #d67a00;
+    --btn-primary-text: #0f0f0f;
     /* ステータスカラー */
     --danger: #ef4444;
     --danger-subtle: rgba(239, 68, 68, 0.15);
@@ -445,6 +452,7 @@
   /* ボタン */
   --color-btn-primary: var(--btn-primary);
   --color-btn-primary-hover: var(--btn-primary-hover);
+  --color-btn-primary-text: var(--btn-primary-text);
   /* ステータスカラー */
   --color-danger: var(--danger);
   --color-danger-subtle: var(--danger-subtle);

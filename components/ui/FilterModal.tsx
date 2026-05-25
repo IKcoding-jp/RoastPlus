@@ -95,7 +95,7 @@ export function FilterOptionButton({ selected = false, className = '', children,
       variant={selected ? 'ghost' : 'surface'}
       size="sm"
       className={`flex-1 !rounded-lg !px-3 !py-2 gap-1.5 justify-center ${
-        selected ? '!bg-spot !text-white !border-spot' : ''
+        selected ? '!bg-spot !text-on-spot !border-spot' : ''
       } ${className}`}
       {...props}
     >

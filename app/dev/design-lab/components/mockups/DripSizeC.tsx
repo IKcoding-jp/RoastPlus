@@ -45,7 +45,7 @@ export default function DripSizeC() {
     <div className="max-w-sm mx-auto">
       {/* Option label */}
       <div className="mb-2 flex items-center gap-2">
-        <span className="px-2 py-0.5 rounded-full bg-spot text-white text-xs font-bold">Option C</span>
+        <span className="px-2 py-0.5 rounded-full bg-spot text-on-spot text-xs font-bold">Option C</span>
         <span className="text-xs text-ink-muted">タイマーを超大型に</span>
       </div>
       <div className="h-[667px] rounded-3xl border border-edge overflow-hidden flex flex-col bg-ground">
@@ -164,7 +164,7 @@ export default function DripSizeC() {
           <button className="p-3 rounded-full text-ink-muted transition-colors hover:text-ink-sub hover:bg-ground active:scale-95">
             <ArrowCounterClockwise size={22} weight="bold" />
           </button>
-          <button className="w-[60px] h-[60px] rounded-full bg-spot text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform">
+          <button className="w-[60px] h-[60px] rounded-full bg-spot text-on-spot flex items-center justify-center shadow-lg active:scale-95 transition-transform">
             <Play size={24} weight="fill" className="ml-0.5" />
           </button>
           <button className="p-3 rounded-full text-ink-muted transition-colors hover:text-ink-sub hover:bg-ground active:scale-95">

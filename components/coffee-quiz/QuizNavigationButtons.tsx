@@ -53,7 +53,7 @@ export function QuizNavigationButtons({
     return (
       <Link
         href={returnUrl}
-        className="w-full mt-4 flex items-center justify-center gap-2 bg-spot hover:bg-spot-hover text-white py-3.5 px-5 rounded-xl font-semibold transition-colors"
+        className="w-full mt-4 flex items-center justify-center gap-2 bg-spot hover:bg-spot-hover text-on-spot py-3.5 px-5 rounded-xl font-semibold transition-colors"
       >
         <ArrowLeftIcon />
         一覧に戻る
@@ -71,7 +71,7 @@ export function QuizNavigationButtons({
             // 最後の問題
             <Link
               href={returnUrl}
-              className="w-full flex items-center justify-center gap-2 bg-spot hover:bg-spot-hover text-white py-3.5 px-5 rounded-xl font-semibold transition-colors"
+              className="w-full flex items-center justify-center gap-2 bg-spot hover:bg-spot-hover text-on-spot py-3.5 px-5 rounded-xl font-semibold transition-colors"
             >
               <ArrowLeftIcon />
               問題一覧に戻る
@@ -79,7 +79,7 @@ export function QuizNavigationButtons({
           ) : (
             // 自動遷移中の表示
             <>
-              <div className="w-full flex items-center justify-center gap-2 bg-spot/80 text-white py-3.5 px-5 rounded-xl font-semibold">
+              <div className="w-full flex items-center justify-center gap-2 bg-spot/80 text-on-spot py-3.5 px-5 rounded-xl font-semibold">
                 <div className="w-4 h-4 rounded-full border-2 border-white/40 border-t-white animate-spin" />
                 次の問題へ移動中...
               </div>
@@ -98,7 +98,7 @@ export function QuizNavigationButtons({
             {!isLastQuestion && (
               <motion.button
                 onClick={onNext}
-                className="w-full flex items-center justify-center gap-2 bg-spot hover:bg-spot-hover text-white py-3.5 px-5 rounded-xl font-semibold transition-colors"
+                className="w-full flex items-center justify-center gap-2 bg-spot hover:bg-spot-hover text-on-spot py-3.5 px-5 rounded-xl font-semibold transition-colors"
               >
                 次の問題へ
                 <ArrowRightIcon />
@@ -108,7 +108,7 @@ export function QuizNavigationButtons({
               href={returnUrl}
               className={`w-full flex items-center justify-center gap-2 py-3 px-5 rounded-xl font-medium transition-colors ${
                 isLastQuestion
-                  ? 'bg-spot hover:bg-spot-hover text-white font-semibold py-3.5'
+                  ? 'bg-spot hover:bg-spot-hover text-on-spot font-semibold py-3.5'
                   : 'bg-edge-subtle hover:bg-edge text-ink-sub border border-edge'
               }`}
             >
@@ -127,7 +127,7 @@ export function QuizNavigationButtons({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       onClick={onNext}
-      className="w-full mt-4 flex items-center justify-center gap-2 bg-spot hover:bg-spot-hover text-white py-3.5 px-5 rounded-xl font-semibold transition-colors"
+      className="w-full mt-4 flex items-center justify-center gap-2 bg-spot hover:bg-spot-hover text-on-spot py-3.5 px-5 rounded-xl font-semibold transition-colors"
     >
       {isLastQuestion ? (
         '結果を見る'

@@ -127,7 +127,7 @@ export default function TimerPatternD() {
           <button className="flex items-center justify-center w-11 h-11 rounded-full bg-ground text-ink-muted">
             <ArrowCounterClockwise size={20} />
           </button>
-          <button className="flex items-center justify-center w-14 h-14 rounded-full bg-spot text-white shadow-md">
+          <button className="flex items-center justify-center w-14 h-14 rounded-full bg-spot text-on-spot shadow-md">
             <Pause size={24} weight="fill" />
           </button>
           <button className="flex items-center justify-center w-11 h-11 rounded-full bg-ground text-ink-muted">

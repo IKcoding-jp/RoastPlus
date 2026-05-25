@@ -175,7 +175,7 @@ export default function TimerPatternE() {
           <button className="p-3 rounded-full text-ink/50 hover:text-ink hover:bg-ground transition-colors">
             <ArrowCounterClockwise size={22} weight="bold" />
           </button>
-          <button className="p-4 rounded-full bg-spot text-white shadow-md hover:opacity-90 transition-opacity">
+          <button className="p-4 rounded-full bg-spot text-on-spot shadow-md hover:opacity-90 transition-opacity">
             <Pause size={28} weight="fill" />
           </button>
           <button className="p-3 rounded-full text-ink/50 hover:text-ink hover:bg-ground transition-colors">

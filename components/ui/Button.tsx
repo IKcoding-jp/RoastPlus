@@ -99,7 +99,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     // バリアントスタイル（CSS変数ベース）
     const variantStyles = {
-      primary: 'bg-btn-primary text-white hover:bg-btn-primary-hover',
+      primary: 'bg-btn-primary text-btn-primary-text hover:bg-btn-primary-hover',
       secondary: 'bg-gray-600 text-white hover:bg-gray-700',
       danger: 'bg-danger text-white hover:bg-danger/90',
       success: 'bg-success text-white hover:bg-success/90',

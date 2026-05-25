@@ -110,7 +110,7 @@ export function LevelUpModal({ show, newLevel, onClose }: LevelUpModalProps) {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.5 }}
             onClick={onClose}
-            className="w-full bg-spot hover:bg-spot-hover text-white py-3 px-6 rounded-xl font-semibold transition-colors"
+            className="w-full bg-spot hover:bg-spot-hover text-on-spot py-3 px-6 rounded-xl font-semibold transition-colors"
           >
             続ける
           </motion.button>

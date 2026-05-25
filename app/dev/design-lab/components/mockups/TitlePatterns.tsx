@@ -178,7 +178,7 @@ function TitlePreview({ pattern }: { pattern: TitlePattern }) {
     >
       {/* Badge */}
       <div className="absolute top-3 left-3 z-10 flex items-center gap-2">
-        <span className="bg-spot text-white w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold">
+        <span className="bg-spot text-on-spot w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold">
           {pattern.id}
         </span>
         {pattern.adopted && (
