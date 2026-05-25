@@ -34,7 +34,7 @@ describe('IconButton', () => {
       render(<IconButton variant="primary">X</IconButton>);
       const button = screen.getByRole('button');
       expect(button.className).toContain('bg-btn-primary');
-      expect(button.className).toContain('text-btn-primary-text');
+      expect(button.className).toContain('text-white');
     });
 
     it('dangerバリアントのスタイルが適用される', () => {
