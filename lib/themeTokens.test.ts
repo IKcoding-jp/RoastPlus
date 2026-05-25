@@ -8,7 +8,7 @@ function readThemeCss(): string {
 }
 
 function getRootThemeToken(css: string, tokenName: string): string | undefined {
-  const rootThemeBlock = css.match(/@layer theme\s*{\s*:root\s*{(?<body>[\s\S]*?)^\s*}/m)?.groups?.body;
+  const rootThemeBlock = css.match(/@layer theme\s*{\s*:root\s*{([\s\S]*?)^\s*}/m)?.[1];
   return rootThemeBlock?.match(new RegExp(`\\s${tokenName}:\\s*([^;]+);`))?.[1]?.trim();
 }
 
