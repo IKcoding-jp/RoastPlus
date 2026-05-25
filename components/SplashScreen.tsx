@@ -5,7 +5,7 @@ import { splashPatterns } from '@/components/splash/patterns';
 
 const SPLASH_DISPLAY_TIME = 2800;
 const SPLASH_SHOWN_KEY = 'roastplus_splash_shown';
-export const REPLAY_SPLASH_EVENT = 'replay-splash';
+const REPLAY_SPLASH_EVENT = 'replay-splash';
 
 function pickRandomIndex() {
   return Math.floor(Math.random() * splashPatterns.length);

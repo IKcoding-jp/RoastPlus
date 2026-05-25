@@ -175,7 +175,7 @@ export function playCompleteSound(volume: number = 0.3): void {
  * バイブレーションを実行
  * @param pattern ミリ秒のパターン（振動, 休止, 振動, ...）
  */
-export function vibrate(pattern: number | number[]): void {
+function vibrate(pattern: number | number[]): void {
   try {
     if ('vibrate' in navigator) {
       navigator.vibrate(pattern);
