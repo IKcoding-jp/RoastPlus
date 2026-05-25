@@ -73,9 +73,11 @@ RoastPlus は、焙煎・試験・抽出業務の現場で、**実際に使わ�
 
 ### 必要環境
 
-- Node.js 18 以上
-- npm
-- Firebase プロジェクト（Authentication / Firestore）
+- Node.js 24.x 推奨（フロントエンドCIと同じバージョン）
+- npm（`package-lock.json` に従って `npm install` / `npm ci` を実行）
+- Firebase プロジェクト（Authentication / Firestore / Storage / Cloud Functions / Hosting）
+
+補足: Cloud Functions の実行ランタイムは Node.js 20 です。Functions 側の詳細は `functions/package.json` と `functions/README.md` を参照してください。
 
 ### セットアップ
 
@@ -94,11 +96,13 @@ iPad 実機確認がある場合は同一ネットワークからアクセスし
 ### よく使うコマンド
 
 ```bash
-npm run dev      # 開発サーバ起動
-npm run build    # 本番ビルド
-npm run lint     # Lint
-npm run test:run # テスト実行
-npm run test:e2e # E2E
+npm run dev        # 開発サーバ起動（音声ファイル一覧を生成してからNext.js起動）
+npm run typecheck  # TypeScript型チェック
+npm run lint       # ESLint
+npm run test:run   # Vitestを1回実行
+npm run test:rules # Firestore Rulesテスト
+npm run build      # 本番ビルド（productionではstatic exportでout/を生成）
+npm run test:e2e   # Playwright E2E
 ```
 
 ---
@@ -112,9 +116,18 @@ npm run test:e2e # E2E
 | 言語 | TypeScript 5 |
 | 認証・DB | Firebase Authentication, Firestore |
 | ストレージ | Firebase Storage |
-| AI | OpenAI GPT-4o API（Cloud Functions経由） |
+| AI | OpenAI API（Cloud Functions経由。クライアントから直接呼び出さない） |
+| 問い合わせ | EmailJS（お問い合わせフォーム） |
 | テスト | Vitest, Playwright |
 | PWA | Service Worker, Web App Manifest |
+
+---
+
+## ビルドと配信
+
+本番ビルドは Next.js の static export です。`next.config.ts` では production 時のみ `output: 'export'` が有効になり、Firebase Hosting は `firebase.json` の設定どおり `out/` を配信します。
+
+`public/` 配下は本番でそのまま配信される公開素材置き場です。秘密情報、テスト用ファイル、デバッグ用ファイルは置かないでください。
 
 ---
 
