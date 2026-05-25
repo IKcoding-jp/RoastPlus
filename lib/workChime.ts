@@ -172,7 +172,7 @@ export function getWorkChimeMessage(kind: WorkChimeKind): string {
   return kind === 'break' ? '休憩時間です' : '作業開始です';
 }
 
-export function getWorkChimePeriodLabel(kind: WorkChimePeriodKind): string {
+function getWorkChimePeriodLabel(kind: WorkChimePeriodKind): string {
   if (kind === 'cleanup') return '掃除中';
   return kind === 'break' ? '休憩中' : '作業中';
 }

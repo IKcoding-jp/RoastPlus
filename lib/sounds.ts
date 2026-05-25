@@ -175,7 +175,7 @@ export async function playNotificationSound(soundFile: string, volume: number): 
 /**
  * 通知音を停止
  */
-export function stopNotificationSound(): void {
+function stopNotificationSound(): void {
   if (notificationAudio) {
     // エラーイベントリスナーを削除
     if (notificationErrorHandler) {
