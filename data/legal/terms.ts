@@ -1,6 +1,6 @@
 // 利用規約コンテンツ
 
-export interface TermsSection {
+interface TermsSection {
   title: string;
   content: string[];
 }
@@ -101,4 +101,3 @@ export const TERMS_SECTIONS: TermsSection[] = [
 ];
 
 export const TERMS_LAST_UPDATED = '2025年1月24日';
-export const TERMS_EFFECTIVE_DATE = '2025年1月24日';

@@ -36,7 +36,7 @@ import {
 /**
  * コンポーネントレジストリのアイテム型定義
  */
-export interface ComponentRegistryItem {
+interface ComponentRegistryItem {
   /** コンポーネント名 */
   name: string;
   /** コンポーネントの説明 */
@@ -563,7 +563,7 @@ function FloatingNavDemo() {
  * 2. このレジストリに新しいエントリを追加
  * 3. UIテストページは自動的に新しいコンポーネントを表示
  */
-export const componentRegistry: ComponentRegistryItem[] = [
+const componentRegistry: ComponentRegistryItem[] = [
   // ボタン系
   {
     name: 'Button',

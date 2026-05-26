@@ -3,7 +3,7 @@ import { db } from '@/lib/firebase';
 import { Assignment, TableSettings, ShuffleSettings, FirestoreTimestamp } from '@/types';
 
 // ===== ヘルパー関数: ユーザー配下のコレクション参照 =====
-export function getUserAssignmentRoot(userId: string) {
+function getUserAssignmentRoot(userId: string) {
   return doc(db, 'users', userId);
 }
 
@@ -43,7 +43,7 @@ export function getPairExclusionsCollection(userId: string) {
   return collection(getUserAssignmentRoot(userId), 'pairExclusions');
 }
 
-export const assignmentKey = (teamId: string, taskLabelId: string) => `${teamId}__${taskLabelId}`;
+const assignmentKey = (teamId: string, taskLabelId: string) => `${teamId}__${taskLabelId}`;
 
 export const toMillisSafe = (value?: FirestoreTimestamp | null): number => {
   if (!value) return 0;

@@ -1,5 +1,5 @@
 // コーヒークイズ機能の型定義
-import { Card as FSRSCard, RecordLog } from 'ts-fsrs';
+import { Card as FSRSCard } from 'ts-fsrs';
 
 // ========================================
 // クイズ問題の型定義
@@ -35,11 +35,6 @@ export interface QuizCard extends FSRSCard {
 }
 
 export type QuizRating = 'again' | 'hard' | 'good' | 'easy';
-
-export interface QuizReviewResult {
-  card: QuizCard;
-  recordLog: RecordLog;
-}
 
 // ========================================
 // ゲーミフィケーションの型定義
@@ -94,7 +89,7 @@ export interface EarnedBadge {
 }
 
 // バッジ定義
-export interface BadgeDefinition {
+interface BadgeDefinition {
   type: BadgeType;
   name: string;
   description: string;

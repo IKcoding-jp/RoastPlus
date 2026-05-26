@@ -3,7 +3,6 @@ import {
   getDocs,
   onSnapshot,
   query,
-  orderBy,
   setDoc,
   deleteDoc,
   serverTimestamp,
@@ -136,21 +135,6 @@ export const deleteManager = async (userId: string): Promise<void> => {
 };
 
 // ===== ペア除外設定管理 =====
-
-/**
- * ペア除外設定を取得
- */
-export const fetchPairExclusions = async (userId: string): Promise<PairExclusion[]> => {
-  try {
-    const pairExclusionsCol = getPairExclusionsCollection(userId);
-    const q = query(pairExclusionsCol, orderBy('createdAt', 'desc'));
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map((d) => ({ id: d.id, ...d.data() }) as PairExclusion);
-  } catch (error) {
-    console.error('Failed to fetch pair exclusions:', error);
-    throw error;
-  }
-};
 
 /**
  * ペア除外設定をリアルタイム購読

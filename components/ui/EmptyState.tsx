@@ -29,7 +29,7 @@ import { forwardRef } from 'react';
  * />
  */
 
-export interface EmptyStateProps extends React.HTMLAttributes<HTMLDivElement> {
+interface EmptyStateProps extends React.HTMLAttributes<HTMLDivElement> {
   /** アイコン要素 */
   icon?: React.ReactNode;
   /** タイトル */

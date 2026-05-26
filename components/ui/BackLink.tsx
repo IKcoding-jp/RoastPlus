@@ -17,7 +17,7 @@ import { CaretLeft } from 'phosphor-react';
  * <BackLink href="/" variant="icon-only" />
  */
 
-export interface BackLinkProps {
+interface BackLinkProps {
   /** リンク先URL */
   href: string;
   /** リンクテキスト（icon-onlyの場合は不要） */

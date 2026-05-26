@@ -146,4 +146,4 @@ export function SetupPanel({ onStart, isLoading, onWeightSelect }: SetupPanelPro
   );
 }
 
-export { type SetupPanelProps };
+;

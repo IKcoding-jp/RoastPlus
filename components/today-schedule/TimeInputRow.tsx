@@ -3,7 +3,7 @@
 import { HiPlus } from 'react-icons/hi';
 import { Button, NumberInput } from '@/components/ui';
 
-export interface TimeInputRowProps {
+interface TimeInputRowProps {
   newHour: string;
   newMinute: string;
   addError: string;

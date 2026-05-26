@@ -1,10 +1,7 @@
 // lib/firestore barrel export
-// 既存の import { xxx } from '@/lib/firestore' を維持するため、
-// 全モジュールを再エクスポートする
-
-export { getDb, getUserDocRef, removeUndefinedFields, normalizeAppData, defaultData } from './common';
+// 既存の import { xxx } from '@/lib/firestore' を維持する
 export { getUserData, saveUserData, subscribeUserData, SAVE_USER_DATA_DEBOUNCE_MS } from './userData';
-export { getDefectBeanMasterData, saveDefectBean, deleteDefectBean, updateDefectBeanSetting } from './defectBeans';
+export { getDefectBeanMasterData } from './defectBeans';
 export {
   extractTargetAmount,
   extractUnitFromWeight,
