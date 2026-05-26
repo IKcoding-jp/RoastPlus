@@ -50,6 +50,7 @@ describe('HomePage', () => {
     render(<HomePage />);
 
     expect(screen.queryByRole('button', { name: '開発秘話' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'シール計算' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'その他' })).toBeInTheDocument();
   });
 });

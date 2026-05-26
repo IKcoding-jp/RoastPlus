@@ -30,6 +30,11 @@ export const HOME_FEATURES = [
     description: '進捗を可視化',
   },
   {
+    key: 'seal-calculator',
+    title: 'シール計算',
+    description: '賞味期限シールを計算',
+  },
+  {
     key: 'drip-guide',
     title: 'ドリップガイド',
     description: '淹れ方の手順',

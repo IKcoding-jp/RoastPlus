@@ -6,7 +6,7 @@ import type { IconType } from 'react-icons';
 import { FaCoffee, FaUsers } from 'react-icons/fa';
 import { IoSettings, IoSparkles } from 'react-icons/io5';
 import { RiLightbulbFlashFill } from 'react-icons/ri';
-import { MdCoffeeMaker, MdTimer, MdTimeline } from 'react-icons/md';
+import { MdCoffeeMaker, MdLocalOffer, MdTimer, MdTimeline } from 'react-icons/md';
 import { RiBookFill, RiCalendarScheduleFill } from 'react-icons/ri';
 import { Loading } from '@/components/Loading';
 import { ActionCard } from '@/components/home/ActionCard';
@@ -44,6 +44,7 @@ const CHRISTMAS_ICONS: Record<string, IconType> = {
   'roast-timer': PiBellFill,
   'defect-beans': GiGingerbreadMan,
   progress: FaSnowflake,
+  'seal-calculator': FaGift,
   'drip-guide': GiCandyCanes,
   'coffee-trivia': FaStar,
   'dev-stories': FaSnowflake,
@@ -94,6 +95,13 @@ const ACTIONS: Action[] = [
     description: '進捗を可視化',
     href: '/progress',
     icon: MdTimeline,
+  },
+  {
+    key: 'seal-calculator',
+    title: 'シール計算',
+    description: '賞味期限シールを計算',
+    href: '/seal-calculator',
+    icon: MdLocalOffer,
   },
   {
     key: 'drip-guide',
