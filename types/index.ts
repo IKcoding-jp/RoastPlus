@@ -11,3 +11,4 @@ export * from './notification';
 export * from './defect-beans';
 export * from './work-progress';
 export * from './changelog';
+export * from './production-pack-record';

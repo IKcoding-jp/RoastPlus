@@ -30,6 +30,11 @@ export const HOME_FEATURES = [
     description: '進捗を可視化',
   },
   {
+    key: 'production-packs',
+    title: '完成パック数',
+    description: '生産数を記録',
+  },
+  {
     key: 'drip-guide',
     title: 'ドリップガイド',
     description: '淹れ方の手順',
