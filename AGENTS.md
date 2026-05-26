@@ -61,7 +61,8 @@ RoastPlus は、ドリップパックコーヒー製造業務を支援する現�
 ## Issue単位の作業ルール
 
 - 原則として `1 Issue = 1 PR = 1 Codexスレッド` で進める。
-- Issue作業では、Issue本文と `docs/working/*_{Issue番号}_*` を優先して確認する。
+- Issue作業では、Issue本文に加えて `docs/steering/*` を優先して確認する。
+- 大きめの機能追加、業務フロー変更、データ構造変更、認証・認可・Firestore Rules・Storage Rules・Cloud Functions に関わる変更では、実装前に `docs/superpowers/specs/` に仕様、`docs/superpowers/plans/` に実装計画を残す。
 - Issue外の改善、隣接コードの整理、無関係なリファクタリング、ついでの整形やコメント変更はしない。
 - 不明点が作業結果に影響する場合は、推測で実装せず、調査して選択肢とおすすめを示す。
 - Issueの目的と違う問題を見つけた場合は、勝手に直さず「別Issue候補」として報告する。
@@ -103,7 +104,8 @@ RoastPlus は、ドリップパックコーヒー製造業務を支援する現�
 - `types/`: TypeScript型定義
 - `functions/`: Firebase Cloud Functions
 - `docs/steering/`: 永続的な設計・仕様ドキュメント
-- `docs/working/`: Issue単位の作業仕様書
+- `docs/superpowers/specs/`: 実装前に合意した仕様・設計
+- `docs/superpowers/plans/`: 仕様に基づく実装計画
 - `e2e/`: Playwright E2Eテスト
 - `scripts/`: 自動化スクリプト
 
@@ -112,7 +114,7 @@ RoastPlus は、ドリップパックコーヒー製造業務を支援する現�
 作業内容に応じて、必要なものだけ読む。
 
 - `README.md`: プロジェクト概要
-- `CLAUDE.md`: 既存のClaude Code向け運用ルール。Codexでも参考にする
+- `AGENTS.md`: Codex作業ルール（本ファイル）
 - `DESIGN.md`: UIデザイン方針
 - `docs/steering/PRODUCT.md`: プロダクトの目的とスコープ
 - `docs/steering/FEATURES.md`: 機能仕様、UI実装ルール、禁止事項
