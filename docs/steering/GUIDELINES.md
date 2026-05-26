@@ -1,6 +1,6 @@
 # Implementation Guidelines
 
-**最終更新**: 2026-05-26
+**最終更新**: 2026-05-27
 
 ---
 
@@ -21,7 +21,7 @@
 ### 標準フロー（探索→計画→最小変更→検証型）
 
 ```
-1. Issue本文とWorking Documents参照
+1. Issue本文とSteering Documents参照
    ↓
 2. 関連ファイル・設定・既存テストを確認
    ↓
@@ -34,9 +34,10 @@
 6. 必要に応じてPR作成、変更内容と残リスクを報告
 ```
 
-#### 1. Working Documents参照
-- `docs/working/*_{Issue番号}_*/` がある場合は、requirement, design, tasklist, testing を必要な範囲で参照
-- Issue の目的・背景を理解
+#### 1. 仕様・既存方針参照
+- Issue本文・コメントで目的と背景を確認
+- 仕様判断は `docs/steering/` を優先する
+- 大きめの機能追加、業務フロー変更、データ構造変更、認証・認可・Rules・Functions に関わる変更では、実装前に `docs/superpowers/specs/` に仕様、`docs/superpowers/plans/` に実装計画を残す
 
 #### 2. 関連ファイル確認
 - 実装前に、対象ファイル、設定、既存テスト、README/steering docs を確認
@@ -62,7 +63,7 @@ npm run build
 #### 6. PR作成
 - git-workflow スキルでコミット
 - PR作成
-- Steering Documents必須レビュー・更新（fix-issue Phase 10）
+- 長期方針や共通仕様が変わった場合は Steering Documents を更新
 
 ---
 
@@ -71,7 +72,7 @@ npm run build
 **コード変更を含む実装では、TDDが基本。** 詳細は `superpowers:test-driven-development` スキルを参照。
 
 ```
-1. テスト設計（testing.md or 対象コード分析）
+1. テスト設計（仕様・受け入れ条件 or 対象コード分析）
    ↓
 2. 🔴 Red: 失敗テスト作成 → コミット
    ↓
@@ -93,18 +94,21 @@ npm run build
 #### SDD × TDD 統合フロー
 
 ```
-/issue-creator                    /fix-issue
-┌──────────────┐            ┌───────────────────────┐
-│ Issue作成     │            │ Phase 1: Working読込   │
-│ Working生成   │───────────→│ Phase 4: 計画承認      │
-│  └ testing.md │   ファイル  │ Phase 5: TDD実装      │
-│    (テスト設計)│   経由で連携│  └ TDDスキルに従う     │
-└──────────────┘            │ Phase 7: 検証          │
-                            └───────────────────────┘
+Issue / 現場課題
+      ↓
+docs/steering/ で既存方針・機能仕様・技術制約を確認
+      ↓
+docs/superpowers/specs/ に仕様・受け入れ条件を作成
+      ↓
+docs/superpowers/plans/ に実装計画を作成
+      ↓
+TDDで実装（Red → Green → Refactor）
+      ↓
+検証 → PR
 ```
 
-- SDDの `testing.md` がTDDのテスト設計インプットになる
-- `/clear` 後も `testing.md` にテスト設計が残り、コンテキスト保持
+- `docs/superpowers/specs/` の受け入れ条件がTDDのテスト設計インプットになる
+- `/clear` 後も仕様と計画がGit上に残り、次のCodexが同じ前提で再開できる
 
 ---
 
@@ -658,39 +662,28 @@ gh pr create --base main --title "[Issue #123] タイトル" --body-file .tmp-pr
 | UBIQUITOUS_LANGUAGE.md | 新規用語追加時 |
 
 **更新方法**:
-1. PR作成前、AIが全6ドキュメントを必須レビュー（fix-issue Phase 10）
+1. PR作成前、変更内容が Steering Documents の更新対象か確認
 2. ユーザーが確認・承認
 3. Gitコミット
 
 ---
 
-### Working Documents（作業用ドキュメント）
+### Spec / Plan Documents（実装前仕様・計画）
 
-**場所**: `docs/working/{YYYYMMDD}_{Issue番号}_{タイトル}/`
+**場所**:
 
-| ファイル | 役割 |
-|---------|------|
-| requirement.md | 要件定義 |
-| design.md | 設計書 |
-| tasklist.md | タスクリスト |
-| testing.md | テスト計画 |
+- `docs/superpowers/specs/`
+- `docs/superpowers/plans/`
 
-**生成**: `/create-spec` スキルで自動生成（AIが80%ドラフト、ユーザーが修正）
-**更新**: 実装中に逐次更新
-**保管**: PR完了後もGit保管（削除しない）
+| 場所 | 役割 |
+|-----|------|
+| `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` | 実装前に合意した仕様、背景、受け入れ条件、やらないこと |
+| `docs/superpowers/plans/YYYY-MM-DD-<topic>.md` | 仕様に基づく実装手順、検証方法、チェックポイント |
 
----
-
-### EnterPlanModeとの使い分け
-
-| 項目 | Working Documents | EnterPlanMode |
-|-----|-------------------|---------------|
-| **永続性** | Git保管（永続的） | 一時的 |
-| **スコープ** | Issue単位 | 複雑な実装の詳細計画 |
-| **生成** | /create-spec で自動 | 手動で実行 |
-| **用途** | 設計メモ、コンテキスト保持 | 実装前の詳細検討 |
-
-**併用推奨**: Working生成後、複雑な実装は EnterPlanMode で詳細計画
+**運用**:
+- 仕様・データ・安全性・本番環境・費用に影響する未決事項がある場合は、実装に進まない
+- 仕様が固まった後に計画を作り、計画に沿って実装する
+- 長期方針に昇格した内容だけ `docs/steering/` に反映する
 
 ---
 
