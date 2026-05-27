@@ -1,6 +1,6 @@
 # Technical Specification
 
-**最終更新**: 2026-05-26
+**最終更新**: 2026-05-28
 
 ---
 
@@ -336,6 +336,109 @@ npm run test:coverage
 |------------|---------|------|
 | `ci.yml` | main向けPR | secrets-scan、typecheck、lint、format、unit tests、rules tests、E2E、build |
 | `firebase-hosting-merge.yml` | main向けPRのmerge / 手動実行 | 変更ファイルからHosting、Functions、Firestore Rulesのdeploy対象を判定。Firestore Rulesはテスト後にdeploy |
+
+---
+
+## 運用監視・バックアップ・復元
+
+RoastPlusは小規模運用のため、Sentry等の外部エラー監視サービスは導入していない。障害時はFirebase / Google Cloudの標準ログ、GitHub Actions、Firebase Consoleを一次情報として確認する。
+
+### 環境と扱う情報
+
+| 区分 | 正とする場所 | 扱う情報 |
+|------|--------------|----------|
+| 本番Firebaseプロジェクト | `.firebaserc` の `default`（現在は `roastplus-72fa6`） | Authentication、Firestore、Storage、Cloud Functions、Hosting |
+| ローカル開発 | `.env.local` と Firebase Emulator | `NEXT_PUBLIC_*` は公開情報。秘密情報は置かない |
+| GitHub Actions | `.github/workflows/ci.yml`, `.github/workflows/firebase-hosting-merge.yml` | CI結果、merge後のHosting / Rules / Functions deploy判定 |
+| Cloud Functions Secret | Firebase Secret Manager | `OPENAI_API_KEY` 等。値をログ・PR・Issueに書かない |
+
+開発環境と本番環境で確認する情報を混ぜない。Firebase Console / Google Cloud Console / CLIを使う前に、対象プロジェクトを確認する。
+
+```powershell
+firebase use
+firebase projects:list
+```
+
+### 障害時に最初に見る場所
+
+| 症状 | 最初に見る場所 | 確認内容 |
+|------|----------------|----------|
+| アプリが開かない / 404 / 古い画面が出る | Firebase Hosting Console、GitHub Actions | 最新PRのmerge後deploy、Hosting release履歴、`out/` 配信設定 |
+| ログインできない | Firebase Authentication Console | 対象ユーザーの有効状態、プロバイダ設定、最近の設定変更 |
+| データが表示されない / 保存できない | Firestore Console、Firestore Rulesテスト、ブラウザConsole | 対象ユーザーの `users/{uid}` データ、権限エラー、Rules変更履歴 |
+| 画像が表示されない / アップロードできない | Firebase Storage Console、Storage Rules | バケット、パス、Rules、ファイル有無 |
+| OCR / AI分析が失敗する | Cloud Functions Logs、Secret Manager | `ocrScheduleFromImage` / `analyzeTastingSession` のエラー、Secret設定、OpenAI側の失敗 |
+| merge後に本番反映されない | GitHub Actions、Firebase Hosting release履歴 | CI失敗、deploy対象判定、Hosting release作成有無 |
+
+### Firebase運用確認コマンド
+
+これらは確認用コマンドであり、データや本番設定を変更しない。
+
+```powershell
+# 対象プロジェクト確認
+firebase use
+
+# Hostingのサイト / チャネル / リリース確認
+firebase hosting:sites:list
+firebase hosting:channel:list
+firebase hosting:releases:list
+
+# Cloud Functionsの一覧とログ確認
+firebase functions:list
+firebase functions:log
+firebase functions:log --only ocrScheduleFromImage
+firebase functions:log --only analyzeTastingSession
+
+# 使えるCLIオプション確認
+firebase help hosting:releases:list
+firebase help functions:log
+```
+
+Cloud Functionsのログは Firebase CLI、Google Cloud Console、Cloud Logging UI のいずれでも確認できる。外部監視を入れていない間は、Cloud Loggingで `ERROR` / `WARNING`、関数名、実行時刻、対象ユーザーの問い合わせ時刻を照合する。
+
+### Firestoreバックアップ
+
+Firestoreの管理エクスポート / インポートは、Firebase CLIではなく `gcloud` または Google Cloud Console の Import/Export を使う。エクスポート先はCloud Storage bucketで、実行にはFirestore Import/Export権限とbucketアクセス権限が必要。エクスポートはドキュメント読み取り課金が発生するため、頻度と対象範囲を決めてから実行する。
+
+```powershell
+# 例: 全ドキュメントをCloud Storageへエクスポート
+gcloud firestore export gs://<backup-bucket>/<yyyy-mm-dd>/<export-name> --database="(default)"
+
+# 例: 特定collection groupだけをエクスポート
+gcloud firestore export gs://<backup-bucket>/<yyyy-mm-dd>/<export-name> --database="(default)" --collection-ids=users
+```
+
+RoastPlusで定期バックアップジョブは未実装。Issue #415時点では、バックアップは手動運用またはGoogle Cloud Consoleからの手動エクスポートを前提とする。バックアップbucket名、保存期間、実行担当者はコードだけでは確認できないため、運用開始時にFirebase管理者が別途決める。
+
+### 復元方針
+
+Firestore importは本番データに影響するため、即時に本番へimportしない。原則として以下の順で進める。
+
+1. 障害内容を記録する: 発生時刻、影響ユーザー、影響collection、直前のPR / deploy、ユーザー操作。
+2. 既存データを保全する: 可能なら復元前に現在の本番Firestoreを別prefixへexportする。
+3. 検証用Firebaseプロジェクトまたは別データベースへimportし、復元対象データを確認する。
+4. 復元対象を最小化する: 全体復元ではなく、可能なら対象collection / 対象ユーザー単位で復旧する。
+5. 本番importが必要な場合は、影響範囲、ロールバック方針、作業時間、担当者をIssueまたは作業メモに残し、ユーザー承認後に実行する。
+
+```powershell
+# 例: exportデータをFirestoreへimport
+gcloud firestore import gs://<backup-bucket>/<yyyy-mm-dd>/<export-name> --database="(default)"
+```
+
+Firestore import/exportの正式手順はFirebase公式ドキュメント「データのエクスポートとインポート」を正とする。
+
+### Storageバックアップと復元
+
+StorageはFirestore exportに含まれない。欠点豆画像などのユーザー追加ファイルを復旧対象にする場合は、Firestoreドキュメントの参照パスとStorageオブジェクトを両方確認する。
+
+確認観点:
+
+- `defect-beans/{userId}/{defectBeanId}/{fileName}` に対象ファイルがあるか
+- Storage Rulesで本人以外の読み書きが許可されていないか
+- マスター画像 `defect-beans-master/{fileName}` を誤って編集・削除していないか
+- 画像復元時にFirestore側の参照URL / path と不整合がないか
+
+Storageの一括コピーや削除は本番データに直結するため、実行前に対象prefix、件数、復元先、戻し方を明示する。
 
 ---
 
