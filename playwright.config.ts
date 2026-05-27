@@ -47,7 +47,7 @@ export default defineConfig({
   webServer: skipWebServer
     ? undefined
     : {
-        command: `npm run generate:sound-list && node ./node_modules/next/dist/bin/next dev --port ${e2ePort}`,
+        command: `npm run generate:sound-list && env-cmd -f e2e/e2e.env -- node ./node_modules/next/dist/bin/next dev --port ${e2ePort}`,
         url: e2eBaseURL,
         reuseExistingServer: !process.env.CI,
         stdout: 'ignore',
