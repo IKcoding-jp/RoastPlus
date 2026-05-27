@@ -493,6 +493,27 @@ npm run test:e2e:ui       # UIモードで実行
 npm run test:e2e:report   # レポート表示
 ```
 
+#### ローカル実行時の開発サーバー
+
+- E2E は既定で `http://localhost:3100` を使う。
+- `npm run test:e2e` は `scripts/run-e2e.ts` で E2E 用の Next.js 開発サーバーを起動してから Playwright を実行する。
+- ローカルでは `3100` に既存サーバーがある場合、そのサーバーを再利用する。
+- CI では意図しないプロセスを使わないため、既存サーバーがある場合は失敗させる。
+- Playwright 本体には `E2E_SKIP_WEB_SERVER=1` を渡し、Windows で Playwright 管理の dev server 終了待ちが詰まる問題を避ける。
+- ユーザーの作業中プロセスを勝手に停止しない。衝突時は、まず次のコマンドで利用状況を確認する。
+
+```powershell
+Get-NetTCPConnection -LocalPort 3100 -ErrorAction SilentlyContinue
+```
+
+`3100` が別用途で埋まっている場合は、PowerShell で一時的に別ポートを指定する。
+
+```powershell
+$env:E2E_PORT = '3101'
+npm run test:e2e
+Remove-Item Env:E2E_PORT
+```
+
 ---
 
 ### 重要なテストパターン
