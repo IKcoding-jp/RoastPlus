@@ -48,14 +48,14 @@
     --edge-strong: #d1d5db;
     --edge-subtle: #f3f4f6;
     /* アクセント */
-    --spot: #d97706;
-    --spot-hover: #b45309;
+    --spot: #e48003;
+    --spot-hover: #c56604;
     --spot-subtle: #f0f0f0;
     --spot-surface: #f7f7f7;
     --on-spot: #ffffff;
     /* ボタン */
-    --btn-primary: #d97706;
-    --btn-primary-hover: #b45309;
+    --btn-primary: #e48003;
+    --btn-primary-hover: #c56604;
     --btn-primary-text: #ffffff;
     /* ステータスカラー */
     --danger: #dc2626;
