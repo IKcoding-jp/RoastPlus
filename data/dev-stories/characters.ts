@@ -84,7 +84,7 @@ export const CHARACTERS: Record<CharacterId, Character> = {
 };
 
 // エピソードごとのキャラクターペア設定
-export const EPISODE_CHARACTER_PAIRS: Record<string, CharacterPairInfo> = {
+const EPISODE_CHARACTER_PAIRS: Record<string, CharacterPairInfo> = {
   'episode-001': {
     left: {
       id: 'asairi',
@@ -186,15 +186,4 @@ export const EPISODE_CHARACTER_PAIRS: Record<string, CharacterPairInfo> = {
 // エピソードIDからキャラクターペアを取得
 export const getCharacterPairByEpisodeId = (episodeId: string): CharacterPairInfo | undefined => {
   return EPISODE_CHARACTER_PAIRS[episodeId];
-};
-
-// エピソードIDから左右のキャラクターを取得
-export const getCharactersByEpisodeId = (episodeId: string): { left: Character; right: Character } | undefined => {
-  const pair = EPISODE_CHARACTER_PAIRS[episodeId];
-  if (!pair) return undefined;
-
-  return {
-    left: CHARACTERS[pair.left.id],
-    right: CHARACTERS[pair.right.id],
-  };
 };

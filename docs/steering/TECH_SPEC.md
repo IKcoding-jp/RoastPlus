@@ -73,7 +73,7 @@ RoastPlusは、**PWA（Progressive Web App）** として設計されたモバ�
 - **方針**: ユーティリティファーストCSS
 - **CSS Modules**: 不使用
 - **繰り返しパターン**: 定数化（例: `DIFFICULTY_STYLES`）
-- **クラス結合**: `clsx` + `tailwind-merge`（`cn()` ユーティリティ）
+- **クラス結合**: `clsx`（必要な箇所で直接使用）
 
 ### テーマシステム（next-themes + CSS変数）
 

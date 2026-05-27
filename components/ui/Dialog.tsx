@@ -4,7 +4,7 @@ import { useEffect, useCallback } from 'react';
 import { Warning } from 'phosphor-react';
 import { Modal } from './Modal';
 
-export interface DialogProps {
+interface DialogProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;

@@ -36,70 +36,44 @@
  */
 
 export { Input } from './Input';
-export type { InputProps } from './Input';
 
 export { Button } from './Button';
-export type { ButtonProps } from './Button';
 
 export { Select } from './Select';
-export type { SelectProps, SelectOption } from './Select';
+export type { SelectOption } from './Select';
 
 export { Textarea } from './Textarea';
-export type { TextareaProps } from './Textarea';
 
 export { Card } from './Card';
-export type { CardProps } from './Card';
 
 export { Modal } from './Modal';
-export type { ModalProps } from './Modal';
 
 export { FilterModal, FilterOptionButton, FilterSearchInput, FilterSection, FilterSortOption } from './FilterModal';
-export type {
-  FilterModalProps,
-  FilterOptionButtonProps,
-  FilterSearchInputProps,
-  FilterSectionProps,
-  FilterSortOptionProps,
-} from './FilterModal';
 
 export { Dialog } from './Dialog';
-export type { DialogProps } from './Dialog';
 
 export { IconButton } from './IconButton';
-export type { IconButtonProps } from './IconButton';
 
 export { NumberInput } from './NumberInput';
-export type { NumberInputProps } from './NumberInput';
 
 export { InlineInput } from './InlineInput';
-export type { InlineInputProps } from './InlineInput';
 
 export { Checkbox } from './Checkbox';
-export type { CheckboxProps } from './Checkbox';
 
 export { Switch } from './Switch';
-export type { SwitchProps } from './Switch';
 
 export { Badge } from './Badge';
-export type { BadgeProps } from './Badge';
 
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './Tabs';
-export type { TabsProps, TabsListProps, TabsTriggerProps, TabsContentProps } from './Tabs';
 
 export { ProgressBar } from './ProgressBar';
-export type { ProgressBarProps } from './ProgressBar';
 
 export { EmptyState } from './EmptyState';
-export type { EmptyStateProps } from './EmptyState';
 
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './Accordion';
-export type { AccordionProps, AccordionItemProps, AccordionTriggerProps, AccordionContentProps } from './Accordion';
 
 export { BackLink } from './BackLink';
-export type { BackLinkProps } from './BackLink';
 
 export { FloatingNav } from './FloatingNav';
-export type { FloatingNavProps } from './FloatingNav';
 
 export { RoastLevelBadge } from './RoastLevelBadge';
-export type { RoastLevelBadgeProps, RoastLevel } from './RoastLevelBadge';

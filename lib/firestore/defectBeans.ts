@@ -1,7 +1,6 @@
 import { collection, getDocs } from 'firebase/firestore';
 import { getDb } from './common';
-import { saveUserData } from './userData';
-import type { AppData, DefectBean, DefectBeanSettings } from '@/types';
+import type { DefectBean } from '@/types';
 
 // ===== 欠陥豆マスタの関数 =====
 
@@ -48,73 +47,4 @@ export async function getDefectBeanMasterData(): Promise<DefectBean[]> {
     console.error('Failed to get defect bean master data:', error);
     return [];
   }
-}
-
-/**
- * ユーザー固有の欠陥豆を保存
- * @param userId ユーザーID
- * @param defectBean 欠陥豆データ
- * @param appData 現在のAppData
- */
-export async function saveDefectBean(userId: string, defectBean: DefectBean, appData: AppData): Promise<void> {
-  const updatedDefectBeans = [...(appData.defectBeans || [])];
-  const existingIndex = updatedDefectBeans.findIndex((db) => db.id === defectBean.id);
-
-  if (existingIndex >= 0) {
-    updatedDefectBeans[existingIndex] = defectBean;
-  } else {
-    updatedDefectBeans.push(defectBean);
-  }
-
-  const updatedData: AppData = {
-    ...appData,
-    defectBeans: updatedDefectBeans,
-  };
-
-  await saveUserData(userId, updatedData);
-}
-
-/**
- * ユーザー固有の欠陥豆を削除
- * @param userId ユーザーID
- * @param defectBeanId 削除する欠陥豆ID
- * @param appData 現在のAppData
- */
-export async function deleteDefectBean(userId: string, defectBeanId: string, appData: AppData): Promise<void> {
-  const updatedDefectBeans = (appData.defectBeans || []).filter((db) => db.id !== defectBeanId);
-
-  const updatedData: AppData = {
-    ...appData,
-    defectBeans: updatedDefectBeans.length > 0 ? updatedDefectBeans : undefined,
-  };
-
-  await saveUserData(userId, updatedData);
-}
-
-/**
- * 欠陥豆の設定（除去するかどうか）を更新
- * @param userId ユーザーID
- * @param defectBeanId 欠陥豆ID
- * @param shouldRemove 除去するかどうか
- * @param appData 現在のAppData
- */
-export async function updateDefectBeanSetting(
-  userId: string,
-  defectBeanId: string,
-  shouldRemove: boolean,
-  appData: AppData
-): Promise<void> {
-  const updatedSettings: DefectBeanSettings = {
-    ...(appData.defectBeanSettings || {}),
-    [defectBeanId]: {
-      shouldRemove,
-    },
-  };
-
-  const updatedData: AppData = {
-    ...appData,
-    defectBeanSettings: updatedSettings,
-  };
-
-  await saveUserData(userId, updatedData);
 }

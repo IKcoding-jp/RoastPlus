@@ -32,7 +32,7 @@ export function isWorkProgressesMigrated(data: unknown): boolean {
   return isRecord(nested) && nested.migrated === true;
 }
 
-export function normalizeWorkProgressDocuments(docs: Array<{ id: string; data: () => DocumentData }>): WorkProgress[] {
+function normalizeWorkProgressDocuments(docs: Array<{ id: string; data: () => DocumentData }>): WorkProgress[] {
   const rawWorkProgresses = docs.map((docSnapshot) => {
     const data = docSnapshot.data();
     return {

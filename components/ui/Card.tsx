@@ -29,7 +29,7 @@ import { forwardRef } from 'react';
  * </Card>
  */
 
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   /** カードのスタイルバリエーション */
   variant?: 'default' | 'hoverable' | 'action' | 'coffee' | 'table' | 'guide';
 }

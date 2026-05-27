@@ -24,7 +24,7 @@ import { forwardRef } from 'react';
  * </IconButton>
  */
 
-export interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** ボタンのスタイルバリエーション */
   variant?: 'default' | 'primary' | 'danger' | 'success' | 'ghost' | 'surface';
   /** ボタンのサイズ */

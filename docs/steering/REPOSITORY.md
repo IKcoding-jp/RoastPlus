@@ -25,7 +25,6 @@ roastplus/
 │   └── scripts/            # Actions内で実行するスクリプト（.mjs）
 ├── public/                 # 静的ファイル（SW, マニフェスト, 画像, 音声）
 ├── scripts/                # 自動化スクリプト
-├── remotion/               # 動画生成（Remotion）
 ├── vitest.config.ts        # Vitestテスト設定
 ├── playwright.config.ts    # Playwright E2E設定
 ├── next.config.ts          # Next.js設定（static export）
@@ -365,21 +364,6 @@ Claude Code 側の起動・設定ファイルのみを置く。
 | `generate-sound-list.ts` | サウンドファイルリスト自動生成 |
 | `setup-worktrees.sh` | Git worktreeセットアップ |
 | `cleanup-worktrees.sh` | Git worktreeクリーンアップ |
-
----
-
-## `/remotion` - 動画生成（Remotion）
-
-Remotionを使用した動画生成機能。
-
-```
-remotion/
-├── index.ts               # エントリポイント
-├── Root.tsx                # ルートコンポーネント
-├── RoastPlusIntro.tsx      # イントロ動画
-├── TestComposition.tsx     # テスト用コンポジション
-└── scenes/                 # シーン定義
-```
 
 ---
 

@@ -33,7 +33,7 @@ import { forwardRef, useId } from 'react';
  * />
  */
 
-export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   /** テキストエリアのラベル */
   label?: string;
   /** エラーメッセージ */

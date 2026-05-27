@@ -218,8 +218,3 @@ export const VERSION_HISTORY: VersionHistoryEntry[] = [
     summary: 'アプリの基本機能をリリースしました',
   },
 ];
-
-// 最新のバージョン履歴を取得
-export const getLatestVersionHistory = (count: number = 5): VersionHistoryEntry[] => {
-  return VERSION_HISTORY.slice(0, count);
-};

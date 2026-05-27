@@ -675,12 +675,3 @@ export const DETAILED_CHANGELOG: ChangelogEntry[] = [
 
 // フィルター用の全タイプリスト（表示順）
 export const FILTER_TYPES: ChangelogEntryType[] = ['feature', 'improvement', 'bugfix', 'style', 'docs'];
-
-// 全タグを取得
-export const getAllTags = (): string[] => {
-  const tagSet = new Set<string>();
-  DETAILED_CHANGELOG.forEach((entry) => {
-    entry.tags?.forEach((tag) => tagSet.add(tag));
-  });
-  return Array.from(tagSet).sort();
-};

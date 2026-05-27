@@ -65,29 +65,6 @@ export const updateAssignmentDay = async (userId: string, date: string, assignme
   }
 };
 
-export const subscribeAssignmentDay = (
-  userId: string,
-  date: string,
-  callback: (data: AssignmentDay | null) => void
-) => {
-  const assignmentDaysCol = getAssignmentDaysCollection(userId);
-  const docRef = doc(assignmentDaysCol, date);
-  return onSnapshot(
-    docRef,
-    (snap) => {
-      if (snap.exists()) {
-        callback({ ...snap.data(), date: snap.id } as AssignmentDay);
-      } else {
-        callback(null);
-      }
-    },
-    (error) => {
-      console.error('Failed to subscribe assignment day:', error);
-      callback(null);
-    }
-  );
-};
-
 export const subscribeLatestAssignmentDay = (
   userId: string,
   callback: (data: AssignmentDay | null) => void,

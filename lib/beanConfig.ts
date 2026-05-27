@@ -17,7 +17,7 @@ export type BeanName =
   | 'マラウイ'
   | 'インド';
 
-export type RoastMachineMode = 'G1' | 'G2' | 'G3';
+type RoastMachineMode = 'G1' | 'G2' | 'G3';
 
 // G1の豆リスト
 export const G1_BEANS: BeanName[] = ['ブラジル', 'ジャマイカ', 'ドミニカ', 'ベトナム', 'ハイチ'];
