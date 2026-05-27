@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import ProductionPacksPage from './page';
@@ -113,5 +113,17 @@ describe('ProductionPacksPage', () => {
 
     expect(screen.queryByText('記録を削除しますか？')).not.toBeInTheDocument();
     expect(mocks.deleteProductionPackRecord).not.toHaveBeenCalled();
+  });
+
+  it('shows a read-only summary for smartphone layout', async () => {
+    render(<ProductionPacksPage />);
+
+    const mobileSummary = await screen.findByLabelText('スマホ用記録サマリー');
+
+    expect(within(mobileSummary).getByText('今日の記録')).toBeInTheDocument();
+    expect(within(mobileSummary).getByText('入力・修正はiPadで行います。')).toBeInTheDocument();
+    expect(within(mobileSummary).getAllByText('33').length).toBeGreaterThan(0);
+    expect(within(mobileSummary).queryByRole('button', { name: '保存' })).not.toBeInTheDocument();
+    expect(within(mobileSummary).queryByRole('button', { name: '削除' })).not.toBeInTheDocument();
   });
 });

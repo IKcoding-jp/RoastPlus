@@ -91,6 +91,172 @@ function TotalTile({ label, value }: TotalTileProps) {
   );
 }
 
+interface MobileProductionPackSummaryProps {
+  todayDate: string;
+  todayRecord: ProductionPackRecord | null;
+  records: ProductionPackRecord[];
+  isCurrentLoading: boolean;
+  isListLoading: boolean;
+}
+
+function formatFailureRate(record: ProductionPackRecord | null): string {
+  if (!record || record.total === 0) {
+    return '0%';
+  }
+
+  return `${Math.round((record.failureTotal / record.total) * 1000) / 10}%`;
+}
+
+function MobileMetricTile({ label, value }: TotalTileProps) {
+  return (
+    <div className="rounded-lg border border-edge bg-field p-2.5">
+      <div className="text-[11px] font-semibold text-ink-muted">{label}</div>
+      <p className="mt-1 text-lg font-bold tabular-nums text-ink">{value}</p>
+    </div>
+  );
+}
+
+function MobileTeamBreakdown({ record }: { record: ProductionPackRecord }) {
+  const teamATotal = record.teamA.successCount + record.teamA.failureCount;
+  const teamBTotal = record.teamB.successCount + record.teamB.failureCount;
+
+  return (
+    <div className="grid gap-2">
+      <div className="flex items-center justify-between gap-3 rounded-lg border border-edge bg-surface p-3">
+        <div>
+          <div className="text-sm font-bold text-ink">A班</div>
+          <p className="mt-1 text-xs text-ink-muted">
+            成功 {record.teamA.successCount} / 失敗 {record.teamA.failureCount}
+          </p>
+        </div>
+        <div className="text-2xl font-bold tabular-nums text-ink">{teamATotal}</div>
+      </div>
+      <div className="flex items-center justify-between gap-3 rounded-lg border border-edge bg-surface p-3">
+        <div>
+          <div className="text-sm font-bold text-ink">B班</div>
+          <p className="mt-1 text-xs text-ink-muted">
+            成功 {record.teamB.successCount} / 失敗 {record.teamB.failureCount}
+          </p>
+        </div>
+        <div className="text-2xl font-bold tabular-nums text-ink">{teamBTotal}</div>
+      </div>
+    </div>
+  );
+}
+
+function MobileProductionPackSummary({
+  todayDate,
+  todayRecord,
+  records,
+  isCurrentLoading,
+  isListLoading,
+}: MobileProductionPackSummaryProps) {
+  const recentRecords = records.filter((record) => record.workDate !== todayDate).slice(0, 6);
+
+  return (
+    <section className="space-y-4 md:hidden" aria-label="スマホ用記録サマリー">
+      <div className="rounded-xl border border-edge bg-surface p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold text-ink">今日の記録</h2>
+            <p className="mt-1 text-sm text-ink-muted">{formatProductionPackDateLabel(todayDate)}</p>
+          </div>
+          <Badge variant={saveStateVariant(todayRecord)} size="md">
+            {saveStateLabel(todayRecord)}
+          </Badge>
+        </div>
+
+        {isCurrentLoading ? (
+          <div className="flex min-h-[180px] items-center justify-center text-sm text-ink-muted">読み込み中...</div>
+        ) : todayRecord ? (
+          <div className="mt-4 space-y-3">
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                <div className="text-xs font-semibold text-ink-muted">総数</div>
+                <p className="mt-1 text-5xl font-bold tabular-nums text-ink">{todayRecord.total}</p>
+              </div>
+              <div className="pb-1 text-right text-sm font-semibold text-ink-sub">
+                失敗率
+                <div className="text-2xl font-bold tabular-nums text-ink">{formatFailureRate(todayRecord)}</div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2">
+              <MobileMetricTile label="成功" value={todayRecord.successTotal} />
+              <MobileMetricTile label="失敗" value={todayRecord.failureTotal} />
+              <MobileMetricTile label="総数" value={todayRecord.total} />
+            </div>
+
+            <MobileTeamBreakdown record={todayRecord} />
+          </div>
+        ) : (
+          <EmptyState
+            title="今日の記録はまだありません"
+            description="iPadで保存されたパッケージ記録がここに表示されます。"
+            icon={<MdInventory2 className="h-8 w-8" />}
+            size="sm"
+          />
+        )}
+      </div>
+
+      <div className="rounded-xl border border-edge bg-surface p-4">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold text-ink">最近の記録</h2>
+            <p className="mt-1 text-sm text-ink-muted">入力・修正はiPadで行います。</p>
+          </div>
+          <Link
+            href="/production-packs/monthly"
+            className="inline-flex min-h-[40px] items-center justify-center rounded-lg border border-edge bg-surface px-3 py-2 text-sm font-semibold text-ink shadow-card transition-colors hover:bg-ground"
+          >
+            月次
+          </Link>
+        </div>
+
+        <div className="mt-4">
+          {isListLoading ? (
+            <div className="flex min-h-[160px] items-center justify-center text-sm text-ink-muted">読み込み中...</div>
+          ) : recentRecords.length === 0 ? (
+            <EmptyState
+              title="過去の記録はまだありません"
+              description="保存済みの過去日データがあると、ここに表示されます。"
+              icon={<MdInventory2 className="h-8 w-8" />}
+              size="sm"
+            />
+          ) : (
+            <div className="space-y-2.5">
+              {recentRecords.map((record) => (
+                <article key={record.workDate} className="rounded-xl border border-edge bg-surface p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="text-base font-bold text-ink">{formatProductionPackDateLabel(record.workDate)}</h3>
+                      <p className="mt-1 text-xs text-ink-muted">
+                        成功 {record.successTotal} / 失敗 {record.failureTotal}
+                      </p>
+                    </div>
+                    <div className="text-2xl font-bold tabular-nums text-ink">{record.total}</div>
+                  </div>
+                  <details className="mt-2 text-sm text-ink-sub">
+                    <summary className="cursor-pointer font-medium text-ink-sub hover:text-ink">内訳を見る</summary>
+                    <div className="mt-2 space-y-1">
+                      <p>
+                        A班 成功 {record.teamA.successCount} / 失敗 {record.teamA.failureCount}
+                      </p>
+                      <p>
+                        B班 成功 {record.teamB.successCount} / 失敗 {record.teamB.failureCount}
+                      </p>
+                    </div>
+                  </details>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function ProductionPacksPage() {
   const { user, loading: authLoading } = useAuth();
   const { showToast } = useToastContext();
@@ -167,6 +333,7 @@ export default function ProductionPacksPage() {
   const canSave = canEditSelectedDate && !isCurrentLoading && !isSaving && formResult.error === '';
   const canDelete = isTodaySelected && currentRecord !== null && !isDeleting;
   const isReadOnly = !canEditSelectedDate || isSaving || isDeleting;
+  const todayRecord = records.find((record) => record.workDate === todayDate) ?? (isTodaySelected ? currentRecord : null);
 
   const handleCountChange = (key: keyof ProductionPackFormState, value: string) => {
     setForm((prev) => ({ ...prev, [key]: normalizePackCountFieldValue(value) }));
@@ -233,10 +400,14 @@ export default function ProductionPacksPage() {
           <div>
             <div className="mb-2 inline-flex items-center gap-2 text-sm font-semibold text-ink-muted">
               <MdInventory2 className="h-5 w-5" />
-              <span>日次入力</span>
+              <span className="md:hidden">記録確認</span>
+              <span className="hidden md:inline">日次入力</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-ink">パッケージ記録</h1>
-            <p className="mt-1 text-sm text-ink-sub">日付を選び、A班・B班の成功数と失敗数を保存します。</p>
+            <p className="mt-1 text-sm text-ink-sub md:hidden">iPadで保存されたパッケージ記録を確認します。</p>
+            <p className="mt-1 hidden text-sm text-ink-sub md:block">
+              日付を選び、A班・B班の成功数と失敗数を保存します。
+            </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
             <Link
@@ -245,18 +416,28 @@ export default function ProductionPacksPage() {
             >
               月次集計
             </Link>
-            <Input
-              type="date"
-              label="作業日"
-              value={selectedDate}
-              max={todayDate}
-              onChange={(event) => setSelectedDate(event.target.value || todayDate)}
-              className="sm:w-[190px] !py-2 !text-base"
-            />
+            <div className="hidden md:block">
+              <Input
+                type="date"
+                label="作業日"
+                value={selectedDate}
+                max={todayDate}
+                onChange={(event) => setSelectedDate(event.target.value || todayDate)}
+                className="sm:w-[190px] !py-2 !text-base"
+              />
+            </div>
           </div>
         </header>
 
-        <main className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)]">
+        <MobileProductionPackSummary
+          todayDate={todayDate}
+          todayRecord={todayRecord}
+          records={records}
+          isCurrentLoading={isCurrentLoading}
+          isListLoading={isListLoading}
+        />
+
+        <main className="hidden items-start gap-4 md:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)]">
           <Card className="space-y-5 p-4 sm:p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
