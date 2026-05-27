@@ -13,7 +13,7 @@ function getRootThemeToken(css: string, tokenName: string): string | undefined {
 }
 
 describe('theme tokens', () => {
-  it('通常テーマのアクセント色は明るいオレンジと白い文字色を使う', () => {
+  it('通常テーマのアクセント色は明るすぎないオレンジと白い文字色を使う', () => {
     const css = readThemeCss();
     const spot = getRootThemeToken(css, '--spot');
     const spotHover = getRootThemeToken(css, '--spot-hover');
@@ -22,11 +22,11 @@ describe('theme tokens', () => {
     const btnPrimaryHover = getRootThemeToken(css, '--btn-primary-hover');
     const btnPrimaryText = getRootThemeToken(css, '--btn-primary-text');
 
-    expect(spot).toBe('#d97706');
-    expect(spotHover).toBe('#b45309');
+    expect(spot).toBe('#e48003');
+    expect(spotHover).toBe('#c56604');
     expect(onSpot).toBe('#ffffff');
-    expect(btnPrimary).toBe('#d97706');
-    expect(btnPrimaryHover).toBe('#b45309');
+    expect(btnPrimary).toBe('#e48003');
+    expect(btnPrimaryHover).toBe('#c56604');
     expect(btnPrimaryText).toBe('#ffffff');
   });
 });

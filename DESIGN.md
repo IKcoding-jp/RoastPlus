@@ -133,11 +133,11 @@ RoastPlus では、色を直接指定せず、意味を持つセマンティッ�
 | `bg-overlay` | `--overlay` | `#FFFFFF` | モーダル・ダイアログ。不透明必須 |
 | `bg-ground` | `--ground` | `#F5F5F5` | テーブルヘッダー・セクション背景 |
 | `bg-field` | `--field` | `#FFFFFF` | 入力フィールド背景 |
-| `bg-spot` | `--spot` | `#d97706` | アクセント背景 |
+| `bg-spot` | `--spot` | `#E48003` | アクセント背景 |
 | `bg-spot-subtle` | `--spot-subtle` | `#f0f0f0` | アクセント薄背景 |
 | `bg-spot-surface` | `--spot-surface` | `#f7f7f7` | アクセント極薄背景 |
-| `bg-btn-primary` | `--btn-primary` | `#d97706` | プライマリボタン背景 |
-| `bg-btn-primary-hover` | `--btn-primary-hover` | `#b45309` | プライマリボタンホバー |
+| `bg-btn-primary` | `--btn-primary` | `#E48003` | プライマリボタン背景 |
+| `bg-btn-primary-hover` | `--btn-primary-hover` | `#C56604` | プライマリボタンホバー |
 | `bg-header-bg` | `--header-bg` | `#261a14` | ヘッダー背景 |
 
 ### 5.4 テキスト色
@@ -147,8 +147,8 @@ RoastPlus では、色を直接指定せず、意味を持つセマンティッ�
 | `text-ink` | `--ink` | `#1f2937` | メインテキスト |
 | `text-ink-sub` | `--ink-sub` | `#4b5563` | 補助テキスト・説明文 |
 | `text-ink-muted` | `--ink-muted` | `#9ca3af` | プレースホルダー・薄いテキスト |
-| `text-spot` | `--spot` | `#d97706` | アクセントテキスト |
-| `text-spot-hover` | `--spot-hover` | `#b45309` | アクセントホバー |
+| `text-spot` | `--spot` | `#E48003` | アクセントテキスト |
+| `text-spot-hover` | `--spot-hover` | `#C56604` | アクセントホバー |
 | `text-header-text` | `--header-text` | `#FFFFFF` | ヘッダーテキスト |
 | `text-header-accent` | `--header-accent` | `#EF8A00` | ヘッダーアクセント |
 | `text-danger` | `--danger` | `#dc2626` | エラー・削除 |
