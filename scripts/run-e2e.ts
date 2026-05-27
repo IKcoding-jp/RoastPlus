@@ -2,10 +2,14 @@ import { spawn, spawnSync, type ChildProcess } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const DEFAULT_E2E_PORT = '3100';
 const SERVER_TIMEOUT_MS = 120_000;
 const POLL_INTERVAL_MS = 1_000;
+const E2E_MODE_MARKER = 'data-roastplus-e2e-mode="true"';
+
+type ServerState = 'unreachable' | 'e2e' | 'non-e2e';
 
 function parseEnvFile(filePath: string) {
   const values: Record<string, string> = {};
@@ -40,26 +44,51 @@ function getE2EPort() {
   return port;
 }
 
-function isServerReady(url: string) {
-  return new Promise<boolean>((resolve) => {
+export function isE2EModeHTML(html: string) {
+  return html.includes(E2E_MODE_MARKER);
+}
+
+export function getServerProbeURL(port: string) {
+  return `http://localhost:${port}/login/`;
+}
+
+function fetchServerHTML(url: string) {
+  return new Promise<string | null>((resolve) => {
     const request = http.get(url, (response) => {
-      response.resume();
-      resolve(response.statusCode !== undefined && response.statusCode < 500);
+      if (response.statusCode === undefined || response.statusCode >= 500) {
+        response.resume();
+        resolve(null);
+        return;
+      }
+
+      let body = '';
+      response.setEncoding('utf8');
+      response.on('data', (chunk) => {
+        body += chunk;
+      });
+      response.on('end', () => resolve(body));
     });
 
     request.setTimeout(2_000, () => {
       request.destroy();
-      resolve(false);
+      resolve(null);
     });
 
-    request.on('error', () => resolve(false));
+    request.on('error', () => resolve(null));
   });
 }
 
-async function waitForServer(url: string, timeoutMs: number) {
+async function inspectServer(url: string): Promise<ServerState> {
+  const html = await fetchServerHTML(url);
+  if (html === null) return 'unreachable';
+
+  return isE2EModeHTML(html) ? 'e2e' : 'non-e2e';
+}
+
+async function waitForE2EServer(url: string, timeoutMs: number) {
   const startedAt = Date.now();
   while (Date.now() - startedAt < timeoutMs) {
-    if (await isServerReady(url)) return true;
+    if ((await inspectServer(url)) === 'e2e') return true;
     await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
   }
 
@@ -121,7 +150,7 @@ async function main() {
   const e2eEnvPath = path.join(rootDir, 'e2e', 'e2e.env');
   const e2eEnv = parseEnvFile(e2eEnvPath);
   const port = getE2EPort();
-  const serverURL = `http://localhost:${port}/login`;
+  const serverURL = getServerProbeURL(port);
   const env = {
     ...process.env,
     ...e2eEnv,
@@ -130,11 +159,17 @@ async function main() {
   };
 
   let server: ChildProcess | null = null;
-  const existingServerReady = await isServerReady(serverURL);
+  const existingServerState = await inspectServer(serverURL);
 
-  if (existingServerReady) {
+  if (existingServerState !== 'unreachable') {
     if (process.env.CI) {
       throw new Error(`E2E server port ${port} is already in use in CI`);
+    }
+
+    if (existingServerState !== 'e2e') {
+      throw new Error(
+        `E2E server port ${port} is already in use, but the server is not running in E2E mode. Stop it or set E2E_PORT to another port.`
+      );
     }
 
     console.log(`[e2e] Reusing existing E2E server at http://localhost:${port}`);
@@ -147,10 +182,10 @@ async function main() {
     console.log(`[e2e] Starting E2E server at http://localhost:${port}`);
     server = startServer(port, env);
 
-    const serverReady = await waitForServer(serverURL, SERVER_TIMEOUT_MS);
+    const serverReady = await waitForE2EServer(serverURL, SERVER_TIMEOUT_MS);
     if (!serverReady) {
       stopServer(server);
-      throw new Error(`E2E server did not become ready within ${SERVER_TIMEOUT_MS / 1000}s`);
+      throw new Error(`E2E mode server did not become ready within ${SERVER_TIMEOUT_MS / 1000}s`);
     }
   }
 
@@ -165,7 +200,9 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}
