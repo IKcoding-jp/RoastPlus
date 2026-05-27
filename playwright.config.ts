@@ -20,7 +20,7 @@ export default defineConfig({
     },
     {
       name: 'chromium',
-      testMatch: /essential\.spec\.ts/,
+      testMatch: [/essential\.spec\.ts/, /production-packs\.spec\.ts/],
       use: {
         ...devices['Desktop Chrome'],
         storageState: 'playwright/.auth/e2e-user.json',
