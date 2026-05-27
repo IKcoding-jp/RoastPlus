@@ -233,9 +233,9 @@ export default function ProductionPacksPage() {
           <div>
             <div className="mb-2 inline-flex items-center gap-2 text-sm font-semibold text-ink-muted">
               <MdInventory2 className="h-5 w-5" />
-              <span>パッケージ数の記録</span>
+              <span>日次入力</span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-ink">パッケージ数記録</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-ink">パッケージ記録</h1>
             <p className="mt-1 text-sm text-ink-sub">日付を選び、A班・B班の成功数と失敗数を保存します。</p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
@@ -256,7 +256,7 @@ export default function ProductionPacksPage() {
           </div>
         </header>
 
-        <main className="grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)]">
+        <main className="grid items-start gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)]">
           <Card className="space-y-5 p-4 sm:p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
@@ -373,7 +373,7 @@ export default function ProductionPacksPage() {
             )}
           </Card>
 
-          <Card className="space-y-4 p-4 sm:p-5">
+          <Card className="flex flex-col gap-4 p-4 sm:p-5 lg:max-h-[calc(100vh-14rem)]">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-lg font-semibold text-ink">過去の記録</h2>
@@ -381,62 +381,61 @@ export default function ProductionPacksPage() {
               </div>
             </div>
 
-            {isListLoading ? (
-              <div className="flex min-h-[180px] items-center justify-center text-sm text-ink-muted">読み込み中...</div>
-            ) : records.length === 0 ? (
-              <EmptyState
-                title="記録がありません"
-                description="今日のパッケージ数を保存すると、ここに表示されます。"
-                icon={<MdInventory2 className="h-8 w-8" />}
-                size="sm"
-              />
-            ) : (
-              <div className="space-y-3">
-                {records.map((record) => (
-                  <article
-                    key={record.workDate}
-                    className="rounded-xl border border-edge bg-surface p-3"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setSelectedDate(record.workDate)}
-                        className="!min-h-0 !justify-start !px-0 !py-0 text-left text-base font-bold !text-ink hover:!text-ink-sub"
-                      >
-                        {formatProductionPackDateLabel(record.workDate)}
-                      </Button>
-                    </div>
-                    <div className="mt-3 grid grid-cols-3 gap-2">
-                      <div className="rounded-lg border border-edge bg-surface p-2.5">
-                        <div className="text-xs font-medium text-ink-muted">成功</div>
-                        <div className="mt-1 text-lg font-bold tabular-nums text-ink">{record.successTotal}</div>
+            <div className="min-h-0 lg:max-h-[calc(100vh-23rem)] lg:overflow-y-auto lg:pr-1">
+              {isListLoading ? (
+                <div className="flex min-h-[180px] items-center justify-center text-sm text-ink-muted">読み込み中...</div>
+              ) : records.length === 0 ? (
+                <EmptyState
+                  title="記録がありません"
+                  description="今日のパッケージ記録を保存すると、ここに表示されます。"
+                  icon={<MdInventory2 className="h-8 w-8" />}
+                  size="sm"
+                />
+              ) : (
+                <div className="space-y-3">
+                  {records.map((record) => (
+                    <article key={record.workDate} className="rounded-xl border border-edge bg-surface p-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSelectedDate(record.workDate)}
+                          className="!min-h-0 !justify-start !px-0 !py-0 text-left text-base font-bold !text-ink hover:!text-ink-sub"
+                        >
+                          {formatProductionPackDateLabel(record.workDate)}
+                        </Button>
                       </div>
-                      <div className="rounded-lg border border-edge bg-surface p-2.5">
-                        <div className="text-xs font-medium text-ink-muted">失敗</div>
-                        <div className="mt-1 text-lg font-bold tabular-nums text-ink">{record.failureTotal}</div>
+                      <div className="mt-3 grid grid-cols-3 gap-2">
+                        <div className="rounded-lg border border-edge bg-surface p-2.5">
+                          <div className="text-xs font-medium text-ink-muted">成功</div>
+                          <div className="mt-1 text-lg font-bold tabular-nums text-ink">{record.successTotal}</div>
+                        </div>
+                        <div className="rounded-lg border border-edge bg-surface p-2.5">
+                          <div className="text-xs font-medium text-ink-muted">失敗</div>
+                          <div className="mt-1 text-lg font-bold tabular-nums text-ink">{record.failureTotal}</div>
+                        </div>
+                        <div className="rounded-lg border border-edge bg-surface p-2.5">
+                          <div className="text-xs font-medium text-ink-muted">総数</div>
+                          <div className="mt-1 text-lg font-bold tabular-nums text-ink">{record.total}</div>
+                        </div>
                       </div>
-                      <div className="rounded-lg border border-edge bg-surface p-2.5">
-                        <div className="text-xs font-medium text-ink-muted">総数</div>
-                        <div className="mt-1 text-lg font-bold tabular-nums text-ink">{record.total}</div>
-                      </div>
-                    </div>
-                    <details className="mt-3 text-sm text-ink-sub">
-                      <summary className="cursor-pointer font-medium text-ink-sub hover:text-ink">内訳を見る</summary>
-                      <div className="mt-2 space-y-1">
-                        <p>
-                          A班 成功 {record.teamA.successCount} / 失敗 {record.teamA.failureCount}
-                        </p>
-                        <p>
-                          B班 成功 {record.teamB.successCount} / 失敗 {record.teamB.failureCount}
-                        </p>
-                      </div>
-                    </details>
-                  </article>
-                ))}
-              </div>
-            )}
+                      <details className="mt-3 text-sm text-ink-sub">
+                        <summary className="cursor-pointer font-medium text-ink-sub hover:text-ink">内訳を見る</summary>
+                        <div className="mt-2 space-y-1">
+                          <p>
+                            A班 成功 {record.teamA.successCount} / 失敗 {record.teamA.failureCount}
+                          </p>
+                          <p>
+                            B班 成功 {record.teamB.successCount} / 失敗 {record.teamB.failureCount}
+                          </p>
+                        </div>
+                      </details>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </div>
           </Card>
         </main>
       </div>

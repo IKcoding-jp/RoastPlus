@@ -122,9 +122,9 @@ export default function ProductionPackMonthlyPage() {
           <div>
             <div className="mb-2 inline-flex items-center gap-2 text-sm font-semibold text-ink-muted">
               <MdInventory2 className="h-5 w-5" />
-              <span>パッケージ数の月次集計</span>
+              <span>月次集計</span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-ink">パッケージ数 月次集計</h1>
+            <h1 className="text-xl sm:text-2xl font-bold text-ink">パッケージ記録 月次集計</h1>
             <p className="mt-1 text-sm text-ink-sub">本社報告用に、月ごとの成功数と失敗数を確認します。</p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
@@ -173,7 +173,7 @@ export default function ProductionPackMonthlyPage() {
           ) : summary.dailyRecords.length === 0 ? (
             <EmptyState
               title="記録がありません"
-              description="選択した月に集計対象のパッケージ数記録はありません。"
+              description="選択した月に集計対象のパッケージ記録はありません。"
               icon={<MdInventory2 className="h-8 w-8" />}
               size="sm"
             />
