@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import ProductionPacksPage from './page';
@@ -29,6 +29,7 @@ const mocks = vi.hoisted(() => ({
   showToast: vi.fn(),
   subscribeProductionPackRecord: vi.fn(),
   subscribeRecentProductionPackRecords: vi.fn(),
+  todayDate: '2026-05-24',
   useAuth: vi.fn(),
 }));
 
@@ -50,7 +51,7 @@ vi.mock('@/lib/productionPackRecords', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/lib/productionPackRecords')>();
   return {
     ...actual,
-    getTodayProductionPackDate: () => '2026-05-24',
+    getTodayProductionPackDate: () => mocks.todayDate,
   };
 });
 
@@ -68,6 +69,8 @@ vi.mock('@/lib/firestore/productionPackRecords', () => ({
 describe('ProductionPacksPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.useRealTimers();
+    mocks.todayDate = '2026-05-24';
     mocks.useAuth.mockReturnValue({ user: { uid: 'user-1' }, loading: false });
     mocks.subscribeProductionPackRecord.mockImplementation(
       (_userId: string, workDate: string, callback: (record: ProductionPackRecord | null) => void) => {
@@ -127,5 +130,53 @@ describe('ProductionPacksPage', () => {
     expect(within(mobileSummary).getAllByText('33').length).toBeGreaterThan(0);
     expect(within(mobileSummary).queryByRole('button', { name: '保存' })).not.toBeInTheDocument();
     expect(within(mobileSummary).queryByRole('button', { name: '削除' })).not.toBeInTheDocument();
+  });
+
+  it('refreshes today when the page stays open across a date change', async () => {
+    render(<ProductionPacksPage />);
+
+    await waitFor(() => expect(screen.getAllByText('2026年5月24日').length).toBeGreaterThan(0));
+
+    mocks.todayDate = '2026-05-25';
+    act(() => window.dispatchEvent(new Event('focus')));
+
+    await waitFor(() => expect(screen.getAllByText('2026年5月25日').length).toBeGreaterThan(0));
+    expect(mocks.subscribeProductionPackRecord).toHaveBeenLastCalledWith(
+      'user-1',
+      '2026-05-25',
+      expect.any(Function),
+      expect.any(Function)
+    );
+  });
+
+  it('does not show the previous user record immediately after auth changes', async () => {
+    let activeUser = { uid: 'user-1' };
+    mocks.useAuth.mockImplementation(() => ({ user: activeUser, loading: false }));
+    mocks.subscribeProductionPackRecord.mockImplementation(
+      (userId: string, workDate: string, callback: (record: ProductionPackRecord | null) => void) => {
+        if (userId === 'user-1') {
+          callback(records.find((record) => record.workDate === workDate) ?? null);
+        }
+        return vi.fn();
+      }
+    );
+    mocks.subscribeRecentProductionPackRecords.mockImplementation(
+      (userId: string, callback: (nextRecords: ProductionPackRecord[]) => void) => {
+        if (userId === 'user-1') {
+          callback(records);
+        }
+        return vi.fn();
+      }
+    );
+
+    const { rerender } = render(<ProductionPacksPage />);
+    const firstSummary = await screen.findByLabelText('スマホ用記録サマリー');
+    expect(within(firstSummary).getAllByText('33').length).toBeGreaterThan(0);
+
+    activeUser = { uid: 'user-2' };
+    rerender(<ProductionPacksPage />);
+
+    const nextSummary = screen.getByLabelText('スマホ用記録サマリー');
+    expect(within(nextSummary).queryByText('33')).not.toBeInTheDocument();
   });
 });

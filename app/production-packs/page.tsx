@@ -260,7 +260,7 @@ function MobileProductionPackSummary({
 export default function ProductionPacksPage() {
   const { user, loading: authLoading } = useAuth();
   const { showToast } = useToastContext();
-  const [todayDate] = useState(() => getTodayProductionPackDate());
+  const [todayDate, setTodayDate] = useState(() => getTodayProductionPackDate());
   const [selectedDate, setSelectedDate] = useState(todayDate);
   const [currentRecord, setCurrentRecord] = useState<ProductionPackRecord | null>(null);
   const [records, setRecords] = useState<ProductionPackRecord[]>([]);
@@ -270,6 +270,36 @@ export default function ProductionPacksPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  useEffect(() => {
+    const refreshTodayDate = () => {
+      const nextTodayDate = getTodayProductionPackDate();
+      setTodayDate((previousTodayDate) => {
+        if (nextTodayDate === previousTodayDate) {
+          return previousTodayDate;
+        }
+
+        setSelectedDate((currentSelectedDate) =>
+          currentSelectedDate === previousTodayDate ? nextTodayDate : currentSelectedDate
+        );
+        return nextTodayDate;
+      });
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        refreshTodayDate();
+      }
+    };
+
+    window.addEventListener('focus', refreshTodayDate);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('focus', refreshTodayDate);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
   useEffect(() => {
     if (!user) {
