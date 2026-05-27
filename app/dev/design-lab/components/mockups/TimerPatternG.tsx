@@ -160,7 +160,7 @@ export default function TimerPatternG() {
           <button className="p-3 rounded-full text-ink/50 hover:bg-ground transition-colors">
             <ArrowCounterClockwise size={22} weight="bold" />
           </button>
-          <button className="p-4 rounded-full bg-spot text-white shadow-md">
+          <button className="p-4 rounded-full bg-spot text-on-spot shadow-md">
             <Play size={28} weight="fill" className="ml-0.5" />
           </button>
           <button className="p-3 rounded-full text-ink/50 hover:bg-ground transition-colors">

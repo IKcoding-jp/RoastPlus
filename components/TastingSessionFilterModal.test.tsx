@@ -94,7 +94,7 @@ describe('TastingSessionFilterModal', () => {
       render(<TastingSessionFilterModal {...baseProps} sortOption="oldest" selectedRoastLevels={['中深煎り']} />);
 
       expect(screen.getByRole('button', { name: '古い順' })).toHaveClass('!text-spot');
-      expect(screen.getByRole('button', { name: '中深煎り' })).toHaveClass('!bg-spot', '!text-white', '!border-spot');
+      expect(screen.getByRole('button', { name: '中深煎り' })).toHaveClass('!bg-spot', '!text-on-spot', '!border-spot');
     });
   });
 

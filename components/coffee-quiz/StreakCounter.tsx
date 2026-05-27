@@ -35,7 +35,7 @@ export function StreakCounter({ streak, compact = false }: StreakCounterProps) {
         <div className="flex items-center gap-2.5">
           <div
             className={`w-9 h-9 rounded-full flex items-center justify-center ${
-              hasStreak ? 'bg-spot text-white' : 'bg-edge-subtle text-ink-muted'
+              hasStreak ? 'bg-spot text-on-spot' : 'bg-edge-subtle text-ink-muted'
             }`}
           >
             <FlameIcon active={hasStreak} />
@@ -66,7 +66,7 @@ export function StreakCounter({ streak, compact = false }: StreakCounterProps) {
         {/* 炎アイコン */}
         <div
           className={`w-12 h-12 rounded-full flex items-center justify-center ${
-            hasStreak ? 'bg-spot text-white' : 'bg-edge-subtle text-ink-muted'
+            hasStreak ? 'bg-spot text-on-spot' : 'bg-edge-subtle text-ink-muted'
           }`}
         >
           <FlameIcon active={hasStreak} />

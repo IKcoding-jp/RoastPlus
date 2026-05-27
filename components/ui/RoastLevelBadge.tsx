@@ -19,9 +19,9 @@ import { forwardRef } from 'react';
  * <RoastLevelBadge level="深煎り" size="lg" />
  */
 
-export type RoastLevel = '深煎り' | '中深煎り' | '中煎り' | '浅煎り';
+type RoastLevel = '深煎り' | '中深煎り' | '中煎り' | '浅煎り';
 
-export interface RoastLevelBadgeProps extends Omit<React.HTMLAttributes<HTMLSpanElement>, 'children'> {
+interface RoastLevelBadgeProps extends Omit<React.HTMLAttributes<HTMLSpanElement>, 'children'> {
   /** 焙煎度 */
   level: RoastLevel | string;
   /** サイズ */

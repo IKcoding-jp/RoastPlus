@@ -1,7 +1,7 @@
 /**
  * 画像圧縮オプション
  */
-export interface CompressImageOptions {
+interface CompressImageOptions {
   /** リサイズの最大辺長（px）。デフォルト: 800 */
   maxSize?: number;
   /** JPEG圧縮品質（0-1）。デフォルト: 0.8 */

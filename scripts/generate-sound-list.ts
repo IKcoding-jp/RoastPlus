@@ -110,7 +110,7 @@ ${roastTimerFiles
  * 音声ファイルを追加・削除した場合は、npm run generate:sound-list を実行してください
  */
 
-export interface SoundFile {
+interface SoundFile {
   value: string;
   label: string;
 }

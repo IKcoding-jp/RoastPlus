@@ -1,6 +1,6 @@
 // プライバシーポリシーコンテンツ
 
-export interface PrivacyPolicySection {
+interface PrivacyPolicySection {
   title: string;
   content: string[];
 }
@@ -166,4 +166,3 @@ export const PRIVACY_POLICY_SECTIONS: PrivacyPolicySection[] = [
 ];
 
 export const PRIVACY_POLICY_LAST_UPDATED = '2026年5月23日';
-export const PRIVACY_POLICY_EFFECTIVE_DATE = '2026年5月23日';

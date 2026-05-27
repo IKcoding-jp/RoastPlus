@@ -1,6 +1,6 @@
 # Repository Structure
 
-**最終更新**: 2026-02-21
+**最終更新**: 2026-05-27
 
 ---
 
@@ -16,16 +16,15 @@ roastplus/
 ├── functions/              # Firebase Cloud Functions（サーバーレスAI処理）
 ├── __tests__/              # ユニットテスト（Node環境が必要なスクリプト等）
 │   └── scripts/            # GitHub Actionsスクリプトのテスト
-├── docs/                   # ドキュメント（Steering / Working）
+├── docs/                   # ドキュメント（Steering / Superpowers specs/plans）
 ├── eslint-rules/           # ESLintカスタムルール（no-raw-button等）
 ├── e2e/                    # Playwright E2Eテスト
-├── .claude/                # Claude Code設定・スキル
+├── .claude/                # Claude Code設定
 ├── .github/                # GitHub設定
 │   ├── workflows/          # GitHub Actionsワークフロー
 │   └── scripts/            # Actions内で実行するスクリプト（.mjs）
 ├── public/                 # 静的ファイル（SW, マニフェスト, 画像, 音声）
 ├── scripts/                # 自動化スクリプト
-├── remotion/               # 動画生成（Remotion）
 ├── vitest.config.ts        # Vitestテスト設定
 ├── playwright.config.ts    # Playwright E2E設定
 ├── next.config.ts          # Next.js設定（static export）
@@ -34,7 +33,7 @@ roastplus/
 ├── firebase.json           # Firebase設定
 ├── firestore.rules         # Firestoreセキュリティルール
 ├── package.json            # 依存関係・スクリプト
-└── CLAUDE.md               # Claude Codeプロジェクトルール
+└── AGENTS.md               # Codexプロジェクトルール
 ```
 
 ---
@@ -275,15 +274,19 @@ functions/
 | `GUIDELINES.md` | 実装ガイドライン | コード作成時 |
 | `UBIQUITOUS_LANGUAGE.md` | ドメイン用語定義 | 命名時 |
 
-### `docs/working/` - Working Documents（作業用ドキュメント）
+### `docs/superpowers/` - Spec / Plan Documents（実装前仕様・計画）
 
-Issue単位の仕様書。`{YYYYMMDD}_{Issue番号}_{タイトル}/` 形式で作成。PR完了後もGit保管（削除しない）。
+大きめの機能追加、業務フロー変更、データ構造変更、認証・認可・Rules・Functions に関わる変更で使う。
 
-最大4ファイル（タスク複雑度により調整）:
-- `requirement.md` - 要件定義（**必須**）
-- `tasklist.md` - タスクリスト（**必須**）
-- `design.md` - 設計書（複雑なタスクのみ）
-- `testing.md` - テスト計画（複雑なタスクのみ）
+```
+docs/superpowers/
+├── specs/                  # 実装前に合意した仕様・設計
+└── plans/                  # 仕様に基づく実装計画
+```
+
+- `specs/`: 背景、目的、期待する挙動、受け入れ条件、やらないこと、未決事項を記録
+- `plans/`: 実装手順、対象ファイル、検証方法、リスク、チェックポイントを記録
+- 長期方針に昇格した内容は `docs/steering/` に反映する
 
 ### その他
 
@@ -321,24 +324,16 @@ e2e/
 
 ---
 
-## `/.claude` - Claude Code設定・スキル
+## `/.claude` - Claude Code設定
 
-### `.claude/skills/` - Claude Codeスキル
+Claude Code 側の起動・設定ファイルのみを置く。
 
-各スキルは独立したディレクトリに `SKILL.md` を配置。
+| ファイル | 内容 |
+|--------|------|
+| `launch.json` | Claude Code 起動設定 |
+| `settings.json` | Claude Code ローカル設定 |
 
-| スキル | 内容 | 用途 |
-|--------|------|------|
-| `create-spec/` | Working Documents自動生成 | Issue仕様書の作成 |
-| `fix-issue/` | Issue解決ワークフロー | Working読込→実装→レビュー→PR |
-| `git-workflow/` | コミット・リリース | Workingからスコープ自動抽出 |
-| `issue-creator/` | Issue作成 | 調査→Issue→Working生成 |
-| `project-maintenance/` | メンテナンス監査 | リファクタリングIssue自動生成 |
-| `nano-banana-pro/` | 画像生成 | Gemini画像生成 |
-| `nextjs-firestore/` | Firebaseパターン参照 | 型定義、CRUD、Auth等 |
-| `roastplus-ui/` | UIデザインシステム | 配色・コンポーネント・レイアウト |
-| `remotion-best-practices/` | Remotionベストプラクティス | 動画生成のパターン |
-| `vercel-react-best-practices/` | Vercel/Reactベストプラクティス | フロントエンド実装 |
+リポジトリ専用の旧スキル群は使用しない。Codex作業ルールは `AGENTS.md`、永続仕様は `docs/steering/`、実装前仕様・計画は `docs/superpowers/` を参照する。
 
 ---
 
@@ -369,21 +364,6 @@ e2e/
 | `generate-sound-list.ts` | サウンドファイルリスト自動生成 |
 | `setup-worktrees.sh` | Git worktreeセットアップ |
 | `cleanup-worktrees.sh` | Git worktreeクリーンアップ |
-
----
-
-## `/remotion` - 動画生成（Remotion）
-
-Remotionを使用した動画生成機能。
-
-```
-remotion/
-├── index.ts               # エントリポイント
-├── Root.tsx                # ルートコンポーネント
-├── RoastPlusIntro.tsx      # イントロ動画
-├── TestComposition.tsx     # テスト用コンポジション
-└── scenes/                 # シーン定義
-```
 
 ---
 

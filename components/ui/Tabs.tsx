@@ -33,7 +33,7 @@ function useTabsContext() {
 }
 
 // Tabs Root
-export interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
+interface TabsProps extends React.HTMLAttributes<HTMLDivElement> {
   /** デフォルトで選択されるタブの値 */
   defaultValue: string;
   /** 制御された値 */
@@ -64,7 +64,7 @@ export const Tabs = forwardRef<HTMLDivElement, TabsProps>(
 Tabs.displayName = 'Tabs';
 
 // TabsList
-export type TabsListProps = React.HTMLAttributes<HTMLDivElement>;
+type TabsListProps = React.HTMLAttributes<HTMLDivElement>;
 
 export const TabsList = forwardRef<HTMLDivElement, TabsListProps>(({ children, className = '', ...props }, ref) => {
   return (
@@ -76,7 +76,7 @@ export const TabsList = forwardRef<HTMLDivElement, TabsListProps>(({ children, c
 TabsList.displayName = 'TabsList';
 
 // TabsTrigger
-export interface TabsTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface TabsTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /** このタブの値 */
   value: string;
 }
@@ -107,7 +107,7 @@ export const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(
 TabsTrigger.displayName = 'TabsTrigger';
 
 // TabsContent
-export interface TabsContentProps extends React.HTMLAttributes<HTMLDivElement> {
+interface TabsContentProps extends React.HTMLAttributes<HTMLDivElement> {
   /** このコンテンツの値 */
   value: string;
 }

@@ -167,7 +167,7 @@ export default function TimerPatternH() {
           <button className="p-3 rounded-full text-ink-muted transition-colors hover:text-ink-sub hover:bg-ground active:scale-95">
             <ArrowCounterClockwise size={22} weight="bold" />
           </button>
-          <button className="w-[60px] h-[60px] rounded-full bg-spot text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform">
+          <button className="w-[60px] h-[60px] rounded-full bg-spot text-on-spot flex items-center justify-center shadow-lg active:scale-95 transition-transform">
             <Play size={24} weight="fill" className="ml-0.5" />
           </button>
           <button className="p-3 rounded-full text-ink-muted transition-colors hover:text-ink-sub hover:bg-ground active:scale-95">

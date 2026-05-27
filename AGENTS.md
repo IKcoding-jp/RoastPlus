@@ -61,7 +61,8 @@ RoastPlus は、ドリップパックコーヒー製造業務を支援する現�
 ## Issue単位の作業ルール
 
 - 原則として `1 Issue = 1 PR = 1 Codexスレッド` で進める。
-- Issue作業では、Issue本文と `docs/working/*_{Issue番号}_*` を優先して確認する。
+- Issue作業では、Issue本文に加えて `docs/steering/*` を優先して確認する。
+- 大きめの機能追加、業務フロー変更、データ構造変更、認証・認可・Firestore Rules・Storage Rules・Cloud Functions に関わる変更では、実装前に `docs/superpowers/specs/` に仕様、`docs/superpowers/plans/` に実装計画を残す。
 - Issue外の改善、隣接コードの整理、無関係なリファクタリング、ついでの整形やコメント変更はしない。
 - 不明点が作業結果に影響する場合は、推測で実装せず、調査して選択肢とおすすめを示す。
 - Issueの目的と違う問題を見つけた場合は、勝手に直さず「別Issue候補」として報告する。
@@ -103,7 +104,8 @@ RoastPlus は、ドリップパックコーヒー製造業務を支援する現�
 - `types/`: TypeScript型定義
 - `functions/`: Firebase Cloud Functions
 - `docs/steering/`: 永続的な設計・仕様ドキュメント
-- `docs/working/`: Issue単位の作業仕様書
+- `docs/superpowers/specs/`: 実装前に合意した仕様・設計
+- `docs/superpowers/plans/`: 仕様に基づく実装計画
 - `e2e/`: Playwright E2Eテスト
 - `scripts/`: 自動化スクリプト
 
@@ -112,7 +114,7 @@ RoastPlus は、ドリップパックコーヒー製造業務を支援する現�
 作業内容に応じて、必要なものだけ読む。
 
 - `README.md`: プロジェクト概要
-- `CLAUDE.md`: 既存のClaude Code向け運用ルール。Codexでも参考にする
+- `AGENTS.md`: Codex作業ルール（本ファイル）
 - `DESIGN.md`: UIデザイン方針
 - `docs/steering/PRODUCT.md`: プロダクトの目的とスコープ
 - `docs/steering/FEATURES.md`: 機能仕様、UI実装ルール、禁止事項
@@ -120,6 +122,44 @@ RoastPlus は、ドリップパックコーヒー製造業務を支援する現�
 - `docs/steering/REPOSITORY.md`: ファイル配置、命名、依存方向
 - `docs/steering/GUIDELINES.md`: 実装規約、テスト、Git運用
 - `docs/steering/UBIQUITOUS_LANGUAGE.md`: ドメイン用語、命名
+
+## Skill活用方針
+
+RoastPlus作業では、依頼内容から必要なskillだけを選び、関係ないskillを同時に使いすぎない。
+迷う場合は、まず問題定義・スコープ整理を優先し、実装前に作るものを小さく区切る。
+
+### グローバルskillの使い分け
+
+- 要件定義: `problem-definition` → `working-backwards` → `writing-prds` の順で使う。
+- UX具体化: 画面フロー、状態、操作仕様が必要なら `ux-specification` を使う。
+- 技術設計: 実装方針、データ構造、テスト方針が必要なら `writing-specs-designs` を使う。
+- UI実装: UIを作る時は `frontend-design` と `design-systems` を優先し、既存の `DESIGN.md` と `components/ui` に合わせる。
+- UIレビュー: 見た目、コントラスト、アクセシビリティ、操作性の確認には `running-design-reviews`、`web-design-guidelines`、`usability-testing` を使う。
+- ユーザー理解: 聞き取りは `conducting-user-interviews`、アンケートは `designing-surveys`、集まった声の整理は `analyzing-user-feedback` を使う。
+- 初回利用: 利用者が迷わない導入や新機能説明には `user-onboarding` を使う。
+- 計画と判断: 優先順位は `prioritizing-roadmap`、技術順序は `technical-roadmaps`、日程は `managing-timelines`、範囲調整は `scoping-cutting`、案比較は `evaluating-trade-offs` を使う。
+- 開発運用: AI開発の進め方は `vibe-coding`、仕事後・休日開発の進め方は `personal-productivity`、技術負債は `managing-tech-debt`、振り返りは `post-mortems-retrospectives` を使う。
+- 技術採用: 新しい技術やライブラリの採用判断は `evaluating-new-technology` を使う。
+- AI機能: LLM、RAG、AI相談などを設計する時は `building-with-llms` を使う。
+- 文章化: Issue、PR、報告文、ChatGPTへの依頼文は `written-communication` を使う。
+- skill管理: 新しいskillが必要か迷う時は `find-skills` を使う。
+
+### RoastPlus専用skillの使い分け
+
+- `building-team-culture`: 8人規模の現場チーム運用、属人化防止、ルール定着。
+- `dogfooding`: RoastPlusを現場で使いながら改善する運用設計。
+- `having-difficult-conversations`: 注意、衝突、言いにくい改善提案、配慮が必要な話し合い。
+- `managing-up`: 管理者や本社へ相談、報告、承認依頼をする時。
+- `onboarding-new-hires`: 新メンバーへの引き継ぎ、教育、業務マニュアル運用。
+- `running-effective-1-1s`: 管理者や本社の人との1対1面談、相談内容の整理。
+- `running-effective-meetings`: 会議や打ち合わせを自分が進行する時。
+- `stakeholder-alignment`: 現場、管理者、本社の認識合わせや合意形成。
+- `team-rituals`: 定例、振り返り、日々の確認、マニュアル更新習慣。
+
+### 今後使わない方針
+
+- RoastPlus専用の `issue-creator`、`fix-issue`、`create-spec` は削除済み。Issue作成や修正は通常のCodex作業、AGENTS.md、必要なSuperpowers系skillで進める。
+- 汎用デザインDB型の `ui-ux-pro-max` は削除済み。RoastPlusのUIは `DESIGN.md`、`components/ui`、`frontend-design`、`design-systems`、`web-design-guidelines` を優先する。
 
 ## UI実装ルール
 

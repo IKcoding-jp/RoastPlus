@@ -109,7 +109,7 @@ export default function PageMockups() {
           <button
             onClick={() => setSelectedId(null)}
             className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-              selectedId === null ? 'bg-spot text-white' : 'bg-ground text-ink-sub hover:text-ink'
+              selectedId === null ? 'bg-spot text-on-spot' : 'bg-ground text-ink-sub hover:text-ink'
             }`}
           >
             全て表示
@@ -119,7 +119,7 @@ export default function PageMockups() {
               key={p.id}
               onClick={() => setSelectedId(selectedId === p.id ? null : p.id)}
               className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                selectedId === p.id ? 'bg-spot text-white' : 'bg-ground text-ink-sub hover:text-ink'
+                selectedId === p.id ? 'bg-spot text-on-spot' : 'bg-ground text-ink-sub hover:text-ink'
               }`}
             >
               {p.id}: {p.title.split(': ')[1]}

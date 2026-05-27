@@ -6,7 +6,7 @@ import { Button, type ButtonProps } from './Button';
 import { Input, type InputProps } from './Input';
 import { Modal } from './Modal';
 
-export interface FilterModalProps {
+interface FilterModalProps {
   show: boolean;
   onClose: () => void;
   title?: string;
@@ -43,7 +43,7 @@ export function FilterModal({
   );
 }
 
-export interface FilterSectionProps {
+interface FilterSectionProps {
   label: string;
   children: ReactNode;
   className?: string;
@@ -58,7 +58,7 @@ export function FilterSection({ label, children, className = '' }: FilterSection
   );
 }
 
-export interface FilterSearchInputProps extends Omit<InputProps, 'onChange'> {
+interface FilterSearchInputProps extends Omit<InputProps, 'onChange'> {
   value: string;
   onChange: (value: string) => void;
 }
@@ -85,7 +85,7 @@ export function FilterSearchInput({
   );
 }
 
-export interface FilterOptionButtonProps extends ButtonProps {
+interface FilterOptionButtonProps extends ButtonProps {
   selected?: boolean;
 }
 
@@ -95,7 +95,7 @@ export function FilterOptionButton({ selected = false, className = '', children,
       variant={selected ? 'ghost' : 'surface'}
       size="sm"
       className={`flex-1 !rounded-lg !px-3 !py-2 gap-1.5 justify-center ${
-        selected ? '!bg-spot !text-white !border-spot' : ''
+        selected ? '!bg-spot !text-on-spot !border-spot' : ''
       } ${className}`}
       {...props}
     >
@@ -104,7 +104,7 @@ export function FilterOptionButton({ selected = false, className = '', children,
   );
 }
 
-export interface FilterSortOptionProps extends ButtonProps {
+interface FilterSortOptionProps extends ButtonProps {
   selected?: boolean;
   icon?: ReactNode;
 }

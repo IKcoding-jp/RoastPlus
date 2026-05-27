@@ -72,7 +72,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
             onClick={onToggleTimer}
             className={clsx(
               'w-16 h-16 sm:w-20 sm:h-20 lg:w-24 lg:h-24 !p-0 shadow-xl active:scale-95 touch-manipulation',
-              isRunning ? 'bg-surface border-2 border-spot/20 text-spot' : 'bg-spot text-white shadow-spot/30'
+              isRunning ? 'bg-surface border-2 border-spot/20 text-spot' : 'bg-spot text-on-spot shadow-spot/30'
             )}
             aria-label={isRunning ? '一時停止' : '再生'}
           >
@@ -140,7 +140,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
             onClick={onToggleTimer}
             className={clsx(
               'w-20 h-20 lg:w-24 lg:h-24 !p-0 shadow-xl active:scale-95 touch-manipulation',
-              isRunning ? 'bg-surface border-2 border-spot/20 text-spot' : 'bg-spot text-white shadow-spot/30'
+              isRunning ? 'bg-surface border-2 border-spot/20 text-spot' : 'bg-spot text-on-spot shadow-spot/30'
             )}
             aria-label={isRunning ? '一時停止' : '再生'}
           >

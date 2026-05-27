@@ -106,7 +106,7 @@ export default function TimerPatternF() {
             {/* 現在ステップカード */}
             <div className="rounded-xl border-2 border-spot bg-spot-subtle/50 px-4 py-3">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-[10px] font-bold text-white bg-spot px-1.5 py-0.5 rounded uppercase tracking-wider">
+                <span className="text-[10px] font-bold text-on-spot bg-spot px-1.5 py-0.5 rounded uppercase tracking-wider">
                   NOW
                 </span>
                 <span className="font-bold text-ink text-base">{currentStep.title}</span>

@@ -26,7 +26,7 @@ import { forwardRef, useId } from 'react';
  * />
  */
 
-export interface NumberInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
+interface NumberInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
   /** 入力フィールドのラベル */
   label?: string;
   /** 単位などの接尾辞 */

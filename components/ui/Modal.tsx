@@ -5,7 +5,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ReactNode } from 'react';
 
-export interface ModalProps {
+interface ModalProps {
   /**
    * モーダルの表示/非表示
    */

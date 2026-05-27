@@ -29,11 +29,6 @@ export interface TaskLabel {
   order?: number;
 }
 
-export interface TaskLabelSnapshot {
-  date: string; // YYYY-MM-DD
-  labels: TaskLabel[];
-}
-
 export interface Assignment {
   teamId: string;
   taskLabelId: string;

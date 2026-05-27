@@ -18,7 +18,7 @@ import { forwardRef } from 'react';
  * <Badge variant="coffee">コーヒー</Badge>
  */
 
-export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
+interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   /** バッジのスタイルバリエーション */
   variant?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'coffee';
   /** サイズ */

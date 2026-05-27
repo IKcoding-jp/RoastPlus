@@ -63,7 +63,7 @@ export const Dialog46Form: React.FC<Dialog46FormProps> = ({
               onClick={() => onTasteChange(t)}
               className={`!py-3 !px-4 !text-sm justify-center ${
                 taste === t
-                  ? '!bg-spot !text-white shadow-md'
+                  ? '!bg-spot !text-on-spot shadow-md'
                   : '!bg-ground !text-ink-sub hover:!bg-ground/80 !border-0 !shadow-none'
               }`}
             >
@@ -86,7 +86,7 @@ export const Dialog46Form: React.FC<Dialog46FormProps> = ({
               onClick={() => onStrengthChange(s)}
               className={`!py-3 !px-4 !text-sm justify-center ${
                 strength === s
-                  ? '!bg-spot !text-white shadow-md'
+                  ? '!bg-spot !text-on-spot shadow-md'
                   : '!bg-ground !text-ink-sub hover:!bg-ground/80 !border-0 !shadow-none'
               }`}
             >

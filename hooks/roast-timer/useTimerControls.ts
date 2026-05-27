@@ -21,7 +21,7 @@ export interface UseTimerControlsArgs {
   currentDeviceId: string;
 }
 
-export interface UseTimerControlsReturn {
+interface UseTimerControlsReturn {
   startTimer: (
     duration: number,
     beanName?: string,
