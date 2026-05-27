@@ -185,11 +185,13 @@ export default function ProductionPackMonthlyPage() {
                     <th className="rounded-l-xl border-y border-l border-edge bg-spot-surface px-3 py-2.5 font-semibold">
                       作業日
                     </th>
-                    <th className="border-y border-edge bg-spot-surface px-3 py-2.5 text-right font-semibold">成功数</th>
-                    <th className="border-y border-edge bg-spot-surface px-3 py-2.5 text-right font-semibold">失敗数</th>
                     <th className="border-y border-edge bg-spot-surface px-3 py-2.5 text-right font-semibold">
-                      総数
+                      成功数
                     </th>
+                    <th className="border-y border-edge bg-spot-surface px-3 py-2.5 text-right font-semibold">
+                      失敗数
+                    </th>
+                    <th className="border-y border-edge bg-spot-surface px-3 py-2.5 text-right font-semibold">総数</th>
                     <th className="rounded-r-xl border-y border-r border-edge bg-spot-surface px-3 py-2.5 text-right font-semibold">
                       失敗率
                     </th>

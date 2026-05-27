@@ -118,10 +118,7 @@ export function subscribeRecentProductionPackRecords(
   );
 }
 
-export async function getProductionPackRecordsByMonth(
-  userId: string,
-  month: string
-): Promise<ProductionPackRecord[]> {
+export async function getProductionPackRecordsByMonth(userId: string, month: string): Promise<ProductionPackRecord[]> {
   const { startDate, endDate } = getProductionPackMonthRange(month);
   const recordsQuery = query(
     getProductionPackRecordsCollectionRef(userId),

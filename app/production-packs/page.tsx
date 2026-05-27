@@ -333,7 +333,8 @@ export default function ProductionPacksPage() {
   const canSave = canEditSelectedDate && !isCurrentLoading && !isSaving && formResult.error === '';
   const canDelete = isTodaySelected && currentRecord !== null && !isDeleting;
   const isReadOnly = !canEditSelectedDate || isSaving || isDeleting;
-  const todayRecord = records.find((record) => record.workDate === todayDate) ?? (isTodaySelected ? currentRecord : null);
+  const todayRecord =
+    records.find((record) => record.workDate === todayDate) ?? (isTodaySelected ? currentRecord : null);
 
   const handleCountChange = (key: keyof ProductionPackFormState, value: string) => {
     setForm((prev) => ({ ...prev, [key]: normalizePackCountFieldValue(value) }));
@@ -564,7 +565,9 @@ export default function ProductionPacksPage() {
 
             <div className="min-h-0 lg:max-h-[calc(100vh-23rem)] lg:overflow-y-auto lg:pr-1">
               {isListLoading ? (
-                <div className="flex min-h-[180px] items-center justify-center text-sm text-ink-muted">読み込み中...</div>
+                <div className="flex min-h-[180px] items-center justify-center text-sm text-ink-muted">
+                  読み込み中...
+                </div>
               ) : records.length === 0 ? (
                 <EmptyState
                   title="記録がありません"

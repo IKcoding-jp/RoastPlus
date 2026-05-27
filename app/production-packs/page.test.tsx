@@ -106,7 +106,9 @@ describe('ProductionPacksPage', () => {
 
     fireEvent.click(screen.getByRole('button', { name: '2026年5月23日' }));
 
-    await waitFor(() => expect(screen.getByText('過去日の追加・修正ができます。削除は当日分のみです。')).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByText('過去日の追加・修正ができます。削除は当日分のみです。')).toBeInTheDocument()
+    );
     expect(screen.getByRole('button', { name: '削除' })).toBeDisabled();
 
     fireEvent.click(screen.getByRole('button', { name: '削除' }));
