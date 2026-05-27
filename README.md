@@ -105,6 +105,28 @@ npm run build      # 本番ビルド（productionではstatic exportでout/を�
 npm run test:e2e   # Playwright E2E
 ```
 
+### E2Eテストのローカル実行
+
+`npm run test:e2e` は E2E 専用に `http://localhost:3100` を使います。
+通常は `scripts/run-e2e.ts` が開発サーバーを起動してから Playwright を実行します。
+
+既に E2E 用サーバーが `3100` で動いている場合、ローカルではそれを再利用します。
+CI では意図しないサーバーを使わないよう、既存サーバーがある場合は失敗させます。
+
+Windows で `3100` の利用状況を確認する場合:
+
+```powershell
+Get-NetTCPConnection -LocalPort 3100 -ErrorAction SilentlyContinue
+```
+
+別ポートで実行したい場合:
+
+```powershell
+$env:E2E_PORT = '3101'
+npm run test:e2e
+Remove-Item Env:E2E_PORT
+```
+
 ---
 
 ## 技術スタック

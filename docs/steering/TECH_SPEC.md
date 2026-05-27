@@ -287,6 +287,7 @@ npm run test:coverage
 - **バージョン**: `package.json` の `@playwright/test` を正とする
 - **ブラウザ**: Chromium
 - **設定**: `playwright.config.ts`
+- **ローカル起動**: 既定では `localhost:3100` を使う。`scripts/run-e2e.ts` が既存E2Eサーバーを再利用し、なければ起動する。
 
 | カテゴリ | ディレクトリ | 内容 |
 |---------|------------|------|

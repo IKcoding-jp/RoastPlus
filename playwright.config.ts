@@ -1,5 +1,14 @@
 import { defineConfig, devices } from '@playwright/test';
 
+const e2ePort = process.env.E2E_PORT ?? '3100';
+
+if (!/^\d+$/.test(e2ePort)) {
+  throw new Error(`E2E_PORT must be a numeric port, received: ${e2ePort}`);
+}
+
+const e2eBaseURL = `http://localhost:${e2ePort}`;
+const skipWebServer = process.env.E2E_SKIP_WEB_SERVER === '1';
+
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: false,
@@ -8,7 +17,7 @@ export default defineConfig({
   workers: 1,
   reporter: process.env.CI ? 'github' : 'html',
   use: {
-    baseURL: 'http://localhost:3100',
+    baseURL: e2eBaseURL,
     timezoneId: 'Asia/Tokyo',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
@@ -35,10 +44,14 @@ export default defineConfig({
       },
     },
   ],
-  webServer: {
-    command: 'env-cmd -f e2e/e2e.env npm run dev -- --port 3100',
-    url: 'http://localhost:3100',
-    reuseExistingServer: false,
-    timeout: 120_000,
-  },
+  webServer: skipWebServer
+    ? undefined
+    : {
+        command: `npm run generate:sound-list && env-cmd -f e2e/e2e.env -- node ./node_modules/next/dist/bin/next dev --port ${e2ePort}`,
+        url: e2eBaseURL,
+        reuseExistingServer: !process.env.CI,
+        stdout: 'ignore',
+        stderr: 'pipe',
+        timeout: 120_000,
+      },
 });

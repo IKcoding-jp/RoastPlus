@@ -35,9 +35,15 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const e2eMode = process.env.NEXT_PUBLIC_E2E_MODE === 'true';
+
   return (
     <html lang="ja" suppressHydrationWarning>
-      <body className="antialiased font-serif bg-page" suppressHydrationWarning>
+      <body
+        className="antialiased font-serif bg-page"
+        data-roastplus-e2e-mode={e2eMode ? 'true' : 'false'}
+        suppressHydrationWarning
+      >
         <SplashScreenWrapper />
         <ServiceWorkerRegistration />
         <ThemeProvider>

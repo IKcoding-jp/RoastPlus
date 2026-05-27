@@ -24,8 +24,8 @@
     "deadcode": "knip",
     "maintenance": "npm run complexity && npm run security && npm run deadcode && npm run skill:validate",
     "skill:validate": "tsx scripts/validate-ui-skill.ts",
-    "test:e2e": "env-cmd -f e2e/e2e.env playwright test",
-    "test:e2e:ui": "env-cmd -f e2e/e2e.env playwright test --ui",
+    "test:e2e": "tsx scripts/run-e2e.ts",
+    "test:e2e:ui": "tsx scripts/run-e2e.ts --ui",
     "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
