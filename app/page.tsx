@@ -268,7 +268,7 @@ export default function HomePage(_props: HomePageProps = {}) {
       {/* メインコンテンツ */}
       <main className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-2 pb-2 sm:px-6 sm:pt-3 sm:pb-3 flex-1 min-h-0">
         <div
-          className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4"
+          className="flex h-full flex-col gap-1.5 md:grid md:h-auto md:grid-cols-4 md:gap-4"
           style={cardHeight ? { gridAutoRows: `${cardHeight}px` } : { gridAutoRows: '1fr' }}
         >
           {visibleActions.map(({ key, title, description, href, icon: DefaultIcon, badge }, index) => {

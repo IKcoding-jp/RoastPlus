@@ -52,4 +52,10 @@ describe('HomePage', () => {
     expect(screen.queryByRole('button', { name: '開発秘話' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'その他' })).toBeInTheDocument();
   });
+
+  it('表示中の機能は1つのホームアクションとして表示する', () => {
+    render(<HomePage />);
+
+    expect(screen.getAllByRole('button', { name: '担当表' })).toHaveLength(1);
+  });
 });
