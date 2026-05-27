@@ -27,7 +27,7 @@ export function ActionCard({ title, description, href, icon: Icon, badge, index,
     <Button
       variant="ghost"
       onClick={() => router.push(href)}
-      className="group relative flex w-full flex-1 flex-row !items-center !justify-start gap-3 !rounded-xl border border-edge-strong bg-surface px-3 py-1.5 text-left text-ink shadow-card transition-all hover:bg-ground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 animate-home-card !min-h-[44px] md:h-[var(--home-card-height)] md:flex-none md:flex-col md:!justify-center md:gap-3 md:!rounded-2xl md:p-5 md:text-center md:shadow-2xl md:hover:-translate-y-2 md:hover:bg-surface md:hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)] md:!min-h-0"
+      className="group relative flex h-[var(--home-card-height)] w-full flex-none flex-row !items-center !justify-start gap-3 !rounded-xl border border-edge-strong bg-surface px-3 py-1.5 text-left text-ink shadow-card transition-all hover:bg-ground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 animate-home-card !min-h-[44px] md:flex-col md:!justify-center md:gap-3 md:!rounded-2xl md:p-5 md:text-center md:shadow-2xl md:hover:-translate-y-2 md:hover:bg-surface md:hover:shadow-[0_16px_40px_rgba(0,0,0,0.08)] md:!min-h-0"
       style={cardStyle}
       aria-label={title}
     >

@@ -209,15 +209,15 @@ export default function HomePage(_props: HomePageProps = {}) {
       const headerHeight = 72; // ヘッダーの高さ目安
       const paddingTop = 8; // pt-2 = 8px
       const paddingBottom = 8; // pb-2 = 8px
-      const rowCount = Math.max(Math.ceil(visibleActions.length / 2), 1);
-      const gridGap = Math.max(rowCount - 1, 0) * 12; // gap-3 = 12px
+      const rowCount = Math.max(visibleActions.length, 1);
+      const gridGap = Math.max(rowCount - 1, 0) * 6; // gap-1.5 = 6px
 
       const availableHeight = viewportHeight - headerHeight - paddingTop - paddingBottom;
       const cardHeightPerRow = (availableHeight - gridGap) / rowCount;
 
-      // 少ない表示件数でもカードが大きくなりすぎないようにする
-      const minCardHeight = 100;
-      const maxCardHeight = 150;
+      // スマホ一覧は少ない表示件数でも巨大化させず、全件表示時は1画面に収める
+      const minCardHeight = 44;
+      const maxCardHeight = 64;
       const calculatedHeight = Math.min(Math.max(cardHeightPerRow, minCardHeight), maxCardHeight);
 
       setCardHeight(calculatedHeight);
