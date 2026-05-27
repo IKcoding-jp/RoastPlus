@@ -1,13 +1,4 @@
-import {
-  doc,
-  getDocs,
-  onSnapshot,
-  query,
-  setDoc,
-  deleteDoc,
-  serverTimestamp,
-  where,
-} from 'firebase/firestore';
+import { doc, getDocs, onSnapshot, query, setDoc, deleteDoc, serverTimestamp, where } from 'firebase/firestore';
 import { TableSettings, ShuffleSettings, Manager, PairExclusion, normalizePairIds } from '@/types';
 import {
   getAssignmentSettingsCollection,

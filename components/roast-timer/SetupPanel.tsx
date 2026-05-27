@@ -145,5 +145,3 @@ export function SetupPanel({ onStart, isLoading, onWeightSelect }: SetupPanelPro
     </div>
   );
 }
-
-;
