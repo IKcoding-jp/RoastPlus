@@ -56,6 +56,7 @@
 ```bash
 npm run typecheck
 npm run lint
+npm run security
 npm run test:run
 npm run test:rules
 npm run build

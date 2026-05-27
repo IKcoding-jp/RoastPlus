@@ -20,6 +20,18 @@ jobs:
             ghcr.io/gitleaks/gitleaks:v8.30.0 \
             git --redact --no-banner --log-opts="origin/${{ github.base_ref }}..HEAD"
 
+  security:
+    name: Security
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run security
+
   typecheck:
     name: Typecheck
     runs-on: ubuntu-latest
