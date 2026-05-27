@@ -75,6 +75,82 @@ function productionPackSnapshot(
   };
 }
 
+describe('getProductionPackRecordDocRef', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('uses /users/{uid}/productionPackRecords/{YYYY-MM-DD} as the document path', async () => {
+    const { getProductionPackRecordDocRef } = await import('./productionPackRecords');
+
+    expect(getProductionPackRecordDocRef('user-1', '2026-05-24')).toEqual({
+      id: '2026-05-24',
+      path: 'users/user-1/productionPackRecords/2026-05-24',
+    });
+  });
+
+  it('rejects invalid work dates before building a Firestore document path', async () => {
+    const { getProductionPackRecordDocRef } = await import('./productionPackRecords');
+
+    expect(() => getProductionPackRecordDocRef('user-1', '2026-02-29')).toThrow('作業日が正しくありません');
+  });
+});
+
+describe('saveProductionPackRecord', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    firestoreMocks.transaction.get.mockResolvedValue({ exists: () => false, data: () => undefined });
+  });
+
+  it('saves the calculated record to the date-based production pack document', async () => {
+    const { saveProductionPackRecord } = await import('./productionPackRecords');
+
+    await saveProductionPackRecord('user-1', {
+      workDate: '2026-05-24',
+      teamA: { successCount: 10, failureCount: 1 },
+      teamB: { successCount: 20, failureCount: 2 },
+    });
+
+    expect(firestoreMocks.transaction.set).toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'users/user-1/productionPackRecords/2026-05-24' }),
+      {
+        workDate: '2026-05-24',
+        teamA: { successCount: 10, failureCount: 1 },
+        teamB: { successCount: 20, failureCount: 2 },
+        successTotal: 30,
+        failureTotal: 3,
+        total: 33,
+        createdAt: 'server-timestamp',
+        updatedAt: 'server-timestamp',
+      }
+    );
+  });
+
+  it('preserves createdAt when updating an existing record', async () => {
+    firestoreMocks.transaction.get.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ createdAt: 'existing-created-at' }),
+    });
+    const { saveProductionPackRecord } = await import('./productionPackRecords');
+
+    await saveProductionPackRecord('user-1', {
+      workDate: '2026-05-24',
+      teamA: { successCount: 1, failureCount: 0 },
+      teamB: { successCount: 2, failureCount: 0 },
+      note: '再確認済み',
+    });
+
+    expect(firestoreMocks.transaction.set).toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'users/user-1/productionPackRecords/2026-05-24' }),
+      expect.objectContaining({
+        note: '再確認済み',
+        createdAt: 'existing-created-at',
+        updatedAt: 'server-timestamp',
+      })
+    );
+  });
+});
+
 describe('deleteProductionPackRecord', () => {
   beforeEach(() => {
     vi.clearAllMocks();

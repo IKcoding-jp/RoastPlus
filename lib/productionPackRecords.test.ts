@@ -11,6 +11,7 @@ import {
   getProductionPackMonthlyCsvFileName,
   isProductionPackRecordEditable,
   isProductionPackWorkDateEditable,
+  isValidProductionPackWorkDate,
   isValidProductionPackMonth,
   normalizePackCountFieldValue,
   normalizePackCountInput,
@@ -26,12 +27,19 @@ describe('normalizePackCountInput', () => {
   it('accepts zero or positive integers', () => {
     expect(normalizePackCountInput('0')).toBe(0);
     expect(normalizePackCountInput('12')).toBe(12);
+    expect(normalizePackCountInput(0)).toBe(0);
+    expect(normalizePackCountInput(12)).toBe(12);
+    expect(normalizePackCountInput(null)).toBe(0);
+    expect(normalizePackCountInput(undefined)).toBe(0);
   });
 
   it('rejects negative, decimal, and non-number input', () => {
     expect(() => normalizePackCountInput('-1')).toThrow('0以上の整数で入力してください');
     expect(() => normalizePackCountInput('1.5')).toThrow('0以上の整数で入力してください');
     expect(() => normalizePackCountInput('abc')).toThrow('0以上の整数で入力してください');
+    expect(() => normalizePackCountInput(-1)).toThrow('0以上の整数で入力してください');
+    expect(() => normalizePackCountInput(1.5)).toThrow('0以上の整数で入力してください');
+    expect(() => normalizePackCountInput(Number.MAX_SAFE_INTEGER + 1)).toThrow('0以上の整数で入力してください');
   });
 });
 
@@ -68,6 +76,25 @@ describe('buildProductionPackRecord', () => {
     });
   });
 
+  it('normalizes count values before saving the record shape', () => {
+    const record = buildProductionPackRecord({
+      workDate: '2026-05-24',
+      teamA: { successCount: 1, failureCount: 0 },
+      teamB: { successCount: 0, failureCount: 2 },
+      note: '本社報告前に確認済み',
+    });
+
+    expect(record).toEqual({
+      workDate: '2026-05-24',
+      teamA: { successCount: 1, failureCount: 0 },
+      teamB: { successCount: 0, failureCount: 2 },
+      successTotal: 1,
+      failureTotal: 2,
+      total: 3,
+      note: '本社報告前に確認済み',
+    });
+  });
+
   it('rejects an invalid work date', () => {
     expect(() =>
       buildProductionPackRecord({
@@ -76,6 +103,17 @@ describe('buildProductionPackRecord', () => {
         teamB: { successCount: 0, failureCount: 0 },
       })
     ).toThrow('作業日が正しくありません');
+  });
+});
+
+describe('isValidProductionPackWorkDate', () => {
+  it('accepts real yyyy-mm-dd dates only', () => {
+    expect(isValidProductionPackWorkDate('2026-05-24')).toBe(true);
+    expect(isValidProductionPackWorkDate('2026-02-29')).toBe(false);
+    expect(isValidProductionPackWorkDate('2024-02-29')).toBe(true);
+    expect(isValidProductionPackWorkDate('2026-13-01')).toBe(false);
+    expect(isValidProductionPackWorkDate('2026-05-32')).toBe(false);
+    expect(isValidProductionPackWorkDate('2026-5-24')).toBe(false);
   });
 });
 
@@ -121,6 +159,7 @@ describe('isProductionPackWorkDateEditable', () => {
     expect(isProductionPackWorkDateEditable('2026-05-24', '2026-05-24')).toBe(true);
     expect(isProductionPackWorkDateEditable('2026-05-23', '2026-05-24')).toBe(true);
     expect(isProductionPackWorkDateEditable('2026-05-25', '2026-05-24')).toBe(false);
+    expect(isProductionPackWorkDateEditable('2026-02-29', '2026-05-24')).toBe(false);
   });
 });
 
@@ -207,6 +246,23 @@ describe('buildProductionPackMonthlySummary', () => {
         { workDate: '2026-05-02', successTotal: 130, failureTotal: 3, total: 133, failureRate: 3 / 133 },
       ],
     });
+  });
+
+  it('returns zero totals when the selected month has no active records', () => {
+    expect(buildProductionPackMonthlySummary('2026-07', records)).toEqual({
+      month: '2026-07',
+      totals: {
+        successTotal: 0,
+        failureTotal: 0,
+        total: 0,
+      },
+      failureRate: 0,
+      dailyRecords: [],
+    });
+  });
+
+  it('rejects an invalid target month', () => {
+    expect(() => buildProductionPackMonthlySummary('2026-13', records)).toThrow('対象年月が正しくありません');
   });
 });
 
