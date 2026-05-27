@@ -22,7 +22,13 @@ import { UserConsent } from '@/types';
 export default function SettingsPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const { isEnabled, isLoading: devModeLoading, enableDeveloperMode, disableDeveloperMode } = useDeveloperMode();
+  const {
+    isAvailable: isDeveloperModeAvailable,
+    isEnabled,
+    isLoading: devModeLoading,
+    enableDeveloperMode,
+    disableDeveloperMode,
+  } = useDeveloperMode();
   const { showToast } = useToastContext();
   const { version, isUpdateAvailable, isChecking, checkForUpdates, applyUpdate } = useAppVersion();
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -124,26 +130,27 @@ export default function SettingsPage() {
             </Card>
           </Link>
 
-          {/* 開発者モードセクション */}
-          <Card variant="default" className="p-6">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <h2 className="text-xl font-semibold text-ink mb-2">開発者モード</h2>
-                <p className="text-sm text-ink-sub">開発者向けの機能を有効化します</p>
+          {isDeveloperModeAvailable && (
+            <Card variant="default" className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <h2 className="text-xl font-semibold text-ink mb-2">開発者モード</h2>
+                  <p className="text-sm text-ink-sub">開発者向けの機能を有効化します</p>
+                </div>
+                <div className="ml-4">
+                  <Switch
+                    size="lg"
+                    checked={isEnabled}
+                    onChange={(e) => handleToggleChange(e.target.checked)}
+                    aria-label="開発者モードを切り替える"
+                  />
+                </div>
               </div>
-              <div className="ml-4">
-                <Switch
-                  size="lg"
-                  checked={isEnabled}
-                  onChange={(e) => handleToggleChange(e.target.checked)}
-                  aria-label="開発者モードを切り替える"
-                />
-              </div>
-            </div>
-          </Card>
+            </Card>
+          )}
 
           {/* Developer Design Lab（開発者モード有効時のみ表示） */}
-          {isEnabled && (
+          {isDeveloperModeAvailable && isEnabled && (
             <Link href="/dev/design-lab" className="block">
               <Card variant="hoverable" className="p-6">
                 <div className="flex items-center justify-between">

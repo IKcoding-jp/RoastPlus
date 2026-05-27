@@ -809,12 +809,13 @@ ESLintカスタムルール（`no-raw-button`, `no-raw-checkbox`, `no-raw-select
 ### 設定（Settings）
 - **目的**: 開発者モード、テーマ設定、アプリバージョン管理
 - **パス**: `/settings`（設定一覧）、`/settings/theme`（テーマ設定専用ページ）
-- **技術**: localStorage（テーマ）、Firestore（開発者モード）
+- **技術**: localStorage（テーマ、開発者モード）
 - **テーマ設定UI**: パターンBデザイン（デスクトップ4列/モバイル2列）で7テーマプリセットから選択。各カードはwhite背景+border、テーマカラーの48px丸カラードット（`previewGradient`グラデーション）、テーマ名（15px bold）、説明文（12.5px）、選択時は右上に黄金チェックマーク（20px丸）。アニメーションなし・LIGHT/DARKバッジなし・色スウォッチなし
 
 ### Developer Design Lab
 - **目的**: 開発者向けデザインモック検証ツール
-- **パス**: `/dev/design-lab`（開発者モード有効時のみアクセス可）
+- **パス**: `/dev/design-lab`（開発環境のみ。`page.dev.tsx` と `next.config.ts` の `pageExtensions` により production build から除外）
+- **注意**: 開発者モードの固定パスワードは開発中の表示切替であり、本番のアクセス制御として扱わない
 - **セクション**: コンポーネントギャラリー、アニメーション、ページモック、カラーパレット、タイポグラフィ、バリエーション、パターン比較、レスポンシブプレビュー
 - **技術**: タブ切替式サイドナビ、既存registry.tsx/splashPatterns連携
 - **統合元**: `/ui-test`（リダイレクト）、`/dev/splash-preview`（リダイレクト）
