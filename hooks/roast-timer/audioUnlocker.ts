@@ -4,7 +4,7 @@
  */
 
 /** 音声パスを解決する */
-export function resolveAudioPath(path: string): string {
+function resolveAudioPath(path: string): string {
   const audioPath = path.startsWith('/') ? path : `/${path}`;
   const version = process.env.NEXT_PUBLIC_APP_VERSION || '0.5.5';
   return `${audioPath}?v=${version}`;

@@ -1,6 +1,6 @@
 # Features
 
-**最終更新**: 2026-03-07
+**最終更新**: 2026-05-26
 
 ---
 
@@ -161,7 +161,7 @@ interface Assignment {
 ### 主要ユースケース
 1. テイスティングセッション作成
 2. フレーバーホイール評価（5軸: aroma, acidity, sweetness, body, aftertaste）
-3. AI分析（Firebase Cloud Functions経由でGPT-4o）自動実行
+3. AI分析（Firebase Cloud Functions経由でgpt-4o-mini）自動実行
 4. 他ユーザーの感想閲覧
 
 ### UI実装ルール
@@ -179,7 +179,7 @@ interface Assignment {
 |-----|------|
 | **ページ** | `app/tasting/page.tsx` |
 | **コンポーネント** | `components/tasting/FlavorWheel.tsx`<br>`components/tasting/TastingCard.tsx` |
-| **AI** | Firebase Cloud Functions v2 `analyzeTastingSession`（GPT-4o）<br>クライアント: `httpsCallable(functions, 'analyzeTastingSession')` |
+| **AI** | Firebase Cloud Functions v2 `analyzeTastingSession`（gpt-4o-mini）<br>クライアント: `httpsCallable(functions, 'analyzeTastingSession')` |
 | **Firestore** | `users/{userId}` ドキュメント内のフィールド |
 
 ### 設計方針
@@ -191,7 +191,7 @@ interface Assignment {
 #### AI分析
 - **自動実行**: フレーバーホイール評価後、自動的にAI分析を実行
 - **実装**: Firebase Cloud Functions v2で`analyzeTastingSession`関数を呼び出し
-- **モデル**: OpenAI GPT-4o（テキスト生成）
+- **モデル**: OpenAI gpt-4o-mini（テキスト生成）
 - **プロンプト**: 5軸スコアを元に、コーヒーの特徴を解析
 
 #### データモデル
@@ -390,7 +390,7 @@ interface RoastRecord {
 | **共有コンポーネント** | `components/work-progress/WorkProgressCard.tsx`<br>`components/work-progress/QuickAddModal.tsx`<br>`components/work-progress/ProgressHistoryEditDialog.tsx` |
 | **フック** | `hooks/useWorkProgressActions.ts` |
 | **型定義** | `types/work-progress.ts` |
-| **Firestore** | `users/{userId}` ドキュメント内の `workProgresses` フィールド |
+| **Firestore** | `users/{userId}/workProgresses/{workProgressId}` サブコレクション<br>旧フィールドからの読み取り・分割同期を考慮 |
 
 ### 設計方針
 
@@ -633,7 +633,9 @@ PWA起動時のブランドアニメーション表示、OSネイティブスプ
 #### 目的
 デザイン統一、マルチテーマ対応
 
-#### コンポーネント一覧（19エクスポート）
+#### コンポーネント一覧
+
+最新のエクスポートは `components/ui/index.ts` を正とする。
 
 **ボタン系**
 - **Button**: 基本ボタン（variant: primary, secondary, ghost）
@@ -652,6 +654,7 @@ PWA起動時のブランドアニメーション表示、OSネイティブスプ
 - **Card**: カード（variant: default, table, feature）
 - **Modal**: モーダルダイアログ
 - **Dialog**: ダイアログ
+- **FilterModal**: 絞り込み用モーダル
 
 **表示系**
 - **Badge**: バッジ
@@ -662,6 +665,7 @@ PWA起動時のブランドアニメーション表示、OSネイティブスプ
 
 **ナビゲーション系**
 - **BackLink**: 戻るリンク
+- **FloatingNav**: フローティングナビゲーション
 - **RoastLevelBadge**: 焙煎度バッジ
 
 #### 技術要素
@@ -669,7 +673,7 @@ PWA起動時のブランドアニメーション表示、OSネイティブスプ
 | 要素 | 内容 |
 |-----|------|
 | **ディレクトリ** | `components/ui/` |
-| **エクスポート数** | 19個（`components/ui/index.ts`） |
+| **エクスポート数** | 固定値を書かず、`components/ui/index.ts` を参照 |
 | **レジストリ** | `components/ui/registry.tsx`（UIカタログ） |
 | **テストページ** | `/dev/design-lab`（Developer Design Lab、開発者モードで表示） |
 
@@ -699,7 +703,7 @@ const { isChristmasTheme } = useAppTheme();
 ```
 
 **3. 配色参照**
-- ✅ **参照**: `.claude/skills/roastplus-ui/references/design-tokens.md`
+- ✅ **参照**: `DESIGN.md`、`docs/steering/FEATURES.md` のテーマシステム、`AGENTS.md` のUI実装ルール
 
 **4. 新規コンポーネント追加時のレジストリ登録**
 新しい共通UIコンポーネントを作成した場合、**必ず以下の手順で登録すること**：
@@ -819,6 +823,12 @@ ESLintカスタムルール（`no-raw-button`, `no-raw-checkbox`, `no-raw-select
 - **目的**: リリースノート表示
 - **技術**: マークダウンファイル読み込み
 
+### お問い合わせ（Contact）
+- **目的**: ユーザーからの質問・不具合報告・要望受付
+- **パス**: `/contact`
+- **技術**: EmailJS（`@emailjs/browser`）、`NEXT_PUBLIC_EMAILJS_*` 環境変数
+- **注意**: クライアント側で扱う公開設定のみを使用し、秘密情報は置かない
+
 ### デジタル時計（Clock）
 - **目的**: iPadを現場に置き、遠距離から時刻・日付・曜日・次の作業区切りを確認できる大型デジタル時計表示
 - **パス**: `/clock`
@@ -833,7 +843,7 @@ ESLintカスタムルール（`no-raw-button`, `no-raw-checkbox`, `no-raw-select
 
 ## Firestoreデータモデル概要
 
-本アプリのデータは主に `users/{userId}` ドキュメント内のフィールドとして格納される。独立したトップレベルコレクションではない点に注意。
+本アプリのユーザー別データは主に `users/{userId}` ドキュメント内のフィールド、または `users/{userId}` 配下のサブコレクションとして格納される。トップレベルに共有データを置く例は限定的。
 
 | データ種別 | 格納場所 | 備考 |
 |-----------|---------|------|
@@ -843,8 +853,8 @@ ESLintカスタムルール（`no-raw-button`, `no-raw-checkbox`, `no-raw-select
 | クイズ進捗 | `users/{userId}` のフィールド | |
 | テイスティング | `users/{userId}` のフィールド | |
 | スケジュール | `users/{userId}` のフィールド | |
-| 作業進捗 | `users/{userId}` の `workProgresses` フィールド | 配列 |
-| 担当表 | サブコレクション | Assignment固有のデータ構造 |
+| 作業進捗 | `users/{userId}/workProgresses/{workProgressId}` | サブコレクション。旧フィールドは互換読み取り・移行補助の対象 |
+| 担当表 | `users/{userId}` 配下のサブコレクション | Assignment固有のデータ構造 |
 | 欠点豆 | `defectBeans` コレクション | 共有データ（全ユーザー共通） |
 | メタデータ | `_meta` コレクション | システム管理用 |
 
@@ -852,12 +862,12 @@ ESLintカスタムルール（`no-raw-button`, `no-raw-checkbox`, `no-raw-select
 
 ## AI機能概要
 
-本アプリではOpenAI GPT-4oをFirebase Cloud Functions v2経由で使用する。API Routeは使用しない（静的エクスポートのため）。
+本アプリではOpenAI APIをFirebase Cloud Functions v2経由で使用する。API Routeは使用しない（静的エクスポートのため）。
 
 | 機能 | Cloud Function名 | AIモデル | 用途 |
 |------|-----------------|---------|------|
 | スケジュールOCR | `ocrScheduleFromImage` | GPT-4o（Vision） | 画像からスケジュール情報を抽出 |
-| テイスティング分析 | `analyzeTastingSession` | GPT-4o（テキスト） | フレーバー評価のAI分析 |
+| テイスティング分析 | `analyzeTastingSession` | gpt-4o-mini（テキスト） | フレーバー評価のAI分析 |
 
 **呼び出し方法**: クライアント側で `httpsCallable(functions, 'functionName')` を使用
 **シークレット管理**: OPENAI_API_KEY は Firebase Secret Manager で管理

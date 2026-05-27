@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { IoArrowBack } from 'react-icons/io5';
 
-export interface FloatingNavProps {
+interface FloatingNavProps {
   backHref?: string;
   right?: React.ReactNode;
   className?: string;

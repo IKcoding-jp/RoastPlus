@@ -22,7 +22,7 @@ import { forwardRef, useId } from 'react';
  * />
  */
 
-export interface SwitchProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> {
+interface SwitchProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> {
   /** スイッチのラベル */
   label?: string;
   /** サイズ */

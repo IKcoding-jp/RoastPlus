@@ -82,7 +82,7 @@ export function QuizOption({
   const getLetterStyles = () => {
     if (!showFeedback) {
       if (isSelected) {
-        return 'bg-spot text-white';
+        return 'bg-spot text-on-spot';
       }
       return 'bg-edge-subtle text-ink-sub';
     }
@@ -129,7 +129,7 @@ export function QuizOption({
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.15, type: 'spring', stiffness: 400, damping: 15 }}
-          className="flex items-center gap-1 px-2 py-0.5 bg-spot text-white rounded-full text-xs font-bold"
+          className="flex items-center gap-1 px-2 py-0.5 bg-spot text-on-spot rounded-full text-xs font-bold"
         >
           +{xpEarned} XP
         </motion.span>

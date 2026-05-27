@@ -81,7 +81,7 @@ export const CLOCK_THEMES: Record<ClockTheme, { label: string; colors: ThemeColo
 
 export type ClockFontKey = 'inter' | 'robotoMono' | 'oswald' | 'orbitron' | 'notoSansJP';
 
-export interface ClockFontOption {
+interface ClockFontOption {
   label: string;
   cssVar: string;
   fallback: string;

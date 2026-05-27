@@ -2,11 +2,11 @@ import type { User } from 'firebase/auth';
 import type { AppData } from '@/types';
 import { createConsentData } from '@/lib/consent';
 
-export const E2E_AUTH_STORAGE_KEY = 'roastplus_e2e_auth';
-export const E2E_APP_DATA_STORAGE_KEY = 'roastplus_e2e_app_data';
+const E2E_AUTH_STORAGE_KEY = 'roastplus_e2e_auth';
+const E2E_APP_DATA_STORAGE_KEY = 'roastplus_e2e_app_data';
 export const E2E_EMAIL = 'e2e@example.com';
 export const E2E_PASSWORD = 'password123';
-export const E2E_USER_ID = 'e2e-user';
+const E2E_USER_ID = 'e2e-user';
 
 export function isE2EMode(): boolean {
   return process.env.NEXT_PUBLIC_E2E_MODE === 'true';

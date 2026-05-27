@@ -50,7 +50,7 @@ export interface AnswerResult {
 }
 
 // 問題の統計情報の型
-export interface QuestionsStats {
+interface QuestionsStats {
   total: number;
   byCategory: Record<QuizCategory, number>;
   byDifficulty: Record<QuizDifficulty, number>;

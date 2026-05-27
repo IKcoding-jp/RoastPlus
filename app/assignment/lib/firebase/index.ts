@@ -1,19 +1,11 @@
 // helpers
-export {
-  toMillisSafe,
-  DEFAULT_TABLE_SETTINGS,
-  DEFAULT_SHUFFLE_SETTINGS,
-  normalizeAssignmentsForDate,
-  sortAssignmentsStable,
-  areAssignmentsEqual,
-} from './helpers';
+export { DEFAULT_SHUFFLE_SETTINGS } from './helpers';
 
 // assignment
 export {
   getServerTodayDate,
   mutateAssignmentDay,
   updateAssignmentDay,
-  subscribeAssignmentDay,
   subscribeLatestAssignmentDay,
   fetchRecentAssignments,
 } from './assignment';
@@ -54,7 +46,6 @@ export {
   subscribeManager,
   setManager,
   deleteManager,
-  fetchPairExclusions,
   subscribePairExclusions,
   addPairExclusion,
   deletePairExclusion,

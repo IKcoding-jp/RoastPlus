@@ -24,7 +24,7 @@ import { forwardRef } from 'react';
  * />
  */
 
-export interface InlineInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InlineInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   /** 背景のバリエーション */
   variant?: 'light' | 'dark';
   /** テキストの配置 */

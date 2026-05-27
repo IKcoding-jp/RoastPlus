@@ -1,10 +1,13 @@
 import React from 'react';
-import { Team, TaskLabel, Assignment, Member, TableSettings } from '@/types';
-import { MdAdd } from 'react-icons/md';
-import { PiShuffleBold } from 'react-icons/pi';
-import { DEFAULT_TABLE_SETTINGS, WidthConfig, HeightConfig } from './types';
-import { Button, Input, InlineInput, IconButton, Card } from '@/components/ui';
-import { MAX_TEAMS, MAX_TASK_LABELS } from '../../lib/constants';
+
+import { Card } from '@/components/ui';
+import type { Assignment, Member, TableSettings, TaskLabel, Team } from '@/types';
+
+import { DesktopTableBody } from './DesktopTableBody';
+import { DesktopTableFooter } from './DesktopTableFooter';
+import { DesktopTableHeader } from './DesktopTableHeader';
+import { getDesktopGridTemplateColumns } from './desktopTableViewLayout';
+import { DEFAULT_TABLE_SETTINGS, type HeightConfig, type WidthConfig } from './types';
 
 type DesktopTableViewProps = {
   teams: Team[];
@@ -81,335 +84,59 @@ export const DesktopTableView: React.FC<DesktopTableViewProps> = ({
   isShuffleDisabled,
 }) => {
   const headerLabels = tableSettings?.headerLabels ?? DEFAULT_TABLE_SETTINGS.headerLabels;
-  const formatTeamTitle = (teamName?: string) => {
-    return teamName && teamName.trim().length > 0 ? `${teamName.trim()}班` : '';
-  };
-
-  const generateGridTemplateColumns = () => {
-    const defaultWidth = 140;
-    const labelWidth = tableSettings?.colWidths?.taskLabel ?? 160;
-    const noteWidth = tableSettings?.colWidths?.note ?? 160;
-
-    if (teams.length === 0) {
-      return `${labelWidth}px 160px ${noteWidth}px`;
-    }
-
-    const teamColumns = teams
-      .map((team) => {
-        const w = tableSettings?.colWidths?.teams?.[team.id] ?? defaultWidth;
-        return `${w}px`;
-      })
-      .join(' ');
-
-    return `${labelWidth}px ${teamColumns} ${noteWidth}px`;
-  };
-
-  const gridTemplateColumns = generateGridTemplateColumns();
+  const gridTemplateColumns = getDesktopGridTemplateColumns(teams, tableSettings);
 
   return (
     <Card variant="table" className="hidden md:block w-fit mx-auto max-w-full overflow-x-auto relative">
-      {/* ヘッダー */}
-      <div
-        className="grid border-b md:text-base font-semibold text-white sticky top-0 z-20 bg-dark border-gray-700"
-        style={{ gridTemplateColumns, minWidth: 'max-content' }}
-      >
-        <div
-          className="py-2 px-2 sm:px-3 border-r flex items-center justify-center cursor-pointer transition-colors bg-dark border-gray-700 hover:bg-gray-800"
-          onClick={() =>
-            setWidthConfig({
-              type: 'taskLabel',
-              currentWidth: tableSettings?.colWidths?.taskLabel ?? 160,
-              label: `${headerLabels.left}列の幅`,
-              currentTitle: headerLabels.left,
-            })
-          }
-          title="クリックして幅を変更"
-        >
-          {headerLabels.left}
-        </div>
+      <DesktopTableHeader
+        teams={teams}
+        tableSettings={tableSettings}
+        gridTemplateColumns={gridTemplateColumns}
+        headerLabels={headerLabels}
+        isAddingTeam={isAddingTeam}
+        setIsAddingTeam={setIsAddingTeam}
+        newTeamName={newTeamName}
+        setNewTeamName={setNewTeamName}
+        handleAddTeam={handleAddTeam}
+        editingTeamId={editingTeamId}
+        editTeamName={editTeamName}
+        setEditTeamName={setEditTeamName}
+        handleUpdateTeam={handleUpdateTeam}
+        setActiveTeamActionId={setActiveTeamActionId}
+        setActiveTeamName={setActiveTeamName}
+        setWidthConfig={setWidthConfig}
+      />
 
-        {/* チーム列 */}
-        {teams.length === 0 ? (
-          <div className="py-2 px-2 border-r text-center flex flex-col items-center justify-center h-full min-h-[44px] bg-dark border-gray-700">
-            {isAddingTeam ? (
-              <div className="relative z-20 flex items-center shadow-lg rounded p-1 w-32 md:w-40 bg-surface border border-spot">
-                <InlineInput
-                  placeholder="班名(任意)"
-                  value={newTeamName}
-                  onChange={(e) => setNewTeamName(e.target.value)}
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleAddTeam();
-                    if (e.key === 'Escape') setIsAddingTeam(false);
-                  }}
-                  variant="dark"
-                  className="!border-none !px-1 md:!p-2 md:!text-base !text-sm"
-                />
-                <IconButton variant="primary" size="sm" onClick={handleAddTeam}>
-                  <MdAdd size={20} className="md:w-6 md:h-6" />
-                </IconButton>
-              </div>
-            ) : (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsAddingTeam(true)}
-                className="!text-sm md:!text-base !gap-1 !bg-transparent"
-              >
-                <MdAdd className="md:w-5 md:h-5" /> 最初の班を追加
-              </Button>
-            )}
-          </div>
-        ) : (
-          teams.map((team) => (
-            <div
-              key={team.id}
-              className="py-2 px-2 border-r text-center relative group flex items-center justify-center bg-dark border-gray-700"
-            >
-              {editingTeamId === team.id ? (
-                <InlineInput
-                  value={editTeamName}
-                  onChange={(e) => setEditTeamName(e.target.value)}
-                  autoFocus
-                  onKeyDown={(e) => e.key === 'Enter' && handleUpdateTeam(team.id)}
-                  onBlur={() => handleUpdateTeam(team.id)}
-                  variant="light"
-                  className="!text-sm md:!text-base"
-                />
-              ) : (
-                <div
-                  className="cursor-pointer rounded px-2 py-1 truncate w-full select-none hover:bg-gray-800 active:bg-gray-700 min-h-[28px] flex items-center justify-center"
-                  onClick={() => {
-                    setActiveTeamActionId(team.id);
-                    setActiveTeamName(team.name);
-                  }}
-                >
-                  {formatTeamTitle(team.name) || <span className="text-gray-500 text-xs">班名を設定</span>}
-                </div>
-              )}
-            </div>
-          ))
-        )}
-
-        {/* チーム追加 & 補足ヘッダー */}
-        <div
-          className="py-2 px-2 sm:px-3 text-center flex items-center justify-between relative cursor-pointer transition-colors bg-dark hover:bg-gray-800"
-          onClick={(e) => {
-            if ((e.target as HTMLElement).closest('button, input')) return;
-            setWidthConfig({
-              type: 'note',
-              currentWidth: tableSettings?.colWidths?.note ?? 160,
-              label: `${headerLabels.right}列の幅`,
-              currentTitle: headerLabels.right,
-            });
-          }}
-          title="クリックして幅を変更"
-        >
-          <div className="relative">
-            {teams.length > 0 &&
-              teams.length < MAX_TEAMS &&
-              (isAddingTeam ? (
-                <>
-                  <div
-                    className="fixed inset-0 z-10"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsAddingTeam(false);
-                    }}
-                  />
-                  <div className="absolute top-1/2 -translate-y-1/2 right-0 z-20 flex items-center shadow-lg rounded p-1 w-32 md:w-40 bg-surface border border-spot">
-                    <InlineInput
-                      placeholder="班名(任意)"
-                      value={newTeamName}
-                      onChange={(e) => setNewTeamName(e.target.value)}
-                      autoFocus
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleAddTeam();
-                        if (e.key === 'Escape') setIsAddingTeam(false);
-                      }}
-                      variant="dark"
-                      className="!border-none !px-1 md:!p-2 !text-sm md:!text-base"
-                    />
-                    <IconButton variant="primary" size="sm" onClick={handleAddTeam}>
-                      <MdAdd size={20} className="md:w-6 md:h-6" />
-                    </IconButton>
-                  </div>
-                </>
-              ) : (
-                <IconButton
-                  variant="ghost"
-                  size="sm"
-                  rounded
-                  onClick={() => setIsAddingTeam(true)}
-                  className="!bg-gray-700 !text-gray-300 hover:!bg-primary hover:!text-white"
-                  title="班を追加"
-                >
-                  <MdAdd size={16} className="md:w-5 md:h-5" />
-                </IconButton>
-              ))}
-          </div>
-          <span className="whitespace-nowrap">{headerLabels.right}</span>
-          <span className="w-4"></span>
-        </div>
-      </div>
-
-      {/* ボディ */}
       <div className="divide-y divide-edge bg-surface" style={{ minWidth: 'max-content' }}>
-        {taskLabels.map((label) => (
-          <div
-            key={label.id}
-            className="grid items-center transition-colors group hover:bg-ground/50"
-            style={{
-              gridTemplateColumns,
-              minHeight: `${tableSettings?.rowHeights?.[label.id] ?? 60}px`,
-            }}
-          >
-            {/* 左ラベル列 */}
-            <div
-              className="p-3 md:p-4 py-2 border-r h-full flex items-center justify-center border-edge cursor-pointer transition-colors hover:bg-ground"
-              onClick={() => {
-                setHeightConfig({
-                  taskLabelId: label.id,
-                  currentHeight: tableSettings?.rowHeights?.[label.id] ?? 60,
-                  label: `${headerLabels.left}の設定`,
-                  currentName: label.leftLabel,
-                  editMode: 'left',
-                  currentRightLabel: label.rightLabel || '',
-                });
-              }}
-            >
-              <div className="w-full p-1 font-medium text-sm md:text-base whitespace-nowrap text-center overflow-visible text-ink">
-                {label.leftLabel}
-              </div>
-            </div>
+        <DesktopTableBody
+          teams={teams}
+          taskLabels={taskLabels}
+          assignments={assignments}
+          members={members}
+          tableSettings={tableSettings}
+          selectedCell={selectedCell}
+          gridTemplateColumns={gridTemplateColumns}
+          headerLabels={headerLabels}
+          setHeightConfig={setHeightConfig}
+          handleCellTouchStart={handleCellTouchStart}
+          handleCellTouchEnd={handleCellTouchEnd}
+          handleCellTouchMove={handleCellTouchMove}
+          handleCellClick={handleCellClick}
+        />
 
-            {/* 各チームの担当者列 */}
-            {teams.length === 0 ? (
-              <div className="p-2 md:p-4 border-r h-full flex items-center justify-center border-edge bg-ground/30">
-                <span className="text-xs md:text-sm text-ink-muted">班を作成してください</span>
-              </div>
-            ) : (
-              teams.map((team) => {
-                const assignment = assignments.find((a) => a.teamId === team.id && a.taskLabelId === label.id);
-                const member = members.find((m) => m.id === assignment?.memberId);
-                const isSelected = selectedCell?.teamId === team.id && selectedCell?.taskLabelId === label.id;
-
-                return (
-                  <div
-                    key={team.id}
-                    className="p-2 md:p-4 py-2 border-r h-full flex items-center justify-center relative border-edge"
-                  >
-                    <Button
-                      variant={isSelected ? (member ? 'primary' : 'outline') : 'surface'}
-                      onMouseDown={(e) => handleCellTouchStart(team.id, label.id, member?.id || null, e)}
-                      onMouseUp={handleCellTouchEnd}
-                      onMouseMove={handleCellTouchMove}
-                      onMouseLeave={handleCellTouchEnd}
-                      onTouchStart={(e) => handleCellTouchStart(team.id, label.id, member?.id || null, e)}
-                      onTouchEnd={handleCellTouchEnd}
-                      onTouchMove={handleCellTouchMove}
-                      onClick={() => handleCellClick(team.id, label.id)}
-                      className={`
-                                                !min-h-0 w-full py-2 md:py-3 px-1 !rounded-lg text-sm md:text-base !font-bold text-center transition-all truncate select-none
-                                                ${member && isSelected ? 'shadow-md scale-105' : ''} ${
-                                                  !member && isSelected ? '!bg-surface !border-spot' : ''
-                                                } ${!member && !isSelected ? '!text-ink-muted !bg-ground !border-dashed !border-edge-strong hover:!bg-ground/80 !shadow-none' : ''}
-                                            `}
-                    >
-                      {member ? member.name : '未割当'}
-                    </Button>
-                  </div>
-                );
-              })
-            )}
-
-            {/* 右ラベル列 */}
-            <div
-              className="p-3 md:p-4 py-2 border-l h-full flex items-center border-edge cursor-pointer transition-colors hover:bg-ground"
-              onClick={() => {
-                setHeightConfig({
-                  taskLabelId: label.id,
-                  currentHeight: tableSettings?.rowHeights?.[label.id] ?? 60,
-                  label: `${headerLabels.right}の設定`,
-                  currentName: label.rightLabel || '',
-                  editMode: 'right',
-                  currentRightLabel: label.leftLabel,
-                });
-              }}
-            >
-              <div className="w-full p-1 font-medium text-sm md:text-base whitespace-nowrap text-center overflow-visible text-ink">
-                {label.rightLabel}
-              </div>
-            </div>
-          </div>
-        ))}
-
-        {/* 新規ラベル追加行 / シャッフル */}
-        <div
-          className="grid items-center py-2 border-t min-h-[60px] bg-ground border-edge"
-          style={{ gridTemplateColumns }}
-        >
-          {taskLabels.length < MAX_TASK_LABELS ? (
-            <div className="px-2">
-              <Input
-                value={newLeftLabel}
-                onChange={(e) => setNewLeftLabel(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleAddTaskLabel();
-                }}
-                placeholder={`${headerLabels.left}を入力`}
-                className="!p-2 !text-sm !min-h-0 !text-center"
-              />
-            </div>
-          ) : (
-            <div />
-          )}
-
-          {/* シャッフル & 追加ボタン（中央配置） */}
-          <div
-            className="col-span-full px-2 flex items-center justify-center gap-3"
-            style={{ gridColumn: `2 / span ${Math.max(1, teams.length)}` }}
-          >
-            {taskLabels.length < MAX_TASK_LABELS && (
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={handleAddTaskLabel}
-                disabled={!newLeftLabel.trim()}
-                className="!rounded-full !px-4 shadow-md active:scale-95"
-              >
-                <MdAdd size={18} />
-                <span className="font-medium text-sm">担当を追加</span>
-              </Button>
-            )}
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={onShuffle}
-              disabled={isShuffleDisabled}
-              className="!rounded-full !px-4 shadow-md active:scale-95"
-            >
-              <PiShuffleBold className="w-5 h-5" />
-              <span className="font-medium text-sm">シャッフル</span>
-            </Button>
-          </div>
-
-          {taskLabels.length < MAX_TASK_LABELS ? (
-            <div className="px-2 flex items-center w-full h-full" style={{ gridColumn: '-2 / -1' }}>
-              <Input
-                value={newRightLabel}
-                onChange={(e) => setNewRightLabel(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') handleAddTaskLabel();
-                }}
-                placeholder={`${headerLabels.right}を入力`}
-                className="!min-w-0 !p-2 !text-center !text-sm !min-h-0 w-full"
-              />
-            </div>
-          ) : (
-            <div />
-          )}
-        </div>
+        <DesktopTableFooter
+          teamsLength={teams.length}
+          taskLabelsLength={taskLabels.length}
+          gridTemplateColumns={gridTemplateColumns}
+          headerLabels={headerLabels}
+          newLeftLabel={newLeftLabel}
+          setNewLeftLabel={setNewLeftLabel}
+          newRightLabel={newRightLabel}
+          setNewRightLabel={setNewRightLabel}
+          handleAddTaskLabel={handleAddTaskLabel}
+          onShuffle={onShuffle}
+          isShuffleDisabled={isShuffleDisabled}
+        />
       </div>
     </Card>
   );

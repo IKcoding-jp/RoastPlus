@@ -20,7 +20,7 @@ export function ContactSuccessScreen() {
           </p>
           <Link
             href="/settings"
-            className="inline-flex items-center px-6 py-3 bg-spot text-white rounded-lg hover:bg-spot-hover transition-colors font-medium"
+            className="inline-flex items-center px-6 py-3 bg-spot text-on-spot rounded-lg hover:bg-spot-hover transition-colors font-medium"
           >
             <HiArrowLeft className="h-5 w-5 mr-2" />
             設定に戻る

@@ -14,7 +14,7 @@ import { forwardRef, useId } from 'react';
  * />
  */
 
-export interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
+interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
   /** チェックボックスのラベル */
   label?: string;
   /** ラベルの説明文 */

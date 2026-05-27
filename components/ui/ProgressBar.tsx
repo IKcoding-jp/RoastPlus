@@ -18,7 +18,7 @@ import { forwardRef } from 'react';
  * <ProgressBar value={50} variant="success" size="lg" />
  */
 
-export interface ProgressBarProps extends React.HTMLAttributes<HTMLDivElement> {
+interface ProgressBarProps extends React.HTMLAttributes<HTMLDivElement> {
   /** 進捗値（0-100） */
   value: number;
   /** 最大値（デフォルト: 100） */

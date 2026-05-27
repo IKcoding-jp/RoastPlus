@@ -164,7 +164,7 @@ export function QuizDashboard({
       >
         <Link
           href="/coffee-trivia/quiz"
-          className="flex items-center justify-center gap-2.5 w-full py-3.5 px-5 rounded-xl font-semibold text-white bg-spot hover:bg-spot-hover active:scale-[0.98] transition-all"
+          className="flex items-center justify-center gap-2.5 w-full py-3.5 px-5 rounded-xl font-semibold text-on-spot bg-spot hover:bg-spot-hover active:scale-[0.98] transition-all"
         >
           <PlayIcon />
           今日のクイズを始める

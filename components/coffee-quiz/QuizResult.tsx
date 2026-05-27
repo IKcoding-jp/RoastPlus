@@ -210,7 +210,7 @@ export function QuizResult({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
             onClick={onRetry}
-            className="group w-full flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl font-semibold bg-spot hover:bg-spot-hover text-white transition-colors active:scale-[0.98]"
+            className="group w-full flex items-center justify-center gap-2 py-3.5 px-5 rounded-xl font-semibold bg-spot hover:bg-spot-hover text-on-spot transition-colors active:scale-[0.98]"
           >
             <span className="group-hover:rotate-180 transition-transform duration-300">
               <RefreshIcon />

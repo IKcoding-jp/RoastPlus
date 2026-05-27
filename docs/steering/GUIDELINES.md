@@ -1,6 +1,6 @@
 # Implementation Guidelines
 
-**最終更新**: 2026-02-21
+**最終更新**: 2026-05-27
 
 ---
 
@@ -18,47 +18,52 @@
 
 ## 開発フロー
 
-### 標準フロー（探索→計画→コード→コミット型）
+### 標準フロー（探索→計画→最小変更→検証型）
 
 ```
-1. Working Documents参照
+1. Issue本文とSteering Documents参照
    ↓
-2. Serena MCPで探索（読み取り専用）
+2. 関連ファイル・設定・既存テストを確認
    ↓
-3. 「think hard」で計画立案
+3. 目的、前提、影響範囲、成功条件、検証方法を整理
    ↓
-4. Claude Code標準ツール（Edit/Write）で実装
+4. Issue範囲に直結する最小変更を実装
    ↓
-5. lint → build → test
+5. typecheck / lint / test / build など必要な検証
    ↓
-6. PR作成、Steering更新ドラフト生成
+6. 必要に応じてPR作成、変更内容と残リスクを報告
 ```
 
-#### 1. Working Documents参照
-- `docs/working/{Issue番号}/` の4ファイル（requirement, design, tasklist, testing）を参照
-- Issue の目的・背景を理解
+#### 1. 仕様・既存方針参照
+- Issue本文・コメントで目的と背景を確認
+- 仕様判断は `docs/steering/` を優先する
+- 大きめの機能追加、業務フロー変更、データ構造変更、認証・認可・Rules・Functions に関わる変更では、実装前に `docs/superpowers/specs/` に仕様、`docs/superpowers/plans/` に実装計画を残す
 
-#### 2. Serena MCPで探索（読み取り専用）
-- **使用ツール**: `search_for_pattern`, `get_symbols_overview`, `find_symbol`, `find_referencing_symbols`
-- **禁止**: `replace_symbol_body`, `insert_*`, `rename_symbol`（編集はClaude Code標準ツールで）
+#### 2. 関連ファイル確認
+- 実装前に、対象ファイル、設定、既存テスト、README/steering docs を確認
+- 検索は `rg` を優先し、コード理解が必要な場合は Serena 等のコード探索ツールを使う
 
-#### 3. 「think hard」で計画立案
-- 複雑な問題、設計判断は「think hard」で深く考える
-- 必要に応じて EnterPlanMode で詳細計画
+#### 3. 計画立案
+- 目的、前提、触る予定のファイル、影響する画面・データ、認証・Rules・Functionsへの影響、成功条件、検証方法を短く整理
+- 不明点が仕様・データ・安全性・本番環境・費用に影響する場合は確認してから進める
 
 #### 4. 実装
-- Claude Code標準ツール（Edit/Write）で実装
-- Context7 MCPで最新ドキュメント参照（`resolve-library-id` → `query-docs`）
+- Issue外の改善、隣接コードの整理、無関係なリファクタリングはしない
+- 新しい依存関係や大きな設計変更は、必要性を説明してから判断する
 
 #### 5. 検証
 ```bash
-npm run lint && npm run build && npm run test
+npm run typecheck
+npm run lint
+npm run test:run
+npm run test:rules
+npm run build
 ```
 
 #### 6. PR作成
 - git-workflow スキルでコミット
 - PR作成
-- Steering Documents必須レビュー・更新（fix-issue Phase 10）
+- 長期方針や共通仕様が変わった場合は Steering Documents を更新
 
 ---
 
@@ -67,7 +72,7 @@ npm run lint && npm run build && npm run test
 **コード変更を含む実装では、TDDが基本。** 詳細は `superpowers:test-driven-development` スキルを参照。
 
 ```
-1. テスト設計（testing.md or 対象コード分析）
+1. テスト設計（仕様・受け入れ条件 or 対象コード分析）
    ↓
 2. 🔴 Red: 失敗テスト作成 → コミット
    ↓
@@ -89,18 +94,21 @@ npm run lint && npm run build && npm run test
 #### SDD × TDD 統合フロー
 
 ```
-/issue-creator                    /fix-issue
-┌──────────────┐            ┌───────────────────────┐
-│ Issue作成     │            │ Phase 1: Working読込   │
-│ Working生成   │───────────→│ Phase 4: 計画承認      │
-│  └ testing.md │   ファイル  │ Phase 5: TDD実装      │
-│    (テスト設計)│   経由で連携│  └ TDDスキルに従う     │
-└──────────────┘            │ Phase 7: 検証          │
-                            └───────────────────────┘
+Issue / 現場課題
+      ↓
+docs/steering/ で既存方針・機能仕様・技術制約を確認
+      ↓
+docs/superpowers/specs/ に仕様・受け入れ条件を作成
+      ↓
+docs/superpowers/plans/ に実装計画を作成
+      ↓
+TDDで実装（Red → Green → Refactor）
+      ↓
+検証 → PR
 ```
 
-- SDDの `testing.md` がTDDのテスト設計インプットになる
-- `/clear` 後も `testing.md` にテスト設計が残り、コンテキスト保持
+- `docs/superpowers/specs/` の受け入れ条件がTDDのテスト設計インプットになる
+- `/clear` 後も仕様と計画がGit上に残り、次のCodexが同じ前提で再開できる
 
 ---
 
@@ -532,17 +540,23 @@ vi.mock('@/lib/coffee-quiz/fsrs', () => ({
 ### テスト実行コマンド
 
 ```bash
-# すべてのテスト実行
+# 1回だけユニット/コンポーネントテスト実行
+npm run test:run
+
+# ウォッチモード
 npm run test
 
 # カバレッジ付き
-npm run test -- --coverage
+npm run test:coverage
+
+# Firestore Rulesテスト
+npm run test:rules
+
+# E2Eテスト
+npm run test:e2e
 
 # 特定ファイルのみ
 npm run test -- gamification.test.ts
-
-# ウォッチモード
-npm run test -- --watch
 ```
 
 ---
@@ -565,8 +579,6 @@ npm run test -- --watch
 <body: 変更点を箇条書き>
 
 Closes #123
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 #### タイプ
@@ -592,8 +604,8 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ### PR作成
 
-```bash
-# 1. コミット（git-workflowスキル使用推奨）
+```powershell
+# 1. コミット（ユーザーから明示依頼がある場合のみ）
 git add .
 git commit -m "feat(quiz): FSRS機能を追加"
 
@@ -601,7 +613,7 @@ git commit -m "feat(quiz): FSRS機能を追加"
 git push -u origin fix/#123-xxx
 
 # 3. PR作成
-cat > /tmp/pr-body.md <<'EOF'
+$prBody = @'
 ## 概要
 Issue #123 を解決。
 
@@ -614,9 +626,10 @@ Issue #123 を解決。
 - [ ] 実機動作確認
 
 Closes #123
-EOF
+'@
+Set-Content -Path .tmp-pr-body.md -Value $prBody -Encoding UTF8
 
-gh pr create --base main --title "[Issue #123] タイトル" --body-file /tmp/pr-body.md
+gh pr create --base main --title "[Issue #123] タイトル" --body-file .tmp-pr-body.md
 ```
 
 ---
@@ -649,39 +662,28 @@ gh pr create --base main --title "[Issue #123] タイトル" --body-file /tmp/pr
 | UBIQUITOUS_LANGUAGE.md | 新規用語追加時 |
 
 **更新方法**:
-1. PR作成前、AIが全6ドキュメントを必須レビュー（fix-issue Phase 10）
+1. PR作成前、変更内容が Steering Documents の更新対象か確認
 2. ユーザーが確認・承認
 3. Gitコミット
 
 ---
 
-### Working Documents（作業用ドキュメント）
+### Spec / Plan Documents（実装前仕様・計画）
 
-**場所**: `docs/working/{YYYYMMDD}_{Issue番号}_{タイトル}/`
+**場所**:
 
-| ファイル | 役割 |
-|---------|------|
-| requirement.md | 要件定義 |
-| design.md | 設計書 |
-| tasklist.md | タスクリスト |
-| testing.md | テスト計画 |
+- `docs/superpowers/specs/`
+- `docs/superpowers/plans/`
 
-**生成**: `/create-spec` スキルで自動生成（AIが80%ドラフト、ユーザーが修正）
-**更新**: 実装中に逐次更新
-**保管**: PR完了後もGit保管（削除しない）
+| 場所 | 役割 |
+|-----|------|
+| `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` | 実装前に合意した仕様、背景、受け入れ条件、やらないこと |
+| `docs/superpowers/plans/YYYY-MM-DD-<topic>.md` | 仕様に基づく実装手順、検証方法、チェックポイント |
 
----
-
-### EnterPlanModeとの使い分け
-
-| 項目 | Working Documents | EnterPlanMode |
-|-----|-------------------|---------------|
-| **永続性** | Git保管（永続的） | 一時的 |
-| **スコープ** | Issue単位 | 複雑な実装の詳細計画 |
-| **生成** | /create-spec で自動 | 手動で実行 |
-| **用途** | 設計メモ、コンテキスト保持 | 実装前の詳細検討 |
-
-**併用推奨**: Working生成後、複雑な実装は EnterPlanMode で詳細計画
+**運用**:
+- 仕様・データ・安全性・本番環境・費用に影響する未決事項がある場合は、実装に進まない
+- 仕様が固まった後に計画を作り、計画に沿って実装する
+- 長期方針に昇格した内容だけ `docs/steering/` に反映する
 
 ---
 
@@ -757,4 +759,4 @@ gh pr create --base main --title "[Issue #123] タイトル" --body-file /tmp/pr
 - **ユビキタス言語**: `docs/steering/UBIQUITOUS_LANGUAGE.md`
 - **機能一覧**: `docs/steering/FEATURES.md`
 - **ADR**: `docs/steering/TECH_SPEC.md`（ADRセクション）
-- **テスト実装の学び**: `C:\Users\kensa\.claude\projects\D--Dev-roastplus\memory\MEMORY.md`
+- **テスト実装の学び**: 現在のCodex/エージェント用メモリと、対象テストの近接ファイルを参照

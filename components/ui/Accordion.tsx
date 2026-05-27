@@ -37,7 +37,7 @@ function useAccordionItemContext() {
 }
 
 // Accordion Root
-export type AccordionProps = React.HTMLAttributes<HTMLDivElement>;
+type AccordionProps = React.HTMLAttributes<HTMLDivElement>;
 
 export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(({ children, className = '', ...props }, ref) => {
   return (
@@ -49,7 +49,7 @@ export const Accordion = forwardRef<HTMLDivElement, AccordionProps>(({ children,
 Accordion.displayName = 'Accordion';
 
 // AccordionItem
-export interface AccordionItemProps extends React.HTMLAttributes<HTMLDivElement> {
+interface AccordionItemProps extends React.HTMLAttributes<HTMLDivElement> {
   /** デフォルトで開いた状態か */
   defaultOpen?: boolean;
 }
@@ -70,7 +70,7 @@ export const AccordionItem = forwardRef<HTMLDivElement, AccordionItemProps>(
 AccordionItem.displayName = 'AccordionItem';
 
 // AccordionTrigger
-export type AccordionTriggerProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
+type AccordionTriggerProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
   ({ children, className = '', ...props }, ref) => {
@@ -96,7 +96,7 @@ export const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerPr
 AccordionTrigger.displayName = 'AccordionTrigger';
 
 // AccordionContent
-export type AccordionContentProps = React.HTMLAttributes<HTMLDivElement>;
+type AccordionContentProps = React.HTMLAttributes<HTMLDivElement>;
 
 export const AccordionContent = forwardRef<HTMLDivElement, AccordionContentProps>(
   ({ children, className = '', ...props }, ref) => {
