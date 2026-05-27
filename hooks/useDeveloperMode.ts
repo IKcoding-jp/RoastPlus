@@ -36,15 +36,18 @@ export function useDeveloperMode() {
   }, [isAvailable]);
 
   // 開発者モードを有効化
-  const enableDeveloperMode = useCallback((password?: string): boolean => {
-    if (!isAvailable || password !== DEVELOPER_MODE_PASSWORD || typeof window === 'undefined') {
-      return false;
-    }
+  const enableDeveloperMode = useCallback(
+    (password?: string): boolean => {
+      if (!isAvailable || password !== DEVELOPER_MODE_PASSWORD || typeof window === 'undefined') {
+        return false;
+      }
 
-    localStorage.setItem(STORAGE_KEY, 'true');
-    setIsEnabled(true);
-    return true;
-  }, [isAvailable]);
+      localStorage.setItem(STORAGE_KEY, 'true');
+      setIsEnabled(true);
+      return true;
+    },
+    [isAvailable]
+  );
 
   // 開発者モードを無効化
   const disableDeveloperMode = useCallback(() => {
