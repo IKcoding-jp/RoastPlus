@@ -26,10 +26,12 @@ export interface ProductionPackRecord extends ProductionPackRecordInput, Product
 
 export interface ProductionPackMonthlyDailyRecord extends ProductionPackTotals {
   workDate: string;
+  failureRate: number;
 }
 
 export interface ProductionPackMonthlySummary {
   month: string;
   totals: ProductionPackTotals;
+  failureRate: number;
   dailyRecords: ProductionPackMonthlyDailyRecord[];
 }

@@ -33,7 +33,7 @@
 
 - [ ] **Step 1: Write failing helper tests**
 
-Create tests that expect empty input to become zero, negative/decimal values to be rejected, totals to be calculated from A/B teams, and only today's active record to be editable.
+Create tests that expect empty input to become zero, negative/decimal values to be rejected, totals to be calculated from A/B teams, and today or past work dates to be editable.
 
 - [ ] **Step 2: Run helper tests and verify RED**
 
@@ -88,7 +88,7 @@ Use `FloatingNav`, `Card`, `Input`, `NumberInput`, `Button`, `Badge`, and `Dialo
 
 - [ ] **Step 2: Add home card**
 
-Add a `production-packs` home feature with short copy: title `完成パック数`, description `生産数を記録`, href `/production-packs`, and an existing package/production-style icon.
+Add a `production-packs` home feature with short copy: title `パッケージ数記録`, description `成功数と失敗数を記録`, href `/production-packs`, and an existing package/production-style icon.
 
 - [ ] **Step 3: Manual visual check**
 

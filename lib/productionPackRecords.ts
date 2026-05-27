@@ -80,6 +80,19 @@ export function normalizePackCountInput(value: string | number | null | undefine
   return parsed;
 }
 
+export function normalizePackCountFieldValue(value: string): string {
+  const trimmed = value.trim();
+  if (trimmed === '') {
+    return '';
+  }
+
+  if (!/^\d+$/.test(trimmed)) {
+    return trimmed;
+  }
+
+  return trimmed.replace(/^0+(?=\d)/, '');
+}
+
 function validateTeamCounts(team: ProductionPackTeamCounts): ProductionPackTeamCounts {
   return {
     successCount: normalizePackCountInput(team.successCount),
@@ -96,6 +109,14 @@ export function calculateProductionPackTotals(input: Pick<ProductionPackRecordIn
     failureTotal,
     total: successTotal + failureTotal,
   };
+}
+
+export function calculateProductionPackFailureRate(failureTotal: number, total: number): number {
+  if (total <= 0) {
+    return 0;
+  }
+
+  return failureTotal / total;
 }
 
 export function buildProductionPackRecord(input: ProductionPackRecordInput): ProductionPackRecord {
@@ -116,8 +137,12 @@ export function buildProductionPackRecord(input: ProductionPackRecordInput): Pro
   };
 }
 
+export function isProductionPackWorkDateEditable(workDate: string, todayDate: string): boolean {
+  return isValidProductionPackWorkDate(workDate) && workDate <= todayDate;
+}
+
 export function isProductionPackRecordEditable(record: ProductionPackRecord | null, todayDate: string): boolean {
-  return record !== null && record.workDate === todayDate;
+  return record !== null && isProductionPackWorkDateEditable(record.workDate, todayDate);
 }
 
 export function formatProductionPackDateLabel(workDate: string): string {
@@ -154,6 +179,7 @@ export function buildProductionPackMonthlySummary(
       successTotal: record.successTotal,
       failureTotal: record.failureTotal,
       total: record.total,
+      failureRate: calculateProductionPackFailureRate(record.failureTotal, record.total),
     }));
 
   const totals = dailyRecords.reduce(
@@ -168,6 +194,7 @@ export function buildProductionPackMonthlySummary(
   return {
     month,
     totals,
+    failureRate: calculateProductionPackFailureRate(totals.failureTotal, totals.total),
     dailyRecords,
   };
 }
@@ -179,17 +206,28 @@ function escapeCsvCell(value: string | number): string {
 
 export function buildProductionPackMonthlyCsv(summary: ProductionPackMonthlySummary): string {
   const rows: Array<Array<string | number>> = [
-    ['日付', '成功数', '失敗数', '総数'],
+    ['日付', '成功数', '失敗数', '総数', '失敗率'],
     ...summary.dailyRecords.map((record) => [
       record.workDate,
       record.successTotal,
       record.failureTotal,
       record.total,
+      formatProductionPackFailureRate(record.failureRate),
     ]),
-    ['月合計', summary.totals.successTotal, summary.totals.failureTotal, summary.totals.total],
+    [
+      '月合計',
+      summary.totals.successTotal,
+      summary.totals.failureTotal,
+      summary.totals.total,
+      formatProductionPackFailureRate(summary.failureRate),
+    ],
   ];
 
   return `\uFEFF${rows.map((row) => row.map(escapeCsvCell).join(',')).join('\r\n')}`;
+}
+
+export function formatProductionPackFailureRate(failureRate: number): string {
+  return `${(failureRate * 100).toFixed(1)}%`;
 }
 
 export function getProductionPackMonthlyCsvFileName(month: string): string {

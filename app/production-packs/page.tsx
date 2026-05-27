@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
-import { HiCalendar, HiCheckCircle, HiXCircle } from 'react-icons/hi';
 import { MdInventory2 } from 'react-icons/md';
 import LoginPage from '@/app/login/page';
 import { Loading } from '@/components/Loading';
@@ -19,6 +18,8 @@ import {
   calculateProductionPackTotals,
   formatProductionPackDateLabel,
   getTodayProductionPackDate,
+  isProductionPackWorkDateEditable,
+  normalizePackCountFieldValue,
   normalizePackCountInput,
 } from '@/lib/productionPackRecords';
 import type { ProductionPackRecord, ProductionPackRecordInput } from '@/types';
@@ -70,6 +71,24 @@ function saveStateLabel(record: ProductionPackRecord | null): string {
   }
 
   return '保存済み';
+}
+
+function saveStateVariant(record: ProductionPackRecord | null): 'success' | 'secondary' {
+  return record ? 'success' : 'secondary';
+}
+
+interface TotalTileProps {
+  label: string;
+  value: number;
+}
+
+function TotalTile({ label, value }: TotalTileProps) {
+  return (
+    <div className="min-h-[86px] rounded-xl border border-edge bg-surface p-3">
+      <div className="text-xs font-semibold text-ink-muted">{label}</div>
+      <p className="mt-2 text-3xl font-bold tabular-nums text-ink">{value}</p>
+    </div>
+  );
 }
 
 export default function ProductionPacksPage() {
@@ -144,12 +163,17 @@ export default function ProductionPacksPage() {
   }, [form, selectedDate]);
 
   const isTodaySelected = selectedDate === todayDate;
-  const canSave = isTodaySelected && !isCurrentLoading && !isSaving && formResult.error === '';
+  const canEditSelectedDate = isProductionPackWorkDateEditable(selectedDate, todayDate);
+  const canSave = canEditSelectedDate && !isCurrentLoading && !isSaving && formResult.error === '';
   const canDelete = isTodaySelected && currentRecord !== null && !isDeleting;
-  const isReadOnly = !isTodaySelected || isSaving || isDeleting;
+  const isReadOnly = !canEditSelectedDate || isSaving || isDeleting;
 
   const handleCountChange = (key: keyof ProductionPackFormState, value: string) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
+    setForm((prev) => ({ ...prev, [key]: normalizePackCountFieldValue(value) }));
+  };
+
+  const handleCountBlur = (key: keyof ProductionPackFormState) => {
+    setForm((prev) => ({ ...prev, [key]: prev[key] === '' ? '0' : prev[key] }));
   };
 
   const handleSave = async () => {
@@ -157,8 +181,8 @@ export default function ProductionPacksPage() {
       return;
     }
 
-    if (!isTodaySelected) {
-      showToast('過去日の記録は閲覧のみです', 'warning');
+    if (!canEditSelectedDate) {
+      showToast('未来日の記録は保存できません', 'warning');
       return;
     }
 
@@ -209,17 +233,16 @@ export default function ProductionPacksPage() {
           <div>
             <div className="mb-2 inline-flex items-center gap-2 text-sm font-semibold text-ink-muted">
               <MdInventory2 className="h-5 w-5" />
-              <span>生産数の記録</span>
+              <span>パッケージ数の記録</span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-ink">完成パック数</h1>
-            <p className="mt-1 text-sm text-ink-muted">A班・B班の成功数と失敗数を記録します。</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-ink">パッケージ数記録</h1>
+            <p className="mt-1 text-sm text-ink-sub">日付を選び、A班・B班の成功数と失敗数を保存します。</p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
             <Link
               href="/production-packs/monthly"
               className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-lg border border-edge bg-surface px-4 py-2 text-sm font-semibold text-ink shadow-card transition-colors hover:bg-ground"
             >
-              <HiCalendar className="h-5 w-5 text-ink-muted" />
               月次集計
             </Link>
             <Input
@@ -234,15 +257,17 @@ export default function ProductionPacksPage() {
         </header>
 
         <main className="grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(340px,0.85fr)]">
-          <Card className="space-y-4 p-4">
+          <Card className="space-y-5 p-4 sm:p-5">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h2 className="text-lg font-semibold text-ink">{formatProductionPackDateLabel(selectedDate)}</h2>
                 <p className="mt-1 text-sm text-ink-muted">
-                  {isTodaySelected ? '当日分は保存・修正・削除できます。' : '過去日は閲覧のみです。'}
+                  {isTodaySelected
+                    ? '当日分は保存・修正・削除できます。'
+                    : '過去日の追加・修正ができます。削除は当日分のみです。'}
                 </p>
               </div>
-              <Badge variant="secondary" size="md">
+              <Badge variant={saveStateVariant(currentRecord)} size="md">
                 {saveStateLabel(currentRecord)}
               </Badge>
             </div>
@@ -251,11 +276,10 @@ export default function ProductionPacksPage() {
               <div className="flex min-h-[220px] items-center justify-center text-sm text-ink-muted">読み込み中...</div>
             ) : (
               <>
-                <div className="grid gap-3 md:grid-cols-2">
-                  <section className="rounded-xl border border-edge bg-ground p-3">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <section className="rounded-xl border border-edge bg-surface p-4">
                     <div className="mb-3 flex items-center justify-between gap-3">
                       <h3 className="text-base font-semibold text-ink">A班</h3>
-                      <span className="text-xs font-medium text-ink-muted">商品用 / 本社用</span>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <NumberInput
@@ -266,6 +290,7 @@ export default function ProductionPacksPage() {
                         inputMode="numeric"
                         disabled={isReadOnly}
                         onChange={(event) => handleCountChange('teamASuccess', event.target.value)}
+                        onBlur={() => handleCountBlur('teamASuccess')}
                         className="min-h-[58px] !py-1.5 text-2xl font-bold"
                       />
                       <NumberInput
@@ -276,15 +301,15 @@ export default function ProductionPacksPage() {
                         inputMode="numeric"
                         disabled={isReadOnly}
                         onChange={(event) => handleCountChange('teamAFailure', event.target.value)}
+                        onBlur={() => handleCountBlur('teamAFailure')}
                         className="min-h-[58px] !py-1.5 text-2xl font-bold"
                       />
                     </div>
                   </section>
 
-                  <section className="rounded-xl border border-edge bg-ground p-3">
+                  <section className="rounded-xl border border-edge bg-surface p-4">
                     <div className="mb-3 flex items-center justify-between gap-3">
                       <h3 className="text-base font-semibold text-ink">B班</h3>
-                      <span className="text-xs font-medium text-ink-muted">商品用 / 本社用</span>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <NumberInput
@@ -295,6 +320,7 @@ export default function ProductionPacksPage() {
                         inputMode="numeric"
                         disabled={isReadOnly}
                         onChange={(event) => handleCountChange('teamBSuccess', event.target.value)}
+                        onBlur={() => handleCountBlur('teamBSuccess')}
                         className="min-h-[58px] !py-1.5 text-2xl font-bold"
                       />
                       <NumberInput
@@ -305,6 +331,7 @@ export default function ProductionPacksPage() {
                         inputMode="numeric"
                         disabled={isReadOnly}
                         onChange={(event) => handleCountChange('teamBFailure', event.target.value)}
+                        onBlur={() => handleCountBlur('teamBFailure')}
                         className="min-h-[58px] !py-1.5 text-2xl font-bold"
                       />
                     </div>
@@ -314,40 +341,20 @@ export default function ProductionPacksPage() {
                 {formResult.error && <p className="text-sm font-medium text-error">{formResult.error}</p>}
 
                 <div className="grid gap-3 sm:grid-cols-3">
-                  <div className="rounded-xl border border-edge bg-ground p-3">
-                    <div className="flex items-center gap-2 text-xs font-medium text-ink-muted">
-                      <HiCheckCircle className="h-4 w-4 text-ink-muted" />
-                      成功合計
-                    </div>
-                    <p className="mt-2 text-3xl font-bold text-ink">{formResult.totals.successTotal}</p>
-                  </div>
-                  <div className="rounded-xl border border-edge bg-ground p-3">
-                    <div className="flex items-center gap-2 text-xs font-medium text-ink-muted">
-                      <HiXCircle className="h-4 w-4 text-ink-muted" />
-                      失敗合計
-                    </div>
-                    <p className="mt-2 text-3xl font-bold text-ink">{formResult.totals.failureTotal}</p>
-                  </div>
-                  <div className="rounded-xl border border-edge bg-ground p-3">
-                    <div className="flex items-start gap-3">
-                      <div className="mt-1 h-11 w-1.5 rounded-full bg-edge-strong" aria-hidden="true" />
-                      <div>
-                        <div className="text-xs font-medium text-ink-muted">総数</div>
-                        <p className="mt-1 text-3xl font-bold text-ink">{formResult.totals.total}</p>
-                      </div>
-                    </div>
-                  </div>
+                  <TotalTile label="成功合計" value={formResult.totals.successTotal} />
+                  <TotalTile label="失敗合計" value={formResult.totals.failureTotal} />
+                  <TotalTile label="総数" value={formResult.totals.total} />
                 </div>
 
                 <div className="flex flex-col gap-3 border-t border-edge pt-5 sm:flex-row sm:items-center sm:justify-between">
                   <Button
-                    variant="surface"
+                    variant={canDelete ? 'danger' : 'surface'}
                     size="sm"
                     type="button"
                     onClick={() => setIsDeleteDialogOpen(true)}
                     disabled={!canDelete}
                     loading={isDeleting}
-                    className="sm:w-auto"
+                    className={`w-full sm:w-28 ${canDelete ? '' : '!border-edge !bg-surface !text-ink-muted !shadow-none'}`}
                   >
                     削除
                   </Button>
@@ -357,7 +364,7 @@ export default function ProductionPacksPage() {
                     onClick={handleSave}
                     disabled={!canSave}
                     loading={isSaving}
-                    className="sm:w-auto"
+                    className="w-full sm:w-32"
                   >
                     保存
                   </Button>
@@ -366,13 +373,12 @@ export default function ProductionPacksPage() {
             )}
           </Card>
 
-          <Card className="space-y-4 p-4">
+          <Card className="space-y-4 p-4 sm:p-5">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-lg font-semibold text-ink">過去の記録</h2>
                 <p className="mt-1 text-sm text-ink-muted">最新30件を表示します。</p>
               </div>
-              <HiCalendar className="h-6 w-6 text-ink-muted" />
             </div>
 
             {isListLoading ? (
@@ -380,7 +386,7 @@ export default function ProductionPacksPage() {
             ) : records.length === 0 ? (
               <EmptyState
                 title="記録がありません"
-                description="今日の完成パック数を保存すると、ここに表示されます。"
+                description="今日のパッケージ数を保存すると、ここに表示されます。"
                 icon={<MdInventory2 className="h-8 w-8" />}
                 size="sm"
               />
@@ -403,17 +409,17 @@ export default function ProductionPacksPage() {
                       </Button>
                     </div>
                     <div className="mt-3 grid grid-cols-3 gap-2">
-                      <div className="rounded-lg bg-ground p-2.5">
+                      <div className="rounded-lg border border-edge bg-surface p-2.5">
                         <div className="text-xs font-medium text-ink-muted">成功</div>
-                        <div className="mt-1 text-lg font-bold text-ink">{record.successTotal}</div>
+                        <div className="mt-1 text-lg font-bold tabular-nums text-ink">{record.successTotal}</div>
                       </div>
-                      <div className="rounded-lg bg-ground p-2.5">
+                      <div className="rounded-lg border border-edge bg-surface p-2.5">
                         <div className="text-xs font-medium text-ink-muted">失敗</div>
-                        <div className="mt-1 text-lg font-bold text-ink">{record.failureTotal}</div>
+                        <div className="mt-1 text-lg font-bold tabular-nums text-ink">{record.failureTotal}</div>
                       </div>
-                      <div className="rounded-lg bg-ground p-2.5">
+                      <div className="rounded-lg border border-edge bg-surface p-2.5">
                         <div className="text-xs font-medium text-ink-muted">総数</div>
-                        <div className="mt-1 text-lg font-bold text-ink">{record.total}</div>
+                        <div className="mt-1 text-lg font-bold tabular-nums text-ink">{record.total}</div>
                       </div>
                     </div>
                     <details className="mt-3 text-sm text-ink-sub">

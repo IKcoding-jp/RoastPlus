@@ -4,11 +4,15 @@ import {
   buildProductionPackMonthlyCsv,
   buildProductionPackMonthlySummary,
   calculateProductionPackTotals,
+  calculateProductionPackFailureRate,
   formatProductionPackDateLabel,
+  formatProductionPackFailureRate,
   getProductionPackMonthRange,
   getProductionPackMonthlyCsvFileName,
   isProductionPackRecordEditable,
+  isProductionPackWorkDateEditable,
   isValidProductionPackMonth,
+  normalizePackCountFieldValue,
   normalizePackCountInput,
 } from './productionPackRecords';
 import type { ProductionPackRecord } from '@/types';
@@ -85,10 +89,38 @@ describe('isProductionPackRecordEditable', () => {
     total: 3,
   };
 
-  it('allows editing only for records on today', () => {
+  it('allows editing records on today or past dates', () => {
     expect(isProductionPackRecordEditable(baseRecord, '2026-05-24')).toBe(true);
+    expect(isProductionPackRecordEditable(baseRecord, '2026-05-25')).toBe(true);
     expect(isProductionPackRecordEditable(baseRecord, '2026-05-23')).toBe(false);
     expect(isProductionPackRecordEditable(null, '2026-05-24')).toBe(false);
+  });
+});
+
+describe('normalizePackCountFieldValue', () => {
+  it('removes unnecessary leading zeros while preserving editable empty input', () => {
+    expect(normalizePackCountFieldValue('')).toBe('');
+    expect(normalizePackCountFieldValue('0')).toBe('0');
+    expect(normalizePackCountFieldValue('00')).toBe('0');
+    expect(normalizePackCountFieldValue('011')).toBe('11');
+  });
+});
+
+describe('calculateProductionPackFailureRate', () => {
+  it('calculates the failure ratio from failure and total counts', () => {
+    expect(calculateProductionPackFailureRate(5, 125)).toBe(0.04);
+  });
+
+  it('returns 0 when total is 0', () => {
+    expect(calculateProductionPackFailureRate(0, 0)).toBe(0);
+  });
+});
+
+describe('isProductionPackWorkDateEditable', () => {
+  it('allows today and past work dates, but rejects future dates', () => {
+    expect(isProductionPackWorkDateEditable('2026-05-24', '2026-05-24')).toBe(true);
+    expect(isProductionPackWorkDateEditable('2026-05-23', '2026-05-24')).toBe(true);
+    expect(isProductionPackWorkDateEditable('2026-05-25', '2026-05-24')).toBe(false);
   });
 });
 
@@ -169,9 +201,10 @@ describe('buildProductionPackMonthlySummary', () => {
         failureTotal: 8,
         total: 258,
       },
+      failureRate: 8 / 258,
       dailyRecords: [
-        { workDate: '2026-05-01', successTotal: 120, failureTotal: 5, total: 125 },
-        { workDate: '2026-05-02', successTotal: 130, failureTotal: 3, total: 133 },
+        { workDate: '2026-05-01', successTotal: 120, failureTotal: 5, total: 125, failureRate: 0.04 },
+        { workDate: '2026-05-02', successTotal: 130, failureTotal: 3, total: 133, failureRate: 3 / 133 },
       ],
     });
   });
@@ -199,8 +232,15 @@ describe('buildProductionPackMonthlyCsv', () => {
     ]);
 
     expect(buildProductionPackMonthlyCsv(summary)).toBe(
-      '\uFEFF日付,成功数,失敗数,総数\r\n2026-05-01,120,5,125\r\n2026-05-02,130,3,133\r\n月合計,250,8,258'
+      '\uFEFF日付,成功数,失敗数,総数,失敗率\r\n2026-05-01,120,5,125,4.0%\r\n2026-05-02,130,3,133,2.3%\r\n月合計,250,8,258,3.1%'
     );
+  });
+});
+
+describe('formatProductionPackFailureRate', () => {
+  it('formats failure rate as a percentage with one decimal place', () => {
+    expect(formatProductionPackFailureRate(0.0404)).toBe('4.0%');
+    expect(formatProductionPackFailureRate(0)).toBe('0.0%');
   });
 });
 

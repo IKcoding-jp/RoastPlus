@@ -98,8 +98,8 @@ const ACTIONS: Action[] = [
   },
   {
     key: 'production-packs',
-    title: '完成パック数',
-    description: '生産数を記録',
+    title: 'パッケージ数記録',
+    description: '成功数と失敗数を記録',
     href: '/production-packs',
     icon: MdInventory2,
   },

@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { HiCalendar, HiDownload } from 'react-icons/hi';
+import type { ReactNode } from 'react';
+import { HiDownload } from 'react-icons/hi';
 import { MdInventory2 } from 'react-icons/md';
 import LoginPage from '@/app/login/page';
 import { Loading } from '@/components/Loading';
@@ -12,6 +13,7 @@ import { getProductionPackRecordsByMonth } from '@/lib/firestore/productionPackR
 import {
   buildProductionPackMonthlyCsv,
   buildProductionPackMonthlySummary,
+  formatProductionPackFailureRate,
   formatProductionPackMonthLabel,
   getProductionPackMonthlyCsvFileName,
   getTodayProductionPackDate,
@@ -20,6 +22,22 @@ import type { ProductionPackRecord } from '@/types';
 
 function getCurrentProductionPackMonth(): string {
   return getTodayProductionPackDate().slice(0, 7);
+}
+
+interface SummaryTileProps {
+  label: string;
+  value: ReactNode;
+  description: string;
+}
+
+function SummaryTile({ label, value, description }: SummaryTileProps) {
+  return (
+    <div className="min-h-[106px] rounded-xl border border-edge bg-surface p-3">
+      <div className="text-xs font-semibold text-ink-muted">{label}</div>
+      <p className="mt-2 text-3xl font-bold tabular-nums text-ink">{value}</p>
+      <p className="mt-1 text-xs text-ink-sub">{description}</p>
+    </div>
+  );
 }
 
 export default function ProductionPackMonthlyPage() {
@@ -104,10 +122,10 @@ export default function ProductionPackMonthlyPage() {
           <div>
             <div className="mb-2 inline-flex items-center gap-2 text-sm font-semibold text-ink-muted">
               <MdInventory2 className="h-5 w-5" />
-              <span>生産数の月次集計</span>
+              <span>パッケージ数の月次集計</span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-ink">完成パック数 月次集計</h1>
-            <p className="mt-1 text-sm text-ink-muted">本社報告用に、月ごとの成功数・失敗数・総数を確認します。</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-ink">パッケージ数 月次集計</h1>
+            <p className="mt-1 text-sm text-ink-sub">本社報告用に、月ごとの成功数と失敗数を確認します。</p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
             <Input
@@ -117,7 +135,7 @@ export default function ProductionPackMonthlyPage() {
               onChange={(event) => handleMonthChange(event.target.value)}
               className="sm:w-[190px] !py-2 !text-base"
             />
-            <Button type="button" size="sm" onClick={handleExportCsv} disabled={isLoading} className="sm:w-auto">
+            <Button type="button" size="sm" onClick={handleExportCsv} disabled={isLoading} className="w-full sm:w-auto">
               <HiDownload className="h-5 w-5" />
               CSV出力
             </Button>
@@ -130,27 +148,17 @@ export default function ProductionPackMonthlyPage() {
               <h2 className="text-lg font-semibold text-ink">{formatProductionPackMonthLabel(selectedMonth)}</h2>
               <p className="mt-1 text-sm text-ink-muted">日別記録から月合計を計算します。</p>
             </div>
-            <HiCalendar className="h-6 w-6 text-ink-muted" />
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3">
-            <div className="rounded-xl border border-edge bg-ground p-3">
-              <div className="text-xs font-medium text-ink-muted">成功数</div>
-              <p className="mt-2 text-3xl font-bold text-ink">{summary.totals.successTotal}</p>
-            </div>
-            <div className="rounded-xl border border-edge bg-ground p-3">
-              <div className="text-xs font-medium text-ink-muted">失敗数</div>
-              <p className="mt-2 text-3xl font-bold text-ink">{summary.totals.failureTotal}</p>
-            </div>
-            <div className="rounded-xl border border-edge bg-ground p-3">
-              <div className="flex items-start gap-3">
-                <div className="mt-1 h-11 w-1.5 rounded-full bg-edge-strong" aria-hidden="true" />
-                <div>
-                  <div className="text-xs font-medium text-ink-muted">総数</div>
-                  <p className="mt-1 text-3xl font-bold text-ink">{summary.totals.total}</p>
-                </div>
-              </div>
-            </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <SummaryTile label="成功数" value={summary.totals.successTotal} description="商品用の個数" />
+            <SummaryTile label="失敗数" value={summary.totals.failureTotal} description="社内用の個数" />
+            <SummaryTile label="総数" value={summary.totals.total} description="成功数 + 失敗数" />
+            <SummaryTile
+              label="失敗率"
+              value={formatProductionPackFailureRate(summary.failureRate)}
+              description="失敗数 ÷ 総数"
+            />
           </div>
         </Card>
 
@@ -165,7 +173,7 @@ export default function ProductionPackMonthlyPage() {
           ) : summary.dailyRecords.length === 0 ? (
             <EmptyState
               title="記録がありません"
-              description="選択した月に集計対象の完成パック数記録はありません。"
+              description="選択した月に集計対象のパッケージ数記録はありません。"
               icon={<MdInventory2 className="h-8 w-8" />}
               size="sm"
             />
@@ -174,13 +182,16 @@ export default function ProductionPackMonthlyPage() {
               <table className="min-w-full border-separate border-spacing-0 text-left text-sm">
                 <thead>
                   <tr className="text-ink-muted">
-                    <th className="rounded-l-xl border-y border-l border-edge bg-ground px-3 py-2.5 font-semibold">
+                    <th className="rounded-l-xl border-y border-l border-edge bg-spot-surface px-3 py-2.5 font-semibold">
                       作業日
                     </th>
-                    <th className="border-y border-edge bg-ground px-3 py-2.5 text-right font-semibold">成功数</th>
-                    <th className="border-y border-edge bg-ground px-3 py-2.5 text-right font-semibold">失敗数</th>
-                    <th className="rounded-r-xl border-y border-r border-edge bg-ground px-3 py-2.5 text-right font-semibold">
+                    <th className="border-y border-edge bg-spot-surface px-3 py-2.5 text-right font-semibold">成功数</th>
+                    <th className="border-y border-edge bg-spot-surface px-3 py-2.5 text-right font-semibold">失敗数</th>
+                    <th className="border-y border-edge bg-spot-surface px-3 py-2.5 text-right font-semibold">
                       総数
+                    </th>
+                    <th className="rounded-r-xl border-y border-r border-edge bg-spot-surface px-3 py-2.5 text-right font-semibold">
+                      失敗率
                     </th>
                   </tr>
                 </thead>
@@ -188,9 +199,18 @@ export default function ProductionPackMonthlyPage() {
                   {summary.dailyRecords.map((record) => (
                     <tr key={record.workDate} className="text-ink">
                       <td className="border-b border-edge px-3 py-3 font-semibold">{record.workDate}</td>
-                      <td className="border-b border-edge px-3 py-3 text-right font-bold">{record.successTotal}</td>
-                      <td className="border-b border-edge px-3 py-3 text-right font-bold">{record.failureTotal}</td>
-                      <td className="border-b border-edge px-3 py-3 text-right font-bold">{record.total}</td>
+                      <td className="border-b border-edge px-3 py-3 text-right font-bold tabular-nums">
+                        {record.successTotal}
+                      </td>
+                      <td className="border-b border-edge px-3 py-3 text-right font-bold tabular-nums">
+                        {record.failureTotal}
+                      </td>
+                      <td className="border-b border-edge px-3 py-3 text-right font-bold tabular-nums">
+                        {record.total}
+                      </td>
+                      <td className="border-b border-edge px-3 py-3 text-right font-bold tabular-nums">
+                        {formatProductionPackFailureRate(record.failureRate)}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
