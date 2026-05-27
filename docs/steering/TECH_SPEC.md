@@ -185,6 +185,7 @@ Firestore
 #### Hosting
 - **本番**: Firebase Hosting（`firebase.json` の `hosting.public` は `out`）
 - **ビルド**: productionでは `next.config.ts` の `output: 'export'` により静的エクスポート
+- **開発専用Route**: `page.dev.tsx` は `next.config.ts` の `pageExtensions` で開発環境だけ有効化し、production build には含めない
 - **環境**: default（本番）, development（開発）
 
 ### Cloud Functions v2

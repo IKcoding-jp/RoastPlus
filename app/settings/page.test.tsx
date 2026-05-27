@@ -26,6 +26,7 @@ vi.mock('@/lib/auth', () => ({
 
 vi.mock('@/hooks/useDeveloperMode', () => ({
   useDeveloperMode: () => ({
+    isAvailable: true,
     isEnabled: false,
     isLoading: false,
     enableDeveloperMode: vi.fn(),

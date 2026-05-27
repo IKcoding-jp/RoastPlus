@@ -1,11 +1,15 @@
 import { act, renderHook } from '@testing-library/react';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { useDeveloperMode } from './useDeveloperMode';
 
 describe('useDeveloperMode', () => {
   beforeEach(() => {
     localStorage.clear();
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it('4869 の入力で開発者モードを有効化できる', () => {
@@ -27,6 +31,20 @@ describe('useDeveloperMode', () => {
     let success = true;
     act(() => {
       success = result.current.enableDeveloperMode('wrong-password');
+    });
+
+    expect(success).toBe(false);
+    expect(result.current.isEnabled).toBe(false);
+    expect(localStorage.getItem('roastplus_developer_mode')).toBeNull();
+  });
+
+  it('production では固定パスワードで開発者モードを有効化できない', () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    const { result } = renderHook(() => useDeveloperMode());
+
+    let success = true;
+    act(() => {
+      success = result.current.enableDeveloperMode('4869');
     });
 
     expect(success).toBe(false);

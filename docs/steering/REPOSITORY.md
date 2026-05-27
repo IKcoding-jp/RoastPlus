@@ -73,13 +73,13 @@ roastplus/
 | `terms/` | 利用規約 | 法的文書 |
 | `privacy-policy/` | プライバシーポリシー | 法的文書 |
 | `dev-stories/` | 開発ストーリー | 開発者向け |
-| `ui-test/` | UIテストページ | 共通コンポーネントカタログ |
+| `ui-test/` | UIテストページ | 開発環境専用。`page.dev.tsx` で `/dev/design-lab` へリダイレクト |
 
 ### 開発者向け
 
 | ディレクトリ | 機能 | 備考 |
 |------------|------|------|
-| `dev/design-lab/` | デザインラボ | UIプロトタイピング |
+| `dev/design-lab/` | デザインラボ | 開発環境専用。production build では Route 生成対象外 |
 
 ---
 
@@ -102,7 +102,7 @@ roastplus/
 
 **重要ファイル**:
 - `index.ts` - 全コンポーネントのバレルエクスポート
-- `registry.tsx` - UIカタログ登録（`/ui-test` ページで自動表示）
+- `registry.tsx` - UIカタログ登録（開発環境の `/dev/design-lab` ページで自動表示）
 
 ### 機能別コンポーネント
 
@@ -385,6 +385,7 @@ Claude Code 側の起動・設定ファイルのみを置く。
 | 型定義 | camelCase（ケバブケースも可） | `common.ts`, `work-progress.ts` |
 | テスト | 対象ファイル名 + `.test` | `gamification.test.ts` |
 | ページ | `page.tsx`, `layout.tsx` | App Router標準 |
+| 開発専用ページ | `page.dev.tsx` | production build から除外 |
 | 定数 | UPPER_SNAKE_CASE（ファイル内） | `MAX_RETRY_COUNT` |
 
 ### インポートパスエイリアス
