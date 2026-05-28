@@ -288,6 +288,7 @@ export function useAppData() {
       try {
         await saveUserData(user.uid, normalizedData, {
           syncWorkProgresses: mutatedKeys.includes('workProgresses'),
+          updatedFields: mutatedKeys,
         });
       } catch (error) {
         saveError = error;

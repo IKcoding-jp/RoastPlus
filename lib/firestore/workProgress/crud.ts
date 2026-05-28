@@ -47,6 +47,7 @@ export async function addWorkProgress(
     },
     {
       syncWorkProgresses: true,
+      updatedFields: ['workProgresses'],
     }
   );
 }
@@ -120,6 +121,7 @@ export async function updateWorkProgress(
     },
     {
       syncWorkProgresses: true,
+      updatedFields: ['workProgresses'],
     }
   );
 }
@@ -198,6 +200,7 @@ export async function updateWorkProgresses(
       },
       {
         syncWorkProgresses: true,
+        updatedFields: ['workProgresses'],
       }
     );
   }
@@ -220,6 +223,7 @@ export async function deleteWorkProgress(userId: string, workProgressId: string,
     },
     {
       syncWorkProgresses: true,
+      updatedFields: ['workProgresses'],
     }
   );
 }

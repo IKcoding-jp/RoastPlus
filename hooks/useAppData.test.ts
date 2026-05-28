@@ -46,7 +46,11 @@ vi.mock('@/lib/auth', () => ({
 
 vi.mock('@/lib/firestore', () => ({
   getUserData: (userId: string) => mockGetUserData(userId),
-  saveUserData: (userId: string, data: AppData, options?: { syncWorkProgresses?: boolean }) =>
+  saveUserData: (
+    userId: string,
+    data: AppData,
+    options?: { syncWorkProgresses?: boolean; updatedFields?: (keyof AppData)[] }
+  ) =>
     mockSaveUserData(userId, data, options),
   subscribeUserData: (userId: string, callback: (data: AppData) => void) => mockSubscribeUserData(userId, callback),
   SAVE_USER_DATA_DEBOUNCE_MS: 500,
@@ -212,7 +216,7 @@ describe('useAppData', () => {
         expect.objectContaining({
           encouragementCount: 5,
         }),
-        { syncWorkProgresses: false }
+        expect.objectContaining({ syncWorkProgresses: false })
       );
       expect(result.current.data.encouragementCount).toBe(5);
     });
@@ -245,7 +249,33 @@ describe('useAppData', () => {
         expect.objectContaining({
           workProgresses: [expect.objectContaining({ id: 'wp-1' })],
         }),
-        { syncWorkProgresses: true }
+        expect.objectContaining({ syncWorkProgresses: true })
+      );
+    });
+
+    it('保存対象フィールドを変更されたキーだけに絞る', async () => {
+      const { result } = renderHook(() => useAppData());
+
+      await act(async () => {
+        await vi.runAllTimersAsync();
+      });
+
+      await act(async () => {
+        await result.current.updateData((currentData) => ({
+          ...currentData,
+          encouragementCount: 7,
+        }));
+        await vi.runAllTimersAsync();
+      });
+
+      expect(mockSaveUserData).toHaveBeenCalledWith(
+        'test-user-id',
+        expect.objectContaining({
+          encouragementCount: 7,
+          tastingSessions: [],
+          tastingRecords: [],
+        }),
+        { syncWorkProgresses: false, updatedFields: ['encouragementCount'] }
       );
     });
 

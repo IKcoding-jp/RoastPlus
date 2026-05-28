@@ -201,6 +201,26 @@ describe('saveUserData workProgresses split writes', () => {
     });
   });
 
+  it('更新対象外のtastingSessionsとtastingRecordsを空配列で上書きしない', async () => {
+    const { saveUserData, SAVE_USER_DATA_DEBOUNCE_MS } = await import('./userData');
+
+    const savePromise = saveUserData(
+      'user-1',
+      appData({
+        encouragementCount: 9,
+        tastingSessions: [],
+        tastingRecords: [],
+      }),
+      { updatedFields: ['encouragementCount'] }
+    );
+
+    await flushSaveTimers(SAVE_USER_DATA_DEBOUNCE_MS);
+    await savePromise;
+
+    expect(rootWritePayloads()).toHaveLength(1);
+    expect(rootWritePayloads()[0]).toEqual({ encouragementCount: 9 });
+  });
+
   it('workProgresses未変更の保存ではサブコレクションを読み書きしない', async () => {
     const { saveUserData, SAVE_USER_DATA_DEBOUNCE_MS } = await import('./userData');
 

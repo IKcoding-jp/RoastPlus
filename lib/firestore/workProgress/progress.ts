@@ -63,6 +63,7 @@ export async function addCompletedCountToWorkProgress(
     },
     {
       syncWorkProgresses: true,
+      updatedFields: ['workProgresses'],
     }
   );
 }
@@ -142,6 +143,7 @@ export async function addProgressToWorkProgress(
     },
     {
       syncWorkProgresses: true,
+      updatedFields: ['workProgresses'],
     }
   );
 }
@@ -170,6 +172,7 @@ export async function archiveWorkProgress(userId: string, workProgressId: string
     },
     {
       syncWorkProgresses: true,
+      updatedFields: ['workProgresses'],
     }
   );
 }
@@ -198,6 +201,7 @@ export async function unarchiveWorkProgress(userId: string, workProgressId: stri
     },
     {
       syncWorkProgresses: true,
+      updatedFields: ['workProgresses'],
     }
   );
 }
@@ -254,6 +258,7 @@ export async function updateProgressHistoryEntry(
     },
     {
       syncWorkProgresses: true,
+      updatedFields: ['workProgresses'],
     }
   );
 }
@@ -304,6 +309,7 @@ export async function deleteProgressHistoryEntry(
     },
     {
       syncWorkProgresses: true,
+      updatedFields: ['workProgresses'],
     }
   );
 }

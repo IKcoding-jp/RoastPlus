@@ -86,9 +86,7 @@ export async function saveUserData(userId: string, data: AppData, options: SaveU
 
   // 最新のデータをキューに保存
   queue.pendingData = data;
-  queue.pendingOptions = {
-    syncWorkProgresses: queue.pendingOptions?.syncWorkProgresses === true || options.syncWorkProgresses === true,
-  };
+  queue.pendingOptions = mergeSaveUserDataOptions(queue.pendingOptions, options);
 
   // 書き込み中の場合は待機してから書き込み
   if (queue.isWriting) {
@@ -114,6 +112,31 @@ export async function saveUserData(userId: string, data: AppData, options: SaveU
   }, SAVE_USER_DATA_DEBOUNCE_MS);
 
   return promise;
+}
+
+function mergeSaveUserDataOptions(
+  previousOptions: SaveUserDataOptions | null,
+  nextOptions: SaveUserDataOptions
+): SaveUserDataOptions {
+  const syncWorkProgresses = previousOptions?.syncWorkProgresses === true || nextOptions.syncWorkProgresses === true;
+  const previousFields = previousOptions?.updatedFields;
+  const nextFields = nextOptions.updatedFields;
+
+  if (!previousOptions) {
+    return {
+      syncWorkProgresses,
+      updatedFields: nextFields,
+    };
+  }
+
+  if (!previousFields || !nextFields) {
+    return { syncWorkProgresses };
+  }
+
+  return {
+    syncWorkProgresses,
+    updatedFields: Array.from(new Set([...previousFields, ...nextFields])),
+  };
 }
 
 export function subscribeUserData(userId: string, callback: (data: AppData) => void): () => void {
