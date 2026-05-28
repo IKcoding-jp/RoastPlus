@@ -56,7 +56,7 @@ export default function ConsentPage() {
       const existingData = await getUserData(user.uid);
       const consentData = createConsentData();
       // userConsentを追加して保存
-      await saveUserData(user.uid, { ...existingData, userConsent: consentData });
+      await saveUserData(user.uid, { ...existingData, userConsent: consentData }, { updatedFields: ['userConsent'] });
       router.replace('/');
     } catch (error) {
       console.error('同意の保存に失敗:', error);

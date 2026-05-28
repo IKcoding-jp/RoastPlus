@@ -30,6 +30,7 @@ export function clearWriteQueueStateForTests(): void {
 
 export interface SaveUserDataOptions {
   syncWorkProgresses?: boolean;
+  updatedFields?: (keyof AppData)[];
 }
 
 // 最大リトライ回数
@@ -85,6 +86,27 @@ function removeRootWorkProgresses(data: Record<string, unknown>): Record<string,
   const rootData = { ...data };
   delete rootData.workProgresses;
   return rootData;
+}
+
+function pickUpdatedFields(
+  data: Record<string, unknown>,
+  updatedFields: (keyof AppData)[] | undefined
+): Record<string, unknown> {
+  if (!updatedFields) {
+    return data;
+  }
+
+  const pickedData: Record<string, unknown> = {};
+  updatedFields.forEach((field) => {
+    if (Object.prototype.hasOwnProperty.call(data, field)) {
+      pickedData[field] = data[field];
+    }
+  });
+  return pickedData;
+}
+
+function hasWritableFields(data: Record<string, unknown>): boolean {
+  return Object.keys(data).length > 0;
 }
 
 function stableStringify(value: unknown): string {
@@ -228,7 +250,10 @@ async function performWrite(userId: string, data: AppData, options: SaveUserData
     }
 
     const batchWriter = createBatchWriter();
-    batchWriter.add((batch) => batch.set(userDocRef, removeRootWorkProgresses(cleanedData), { merge: true }));
+    const rootWriteData = removeRootWorkProgresses(pickUpdatedFields(cleanedData, options.updatedFields));
+    if (hasWritableFields(rootWriteData)) {
+      batchWriter.add((batch) => batch.set(userDocRef, rootWriteData, { merge: true }));
+    }
     let syncedWorkProgressesSignature: string | null = null;
     if (options.syncWorkProgresses === true) {
       const nextSyncSignature = stableStringify(data.workProgresses);
