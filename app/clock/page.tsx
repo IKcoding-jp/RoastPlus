@@ -2,8 +2,8 @@
 
 import { useState, useCallback, useEffect, useSyncExternalStore } from 'react';
 import { HiCog6Tooth } from 'react-icons/hi2';
-import { MdSchedule } from 'react-icons/md';
-import { BackLink, IconButton } from '@/components/ui';
+import { MdSchedule, MdVolumeUp } from 'react-icons/md';
+import { BackLink, Button, IconButton } from '@/components/ui';
 import { useClockSettings } from '@/hooks/useClockSettings';
 import { ClockSettingsModal } from '@/components/clock/ClockSettingsModal';
 import { NextChimeStrip } from '@/components/clock/NextChimeStrip';
@@ -114,6 +114,8 @@ export default function ClockPage() {
     return () => window.clearTimeout(timer);
   }, [previewChime]);
   const displayedChime = previewChime ?? activeChime;
+  const shouldShowAudioEnableButton =
+    !displayedChime && workChimeSettings.enabled && workChimeSettings.soundEnabled && !isAudioEnabled;
 
   const handleTestWorkChime = useCallback(
     (kind: WorkChimeKind) => {
@@ -238,6 +240,26 @@ export default function ClockPage() {
 
         {!displayedChime && workChimeSettings.enabled && (
           <NextChimeStrip currentPeriod={currentPeriod} nextChime={nextChime} colors={colors} />
+        )}
+
+        {shouldShowAudioEnableButton && (
+          <div className="mt-4 flex justify-center">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={enableAudio}
+              className="!min-h-11 border"
+              style={{
+                backgroundColor: colors.uiBg,
+                borderColor: colors.accent,
+                color: colors.text,
+              }}
+            >
+              <MdVolumeUp className="mr-1.5 h-5 w-5" aria-hidden="true" />
+              チャイム音を有効化
+            </Button>
+          </div>
         )}
       </div>
 

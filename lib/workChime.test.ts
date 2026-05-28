@@ -4,6 +4,7 @@ import {
   DEFAULT_WORK_CHIME_SETTINGS,
   getCurrentWorkChimePeriod,
   getDueWorkChime,
+  getDueWorkChimeSince,
   getNextWorkChime,
   getWorkChimeSettings,
   setWorkChimeSettings,
@@ -156,6 +157,24 @@ describe('workChime', () => {
     const due = getDueWorkChime(now, DEFAULT_WORK_CHIME_SETTINGS, ['2026-05-17:break-1']);
 
     expect(due).toBeNull();
+  });
+
+  it('区切り時刻の秒をまたいだ場合も直近のチャイムを返す', () => {
+    const previous = localDate(10, 44, 59);
+    const now = localDate(10, 45, 3);
+
+    const due = getDueWorkChimeSince(previous, now, DEFAULT_WORK_CHIME_SETTINGS, []);
+
+    expect(due?.period.id).toBe('break-1');
+    expect(due?.kind).toBe('break');
+    expect(due?.message).toBe('休憩時間です');
+  });
+
+  it('長時間停止後は古い区切り時刻のチャイムを後追いしない', () => {
+    const previous = localDate(10, 40, 0);
+    const now = localDate(10, 50, 0);
+
+    expect(getDueWorkChimeSince(previous, now, DEFAULT_WORK_CHIME_SETTINGS, [])).toBeNull();
   });
 
   it('無効化されている場合は現在表示も発火もしない', () => {

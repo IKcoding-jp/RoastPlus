@@ -2,10 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { playWorkChime } from '@/lib/workChimeAudio';
+import { isWorkChimeAudioReady, playWorkChime, unlockWorkChimeAudio } from '@/lib/workChimeAudio';
 import {
   getCurrentWorkChimePeriod,
-  getDueWorkChime,
+  getDueWorkChimeSince,
   getNextWorkChime,
   getWorkChimeMessage,
   getWorkChimeSettings,
@@ -45,6 +45,7 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
   const [isAudioEnabled, setIsAudioEnabled] = useState(false);
   const [activeChime, setActiveChime] = useState<DueWorkChime | null>(null);
   const playedKeysRef = useRef<string[]>([]);
+  const previousNowRef = useRef<Date | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const dismissActiveChime = useCallback(() => {
@@ -56,8 +57,7 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
   }, []);
 
   const enableAudio = useCallback(() => {
-    playWorkChime('work-start', { volume: 0 });
-    setIsAudioEnabled(true);
+    void unlockWorkChimeAudio().then(setIsAudioEnabled);
   }, []);
 
   const updateSettings = useCallback((patch: Partial<WorkChimeSettings>) => {
@@ -90,12 +90,14 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
 
       if (timerRef.current) clearTimeout(timerRef.current);
 
-      setIsAudioEnabled(true);
       setActiveChime(chime);
 
-      if (settings.soundEnabled) {
-        playWorkChime(kind, { volume: settings.volume });
-      }
+      void unlockWorkChimeAudio().then((audioReady) => {
+        setIsAudioEnabled(audioReady);
+        if (settings.soundEnabled && audioReady) {
+          void playWorkChime(kind, { volume: settings.volume });
+        }
+      });
 
       timerRef.current = setTimeout(() => {
         setActiveChime(null);
@@ -109,16 +111,19 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
   const nextChime = now ? getNextWorkChime(now, settings) : null;
 
   useEffect(() => {
-    if (!now || !isAudioEnabled) return;
+    if (!now) return;
 
-    const due = getDueWorkChime(now, settings, playedKeysRef.current);
+    const due = getDueWorkChimeSince(previousNowRef.current, now, settings, playedKeysRef.current);
+    previousNowRef.current = now;
     if (!due) return;
 
     playedKeysRef.current = [...playedKeysRef.current, due.playKey].slice(-50);
     setActiveChime(due);
 
-    if (settings.soundEnabled) {
-      playWorkChime(due.kind, { volume: settings.volume });
+    if (settings.soundEnabled && isAudioEnabled) {
+      void playWorkChime(due.kind, { volume: settings.volume }).then((didPlay) => {
+        if (!didPlay) setIsAudioEnabled(false);
+      });
     }
 
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -127,6 +132,27 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
       timerRef.current = null;
     }, 5000);
   }, [isAudioEnabled, now, settings]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    if (!isAudioEnabled) return;
+
+    const refreshAudioState = () => {
+      if (!isWorkChimeAudioReady()) {
+        setIsAudioEnabled(false);
+      }
+    };
+
+    window.addEventListener('focus', refreshAudioState);
+    window.addEventListener('pageshow', refreshAudioState);
+    document.addEventListener('visibilitychange', refreshAudioState);
+
+    return () => {
+      window.removeEventListener('focus', refreshAudioState);
+      window.removeEventListener('pageshow', refreshAudioState);
+      document.removeEventListener('visibilitychange', refreshAudioState);
+    };
+  }, [isAudioEnabled]);
 
   useEffect(() => {
     return () => {

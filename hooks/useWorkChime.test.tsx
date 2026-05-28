@@ -4,9 +4,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useWorkChime } from './useWorkChime';
 
 const playWorkChimeMock = vi.fn();
+const unlockWorkChimeAudioMock = vi.fn(() => Promise.resolve(true));
+const isWorkChimeAudioReadyMock = vi.fn(() => true);
 
 vi.mock('@/lib/workChimeAudio', () => ({
+  isWorkChimeAudioReady: () => isWorkChimeAudioReadyMock(),
   playWorkChime: (...args: unknown[]) => playWorkChimeMock(...args),
+  unlockWorkChimeAudio: () => unlockWorkChimeAudioMock(),
 }));
 
 const createLocalStorageMock = () => {
@@ -33,26 +37,36 @@ describe('useWorkChime', () => {
     vi.useFakeTimers();
     vi.stubGlobal('localStorage', createLocalStorageMock());
     playWorkChimeMock.mockReset();
+    playWorkChimeMock.mockResolvedValue(true);
+    unlockWorkChimeAudioMock.mockReset();
+    unlockWorkChimeAudioMock.mockResolvedValue(true);
+    isWorkChimeAudioReadyMock.mockReset();
+    isWorkChimeAudioReadyMock.mockReturnValue(true);
   });
 
-  it('アンロック前は該当時刻でも音を鳴らさない', () => {
-    renderHook(() => useWorkChime(localDate(10, 45)));
+  it('音の有効化前でも該当時刻は通知を表示する', () => {
+    const { result } = renderHook(() => useWorkChime(localDate(10, 45)));
 
     expect(playWorkChimeMock).not.toHaveBeenCalled();
+    expect(result.current.activeChime?.message).toBe('休憩時間です');
   });
 
-  it('アンロック後に該当時刻で音を鳴らして通知を表示する', () => {
+  it('アンロック後に該当時刻で音を鳴らして通知を表示する', async () => {
     const { result, rerender } = renderHook(({ now }) => useWorkChime(now), {
       initialProps: { now: localDate(10, 44, 59) },
     });
 
-    act(() => {
+    await act(async () => {
       result.current.enableAudio();
+      await Promise.resolve();
     });
 
     playWorkChimeMock.mockClear();
 
     rerender({ now: localDate(10, 45) });
+    await act(async () => {
+      await Promise.resolve();
+    });
 
     expect(playWorkChimeMock).toHaveBeenCalledWith('break', { volume: 0.8 });
     expect(result.current.activeChime?.message).toBe('休憩時間です');
@@ -66,30 +80,47 @@ describe('useWorkChime', () => {
     expect(result.current.currentPeriod?.minutesUntilEnd).toBe(5);
   });
 
-  it('同じ分では重複再生しない', () => {
+  it('同じ分では重複再生しない', async () => {
     const { result, rerender } = renderHook(({ now }) => useWorkChime(now), {
       initialProps: { now: localDate(10, 44, 59) },
     });
 
-    act(() => {
+    await act(async () => {
       result.current.enableAudio();
+      await Promise.resolve();
     });
 
     playWorkChimeMock.mockClear();
 
     rerender({ now: localDate(10, 45) });
     rerender({ now: localDate(10, 45, 40) });
+    await act(async () => {
+      await Promise.resolve();
+    });
 
     expect(playWorkChimeMock).toHaveBeenCalledTimes(1);
   });
 
-  it('5秒後に通知を消す', () => {
+  it('PWA復帰などで区切り時刻の秒をまたいでも通知を表示する', () => {
     const { result, rerender } = renderHook(({ now }) => useWorkChime(now), {
       initialProps: { now: localDate(10, 44, 59) },
     });
 
-    act(() => {
+    rerender({ now: localDate(10, 45, 3) });
+
+    expect(playWorkChimeMock).not.toHaveBeenCalled();
+    expect(result.current.activeChime?.label).toBe('休憩開始');
+    expect(result.current.activeChime?.message).toBe('休憩時間です');
+  });
+
+  it('5秒後に通知を消す', async () => {
+    const { result, rerender } = renderHook(({ now }) => useWorkChime(now), {
+      initialProps: { now: localDate(10, 44, 59) },
+    });
+
+    await act(async () => {
       result.current.enableAudio();
+      await Promise.resolve();
     });
 
     rerender({ now: localDate(10, 45) });
@@ -102,11 +133,12 @@ describe('useWorkChime', () => {
     expect(result.current.activeChime).toBeNull();
   });
 
-  it('テスト用チャイムは通知を表示して音を鳴らす', () => {
+  it('テスト用チャイムは通知を表示して音を鳴らす', async () => {
     const { result } = renderHook(() => useWorkChime(localDate(10, 40)));
 
-    act(() => {
+    await act(async () => {
       result.current.testWorkChime('work-start');
+      await Promise.resolve();
     });
 
     expect(playWorkChimeMock).toHaveBeenCalledWith('work-start', { volume: 0.8 });
@@ -129,5 +161,23 @@ describe('useWorkChime', () => {
     });
 
     expect(result.current.activeChime).toBeNull();
+  });
+
+  it('AudioContextが停止した状態で復帰したら音の有効化を解除する', async () => {
+    const { result } = renderHook(() => useWorkChime(localDate(10, 40)));
+
+    await act(async () => {
+      result.current.enableAudio();
+      await Promise.resolve();
+    });
+    expect(result.current.isAudioEnabled).toBe(true);
+
+    isWorkChimeAudioReadyMock.mockReturnValue(false);
+
+    act(() => {
+      window.dispatchEvent(new Event('focus'));
+    });
+
+    expect(result.current.isAudioEnabled).toBe(false);
   });
 });
