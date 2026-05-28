@@ -2,10 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { playWorkChime } from '@/lib/workChimeAudio';
+import { playWorkChime, unlockWorkChimeAudio } from '@/lib/workChimeAudio';
 import {
   getCurrentWorkChimePeriod,
-  getDueWorkChime,
+  getDueWorkChimeSince,
   getNextWorkChime,
   getWorkChimeMessage,
   getWorkChimeSettings,
@@ -45,6 +45,7 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
   const [isAudioEnabled, setIsAudioEnabled] = useState(false);
   const [activeChime, setActiveChime] = useState<DueWorkChime | null>(null);
   const playedKeysRef = useRef<string[]>([]);
+  const previousNowRef = useRef<Date | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const dismissActiveChime = useCallback(() => {
@@ -56,8 +57,7 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
   }, []);
 
   const enableAudio = useCallback(() => {
-    playWorkChime('work-start', { volume: 0 });
-    setIsAudioEnabled(true);
+    setIsAudioEnabled(unlockWorkChimeAudio());
   }, []);
 
   const updateSettings = useCallback((patch: Partial<WorkChimeSettings>) => {
@@ -90,10 +90,11 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
 
       if (timerRef.current) clearTimeout(timerRef.current);
 
-      setIsAudioEnabled(true);
+      const audioReady = unlockWorkChimeAudio();
+      setIsAudioEnabled(audioReady);
       setActiveChime(chime);
 
-      if (settings.soundEnabled) {
+      if (settings.soundEnabled && audioReady) {
         playWorkChime(kind, { volume: settings.volume });
       }
 
@@ -109,15 +110,16 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
   const nextChime = now ? getNextWorkChime(now, settings) : null;
 
   useEffect(() => {
-    if (!now || !isAudioEnabled) return;
+    if (!now) return;
 
-    const due = getDueWorkChime(now, settings, playedKeysRef.current);
+    const due = getDueWorkChimeSince(previousNowRef.current, now, settings, playedKeysRef.current);
+    previousNowRef.current = now;
     if (!due) return;
 
     playedKeysRef.current = [...playedKeysRef.current, due.playKey].slice(-50);
     setActiveChime(due);
 
-    if (settings.soundEnabled) {
+    if (settings.soundEnabled && isAudioEnabled) {
       playWorkChime(due.kind, { volume: settings.volume });
     }
 

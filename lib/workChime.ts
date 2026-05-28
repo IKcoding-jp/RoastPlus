@@ -167,6 +167,19 @@ function getBoundaryLabel(kind: WorkChimeKind): string {
   return '作業開始';
 }
 
+function createDueWorkChime(now: Date, period: WorkChimePeriod, sortedPeriods: WorkChimePeriod[]): DueWorkChime {
+  const kind = getBoundaryKind(period, sortedPeriods);
+
+  return {
+    period,
+    time: period.start,
+    kind,
+    label: getBoundaryLabel(kind),
+    playKey: `${dateKey(now)}:${period.id}`,
+    message: getWorkChimeMessage(kind),
+  };
+}
+
 export function getWorkChimeMessage(kind: WorkChimeKind): string {
   if (kind === 'cleanup-start') return '掃除開始です';
   return kind === 'break' ? '休憩時間です' : '作業開始です';
@@ -235,17 +248,44 @@ export function getDueWorkChime(now: Date, settings: WorkChimeSettings, playedKe
   const period = sortedPeriods.find((candidate) => candidate.start === currentTime);
   if (!period) return null;
 
-  const playKey = `${dateKey(now)}:${period.id}`;
-  if (playedKeys.includes(playKey)) return null;
+  const due = createDueWorkChime(now, period, sortedPeriods);
+  if (playedKeys.includes(due.playKey)) return null;
 
-  const kind = getBoundaryKind(period, sortedPeriods);
+  return due;
+}
 
-  return {
-    period,
-    time: period.start,
-    kind,
-    label: getBoundaryLabel(kind),
-    playKey,
-    message: getWorkChimeMessage(kind),
-  };
+export function getDueWorkChimeSince(
+  previous: Date | null,
+  now: Date,
+  settings: WorkChimeSettings,
+  playedKeys: string[]
+): DueWorkChime | null {
+  if (!settings.enabled) return null;
+  if (!previous) return getDueWorkChime(now, settings, playedKeys);
+
+  const previousTime = previous.getTime();
+  const currentTime = now.getTime();
+  if (previousTime >= currentTime) return getDueWorkChime(now, settings, playedKeys);
+
+  const maxCatchUpMs = 5 * 60 * 1000;
+  if (currentTime - previousTime > maxCatchUpMs) return getDueWorkChime(now, settings, playedKeys);
+
+  const sortedPeriods = getSortedPeriods(settings);
+  const due = sortedPeriods
+    .map((period) => {
+      const [hours, minutes] = period.start.split(':').map(Number);
+      const boundary = new Date(now);
+      boundary.setHours(hours, minutes, 0, 0);
+
+      return {
+        period,
+        boundaryTime: boundary.getTime(),
+      };
+    })
+    .find(({ boundaryTime, period }) => {
+      const playKey = `${dateKey(now)}:${period.id}`;
+      return previousTime < boundaryTime && boundaryTime <= currentTime && !playedKeys.includes(playKey);
+    });
+
+  return due ? createDueWorkChime(now, due.period, sortedPeriods) : null;
 }

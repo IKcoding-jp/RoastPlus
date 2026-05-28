@@ -4,9 +4,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useWorkChime } from './useWorkChime';
 
 const playWorkChimeMock = vi.fn();
+const unlockWorkChimeAudioMock = vi.fn(() => true);
 
 vi.mock('@/lib/workChimeAudio', () => ({
   playWorkChime: (...args: unknown[]) => playWorkChimeMock(...args),
+  unlockWorkChimeAudio: () => unlockWorkChimeAudioMock(),
 }));
 
 const createLocalStorageMock = () => {
@@ -33,12 +35,15 @@ describe('useWorkChime', () => {
     vi.useFakeTimers();
     vi.stubGlobal('localStorage', createLocalStorageMock());
     playWorkChimeMock.mockReset();
+    unlockWorkChimeAudioMock.mockReset();
+    unlockWorkChimeAudioMock.mockReturnValue(true);
   });
 
-  it('アンロック前は該当時刻でも音を鳴らさない', () => {
-    renderHook(() => useWorkChime(localDate(10, 45)));
+  it('音の有効化前でも該当時刻は通知を表示する', () => {
+    const { result } = renderHook(() => useWorkChime(localDate(10, 45)));
 
     expect(playWorkChimeMock).not.toHaveBeenCalled();
+    expect(result.current.activeChime?.message).toBe('休憩時間です');
   });
 
   it('アンロック後に該当時刻で音を鳴らして通知を表示する', () => {
@@ -81,6 +86,18 @@ describe('useWorkChime', () => {
     rerender({ now: localDate(10, 45, 40) });
 
     expect(playWorkChimeMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('PWA復帰などで区切り時刻の秒をまたいでも通知を表示する', () => {
+    const { result, rerender } = renderHook(({ now }) => useWorkChime(now), {
+      initialProps: { now: localDate(10, 44, 59) },
+    });
+
+    rerender({ now: localDate(10, 45, 3) });
+
+    expect(playWorkChimeMock).not.toHaveBeenCalled();
+    expect(result.current.activeChime?.label).toBe('休憩開始');
+    expect(result.current.activeChime?.message).toBe('休憩時間です');
   });
 
   it('5秒後に通知を消す', () => {

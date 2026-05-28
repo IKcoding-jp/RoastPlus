@@ -6,7 +6,8 @@ declare global {
   }
 }
 
-type AudioContextLike = Pick<AudioContext, 'currentTime' | 'destination' | 'createOscillator' | 'createGain'>;
+type AudioContextLike = Pick<AudioContext, 'currentTime' | 'destination' | 'createOscillator' | 'createGain'> &
+  Partial<Pick<AudioContext, 'state' | 'resume'>>;
 
 interface PlayWorkChimeOptions {
   volume: number;
@@ -27,6 +28,8 @@ function clampVolume(value: number): number {
   return Math.max(0, Math.min(1, value));
 }
 
+let workChimeAudioContext: AudioContextLike | null = null;
+
 function createAudioContext(): AudioContextLike | null {
   if (typeof window === 'undefined') return null;
 
@@ -34,6 +37,21 @@ function createAudioContext(): AudioContextLike | null {
   if (!AudioContextConstructor) return null;
 
   return new AudioContextConstructor();
+}
+
+function getAudioContext(): AudioContextLike | null {
+  if (workChimeAudioContext) return workChimeAudioContext;
+
+  workChimeAudioContext = createAudioContext();
+  return workChimeAudioContext;
+}
+
+function resumeAudioContext(ctx: AudioContextLike): void {
+  if (ctx.state !== 'suspended' || !ctx.resume) return;
+
+  void ctx.resume().catch((error) => {
+    console.warn('Failed to resume work chime audio:', error);
+  });
 }
 
 function tone(ctx: AudioContextLike, master: GainNode, options: ToneOptions): void {
@@ -84,11 +102,9 @@ function bell(
   });
 }
 
-export function playWorkChime(kind: WorkChimeKind, options: PlayWorkChimeOptions): void {
-  const ctx = options.audioContext ?? createAudioContext();
-  if (!ctx) return;
+function scheduleWorkChime(ctx: AudioContextLike, kind: WorkChimeKind, volume: number): void {
+  resumeAudioContext(ctx);
 
-  const volume = clampVolume(options.volume);
   const master = ctx.createGain();
   master.gain.setValueAtTime(volume, ctx.currentTime);
   master.connect(ctx.destination);
@@ -104,4 +120,30 @@ export function playWorkChime(kind: WorkChimeKind, options: PlayWorkChimeOptions
   bell(ctx, master, now, 659, 0.14, 0.3);
   bell(ctx, master, now + 0.21, 784, 0.14, 0.32);
   bell(ctx, master, now + 0.42, 988, 0.22, 0.28);
+}
+
+export function unlockWorkChimeAudio(): boolean {
+  const ctx = getAudioContext();
+  if (!ctx) return false;
+
+  try {
+    scheduleWorkChime(ctx, 'work-start', 0);
+    return true;
+  } catch (error) {
+    console.warn('Failed to unlock work chime audio:', error);
+    return false;
+  }
+}
+
+export function playWorkChime(kind: WorkChimeKind, options: PlayWorkChimeOptions): boolean {
+  const ctx = options.audioContext ?? getAudioContext();
+  if (!ctx) return false;
+
+  try {
+    scheduleWorkChime(ctx, kind, clampVolume(options.volume));
+    return true;
+  } catch (error) {
+    console.warn('Failed to play work chime:', error);
+    return false;
+  }
 }

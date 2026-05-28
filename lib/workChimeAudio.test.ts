@@ -1,10 +1,10 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { playWorkChime } from './workChimeAudio';
+import { playWorkChime, unlockWorkChimeAudio } from './workChimeAudio';
 
 type AudioContextMock = NonNullable<Parameters<typeof playWorkChime>[1]['audioContext']>;
 
-function createAudioContextMock() {
+function createAudioContextMock(options: Partial<Pick<AudioContext, 'state' | 'resume'>> = {}) {
   const events: Array<{ frequency: number; start: number; stop: number; type: OscillatorType }> = [];
   const gainValues: number[] = [];
 
@@ -47,6 +47,7 @@ function createAudioContextMock() {
     destination,
     createOscillator,
     createGain,
+    ...options,
   };
 
   return {
@@ -87,5 +88,41 @@ describe('workChimeAudio', () => {
 
     expect(low.gainValues).toContain(0);
     expect(high.gainValues.some((value) => value > 1)).toBe(false);
+  });
+
+  it('停止中のAudioContextを再開してからチャイムをスケジュールする', () => {
+    const resume = vi.fn(() => Promise.resolve());
+    const mock = createAudioContextMock({ state: 'suspended', resume });
+
+    playWorkChime('break', { volume: 0.8, audioContext: mock.ctx });
+
+    expect(resume).toHaveBeenCalledTimes(1);
+    expect(mock.ctx.createOscillator).toHaveBeenCalled();
+  });
+
+  it('音声有効化時にAudioContextを作成して無音チャイムで初期化する', () => {
+    const resume = vi.fn(() => Promise.resolve());
+    const mock = createAudioContextMock({ state: 'suspended', resume });
+    const AudioContextMockConstructor = vi.fn(function AudioContextMock() {
+      return mock.ctx;
+    });
+    const originalAudioContext = window.AudioContext;
+
+    Object.defineProperty(window, 'AudioContext', {
+      value: AudioContextMockConstructor as unknown as typeof AudioContext,
+      configurable: true,
+    });
+
+    const didUnlock = unlockWorkChimeAudio();
+
+    expect(didUnlock).toBe(true);
+    expect(AudioContextMockConstructor).toHaveBeenCalledTimes(1);
+    expect(resume).toHaveBeenCalledTimes(1);
+    expect(mock.gainValues).toContain(0);
+
+    Object.defineProperty(window, 'AudioContext', {
+      value: originalAudioContext,
+      configurable: true,
+    });
   });
 });
