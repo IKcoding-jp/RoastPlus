@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { playWorkChime, unlockWorkChimeAudio } from '@/lib/workChimeAudio';
+import { isWorkChimeAudioReady, playWorkChime, unlockWorkChimeAudio } from '@/lib/workChimeAudio';
 import {
   getCurrentWorkChimePeriod,
   getDueWorkChimeSince,
@@ -57,7 +57,7 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
   }, []);
 
   const enableAudio = useCallback(() => {
-    setIsAudioEnabled(unlockWorkChimeAudio());
+    void unlockWorkChimeAudio().then(setIsAudioEnabled);
   }, []);
 
   const updateSettings = useCallback((patch: Partial<WorkChimeSettings>) => {
@@ -90,13 +90,14 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
 
       if (timerRef.current) clearTimeout(timerRef.current);
 
-      const audioReady = unlockWorkChimeAudio();
-      setIsAudioEnabled(audioReady);
       setActiveChime(chime);
 
-      if (settings.soundEnabled && audioReady) {
-        playWorkChime(kind, { volume: settings.volume });
-      }
+      void unlockWorkChimeAudio().then((audioReady) => {
+        setIsAudioEnabled(audioReady);
+        if (settings.soundEnabled && audioReady) {
+          void playWorkChime(kind, { volume: settings.volume });
+        }
+      });
 
       timerRef.current = setTimeout(() => {
         setActiveChime(null);
@@ -120,7 +121,9 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
     setActiveChime(due);
 
     if (settings.soundEnabled && isAudioEnabled) {
-      playWorkChime(due.kind, { volume: settings.volume });
+      void playWorkChime(due.kind, { volume: settings.volume }).then((didPlay) => {
+        if (!didPlay) setIsAudioEnabled(false);
+      });
     }
 
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -129,6 +132,27 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
       timerRef.current = null;
     }, 5000);
   }, [isAudioEnabled, now, settings]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    if (!isAudioEnabled) return;
+
+    const refreshAudioState = () => {
+      if (!isWorkChimeAudioReady()) {
+        setIsAudioEnabled(false);
+      }
+    };
+
+    window.addEventListener('focus', refreshAudioState);
+    window.addEventListener('pageshow', refreshAudioState);
+    document.addEventListener('visibilitychange', refreshAudioState);
+
+    return () => {
+      window.removeEventListener('focus', refreshAudioState);
+      window.removeEventListener('pageshow', refreshAudioState);
+      document.removeEventListener('visibilitychange', refreshAudioState);
+    };
+  }, [isAudioEnabled]);
 
   useEffect(() => {
     return () => {

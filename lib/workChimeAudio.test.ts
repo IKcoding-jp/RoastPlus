@@ -58,20 +58,20 @@ function createAudioContextMock(options: Partial<Pick<AudioContext, 'state' | 'r
 }
 
 describe('workChimeAudio', () => {
-  it('休憩チャイムは下がる2音をスケジュールする', () => {
+  it('休憩チャイムは下がる2音をスケジュールする', async () => {
     const mock = createAudioContextMock();
 
-    playWorkChime('break', { volume: 0.8, audioContext: mock.ctx });
+    await playWorkChime('break', { volume: 0.8, audioContext: mock.ctx });
 
     expect(mock.ctx.createOscillator).toHaveBeenCalledTimes(6);
     expect(mock.events[0].frequency).toBe(784);
     expect(mock.events[3].frequency).toBe(659);
   });
 
-  it('作業開始チャイムは上がる3音をスケジュールする', () => {
+  it('作業開始チャイムは上がる3音をスケジュールする', async () => {
     const mock = createAudioContextMock();
 
-    playWorkChime('work-start', { volume: 0.8, audioContext: mock.ctx });
+    await playWorkChime('work-start', { volume: 0.8, audioContext: mock.ctx });
 
     expect(mock.ctx.createOscillator).toHaveBeenCalledTimes(9);
     expect(mock.events[0].frequency).toBe(659);
@@ -79,28 +79,28 @@ describe('workChimeAudio', () => {
     expect(mock.events[6].frequency).toBe(988);
   });
 
-  it('音量は0から1に丸める', () => {
+  it('音量は0から1に丸める', async () => {
     const low = createAudioContextMock();
     const high = createAudioContextMock();
 
-    playWorkChime('break', { volume: -1, audioContext: low.ctx });
-    playWorkChime('break', { volume: 2, audioContext: high.ctx });
+    await playWorkChime('break', { volume: -1, audioContext: low.ctx });
+    await playWorkChime('break', { volume: 2, audioContext: high.ctx });
 
     expect(low.gainValues).toContain(0);
     expect(high.gainValues.some((value) => value > 1)).toBe(false);
   });
 
-  it('停止中のAudioContextを再開してからチャイムをスケジュールする', () => {
+  it('停止中のAudioContextを再開してからチャイムをスケジュールする', async () => {
     const resume = vi.fn(() => Promise.resolve());
     const mock = createAudioContextMock({ state: 'suspended', resume });
 
-    playWorkChime('break', { volume: 0.8, audioContext: mock.ctx });
+    await playWorkChime('break', { volume: 0.8, audioContext: mock.ctx });
 
     expect(resume).toHaveBeenCalledTimes(1);
     expect(mock.ctx.createOscillator).toHaveBeenCalled();
   });
 
-  it('音声有効化時にAudioContextを作成して無音チャイムで初期化する', () => {
+  it('音声有効化時にAudioContextを作成して無音チャイムで初期化する', async () => {
     const resume = vi.fn(() => Promise.resolve());
     const mock = createAudioContextMock({ state: 'suspended', resume });
     const AudioContextMockConstructor = vi.fn(function AudioContextMock() {
@@ -113,7 +113,7 @@ describe('workChimeAudio', () => {
       configurable: true,
     });
 
-    const didUnlock = unlockWorkChimeAudio();
+    const didUnlock = await unlockWorkChimeAudio();
 
     expect(didUnlock).toBe(true);
     expect(AudioContextMockConstructor).toHaveBeenCalledTimes(1);
