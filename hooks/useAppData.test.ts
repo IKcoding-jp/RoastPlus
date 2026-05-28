@@ -50,8 +50,7 @@ vi.mock('@/lib/firestore', () => ({
     userId: string,
     data: AppData,
     options?: { syncWorkProgresses?: boolean; updatedFields?: (keyof AppData)[] }
-  ) =>
-    mockSaveUserData(userId, data, options),
+  ) => mockSaveUserData(userId, data, options),
   subscribeUserData: (userId: string, callback: (data: AppData) => void) => mockSubscribeUserData(userId, callback),
   SAVE_USER_DATA_DEBOUNCE_MS: 500,
 }));
