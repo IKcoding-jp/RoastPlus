@@ -3,16 +3,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { AppData } from '@/types';
 
 const firestoreMocks = vi.hoisted(() => {
-  const deleteFieldSentinel = { __deleteField: true };
   const batch = {
     set: vi.fn(),
-    delete: vi.fn(),
     commit: vi.fn(),
   };
 
   return {
     batch,
-    deleteFieldSentinel,
     getFirestore: vi.fn(() => ({ app: 'mock-firestore' })),
     doc: vi.fn((first: { path?: string } | unknown, ...segments: string[]) => {
       const basePath =
@@ -20,16 +17,9 @@ const firestoreMocks = vi.hoisted(() => {
       const path = basePath ? [basePath, ...segments].join('/') : segments.join('/');
       return { id: segments.at(-1), path };
     }),
-    collection: vi.fn((first: { path?: string } | unknown, ...segments: string[]) => {
-      const basePath =
-        first && typeof first === 'object' && 'path' in first && typeof first.path === 'string' ? first.path : '';
-      const path = basePath ? [basePath, ...segments].join('/') : segments.join('/');
-      return { path };
-    }),
-    getDocs: vi.fn(),
     setDoc: vi.fn(),
     writeBatch: vi.fn(() => batch),
-    deleteField: vi.fn(() => deleteFieldSentinel),
+    deleteField: vi.fn(),
   };
 });
 
@@ -40,8 +30,6 @@ vi.mock('../firebase', () => ({
 vi.mock('firebase/firestore', () => ({
   getFirestore: firestoreMocks.getFirestore,
   doc: firestoreMocks.doc,
-  collection: firestoreMocks.collection,
-  getDocs: firestoreMocks.getDocs,
   setDoc: firestoreMocks.setDoc,
   writeBatch: firestoreMocks.writeBatch,
   deleteField: firestoreMocks.deleteField,
@@ -81,7 +69,6 @@ describe('saveUserData root write behavior', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-05-24T00:00:00.000Z'));
     vi.clearAllMocks();
-    firestoreMocks.getDocs.mockResolvedValue({ docs: [] });
     firestoreMocks.setDoc.mockResolvedValue(undefined);
     firestoreMocks.batch.commit.mockResolvedValue(undefined);
   });
