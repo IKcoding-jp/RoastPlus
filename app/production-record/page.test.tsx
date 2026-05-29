@@ -19,6 +19,7 @@ const mocks = vi.hoisted(() => ({
   saveRoastEntry: vi.fn(async () => 'r-id'),
   savePackageEntry: vi.fn(async () => 'p-id'),
   subscribeRecentProductionMonths: vi.fn(),
+  productionRecordMonthExists: vi.fn(async () => false),
   months: [] as ProductionRecordMonth[],
   hookState: {
     monthDoc: null as ProductionRecordMonth | null,
@@ -56,6 +57,7 @@ vi.mock('@/lib/firestore/productionRecords', () => ({
   saveHandpickEntry: mocks.saveHandpickEntry,
   saveRoastEntry: mocks.saveRoastEntry,
   savePackageEntry: mocks.savePackageEntry,
+  productionRecordMonthExists: mocks.productionRecordMonthExists,
 }));
 
 // ログインページをモック（識別用テキストのみ）
@@ -288,12 +290,12 @@ describe('ProductionRecordPage 空状態と新規作成', () => {
     expect(screen.queryByRole('heading', { name: '生豆ハンドピック' })).not.toBeInTheDocument();
   });
 
-  it('「対象月を作成」で月設定モーダルを開くが、保存前は3列へ遷移しない', () => {
+  it('「対象月を作成」で月設定モーダルを開くが、保存前は3列へ遷移しない', async () => {
     render(<ProductionRecordPage />);
     // 空状態ではヘッダーとEmptyStateの両方に「対象月を作成」がある。先頭(ヘッダー)を押す
     fireEvent.click(screen.getAllByRole('button', { name: '対象月を作成' })[0]);
 
-    expect(screen.getByTestId('month-modal')).toBeInTheDocument();
+    expect(await screen.findByTestId('month-modal')).toBeInTheDocument();
     // selectedMonth は変わらないので空状態のまま・3列見出しは出ない
     expect(screen.getByText('生産記録がまだありません')).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: '生豆ハンドピック' })).not.toBeInTheDocument();
@@ -305,7 +307,7 @@ describe('ProductionRecordPage 月設定の保存', () => {
   it('月設定保存で saveProductionRecordMonth を呼び、3列表示へ切り替わる', async () => {
     render(<ProductionRecordPage />);
     fireEvent.click(screen.getAllByRole('button', { name: '対象月を作成' })[0]);
-    fireEvent.click(screen.getByRole('button', { name: 'save-month' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'save-month' }));
 
     await waitFor(() => {
       expect(mocks.saveProductionRecordMonth).toHaveBeenCalledWith('test-uid', {
@@ -371,13 +373,13 @@ describe('ProductionRecordPage データ表示と集計', () => {
     expect(mocks.monthProps?.initial).toEqual(MONTH_DOC);
   });
 
-  it('新規作成時は月設定モーダルが空（initial=null）で開く', () => {
+  it('新規作成時は月設定モーダルが空（initial=null）で開く', async () => {
     render(<ProductionRecordPage />);
     // 既存月(2026-05)と重複しない月を指定する（重複月は作成がブロックされるため、当月の日付に依存させない）
     fireEvent.change(screen.getByLabelText('新規作成'), { target: { value: '2026-07' } });
     fireEvent.click(screen.getByRole('button', { name: '対象月を作成' }));
 
-    expect(screen.getByTestId('month-modal')).toBeInTheDocument();
+    expect(await screen.findByTestId('month-modal')).toBeInTheDocument();
     expect(mocks.monthProps?.initial).toBeNull();
   });
 });
@@ -521,6 +523,13 @@ describe('ProductionRecordPage 月切替ローディング中のガード', () =
     expect(screen.getByRole('button', { name: '焙煎を入力' })).toBeEnabled();
     expect(screen.getByRole('button', { name: 'パッケージを入力' })).toBeEnabled();
   });
+
+  it('読み込み中は「設定を編集」ボタンを表示しない（前月設定での誤編集を防ぐ）', () => {
+    mocks.hookState.isLoading = true;
+    render(<ProductionRecordPage />);
+
+    expect(screen.queryByRole('button', { name: '設定を編集' })).not.toBeInTheDocument();
+  });
 });
 
 describe('ProductionRecordPage 重複月の作成防止', () => {
@@ -538,5 +547,18 @@ describe('ProductionRecordPage 重複月の作成防止', () => {
     // 月設定モーダルは開かず（無警告の上書きを防ぐ）、既存月である旨を通知する
     expect(screen.queryByTestId('month-modal')).not.toBeInTheDocument();
     expect(mocks.showToast).toHaveBeenCalledWith(expect.stringContaining('既に存在'), 'error');
+  });
+
+  it('recentMonths(最新24件)に無くてもFirestoreに存在する月の作成はブロックする', async () => {
+    // months には 2026-05 のみ。2026-01 はセレクタ外だが Firestore には存在する想定
+    mocks.productionRecordMonthExists.mockResolvedValue(true);
+    render(<ProductionRecordPage />);
+    fireEvent.change(screen.getByLabelText('新規作成'), { target: { value: '2026-01' } });
+    fireEvent.click(screen.getByRole('button', { name: '対象月を作成' }));
+
+    await waitFor(() => {
+      expect(mocks.showToast).toHaveBeenCalledWith(expect.stringContaining('既に存在'), 'error');
+    });
+    expect(screen.queryByTestId('month-modal')).not.toBeInTheDocument();
   });
 });

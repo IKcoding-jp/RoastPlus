@@ -58,6 +58,20 @@ export function getServerProbeURL(port: string) {
   return `http://localhost:${port}/login/`;
 }
 
+/**
+ * Playwright へ渡す引数を内側 shell 用にクォートして1つの文字列にまとめる。
+ * emulators:exec が受け取るコマンド文字列は外側のダブルクォート内に置かれるため、POSIX では
+ * 各引数をシングルクォートで囲めば外側のダブルクォートと衝突せず引数境界（空白など）を保てる。
+ * Windows(cmd) はダブルクォートのネスト規則が複雑で実機検証が難しいため、従来どおり素の連結に
+ * 留める（空白を含まない引数は問題なく動作し、CI は引数なしで実行するため影響しない）。
+ */
+export function quotePlaywrightArgs(args: string[], platform: NodeJS.Platform = process.platform): string {
+  if (platform === 'win32') {
+    return args.join(' ');
+  }
+  return args.map((arg) => (/^[\w@%+=:,./-]+$/.test(arg) ? arg : `'${arg.replace(/'/g, `'\\''`)}'`)).join(' ');
+}
+
 function fetchServerHTML(url: string) {
   return new Promise<string | null>((resolve) => {
     const request = http.get(url, (response) => {
@@ -191,7 +205,7 @@ async function main() {
   try {
     // Playwright を Firestore エミュレータ内で実行する。
     // emulators:exec はラップしたコマンドの実行中だけエミュレータを立ち上げ、終了後に片付ける。
-    const playwrightArgs = process.argv.slice(2).join(' ');
+    const playwrightArgs = quotePlaywrightArgs(process.argv.slice(2));
     const innerCommand = `npx playwright test${playwrightArgs ? ` ${playwrightArgs}` : ''}`;
     const command = `firebase emulators:exec --project ${E2E_FIREBASE_PROJECT_ID} --config ${E2E_FIREBASE_CONFIG} --only firestore "${innerCommand}"`;
     const execEnv = { ...buildJavaEnv(java), ...e2eEnv, E2E_PORT: port, E2E_SKIP_WEB_SERVER: '1' };

@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  getDoc,
   limit,
   onSnapshot,
   orderBy,
@@ -133,6 +134,15 @@ export async function saveProductionRecordMonth(userId: string, input: Productio
       })
     );
   });
+}
+
+/**
+ * 対象月ドキュメントが既に存在するか確認する（重複月の新規作成を防ぐため）。
+ * recentMonths(最新24件)の購読に依存せず、窓外の古い月も判定できる。
+ */
+export async function productionRecordMonthExists(userId: string, month: string): Promise<boolean> {
+  const snapshot = await getDoc(getProductionRecordMonthDocRef(userId, month));
+  return snapshot.exists();
 }
 
 export function subscribeRecentProductionMonths(

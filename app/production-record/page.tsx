@@ -14,6 +14,7 @@ import { Badge, Button, Card, EmptyState, FloatingNav, Input, Select } from '@/c
 import { useProductionRecord } from '@/hooks/useProductionRecord';
 import { useAuth } from '@/lib/auth';
 import {
+  productionRecordMonthExists,
   saveHandpickEntry,
   savePackageEntry,
   saveProductionRecordMonth,
@@ -216,12 +217,26 @@ export default function ProductionRecordPage() {
   };
 
   // 新規作成（月設定モーダルを空で開くだけ。保存するまで selectedMonth は変えず画面遷移しない）
-  const handleCreateMonth = () => {
+  const handleCreateMonth = async () => {
     // 既存月と同じ対象月を「作成」すると、同じ月ドキュメントを現在値表示なしで上書きしてしまう。
     // データ損失を防ぐため作成はブロックし、「対象月」から選んで編集するよう促す。
-    if (recentMonths.some((month) => month.month === newMonthInput)) {
+    const notifyExisting = () =>
       showToast('その対象月は既に存在します。「対象月」から選んで設定を編集してください', 'error');
+    if (recentMonths.some((month) => month.month === newMonthInput)) {
+      notifyExisting();
       return;
+    }
+    // recentMonths は最新24件しか購読しないため、窓外の古い既存月は Firestore へ直接問い合わせて確認する。
+    if (user) {
+      try {
+        if (await productionRecordMonthExists(user.uid, newMonthInput)) {
+          notifyExisting();
+          return;
+        }
+      } catch {
+        showToast('対象月の確認に失敗しました。通信環境を確認して再度お試しください', 'error');
+        return;
+      }
     }
     setIsEditingMonth(false);
     setIsMonthSettingsOpen(true);
@@ -291,7 +306,7 @@ export default function ProductionRecordPage() {
                   onChange={(event) => setSelectedMonth(event.target.value)}
                   className="sm:w-[160px] !min-h-[42px] !py-2 !text-base"
                 />
-                {selectedMonth && monthDoc && (
+                {selectedMonth && monthDoc && !isLoading && (
                   <Button
                     type="button"
                     size="sm"
