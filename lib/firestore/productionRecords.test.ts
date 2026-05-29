@@ -568,3 +568,101 @@ describe('updateRoastEntry', () => {
     );
   });
 });
+
+describe('subscribePackageEntries', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('queries package entries ordered by createdAt desc and normalizes nested team counts with doc id', async () => {
+    firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, onNext: (snap: unknown) => void) => {
+      onNext(
+        collectionSnapshot([
+          {
+            id: 'pack-1',
+            data: {
+              workDate: '2026-08-10',
+              teamA: { goodCount: 120, defectiveCount: 4 },
+              teamB: { goodCount: 90, defectiveCount: 2 },
+              createdAt: 'created-at',
+              updatedAt: 'updated-at',
+            },
+          },
+        ])
+      );
+      return () => undefined;
+    });
+
+    const { subscribePackageEntries } = await import('./productionRecords');
+    const callback = vi.fn();
+
+    subscribePackageEntries('user-1', '2026-08', callback);
+
+    expect(firestoreMocks.orderBy).toHaveBeenCalledWith('createdAt', 'desc');
+    expect(callback).toHaveBeenCalledWith([
+      {
+        id: 'pack-1',
+        workDate: '2026-08-10',
+        teamA: { goodCount: 120, defectiveCount: 4 },
+        teamB: { goodCount: 90, defectiveCount: 2 },
+        createdAt: 'created-at',
+        updatedAt: 'updated-at',
+      },
+    ]);
+  });
+});
+
+describe('addPackageEntry', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('adds a package entry with an auto-generated id and returns it', async () => {
+    const { addPackageEntry } = await import('./productionRecords');
+
+    const id = await addPackageEntry('user-1', '2026-08', {
+      workDate: '2026-08-10',
+      teamA: { goodCount: 120, defectiveCount: 4 },
+      teamB: { goodCount: 90, defectiveCount: 2 },
+    });
+
+    expect(id).toBe('auto-generated-id');
+    expect(firestoreMocks.setDoc).toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/packageEntries/auto-generated-id' }),
+      {
+        workDate: '2026-08-10',
+        teamA: { goodCount: 120, defectiveCount: 4 },
+        teamB: { goodCount: 90, defectiveCount: 2 },
+        createdAt: 'server-timestamp',
+        updatedAt: 'server-timestamp',
+      }
+    );
+  });
+});
+
+describe('updatePackageEntry', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('merges the rebuilt package entry with a refreshed updatedAt', async () => {
+    const { updatePackageEntry } = await import('./productionRecords');
+
+    await updatePackageEntry('user-1', '2026-08', 'pack-1', {
+      workDate: '2026-08-11',
+      teamA: { goodCount: 100, defectiveCount: 0 },
+      teamB: { goodCount: 80, defectiveCount: 1 },
+    });
+
+    expect(firestoreMocks.setDoc).toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/packageEntries/pack-1' }),
+      {
+        workDate: '2026-08-11',
+        teamA: { goodCount: 100, defectiveCount: 0 },
+        teamB: { goodCount: 80, defectiveCount: 1 },
+        updatedAt: 'server-timestamp',
+      },
+      { merge: true }
+    );
+  });
+});

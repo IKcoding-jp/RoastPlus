@@ -14,18 +14,23 @@ import {
 import { getDb, removeUndefinedFields } from './common';
 import {
   buildHandpickEntry,
+  buildPackageEntry,
   buildProductionRecordMonth,
   buildRoastEntry,
   isValidProductionMonth,
+  normalizeCountInput,
 } from '@/lib/productionRecords';
 import type {
   HandpickEntry,
   HandpickEntryInput,
   HandpickSegment,
+  PackageEntry,
+  PackageEntryInput,
   ProductionRecordMonth,
   ProductionRecordMonthInput,
   RoastEntry,
   RoastEntryInput,
+  TeamCounts,
 } from '@/types';
 
 export const RECENT_PRODUCTION_MONTHS_LIMIT = 24;
@@ -292,6 +297,86 @@ export async function updateRoastEntry(
 ): Promise<void> {
   const entry = buildRoastEntry(input);
   const docRef = doc(getRoastEntriesCollectionRef(userId, month), entryId);
+
+  await setDoc(
+    docRef,
+    {
+      ...entry,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
+}
+
+function normalizeTeamCounts(value: unknown): TeamCounts {
+  const data = value && typeof value === 'object' && !Array.isArray(value) ? (value as Record<string, unknown>) : {};
+
+  return {
+    goodCount: normalizeCountInput(typeof data.goodCount === 'number' ? data.goodCount : 0),
+    defectiveCount: normalizeCountInput(typeof data.defectiveCount === 'number' ? data.defectiveCount : 0),
+  };
+}
+
+function normalizePackageEntry(id: string, data: DocumentData): PackageEntry {
+  const entry = buildPackageEntry({
+    workDate: typeof data.workDate === 'string' ? data.workDate : '',
+    teamA: normalizeTeamCounts(data.teamA),
+    teamB: normalizeTeamCounts(data.teamB),
+  });
+
+  return {
+    ...entry,
+    id,
+    createdAt: data.createdAt,
+    updatedAt: data.updatedAt,
+  };
+}
+
+export function subscribePackageEntries(
+  userId: string,
+  month: string,
+  callback: (entries: PackageEntry[]) => void,
+  onError?: (error: Error) => void
+): Unsubscribe {
+  const entriesQuery = query(getPackageEntriesCollectionRef(userId, month), orderBy('createdAt', 'desc'));
+
+  return onSnapshot(
+    entriesQuery,
+    (snapshot) => {
+      callback(snapshot.docs.map((entryDoc) => normalizePackageEntry(entryDoc.id, entryDoc.data())));
+    },
+    (error) => {
+      console.error('Failed to subscribe package entries:', error);
+      onError?.(error);
+      callback([]);
+    }
+  );
+}
+
+export async function addPackageEntry(userId: string, month: string, input: PackageEntryInput): Promise<string> {
+  const entry = buildPackageEntry(input);
+  const docRef = doc(getPackageEntriesCollectionRef(userId, month));
+
+  await setDoc(
+    docRef,
+    removeUndefinedFields({
+      ...entry,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    })
+  );
+
+  return docRef.id;
+}
+
+export async function updatePackageEntry(
+  userId: string,
+  month: string,
+  entryId: string,
+  input: PackageEntryInput
+): Promise<void> {
+  const entry = buildPackageEntry(input);
+  const docRef = doc(getPackageEntriesCollectionRef(userId, month), entryId);
 
   await setDoc(
     docRef,
