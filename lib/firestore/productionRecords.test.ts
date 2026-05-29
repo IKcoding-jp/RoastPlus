@@ -470,3 +470,101 @@ describe('updateHandpickEntry', () => {
     );
   });
 });
+
+describe('subscribeRoastEntries', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('queries roast entries ordered by createdAt desc and normalizes them with doc id', async () => {
+    firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, onNext: (snap: unknown) => void) => {
+      onNext(
+        collectionSnapshot([
+          {
+            id: 'roast-1',
+            data: {
+              workDate: '2026-08-10',
+              beforeRoastWeightGram: 10000,
+              afterRoastWeightGram: 8200,
+              createdAt: 'created-at',
+              updatedAt: 'updated-at',
+            },
+          },
+        ])
+      );
+      return () => undefined;
+    });
+
+    const { subscribeRoastEntries } = await import('./productionRecords');
+    const callback = vi.fn();
+
+    subscribeRoastEntries('user-1', '2026-08', callback);
+
+    expect(firestoreMocks.orderBy).toHaveBeenCalledWith('createdAt', 'desc');
+    expect(callback).toHaveBeenCalledWith([
+      {
+        id: 'roast-1',
+        workDate: '2026-08-10',
+        beforeRoastWeightGram: 10000,
+        afterRoastWeightGram: 8200,
+        createdAt: 'created-at',
+        updatedAt: 'updated-at',
+      },
+    ]);
+  });
+});
+
+describe('addRoastEntry', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('adds a roast entry with an auto-generated id and returns it', async () => {
+    const { addRoastEntry } = await import('./productionRecords');
+
+    const id = await addRoastEntry('user-1', '2026-08', {
+      workDate: '2026-08-10',
+      beforeRoastWeightGram: 10000,
+      afterRoastWeightGram: 8200,
+    });
+
+    expect(id).toBe('auto-generated-id');
+    expect(firestoreMocks.setDoc).toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/roastEntries/auto-generated-id' }),
+      {
+        workDate: '2026-08-10',
+        beforeRoastWeightGram: 10000,
+        afterRoastWeightGram: 8200,
+        createdAt: 'server-timestamp',
+        updatedAt: 'server-timestamp',
+      }
+    );
+  });
+});
+
+describe('updateRoastEntry', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('merges the rebuilt roast entry with a refreshed updatedAt', async () => {
+    const { updateRoastEntry } = await import('./productionRecords');
+
+    await updateRoastEntry('user-1', '2026-08', 'roast-1', {
+      workDate: '2026-08-11',
+      beforeRoastWeightGram: 12000,
+      afterRoastWeightGram: 9800,
+    });
+
+    expect(firestoreMocks.setDoc).toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/roastEntries/roast-1' }),
+      {
+        workDate: '2026-08-11',
+        beforeRoastWeightGram: 12000,
+        afterRoastWeightGram: 9800,
+        updatedAt: 'server-timestamp',
+      },
+      { merge: true }
+    );
+  });
+});

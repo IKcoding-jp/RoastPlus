@@ -12,13 +12,20 @@ import {
   type Unsubscribe,
 } from 'firebase/firestore';
 import { getDb, removeUndefinedFields } from './common';
-import { buildHandpickEntry, buildProductionRecordMonth, isValidProductionMonth } from '@/lib/productionRecords';
+import {
+  buildHandpickEntry,
+  buildProductionRecordMonth,
+  buildRoastEntry,
+  isValidProductionMonth,
+} from '@/lib/productionRecords';
 import type {
   HandpickEntry,
   HandpickEntryInput,
   HandpickSegment,
   ProductionRecordMonth,
   ProductionRecordMonthInput,
+  RoastEntry,
+  RoastEntryInput,
 } from '@/types';
 
 export const RECENT_PRODUCTION_MONTHS_LIMIT = 24;
@@ -214,6 +221,77 @@ export async function updateHandpickEntry(
 ): Promise<void> {
   const entry = buildHandpickEntry(input);
   const docRef = doc(getHandpickEntriesCollectionRef(userId, month), entryId);
+
+  await setDoc(
+    docRef,
+    {
+      ...entry,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
+}
+
+function normalizeRoastEntry(id: string, data: DocumentData): RoastEntry {
+  const entry = buildRoastEntry({
+    workDate: typeof data.workDate === 'string' ? data.workDate : '',
+    beforeRoastWeightGram: typeof data.beforeRoastWeightGram === 'number' ? data.beforeRoastWeightGram : 0,
+    afterRoastWeightGram: typeof data.afterRoastWeightGram === 'number' ? data.afterRoastWeightGram : 0,
+  });
+
+  return {
+    ...entry,
+    id,
+    createdAt: data.createdAt,
+    updatedAt: data.updatedAt,
+  };
+}
+
+export function subscribeRoastEntries(
+  userId: string,
+  month: string,
+  callback: (entries: RoastEntry[]) => void,
+  onError?: (error: Error) => void
+): Unsubscribe {
+  const entriesQuery = query(getRoastEntriesCollectionRef(userId, month), orderBy('createdAt', 'desc'));
+
+  return onSnapshot(
+    entriesQuery,
+    (snapshot) => {
+      callback(snapshot.docs.map((entryDoc) => normalizeRoastEntry(entryDoc.id, entryDoc.data())));
+    },
+    (error) => {
+      console.error('Failed to subscribe roast entries:', error);
+      onError?.(error);
+      callback([]);
+    }
+  );
+}
+
+export async function addRoastEntry(userId: string, month: string, input: RoastEntryInput): Promise<string> {
+  const entry = buildRoastEntry(input);
+  const docRef = doc(getRoastEntriesCollectionRef(userId, month));
+
+  await setDoc(
+    docRef,
+    removeUndefinedFields({
+      ...entry,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    })
+  );
+
+  return docRef.id;
+}
+
+export async function updateRoastEntry(
+  userId: string,
+  month: string,
+  entryId: string,
+  input: RoastEntryInput
+): Promise<void> {
+  const entry = buildRoastEntry(input);
+  const docRef = doc(getRoastEntriesCollectionRef(userId, month), entryId);
 
   await setDoc(
     docRef,
