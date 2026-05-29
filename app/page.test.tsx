@@ -84,4 +84,14 @@ describe('HomePage', () => {
     expect(settingsButton.className).toMatch(/max-h-\[112px\]/);
     expect(settingsButton.style.getPropertyValue('--home-card-height')).toBe('');
   });
+
+  it('機能名の上に英字ラベルを表示する', () => {
+    render(<HomePage />);
+
+    // 英字ラベルが表示される（クラフトラベル型）
+    expect(screen.getByText('ASSIGNMENT')).toBeInTheDocument();
+    expect(screen.getByText('PRODUCTION')).toBeInTheDocument();
+    // アクセシブルネームは機能名のまま（aria-label）であること
+    expect(screen.getByRole('button', { name: '担当表' })).toBeInTheDocument();
+  });
 });

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui';
 
 interface ActionCardProps {
   title: string;
+  label: string;
   description: string;
   href: string;
   icon: IconType;
@@ -15,7 +16,7 @@ interface ActionCardProps {
   index: number;
 }
 
-export function ActionCard({ title, description, href, icon: Icon, badge, index }: ActionCardProps) {
+export function ActionCard({ title, label, description, href, icon: Icon, badge, index }: ActionCardProps) {
   const router = useRouter();
   const cardStyle = {
     animationDelay: `${index * 60}ms`,
@@ -46,8 +47,11 @@ export function ActionCard({ title, description, href, icon: Icon, badge, index 
       <span className="relative flex h-10 w-10 shrink-0 items-center justify-center self-center text-spot transition-all duration-300 md:h-14 md:w-14">
         <Icon className="relative z-10 h-6 w-6 md:h-11 md:w-11" />
       </span>
-      <div className="relative z-10 flex min-w-0 flex-1 items-center md:block md:flex-none md:text-center">
-        <p className="truncate leading-none font-bold text-ink transition-colors group-hover:text-spot text-base md:text-lg">
+      <div className="relative z-10 flex min-w-0 flex-1 flex-col justify-center md:block md:flex-none md:text-center">
+        <span className="block text-[10px] font-bold uppercase tracking-[0.2em] leading-none text-spot md:hidden">
+          {label}
+        </span>
+        <p className="mt-1 truncate leading-none font-bold text-ink transition-colors group-hover:text-spot text-base md:mt-0 md:text-lg">
           {title}
         </p>
         <p className="hidden text-xs text-ink-muted transition-colors md:block md:text-sm">{description}</p>

@@ -28,6 +28,7 @@ import { BsStars } from 'react-icons/bs';
 interface Action {
   key: HomeFeatureKey;
   title: string;
+  label: string;
   description: string;
   href: string;
   icon: IconType;
@@ -51,6 +52,7 @@ const ACTIONS: Action[] = [
   {
     key: 'assignment',
     title: '担当表',
+    label: 'ASSIGNMENT',
     description: '公平に担当を割り当て',
     href: '/assignment',
     icon: FaUsers,
@@ -58,6 +60,7 @@ const ACTIONS: Action[] = [
   {
     key: 'schedule',
     title: 'スケジュール',
+    label: 'SCHEDULE',
     description: '一日の予定を確認',
     href: '/schedule',
     icon: RiCalendarScheduleFill,
@@ -65,6 +68,7 @@ const ACTIONS: Action[] = [
   {
     key: 'tasting',
     title: '試飲感想記録',
+    label: 'TASTING',
     description: '試飲の感想を記録',
     href: '/tasting',
     icon: FaCoffee,
@@ -72,6 +76,7 @@ const ACTIONS: Action[] = [
   {
     key: 'defect-beans',
     title: '欠点豆図鑑',
+    label: 'DEFECTS',
     description: '欠点豆の知識を共有',
     href: '/defect-beans',
     icon: RiBookFill,
@@ -79,6 +84,7 @@ const ACTIONS: Action[] = [
   {
     key: 'production-record',
     title: '生産記録',
+    label: 'PRODUCTION',
     description: '月次の生産実績を記録',
     href: '/production-record',
     icon: MdFactory,
@@ -86,6 +92,7 @@ const ACTIONS: Action[] = [
   {
     key: 'drip-guide',
     title: 'ドリップガイド',
+    label: 'DRIP GUIDE',
     description: '淹れ方の手順',
     href: '/drip-guide',
     icon: MdCoffeeMaker,
@@ -93,6 +100,7 @@ const ACTIONS: Action[] = [
   {
     key: 'settings',
     title: 'その他',
+    label: 'MORE',
     description: '設定やアプリ情報など',
     href: '/settings',
     icon: IoSettings,
@@ -191,13 +199,14 @@ export default function HomePage(_props: HomePageProps = {}) {
       {/* メインコンテンツ */}
       <main className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-2 pb-2 sm:px-6 sm:pt-3 sm:pb-3 flex-1 min-h-0">
         <div className="flex h-full flex-col gap-2 md:grid md:h-auto md:grid-cols-4 md:gap-4 md:[grid-auto-rows:1fr]">
-          {visibleActions.map(({ key, title, description, href, icon: DefaultIcon, badge }, index) => {
+          {visibleActions.map(({ key, title, label, description, href, icon: DefaultIcon, badge }, index) => {
             const Icon = isChristmasMode ? CHRISTMAS_ICONS[key] || DefaultIcon : DefaultIcon;
 
             return (
               <ActionCard
                 key={key}
                 title={title}
+                label={label}
                 description={description}
                 href={href}
                 icon={Icon}
