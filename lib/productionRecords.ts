@@ -1,4 +1,12 @@
-import type { BlendItem, HandpickEntry, PackageEntry, RoastEntry, TeamCounts } from '@/types';
+import type {
+  BlendItem,
+  HandpickEntry,
+  PackageEntry,
+  ProductionRecordMonth,
+  ProductionRecordMonthlySummary,
+  RoastEntry,
+  TeamCounts,
+} from '@/types';
 
 const WORK_MONTH_PATTERN = /^\d{4}-\d{2}$/;
 const WORK_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
@@ -135,4 +143,46 @@ export function sumPackage(entries: PackageEntry[]): {
     },
     { goodTotal: 0, defectiveTotal: 0, producedTotal: 0 }
   );
+}
+
+export function buildMonthlySummary(
+  monthDoc: ProductionRecordMonth,
+  handpickEntries: HandpickEntry[],
+  roastEntries: RoastEntry[],
+  packageEntries: PackageEntry[]
+): ProductionRecordMonthlySummary {
+  const handpickTotals = sumHandpick(handpickEntries);
+  const roastTotals = sumRoast(roastEntries);
+  const packageTotals = sumPackage(packageEntries);
+
+  const defectRate = calculateDefectRate(handpickTotals.defectTotalGram, handpickTotals.handpickedTotalGram);
+  const roastYield = calculateRoastYield(roastTotals.beforeTotalGram, roastTotals.afterTotalGram);
+  const moistureLossRate = calculateMoistureLossRate(roastYield);
+  const usableGreenGram = calculateUsableGreenGram(
+    handpickTotals.handpickedTotalGram,
+    handpickTotals.defectTotalGram
+  );
+  const premix = calculatePremixBags(usableGreenGram);
+  const thirtyKgTheoryPacks = calculateThirtyKgTheoryPacks(defectRate, roastYield, monthDoc.powderPerPackGram);
+  const packageLossRate =
+    packageTotals.producedTotal <= 0 ? 0 : packageTotals.defectiveTotal / packageTotals.producedTotal;
+
+  return {
+    month: monthDoc.month,
+    blendLabel: buildBlendLabel(monthDoc.blendItems),
+    greenBeanTotalGram: monthDoc.greenBeanTotalGram,
+    defectBeanTotalGram: handpickTotals.defectTotalGram,
+    defectRate,
+    roastBeforeTotalGram: roastTotals.beforeTotalGram,
+    roastAfterTotalGram: roastTotals.afterTotalGram,
+    roastYield,
+    moistureLossRate,
+    premixBags: premix.bags,
+    premixRemainderGram: premix.remainderGram,
+    thirtyKgTheoryPacks,
+    monthlyGoodCount: packageTotals.goodTotal,
+    monthlyDefectiveCount: packageTotals.defectiveTotal,
+    monthlyProducedCount: packageTotals.producedTotal,
+    packageLossRate,
+  };
 }

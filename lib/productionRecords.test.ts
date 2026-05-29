@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildBlendLabel,
+  buildMonthlySummary,
   calculateDailyTheoryPacks,
   calculateDefectRate,
   calculateMoistureLossRate,
@@ -15,7 +16,14 @@ import {
   sumPackage,
   sumRoast,
 } from './productionRecords';
-import type { BlendItem, HandpickEntry, PackageEntry, RoastEntry, TeamCounts } from '@/types';
+import type {
+  BlendItem,
+  HandpickEntry,
+  PackageEntry,
+  ProductionRecordMonth,
+  RoastEntry,
+  TeamCounts,
+} from '@/types';
 
 describe('isValidProductionMonth', () => {
   it('accepts real yyyy-MM months only', () => {
@@ -226,5 +234,113 @@ describe('sumPackage', () => {
 
   it('returns zero totals for an empty list', () => {
     expect(sumPackage([])).toEqual({ goodTotal: 0, defectiveTotal: 0, producedTotal: 0 });
+  });
+});
+
+describe('buildMonthlySummary', () => {
+  const monthDoc: ProductionRecordMonth = {
+    month: '2026-08',
+    greenBeanTotalGram: 20000,
+    powderPerPackGram: 8.5,
+    blendItems: [
+      { beanName: 'ブラジル', ratioPercent: 80 },
+      { beanName: 'グアテマラ', ratioPercent: 20 },
+    ],
+  };
+
+  const handpickEntries: HandpickEntry[] = [
+    {
+      id: 'h1',
+      workDate: '2026-08-01',
+      beanName: 'ブラジル',
+      segment: 'first',
+      greenBeanWeightGram: 10000,
+      defectBeanWeightGram: 320,
+    },
+    {
+      id: 'h2',
+      workDate: '2026-08-02',
+      beanName: 'ブラジル',
+      segment: 'second',
+      greenBeanWeightGram: 10000,
+      defectBeanWeightGram: 300,
+    },
+  ];
+
+  const roastEntries: RoastEntry[] = [
+    { id: 'r1', workDate: '2026-08-01', beforeRoastWeightGram: 1000, afterRoastWeightGram: 830 },
+    { id: 'r2', workDate: '2026-08-02', beforeRoastWeightGram: 1000, afterRoastWeightGram: 830 },
+  ];
+
+  const packageEntries: PackageEntry[] = [
+    {
+      id: 'p1',
+      workDate: '2026-08-01',
+      teamA: { goodCount: 1000, defectiveCount: 30 },
+      teamB: { goodCount: 500, defectiveCount: 20 },
+    },
+    {
+      id: 'p2',
+      workDate: '2026-08-02',
+      teamA: { goodCount: 500, defectiveCount: 20 },
+      teamB: { goodCount: 840, defectiveCount: 12 },
+    },
+  ];
+
+  it('composes a monthly summary from month doc and all entries', () => {
+    const summary = buildMonthlySummary(monthDoc, handpickEntries, roastEntries, packageEntries);
+
+    const expectedDefectRate = 620 / 20000; // 0.031
+    const expectedRoastYield = 1660 / 2000; // 0.83
+    const expectedThirtyKg = Math.floor((30000 * (1 - expectedDefectRate) * expectedRoastYield) / 8.5);
+    // usable = 20000 - 620 = 19380 -> 38 bags, remainder 380
+
+    expect(summary).toEqual({
+      month: '2026-08',
+      blendLabel: 'ブラジル 80% / グアテマラ 20%',
+      greenBeanTotalGram: 20000,
+      defectBeanTotalGram: 620,
+      defectRate: expectedDefectRate,
+      roastBeforeTotalGram: 2000,
+      roastAfterTotalGram: 1660,
+      roastYield: expectedRoastYield,
+      moistureLossRate: 1 - expectedRoastYield,
+      premixBags: 38,
+      premixRemainderGram: 380,
+      thirtyKgTheoryPacks: expectedThirtyKg,
+      monthlyGoodCount: 2840,
+      monthlyDefectiveCount: 82,
+      monthlyProducedCount: 2922,
+      packageLossRate: 82 / 2922,
+    });
+  });
+
+  it('guards against division by zero with empty entries', () => {
+    const emptyMonthDoc: ProductionRecordMonth = {
+      month: '2026-09',
+      greenBeanTotalGram: 0,
+      powderPerPackGram: 8.5,
+      blendItems: [],
+    };
+    const summary = buildMonthlySummary(emptyMonthDoc, [], [], []);
+
+    expect(summary).toEqual({
+      month: '2026-09',
+      blendLabel: '',
+      greenBeanTotalGram: 0,
+      defectBeanTotalGram: 0,
+      defectRate: 0,
+      roastBeforeTotalGram: 0,
+      roastAfterTotalGram: 0,
+      roastYield: 0,
+      moistureLossRate: 0,
+      premixBags: 0,
+      premixRemainderGram: 0,
+      thirtyKgTheoryPacks: 0,
+      monthlyGoodCount: 0,
+      monthlyDefectiveCount: 0,
+      monthlyProducedCount: 0,
+      packageLossRate: 0,
+    });
   });
 });
