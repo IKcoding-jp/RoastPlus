@@ -14,6 +14,7 @@ import {
   calculateRoastYield,
   calculateThirtyKgTheoryPacks,
   calculateUsableGreenGram,
+  escapeCsvCell,
   formatKg,
   formatPercent,
   isValidProductionMonth,
@@ -547,5 +548,19 @@ describe('formatKg', () => {
     expect(formatKg(20100)).toBe('20.10');
     expect(formatKg(1660)).toBe('1.66');
     expect(formatKg(0)).toBe('0.00');
+  });
+});
+
+describe('escapeCsvCell', () => {
+  it('leaves a plain value untouched', () => {
+    expect(escapeCsvCell('ブラジル')).toBe('ブラジル');
+    expect(escapeCsvCell(20000)).toBe('20000');
+  });
+
+  it('wraps values containing comma, quote, or newline in quotes (RFC4180)', () => {
+    expect(escapeCsvCell('a,b')).toBe('"a,b"');
+    expect(escapeCsvCell('a"b')).toBe('"a""b"');
+    expect(escapeCsvCell('a\nb')).toBe('"a\nb"');
+    expect(escapeCsvCell('a\rb')).toBe('"a\rb"');
   });
 });
