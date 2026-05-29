@@ -21,7 +21,6 @@ const pages: A11yPage[] = [
   { name: '欠点豆', path: '/defect-beans', authenticated: true },
   { name: '設定', path: '/settings', authenticated: true },
   { name: 'お問い合わせ', path: '/contact', authenticated: true },
-  { name: '変更履歴', path: '/changelog', authenticated: true },
 ];
 
 async function preparePage(page: Page, target: A11yPage) {

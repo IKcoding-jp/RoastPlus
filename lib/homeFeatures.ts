@@ -40,11 +40,6 @@ export const HOME_FEATURES = [
     description: '淹れ方の手順',
   },
   {
-    key: 'dev-stories',
-    title: '開発秘話',
-    description: '開発の裏話を覗く',
-  },
-  {
     key: 'settings',
     title: 'その他',
     description: '設定やアプリ情報など',

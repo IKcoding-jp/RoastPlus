@@ -11,10 +11,9 @@ import { Loading } from '@/components/Loading';
 import { useToastContext } from '@/components/Toast';
 import { PasswordModal } from '@/components/settings/PasswordModal';
 import { HiDocumentText, HiShieldCheck, HiLogout, HiMail, HiColorSwatch } from 'react-icons/hi';
-import { MdHistory, MdHome } from 'react-icons/md';
+import { MdHome } from 'react-icons/md';
 import LoginPage from '@/app/login/page';
 import { Button, Switch, FloatingNav, Card } from '@/components/ui';
-import { VERSION_HISTORY } from '@/data/dev-stories/version-history';
 import { getUserData } from '@/lib/firestore';
 import { formatConsentDate } from '@/lib/consent';
 import { UserConsent } from '@/types';
@@ -205,25 +204,6 @@ export default function SettingsPage() {
               )}
             </div>
           </Card>
-
-          {/* 更新履歴セクション */}
-          <Link href="/changelog" className="block">
-            <Card variant="hoverable" className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <h2 className="text-xl font-semibold text-ink mb-2 flex items-center gap-2">
-                    <MdHistory className="h-5 w-5 text-spot" />
-                    更新履歴
-                  </h2>
-                  <p className="text-sm text-ink-sub">アプリの更新内容を確認する</p>
-                  <p className="text-xs text-ink-muted mt-1">
-                    最新: v{VERSION_HISTORY[0]?.version} ({VERSION_HISTORY[0]?.date})
-                  </p>
-                </div>
-                <span className="text-ink-muted text-xl">&gt;</span>
-              </div>
-            </Card>
-          </Link>
 
           {/* 法的情報セクション */}
           <Card variant="default" className="p-6">

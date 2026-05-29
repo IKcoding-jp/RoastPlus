@@ -41,8 +41,6 @@ import type { RoastTimerRecord, RoastTimerState } from './timer';
 import type { DefectBean, DefectBeanSettings } from './defect-beans';
 import type { WorkProgress } from './work-progress';
 import type { DripRecipe } from './common';
-import type { ChangelogEntry } from './changelog';
-
 export interface AppData {
   todaySchedules: TodaySchedule[];
   roastSchedules: RoastSchedule[];
@@ -58,6 +56,5 @@ export interface AppData {
   defectBeanSettings?: DefectBeanSettings;
   workProgresses: WorkProgress[];
   dripRecipes?: DripRecipe[];
-  changelogEntries?: ChangelogEntry[];
   userConsent?: UserConsent;
 }

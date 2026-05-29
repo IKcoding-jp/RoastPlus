@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import type { IconType } from 'react-icons';
 import { FaCoffee, FaUsers } from 'react-icons/fa';
 import { IoSettings } from 'react-icons/io5';
-import { RiLightbulbFlashFill } from 'react-icons/ri';
 import { MdCoffeeMaker, MdInventory2, MdTimer, MdTimeline } from 'react-icons/md';
 import { RiBookFill, RiCalendarScheduleFill } from 'react-icons/ri';
 import { Loading } from '@/components/Loading';
@@ -46,7 +45,6 @@ const CHRISTMAS_ICONS: Record<string, IconType> = {
   progress: FaSnowflake,
   'production-packs': MdInventory2,
   'drip-guide': GiCandyCanes,
-  'dev-stories': FaSnowflake,
   settings: IoSettings,
 };
 
@@ -108,13 +106,6 @@ const ACTIONS: Action[] = [
     description: '淹れ方の手順',
     href: '/drip-guide',
     icon: MdCoffeeMaker,
-  },
-  {
-    key: 'dev-stories',
-    title: '開発秘話',
-    description: '開発の裏話を覗く',
-    href: '/dev-stories',
-    icon: RiLightbulbFlashFill,
   },
   {
     key: 'settings',

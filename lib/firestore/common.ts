@@ -194,11 +194,6 @@ export function normalizeAppData(data: Partial<AppData> | undefined | null): App
     normalized.dripRecipes = data.dripRecipes;
   }
 
-  // changelogEntriesは存在する場合のみ処理
-  if (Array.isArray(data?.changelogEntries)) {
-    normalized.changelogEntries = data.changelogEntries;
-  }
-
   // userConsentは存在する場合のみ処理
   if (data?.userConsent && typeof data.userConsent === 'object') {
     const consent = data.userConsent;

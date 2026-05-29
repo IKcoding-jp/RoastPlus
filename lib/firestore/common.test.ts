@@ -139,7 +139,7 @@ describe('normalizeAppData', () => {
       userSettings: {
         selectedMemberId: 'member-1',
         taskLabelHeaderTextLeft: '  左ヘッダー  ',
-        homeHiddenFeatureKeys: ['dev-stories', 'settings', 'dev-stories', 'unknown'],
+        homeHiddenFeatureKeys: ['drip-guide', 'settings', 'drip-guide', 'unknown'],
         roastTimerSettings: {
           timerSoundEnabled: false,
           timerSoundFile: '/sounds/roasttimer/bell.mp3',
@@ -152,7 +152,7 @@ describe('normalizeAppData', () => {
     } as never);
     expect(result.userSettings?.selectedMemberId).toBe('member-1');
     expect(result.userSettings?.taskLabelHeaderTextLeft).toBe('左ヘッダー');
-    expect(result.userSettings?.homeHiddenFeatureKeys).toEqual(['dev-stories']);
+    expect(result.userSettings?.homeHiddenFeatureKeys).toEqual(['drip-guide']);
     expect(result.userSettings?.roastTimerSettings?.timerSoundEnabled).toBe(false);
   });
 

@@ -60,17 +60,16 @@ describe('HomePage', () => {
       'progress',
       'production-packs',
       'drip-guide',
-      'dev-stories',
       'settings',
     ].forEach((key) => mocks.visibleKeys.add(key));
   });
 
   it('非表示設定の機能カードをホームに表示しないが、その他は表示する', () => {
-    mocks.visibleKeys.delete('dev-stories');
+    mocks.visibleKeys.delete('drip-guide');
 
     render(<HomePage />);
 
-    expect(screen.queryByRole('button', { name: '開発秘話' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'ドリップガイド' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'その他' })).toBeInTheDocument();
   });
 
