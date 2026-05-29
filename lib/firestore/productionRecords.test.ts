@@ -224,3 +224,62 @@ describe('subscribeProductionRecordMonth', () => {
     expect(callback).toHaveBeenCalledWith(null);
   });
 });
+
+describe('saveProductionRecordMonth', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    firestoreMocks.transaction.get.mockResolvedValue({ exists: () => false, data: () => undefined });
+  });
+
+  it('saves the built month document to the month-based path', async () => {
+    const { saveProductionRecordMonth } = await import('./productionRecords');
+
+    await saveProductionRecordMonth('user-1', {
+      month: '2026-08',
+      greenBeanTotalGram: 30000,
+      powderPerPackGram: 8.5,
+      blendItems: [
+        { beanName: 'ブラジル', ratioPercent: 80 },
+        { beanName: 'グアテマラ', ratioPercent: 20 },
+      ],
+    });
+
+    expect(firestoreMocks.transaction.set).toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08' }),
+      {
+        month: '2026-08',
+        greenBeanTotalGram: 30000,
+        powderPerPackGram: 8.5,
+        blendItems: [
+          { beanName: 'ブラジル', ratioPercent: 80 },
+          { beanName: 'グアテマラ', ratioPercent: 20 },
+        ],
+        createdAt: 'server-timestamp',
+        updatedAt: 'server-timestamp',
+      }
+    );
+  });
+
+  it('preserves createdAt when updating an existing month document', async () => {
+    firestoreMocks.transaction.get.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ createdAt: 'existing-created-at' }),
+    });
+    const { saveProductionRecordMonth } = await import('./productionRecords');
+
+    await saveProductionRecordMonth('user-1', {
+      month: '2026-08',
+      greenBeanTotalGram: 30000,
+      powderPerPackGram: 8.5,
+      blendItems: [{ beanName: 'ブラジル', ratioPercent: 100 }],
+    });
+
+    expect(firestoreMocks.transaction.set).toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08' }),
+      expect.objectContaining({
+        createdAt: 'existing-created-at',
+        updatedAt: 'server-timestamp',
+      })
+    );
+  });
+});

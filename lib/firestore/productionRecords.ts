@@ -2,12 +2,14 @@ import {
   collection,
   doc,
   onSnapshot,
+  runTransaction,
+  serverTimestamp,
   type DocumentData,
   type Unsubscribe,
 } from 'firebase/firestore';
-import { getDb } from './common';
-import { isValidProductionMonth } from '@/lib/productionRecords';
-import type { ProductionRecordMonth } from '@/types';
+import { getDb, removeUndefinedFields } from './common';
+import { buildProductionRecordMonth, isValidProductionMonth } from '@/lib/productionRecords';
+import type { ProductionRecordMonth, ProductionRecordMonthInput } from '@/types';
 
 export const RECENT_PRODUCTION_MONTHS_LIMIT = 24;
 
@@ -91,4 +93,23 @@ export function subscribeProductionRecordMonth(
       callback(null);
     }
   );
+}
+
+export async function saveProductionRecordMonth(userId: string, input: ProductionRecordMonthInput): Promise<void> {
+  const record = buildProductionRecordMonth(input);
+  const docRef = getProductionRecordMonthDocRef(userId, record.month);
+
+  await runTransaction(getDb(), async (transaction) => {
+    const snapshot = await transaction.get(docRef);
+    const existingData = snapshot.exists() ? snapshot.data() : undefined;
+
+    transaction.set(
+      docRef,
+      removeUndefinedFields({
+        ...record,
+        createdAt: existingData?.createdAt ?? serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      })
+    );
+  });
 }
