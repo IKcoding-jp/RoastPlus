@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { HiX } from 'react-icons/hi';
 
 import { Modal, IconButton, Button, NumberInput, Input } from '@/components/ui';
@@ -19,6 +19,8 @@ interface MonthSettingsModalProps {
 }
 
 interface BlendItemDraft {
+  /** React の key 用の安定ID（中間行の削除でフォーカスがずれないようにする） */
+  id: string;
   beanName: string;
   ratioPercent: string;
 }
@@ -30,9 +32,16 @@ function formatMonthLabel(month: string): string {
 }
 
 export function MonthSettingsModal({ month, initial, onSave, onClose }: MonthSettingsModalProps) {
+  // useId() を基点に連番でドラフト行の安定IDを生成する（乱数系APIは使わない）
+  const idBase = useId();
+  const idCounterRef = useRef(0);
+  const nextDraftId = () => `${idBase}-blend-${idCounterRef.current++}`;
+
   const [greenBeanTotal, setGreenBeanTotal] = useState('');
   const [powderPerPack, setPowderPerPack] = useState(String(DEFAULT_POWDER_PER_PACK_GRAM));
-  const [blendDrafts, setBlendDrafts] = useState<BlendItemDraft[]>([{ beanName: '', ratioPercent: '' }]);
+  const [blendDrafts, setBlendDrafts] = useState<BlendItemDraft[]>(() => [
+    { id: nextDraftId(), beanName: '', ratioPercent: '' },
+  ]);
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -42,10 +51,13 @@ export function MonthSettingsModal({ month, initial, onSave, onClose }: MonthSet
     setPowderPerPack(String(initial.powderPerPackGram));
     setBlendDrafts(
       initial.blendItems.map((item) => ({
+        id: nextDraftId(),
         beanName: item.beanName,
         ratioPercent: String(item.ratioPercent),
       }))
     );
+    // nextDraftId は ref ベースで安定しているため依存配列には含めない
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initial]);
 
   const greenBeanTotalGram = (parseFloat(greenBeanTotal) || 0) * 1000;
@@ -55,7 +67,7 @@ export function MonthSettingsModal({ month, initial, onSave, onClose }: MonthSet
 
   const handleAddBlend = () => {
     if (blendDrafts.length >= MAX_BLEND_ITEMS) return;
-    setBlendDrafts((prev) => [...prev, { beanName: '', ratioPercent: '' }]);
+    setBlendDrafts((prev) => [...prev, { id: nextDraftId(), beanName: '', ratioPercent: '' }]);
   };
 
   const handleRemoveBlend = (index: number) => {
@@ -146,7 +158,7 @@ export function MonthSettingsModal({ month, initial, onSave, onClose }: MonthSet
             const ratio = parseFloat(item.ratioPercent) || 0;
             const requiredKg = (greenBeanTotalGram * (ratio / 100)) / 1000;
             return (
-              <div key={index} className="flex items-end gap-2 rounded-lg p-3 bg-ground">
+              <div key={item.id} className="flex items-end gap-2 rounded-lg p-3 bg-ground">
                 <div className="flex-1">
                   <Input
                     label="豆名"

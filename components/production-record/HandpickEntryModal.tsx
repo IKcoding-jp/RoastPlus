@@ -42,7 +42,8 @@ export function HandpickEntryModal({ beanNames, initial, defaultWorkDate, onSave
   }, [initial]);
 
   const greenBeanWeightGram = (parseFloat(greenBeanWeight) || 0) * 1000;
-  const defectBeanWeightGram = parseFloat(defectBeanWeight) || 0;
+  // 欠点豆重量gは整数運用。小数入力されても整数に丸めて担保する。
+  const defectBeanWeightGram = Math.round(parseFloat(defectBeanWeight) || 0);
   const defectRate = calculateDefectRate(defectBeanWeightGram, greenBeanWeightGram);
 
   const handleSave = async () => {
@@ -125,6 +126,7 @@ export function HandpickEntryModal({ beanNames, initial, defaultWorkDate, onSave
           label="欠点豆重量"
           suffix="g"
           min={0}
+          step={1}
           value={defectBeanWeight}
           onChange={(e) => setDefectBeanWeight(e.target.value)}
         />

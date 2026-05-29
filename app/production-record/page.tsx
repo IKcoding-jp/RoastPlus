@@ -576,7 +576,7 @@ export default function ProductionRecordPage() {
                       valueClassName="text-danger"
                     />
                     <SummaryTile label="月生産個数" value={summary.monthlyProducedCount} />
-                    <SummaryTile label="パッケージロス率" value={formatPercent(summary.packageLossRate)} />
+                    <SummaryTile label="不良率" value={formatPercent(summary.packageLossRate)} />
                   </div>
 
                   <div>
