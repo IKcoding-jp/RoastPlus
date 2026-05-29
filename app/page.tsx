@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { IconType } from 'react-icons';
 import { FaCoffee, FaUsers } from 'react-icons/fa';
-import { IoSettings, IoSparkles } from 'react-icons/io5';
+import { IoSettings } from 'react-icons/io5';
 import { RiLightbulbFlashFill } from 'react-icons/ri';
 import { MdCoffeeMaker, MdInventory2, MdTimer, MdTimeline } from 'react-icons/md';
 import { RiBookFill, RiCalendarScheduleFill } from 'react-icons/ri';
@@ -22,7 +22,7 @@ import dynamic from 'next/dynamic';
 const Snowfall = dynamic(() => import('@/components/Snowfall').then((mod) => ({ default: mod.Snowfall })), {
   ssr: false,
 });
-import { FaTree, FaGift, FaSnowflake, FaStar } from 'react-icons/fa';
+import { FaTree, FaGift, FaSnowflake } from 'react-icons/fa';
 import { PiBellFill } from 'react-icons/pi';
 import { GiCandyCanes, GiGingerbreadMan } from 'react-icons/gi';
 import { BsStars } from 'react-icons/bs';
@@ -46,7 +46,6 @@ const CHRISTMAS_ICONS: Record<string, IconType> = {
   progress: FaSnowflake,
   'production-packs': MdInventory2,
   'drip-guide': GiCandyCanes,
-  'coffee-trivia': FaStar,
   'dev-stories': FaSnowflake,
   settings: IoSettings,
 };
@@ -109,13 +108,6 @@ const ACTIONS: Action[] = [
     description: '淹れ方の手順',
     href: '/drip-guide',
     icon: MdCoffeeMaker,
-  },
-  {
-    key: 'coffee-trivia',
-    title: 'コーヒークイズ',
-    description: '楽しく学ぶコーヒー知識',
-    href: '/coffee-trivia',
-    icon: IoSparkles,
   },
   {
     key: 'dev-stories',
