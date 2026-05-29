@@ -8,5 +8,4 @@ export * from './tasting';
 export * from './settings';
 export * from './notification';
 export * from './defect-beans';
-export * from './production-pack-record';
 export * from './production-record';

@@ -100,34 +100,6 @@ describe('Firestore rules', () => {
     });
   });
 
-  describe('users/{uid}/productionPackRecords/{workDate}', () => {
-    it('allows only the signed-in owner to read and write production pack records', async () => {
-      const path = `users/${OWN_UID}/productionPackRecords/2026-05-24`;
-      const ownerDoc = firestoreFor(OWN_UID).doc(path);
-      const otherDoc = firestoreFor(OTHER_UID).doc(path);
-      const anonymousDoc = firestoreFor().doc(path);
-      const record = {
-        workDate: '2026-05-24',
-        teamA: { successCount: 10, failureCount: 1 },
-        teamB: { successCount: 20, failureCount: 2 },
-        successTotal: 30,
-        failureTotal: 3,
-        total: 33,
-      };
-
-      await assertFails(anonymousDoc.get());
-      await assertFails(anonymousDoc.set(record));
-
-      await assertSucceeds(ownerDoc.set(record));
-      await assertSucceeds(ownerDoc.get());
-
-      await assertFails(otherDoc.get());
-      await assertFails(otherDoc.set(record));
-      await assertFails(otherDoc.delete());
-      await assertSucceeds(ownerDoc.delete());
-    });
-  });
-
   describe('users/{uid}/productionRecords/{month}', () => {
     it('allows only the signed-in owner to read and write the month document', async () => {
       const path = `users/${OWN_UID}/productionRecords/2026-08`;
