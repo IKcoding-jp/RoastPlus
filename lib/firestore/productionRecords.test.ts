@@ -483,6 +483,32 @@ describe('saveHandpickEntry', () => {
       expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/handpickEntries/old-handpick-id' })
     );
   });
+
+  it('rejects without overwriting or deleting when rekeying onto an existing record (collision)', async () => {
+    // リキー先(新id)に別レコードが既にある状態
+    firestoreMocks.transaction.get.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ createdAt: 'existing' }),
+    });
+    const { saveHandpickEntry } = await import('./productionRecords');
+
+    await expect(
+      saveHandpickEntry(
+        'user-1',
+        '2026-08',
+        {
+          workDate: '2026-08-10',
+          beanName: 'グアテマラ',
+          segment: 'second',
+          greenBeanWeightGram: 12000,
+          defectBeanWeightGram: 0,
+        },
+        'old-handpick-id'
+      )
+    ).rejects.toThrow();
+    expect(firestoreMocks.transaction.set).not.toHaveBeenCalled();
+    expect(firestoreMocks.transaction.delete).not.toHaveBeenCalled();
+  });
 });
 
 describe('subscribeRoastEntries', () => {
@@ -575,6 +601,25 @@ describe('saveRoastEntry', () => {
       expect.objectContaining({ workDate: '2026-08-11' })
     );
   });
+
+  it('rejects without overwriting or deleting when rekeying onto an existing record (collision)', async () => {
+    firestoreMocks.transaction.get.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ createdAt: 'existing', workDate: '2026-08-11' }),
+    });
+    const { saveRoastEntry } = await import('./productionRecords');
+
+    await expect(
+      saveRoastEntry(
+        'user-1',
+        '2026-08',
+        { workDate: '2026-08-11', beforeRoastWeightGram: 12000, afterRoastWeightGram: 9800 },
+        '2026-08-10'
+      )
+    ).rejects.toThrow();
+    expect(firestoreMocks.transaction.set).not.toHaveBeenCalled();
+    expect(firestoreMocks.transaction.delete).not.toHaveBeenCalled();
+  });
 });
 
 describe('subscribePackageEntries', () => {
@@ -666,5 +711,28 @@ describe('savePackageEntry', () => {
     expect(firestoreMocks.transaction.delete).toHaveBeenCalledWith(
       expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/packageEntries/2026-08-10' })
     );
+  });
+
+  it('rejects without overwriting or deleting when rekeying onto an existing record (collision)', async () => {
+    firestoreMocks.transaction.get.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ createdAt: 'existing', workDate: '2026-08-11' }),
+    });
+    const { savePackageEntry } = await import('./productionRecords');
+
+    await expect(
+      savePackageEntry(
+        'user-1',
+        '2026-08',
+        {
+          workDate: '2026-08-11',
+          teamA: { goodCount: 100, defectiveCount: 0 },
+          teamB: { goodCount: 80, defectiveCount: 1 },
+        },
+        '2026-08-10'
+      )
+    ).rejects.toThrow();
+    expect(firestoreMocks.transaction.set).not.toHaveBeenCalled();
+    expect(firestoreMocks.transaction.delete).not.toHaveBeenCalled();
   });
 });

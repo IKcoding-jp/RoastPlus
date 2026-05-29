@@ -237,6 +237,10 @@ export async function saveHandpickEntry(
 
   await runTransaction(getDb(), async (transaction) => {
     const snapshot = await transaction.get(docRef);
+    // 編集でキーを変更した先に別レコードが既にある場合、上書きするとそのデータを失うため拒否する
+    if (previousId && previousId !== id && snapshot.exists()) {
+      throw new Error('同じ日付・区分・豆名の記録が既にあります。先にそちらを確認してください');
+    }
     const createdAt = snapshot.exists() ? (snapshot.data()?.createdAt ?? serverTimestamp()) : serverTimestamp();
     if (previousId && previousId !== id) {
       transaction.delete(doc(colRef, previousId));
@@ -307,6 +311,10 @@ export async function saveRoastEntry(
 
   await runTransaction(getDb(), async (transaction) => {
     const snapshot = await transaction.get(docRef);
+    // 編集で日付を変更した先に別の焙煎記録が既にある場合、上書きするとそのデータを失うため拒否する
+    if (previousId && previousId !== id && snapshot.exists()) {
+      throw new Error('同じ日付の焙煎記録が既にあります。先にそちらを確認してください');
+    }
     const createdAt = snapshot.exists() ? (snapshot.data()?.createdAt ?? serverTimestamp()) : serverTimestamp();
     if (previousId && previousId !== id) {
       transaction.delete(doc(colRef, previousId));
@@ -386,6 +394,10 @@ export async function savePackageEntry(
 
   await runTransaction(getDb(), async (transaction) => {
     const snapshot = await transaction.get(docRef);
+    // 編集で日付を変更した先に別のパッケージ記録が既にある場合、上書きするとそのデータを失うため拒否する
+    if (previousId && previousId !== id && snapshot.exists()) {
+      throw new Error('同じ日付のパッケージ記録が既にあります。先にそちらを確認してください');
+    }
     const createdAt = snapshot.exists() ? (snapshot.data()?.createdAt ?? serverTimestamp()) : serverTimestamp();
     if (previousId && previousId !== id) {
       transaction.delete(doc(colRef, previousId));
