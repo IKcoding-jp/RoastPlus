@@ -85,7 +85,7 @@ test.describe('生産記録 E2E（実Firestoreエミュレータ）', () => {
     // 月合計サマリーとCSVプレビュー
     await expect(page.getByRole('heading', { name: '月合計サマリー' })).toBeVisible();
     const pre = page.locator('pre');
-    await expect(pre).toContainText('2026-08');
+    await expect(pre).toContainText('2026年8月分');
     await expect(pre).toContainText('モカ 100%');
 
     // CSV出力でダウンロードが発火する

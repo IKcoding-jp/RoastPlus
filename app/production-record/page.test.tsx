@@ -357,7 +357,7 @@ describe('ProductionRecordPage データ表示と集計', () => {
     // CSVプレビューにヘッダーと対象月が含まれる
     const pre = document.querySelector('pre');
     expect(pre?.textContent).toContain('対象月');
-    expect(pre?.textContent).toContain('2026-05');
+    expect(pre?.textContent).toContain('2026年5月分');
     expect(pre?.textContent).toContain('モカ 70% / ブラジル 30%');
   });
 });

@@ -18,6 +18,7 @@ import {
   escapeCsvCell,
   formatKg,
   formatPercent,
+  formatProductionMonthLabel,
   getProductionRecordCsvFileName,
   isValidProductionMonth,
   isValidWorkDate,
@@ -588,9 +589,9 @@ describe('buildProductionRecordCsv', () => {
     };
 
     const header =
-      '対象月,配合,生豆重量kg,欠点豆重量g,欠点率,焙煎後重量kg,水分蒸発率,30kg理論袋数,月良品数,月不良品数,月生産個数,パッケージロス率';
-    // 配合はスラッシュを含むがカンマを含まないためクォート不要
-    const dataRow = '2026-08,ブラジル 80% / グアテマラ 20%,20.00,620,3.1%,1.66,17.0%,2838,2840,82,2922,2.8%';
+      '対象月,配合,生豆重量kg,欠点豆重量g,欠点率,焙煎後重量kg,焙煎ロス率,30kg理論袋数,月良品数,月不良品数,月生産個数,パッケージロス率';
+    // 対象月は「YYYY年M月分」表記。配合はスラッシュを含むがカンマを含まないためクォート不要
+    const dataRow = '2026年8月分,ブラジル 80% / グアテマラ 20%,20.00,620,3.1%,1.66,17.0%,2838,2840,82,2922,2.8%';
 
     expect(buildProductionRecordCsv(summary)).toBe(`\uFEFF${header}\r\n${dataRow}`);
   });
@@ -599,5 +600,17 @@ describe('buildProductionRecordCsv', () => {
 describe('getProductionRecordCsvFileName', () => {
   it('uses the target month in the file name', () => {
     expect(getProductionRecordCsvFileName('2026-08')).toBe('production-record-2026-08.csv');
+  });
+});
+
+describe('formatProductionMonthLabel', () => {
+  it('formats yyyy-MM as 「YYYY年M月分」 (zero-padded month is shown without leading zero)', () => {
+    expect(formatProductionMonthLabel('2026-08')).toBe('2026年8月分');
+    expect(formatProductionMonthLabel('2026-12')).toBe('2026年12月分');
+  });
+
+  it('returns the input unchanged when it is not yyyy-MM', () => {
+    expect(formatProductionMonthLabel('')).toBe('');
+    expect(formatProductionMonthLabel('2026')).toBe('2026');
   });
 });

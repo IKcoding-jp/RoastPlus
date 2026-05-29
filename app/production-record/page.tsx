@@ -30,6 +30,7 @@ import {
   calculateUsableGreenGram,
   formatKg,
   formatPercent,
+  formatProductionMonthLabel,
   getProductionRecordCsvFileName,
   sumHandpick,
   sumRoast,
@@ -60,15 +61,6 @@ function getTodayDate(): string {
   const month = String(now.getMonth() + 1).padStart(2, '0');
   const day = String(now.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
-}
-
-// 月ラベル「2026年8月分」へ変換（表示専用。CSVは month そのものを使う）
-function formatMonthLabel(month: string): string {
-  const [year, monthPart] = month.split('-');
-  if (!year || !monthPart) {
-    return month;
-  }
-  return `${year}年${Number(monthPart)}月分`;
 }
 
 export default function ProductionRecordPage() {
@@ -122,7 +114,7 @@ export default function ProductionRecordPage() {
 
   // 月セレクトの選択肢
   const monthOptions = useMemo(
-    () => recentMonths.map((month) => ({ value: month.month, label: formatMonthLabel(month.month) })),
+    () => recentMonths.map((month) => ({ value: month.month, label: formatProductionMonthLabel(month.month) })),
     [recentMonths]
   );
 
@@ -264,7 +256,7 @@ export default function ProductionRecordPage() {
             <h1 className="text-xl sm:text-2xl font-bold text-ink">生産記録</h1>
             {selectedMonth ? (
               <p className="mt-1 text-sm text-ink-sub">
-                {formatMonthLabel(selectedMonth)}
+                {formatProductionMonthLabel(selectedMonth)}
                 {blendLabel ? `　配合: ${blendLabel}` : ''}
               </p>
             ) : (
@@ -539,7 +531,7 @@ export default function ProductionRecordPage() {
                     <SummaryTile label="欠点豆重量" value={summary.defectBeanTotalGram} unit="g" />
                     <SummaryTile label="欠点率" value={formatPercent(summary.defectRate)} />
                     <SummaryTile label="焙煎後重量" value={formatKg(summary.roastAfterTotalGram)} unit="kg" />
-                    <SummaryTile label="水分蒸発率" value={formatPercent(summary.moistureLossRate)} />
+                    <SummaryTile label="焙煎ロス率" value={formatPercent(summary.moistureLossRate)} />
                     <SummaryTile label="30kg理論袋数" value={summary.thirtyKgTheoryPacks} unit="袋" />
                     <SummaryTile
                       label="月良品数"

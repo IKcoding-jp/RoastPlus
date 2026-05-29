@@ -312,6 +312,15 @@ export function formatPercent(rate: number): string {
   return `${(rate * 100).toFixed(1)}%`;
 }
 
+// 対象月(yyyy-MM)を本社報告用の「YYYY年M月分」表記に変換する（CSV・画面ラベル共通）
+export function formatProductionMonthLabel(month: string): string {
+  const [year, monthPart] = month.split('-');
+  if (!year || !monthPart) {
+    return month;
+  }
+  return `${year}年${Number(monthPart)}月分`;
+}
+
 export function formatKg(gram: number): string {
   return (gram / 1000).toFixed(2);
 }
@@ -329,7 +338,8 @@ export function buildProductionRecordCsv(summary: ProductionRecordMonthlySummary
     '欠点豆重量g',
     '欠点率',
     '焙煎後重量kg',
-    '水分蒸発率',
+    // 焙煎後重量はアフターピック後に計測する運用のため、この値は「水分蒸発＋アフターピック損失」の合算ロス
+    '焙煎ロス率',
     '30kg理論袋数',
     '月良品数',
     '月不良品数',
@@ -338,7 +348,7 @@ export function buildProductionRecordCsv(summary: ProductionRecordMonthlySummary
   ];
 
   const dataRow: Array<string | number> = [
-    summary.month,
+    formatProductionMonthLabel(summary.month),
     summary.blendLabel,
     formatKg(summary.greenBeanTotalGram),
     summary.defectBeanTotalGram,
