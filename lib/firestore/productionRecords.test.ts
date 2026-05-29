@@ -1,0 +1,153 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+interface FirestoreTransactionMock {
+  get: ReturnType<typeof vi.fn>;
+  set: ReturnType<typeof vi.fn>;
+  update: ReturnType<typeof vi.fn>;
+  delete: ReturnType<typeof vi.fn>;
+}
+
+const firestoreMocks = vi.hoisted(() => {
+  const transaction: FirestoreTransactionMock = {
+    get: vi.fn(),
+    set: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+  };
+
+  return {
+    transaction,
+    getFirestore: vi.fn(() => ({ app: 'mock-firestore' })),
+    collection: vi.fn((first: { path?: string } | unknown, ...segments: string[]) => {
+      const basePath =
+        first && typeof first === 'object' && 'path' in first && typeof first.path === 'string' ? first.path : '';
+      const path = basePath ? [basePath, ...segments].join('/') : segments.join('/');
+      return { path };
+    }),
+    doc: vi.fn((first: { path?: string } | unknown, ...segments: string[]) => {
+      const basePath =
+        first && typeof first === 'object' && 'path' in first && typeof first.path === 'string' ? first.path : '';
+      // segmentsが空(doc(colRef)自動ID)の場合は固定のauto-idを返す
+      if (segments.length === 0) {
+        return { id: 'auto-generated-id', path: basePath ? `${basePath}/auto-generated-id` : 'auto-generated-id' };
+      }
+      const path = basePath ? [basePath, ...segments].join('/') : segments.join('/');
+      return { id: segments.at(-1), path };
+    }),
+    getDocs: vi.fn(),
+    getDoc: vi.fn(),
+    addDoc: vi.fn(),
+    setDoc: vi.fn(),
+    limit: vi.fn((value: number) => ({ type: 'limit', value })),
+    onSnapshot: vi.fn(),
+    orderBy: vi.fn((field: string, direction: string) => ({ type: 'orderBy', field, direction })),
+    query: vi.fn((...args: unknown[]) => ({ args })),
+    runTransaction: vi.fn(async (_db: unknown, callback: (transaction: FirestoreTransactionMock) => Promise<void>) =>
+      callback(transaction)
+    ),
+    serverTimestamp: vi.fn(() => 'server-timestamp'),
+    where: vi.fn((field: string, operator: string, value: string) => ({ type: 'where', field, operator, value })),
+  };
+});
+
+vi.mock('../firebase', () => ({
+  default: {},
+}));
+
+vi.mock('firebase/firestore', () => ({
+  collection: firestoreMocks.collection,
+  doc: firestoreMocks.doc,
+  getDocs: firestoreMocks.getDocs,
+  getDoc: firestoreMocks.getDoc,
+  addDoc: firestoreMocks.addDoc,
+  setDoc: firestoreMocks.setDoc,
+  getFirestore: firestoreMocks.getFirestore,
+  limit: firestoreMocks.limit,
+  onSnapshot: firestoreMocks.onSnapshot,
+  orderBy: firestoreMocks.orderBy,
+  query: firestoreMocks.query,
+  runTransaction: firestoreMocks.runTransaction,
+  serverTimestamp: firestoreMocks.serverTimestamp,
+  where: firestoreMocks.where,
+}));
+
+/** 単一docスナップショットを生成する。 */
+function docSnapshot(id: string, data: Record<string, unknown> | null) {
+  return {
+    exists: () => data !== null,
+    id,
+    data: () => data ?? undefined,
+  };
+}
+
+/** コレクションスナップショット(docs配列)を生成する。 */
+function collectionSnapshot(records: Array<{ id: string; data: Record<string, unknown> }>) {
+  return {
+    docs: records.map((record) => ({
+      id: record.id,
+      data: () => record.data,
+    })),
+  };
+}
+
+describe('getProductionRecordsCollectionRef', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('uses /users/{uid}/productionRecords as the collection path', async () => {
+    const { getProductionRecordsCollectionRef } = await import('./productionRecords');
+
+    expect(getProductionRecordsCollectionRef('user-1')).toEqual({
+      path: 'users/user-1/productionRecords',
+    });
+  });
+});
+
+describe('getProductionRecordMonthDocRef', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('uses /users/{uid}/productionRecords/{YYYY-MM} as the document path', async () => {
+    const { getProductionRecordMonthDocRef } = await import('./productionRecords');
+
+    expect(getProductionRecordMonthDocRef('user-1', '2026-08')).toEqual({
+      id: '2026-08',
+      path: 'users/user-1/productionRecords/2026-08',
+    });
+  });
+
+  it('rejects invalid months before building a Firestore document path', async () => {
+    const { getProductionRecordMonthDocRef } = await import('./productionRecords');
+
+    expect(() => getProductionRecordMonthDocRef('user-1', '2026-13')).toThrow('対象月が正しくありません');
+  });
+});
+
+describe('subcollection refs', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('builds handpickEntries / roastEntries / packageEntries subcollection paths under the month doc', async () => {
+    const { getHandpickEntriesCollectionRef, getRoastEntriesCollectionRef, getPackageEntriesCollectionRef } =
+      await import('./productionRecords');
+
+    expect(getHandpickEntriesCollectionRef('user-1', '2026-08')).toEqual({
+      path: 'users/user-1/productionRecords/2026-08/handpickEntries',
+    });
+    expect(getRoastEntriesCollectionRef('user-1', '2026-08')).toEqual({
+      path: 'users/user-1/productionRecords/2026-08/roastEntries',
+    });
+    expect(getPackageEntriesCollectionRef('user-1', '2026-08')).toEqual({
+      path: 'users/user-1/productionRecords/2026-08/packageEntries',
+    });
+  });
+
+  it('rejects invalid months when building subcollection refs', async () => {
+    const { getHandpickEntriesCollectionRef } = await import('./productionRecords');
+
+    expect(() => getHandpickEntriesCollectionRef('user-1', '2026-13')).toThrow('対象月が正しくありません');
+  });
+});
