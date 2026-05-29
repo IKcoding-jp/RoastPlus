@@ -12,6 +12,8 @@ import {
   calculateUsableGreenGram,
   isValidProductionMonth,
   isValidWorkDate,
+  normalizeCountInput,
+  normalizeWeightInput,
   sumHandpick,
   sumPackage,
   sumRoast,
@@ -342,5 +344,33 @@ describe('buildMonthlySummary', () => {
       monthlyProducedCount: 0,
       packageLossRate: 0,
     });
+  });
+});
+
+describe('normalizeWeightInput', () => {
+  it('accepts zero and positive finite numbers', () => {
+    expect(normalizeWeightInput(0)).toBe(0);
+    expect(normalizeWeightInput(8.5)).toBe(8.5);
+    expect(normalizeWeightInput(20000)).toBe(20000);
+  });
+
+  it('throws for negative, NaN, or non-finite values', () => {
+    expect(() => normalizeWeightInput(-1)).toThrow('0以上の数値で入力してください');
+    expect(() => normalizeWeightInput(Number.NaN)).toThrow('0以上の数値で入力してください');
+    expect(() => normalizeWeightInput(Number.POSITIVE_INFINITY)).toThrow('0以上の数値で入力してください');
+  });
+});
+
+describe('normalizeCountInput', () => {
+  it('accepts zero and positive integers', () => {
+    expect(normalizeCountInput(0)).toBe(0);
+    expect(normalizeCountInput(2840)).toBe(2840);
+  });
+
+  it('throws for negative, decimal, NaN, or non-finite values', () => {
+    expect(() => normalizeCountInput(-1)).toThrow('0以上の整数で入力してください');
+    expect(() => normalizeCountInput(1.5)).toThrow('0以上の整数で入力してください');
+    expect(() => normalizeCountInput(Number.NaN)).toThrow('0以上の整数で入力してください');
+    expect(() => normalizeCountInput(Number.POSITIVE_INFINITY)).toThrow('0以上の整数で入力してください');
   });
 });

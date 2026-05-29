@@ -16,6 +16,9 @@ export const PREMIX_BAG_GRAM = 500;
 export const THIRTY_KG_BASE_GRAM = 30000;
 export const MAX_BLEND_ITEMS = 4;
 
+const WEIGHT_INPUT_ERROR = '0以上の数値で入力してください';
+const COUNT_INPUT_ERROR = '0以上の整数で入力してください';
+
 export function isValidProductionMonth(month: string): boolean {
   if (!WORK_MONTH_PATTERN.test(month)) {
     return false;
@@ -185,4 +188,18 @@ export function buildMonthlySummary(
     monthlyProducedCount: packageTotals.producedTotal,
     packageLossRate,
   };
+}
+
+export function normalizeWeightInput(value: number): number {
+  if (!Number.isFinite(value) || value < 0) {
+    throw new Error(WEIGHT_INPUT_ERROR);
+  }
+  return value;
+}
+
+export function normalizeCountInput(value: number): number {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new Error(COUNT_INPUT_ERROR);
+  }
+  return value;
 }
