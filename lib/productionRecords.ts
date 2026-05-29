@@ -353,7 +353,7 @@ export function buildProductionRecordCsv(summary: ProductionRecordMonthlySummary
   ];
 
   const rows = [header, dataRow.map((cell) => String(cell))];
-  return `﻿${rows.map((row) => row.map(escapeCsvCell).join(',')).join('\r\n')}`;
+  return `\uFEFF${rows.map((row) => row.map(escapeCsvCell).join(',')).join('\r\n')}`;
 }
 
 export function getProductionRecordCsvFileName(month: string): string {

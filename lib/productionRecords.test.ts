@@ -592,7 +592,7 @@ describe('buildProductionRecordCsv', () => {
     // 配合はスラッシュを含むがカンマを含まないためクォート不要
     const dataRow = '2026-08,ブラジル 80% / グアテマラ 20%,20.00,620,3.1%,1.66,17.0%,2838,2840,82,2922,2.8%';
 
-    expect(buildProductionRecordCsv(summary)).toBe(`﻿${header}\r\n${dataRow}`);
+    expect(buildProductionRecordCsv(summary)).toBe(`\uFEFF${header}\r\n${dataRow}`);
   });
 });
 
