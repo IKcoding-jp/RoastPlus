@@ -175,7 +175,6 @@ roastplus/
 |---------|------|
 | `useAppData.ts` | アプリ全体のデータ管理 |
 | `useAppTheme.ts` | テーマ管理（7テーマ切替） |
-| `useAppLifecycle.ts` | アプリライフサイクル管理 |
 | `useAppVersion.ts` | バージョン情報 |
 | `useChristmasMode.ts` | クリスマステーマ切替・判定 |
 | `useScheduleOCR.ts` | スケジュールOCR操作 |
