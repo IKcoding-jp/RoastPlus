@@ -11,8 +11,11 @@ import {
   calculateUsableGreenGram,
   isValidProductionMonth,
   isValidWorkDate,
+  sumHandpick,
+  sumPackage,
+  sumRoast,
 } from './productionRecords';
-import type { BlendItem, TeamCounts } from '@/types';
+import type { BlendItem, HandpickEntry, PackageEntry, RoastEntry, TeamCounts } from '@/types';
 
 describe('isValidProductionMonth', () => {
   it('accepts real yyyy-MM months only', () => {
@@ -157,5 +160,71 @@ describe('buildBlendLabel', () => {
 
   it('returns an empty string for no items', () => {
     expect(buildBlendLabel([])).toBe('');
+  });
+});
+
+describe('sumHandpick', () => {
+  it('sums green bean and defect grams across entries', () => {
+    const entries: HandpickEntry[] = [
+      {
+        id: 'h1',
+        workDate: '2026-08-01',
+        beanName: 'ブラジル',
+        segment: 'first',
+        greenBeanWeightGram: 10000,
+        defectBeanWeightGram: 320,
+      },
+      {
+        id: 'h2',
+        workDate: '2026-08-02',
+        beanName: 'ブラジル',
+        segment: 'second',
+        greenBeanWeightGram: 10000,
+        defectBeanWeightGram: 300,
+      },
+    ];
+    expect(sumHandpick(entries)).toEqual({ handpickedTotalGram: 20000, defectTotalGram: 620 });
+  });
+
+  it('returns zero totals for an empty list', () => {
+    expect(sumHandpick([])).toEqual({ handpickedTotalGram: 0, defectTotalGram: 0 });
+  });
+});
+
+describe('sumRoast', () => {
+  it('sums before and after grams across entries', () => {
+    const entries: RoastEntry[] = [
+      { id: 'r1', workDate: '2026-08-01', beforeRoastWeightGram: 1000, afterRoastWeightGram: 830 },
+      { id: 'r2', workDate: '2026-08-02', beforeRoastWeightGram: 1000, afterRoastWeightGram: 830 },
+    ];
+    expect(sumRoast(entries)).toEqual({ beforeTotalGram: 2000, afterTotalGram: 1660 });
+  });
+
+  it('returns zero totals for an empty list', () => {
+    expect(sumRoast([])).toEqual({ beforeTotalGram: 0, afterTotalGram: 0 });
+  });
+});
+
+describe('sumPackage', () => {
+  it('sums good, defective, and produced totals across entries', () => {
+    const entries: PackageEntry[] = [
+      {
+        id: 'p1',
+        workDate: '2026-08-01',
+        teamA: { goodCount: 1000, defectiveCount: 30 },
+        teamB: { goodCount: 500, defectiveCount: 20 },
+      },
+      {
+        id: 'p2',
+        workDate: '2026-08-02',
+        teamA: { goodCount: 500, defectiveCount: 20 },
+        teamB: { goodCount: 840, defectiveCount: 12 },
+      },
+    ];
+    expect(sumPackage(entries)).toEqual({ goodTotal: 2840, defectiveTotal: 82, producedTotal: 2922 });
+  });
+
+  it('returns zero totals for an empty list', () => {
+    expect(sumPackage([])).toEqual({ goodTotal: 0, defectiveTotal: 0, producedTotal: 0 });
   });
 });

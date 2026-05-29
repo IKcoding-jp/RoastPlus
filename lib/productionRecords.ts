@@ -1,4 +1,4 @@
-import type { BlendItem, TeamCounts } from '@/types';
+import type { BlendItem, HandpickEntry, PackageEntry, RoastEntry, TeamCounts } from '@/types';
 
 const WORK_MONTH_PATTERN = /^\d{4}-\d{2}$/;
 const WORK_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
@@ -94,4 +94,45 @@ export function calculatePackageTotals(
 
 export function buildBlendLabel(blendItems: BlendItem[]): string {
   return blendItems.map((item) => `${item.beanName} ${item.ratioPercent}%`).join(' / ');
+}
+
+export function sumHandpick(entries: HandpickEntry[]): {
+  handpickedTotalGram: number;
+  defectTotalGram: number;
+} {
+  return entries.reduce(
+    (acc, entry) => ({
+      handpickedTotalGram: acc.handpickedTotalGram + entry.greenBeanWeightGram,
+      defectTotalGram: acc.defectTotalGram + entry.defectBeanWeightGram,
+    }),
+    { handpickedTotalGram: 0, defectTotalGram: 0 }
+  );
+}
+
+export function sumRoast(entries: RoastEntry[]): { beforeTotalGram: number; afterTotalGram: number } {
+  return entries.reduce(
+    (acc, entry) => ({
+      beforeTotalGram: acc.beforeTotalGram + entry.beforeRoastWeightGram,
+      afterTotalGram: acc.afterTotalGram + entry.afterRoastWeightGram,
+    }),
+    { beforeTotalGram: 0, afterTotalGram: 0 }
+  );
+}
+
+export function sumPackage(entries: PackageEntry[]): {
+  goodTotal: number;
+  defectiveTotal: number;
+  producedTotal: number;
+} {
+  return entries.reduce(
+    (acc, entry) => {
+      const totals = calculatePackageTotals(entry.teamA, entry.teamB);
+      return {
+        goodTotal: acc.goodTotal + totals.goodTotal,
+        defectiveTotal: acc.defectiveTotal + totals.defectiveTotal,
+        producedTotal: acc.producedTotal + totals.producedTotal,
+      };
+    },
+    { goodTotal: 0, defectiveTotal: 0, producedTotal: 0 }
+  );
 }
