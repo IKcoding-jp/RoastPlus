@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import HomePage from './page';
@@ -71,17 +71,25 @@ describe('HomePage', () => {
     expect(screen.getAllByRole('button', { name: '担当表' })).toHaveLength(1);
   });
 
-  it('スマホで表示機能が少ない場合もアクションを巨大化させない', async () => {
-    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 390 });
-    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 844 });
+  it('スマホで表示機能が少ない場合もアクションを巨大化させない', () => {
     mocks.visibleKeys.clear();
     mocks.visibleKeys.add('settings');
 
     render(<HomePage />);
 
     const settingsButton = screen.getByRole('button', { name: 'その他' });
-    await waitFor(() => {
-      expect(settingsButton.style.getPropertyValue('--home-card-height')).toBe('64px');
-    });
+    // flex-1 で伸びるが max-h で頭打ちにして巨大化を防ぐ。旧来のインライン高さ変数は持たない。
+    expect(settingsButton.className).toMatch(/max-h-\[112px\]/);
+    expect(settingsButton.style.getPropertyValue('--home-card-height')).toBe('');
+  });
+
+  it('機能名の上に英字ラベルを表示する', () => {
+    render(<HomePage />);
+
+    // 英字ラベルが表示される（クラフトラベル型）
+    expect(screen.getByText('ASSIGNMENT')).toBeInTheDocument();
+    expect(screen.getByText('PRODUCTION')).toBeInTheDocument();
+    // アクセシブルネームは機能名のまま（aria-label）であること
+    expect(screen.getByRole('button', { name: '担当表' })).toBeInTheDocument();
   });
 });

@@ -28,6 +28,7 @@ import { BsStars } from 'react-icons/bs';
 interface Action {
   key: HomeFeatureKey;
   title: string;
+  label: string;
   description: string;
   href: string;
   icon: IconType;
@@ -51,6 +52,7 @@ const ACTIONS: Action[] = [
   {
     key: 'assignment',
     title: '担当表',
+    label: 'ASSIGNMENT',
     description: '公平に担当を割り当て',
     href: '/assignment',
     icon: FaUsers,
@@ -58,6 +60,7 @@ const ACTIONS: Action[] = [
   {
     key: 'schedule',
     title: 'スケジュール',
+    label: 'SCHEDULE',
     description: '一日の予定を確認',
     href: '/schedule',
     icon: RiCalendarScheduleFill,
@@ -65,6 +68,7 @@ const ACTIONS: Action[] = [
   {
     key: 'tasting',
     title: '試飲感想記録',
+    label: 'TASTING',
     description: '試飲の感想を記録',
     href: '/tasting',
     icon: FaCoffee,
@@ -72,6 +76,7 @@ const ACTIONS: Action[] = [
   {
     key: 'defect-beans',
     title: '欠点豆図鑑',
+    label: 'DEFECTS',
     description: '欠点豆の知識を共有',
     href: '/defect-beans',
     icon: RiBookFill,
@@ -79,6 +84,7 @@ const ACTIONS: Action[] = [
   {
     key: 'production-record',
     title: '生産記録',
+    label: 'PRODUCTION',
     description: '月次の生産実績を記録',
     href: '/production-record',
     icon: MdFactory,
@@ -86,6 +92,7 @@ const ACTIONS: Action[] = [
   {
     key: 'drip-guide',
     title: 'ドリップガイド',
+    label: 'DRIP GUIDE',
     description: '淹れ方の手順',
     href: '/drip-guide',
     icon: MdCoffeeMaker,
@@ -93,6 +100,7 @@ const ACTIONS: Action[] = [
   {
     key: 'settings',
     title: 'その他',
+    label: 'MORE',
     description: '設定やアプリ情報など',
     href: '/settings',
     icon: IoSettings,
@@ -112,7 +120,6 @@ export default function HomePage(_props: HomePageProps = {}) {
   const { user, loading } = useAuth();
   const router = useRouter();
   const [splashVisible, setSplashVisible] = useState(true);
-  const [cardHeight, setCardHeight] = useState<number | null>(null);
   const [checkingConsent, setCheckingConsent] = useState(true);
   const { isChristmasMode } = useChristmasMode();
   const { isVisible } = useHomeFeatureVisibility();
@@ -161,48 +168,6 @@ export default function HomePage(_props: HomePageProps = {}) {
     }
   }, [user, loading, router]);
 
-  // スマホレイアウト: 画面高さに応じてカードの高さを動的に調整
-  useEffect(() => {
-    const calculateCardHeight = () => {
-      // md未満 (768px未満) だけ可変
-      if (typeof window === 'undefined' || window.innerWidth >= 768) {
-        setCardHeight(null);
-        return;
-      }
-
-      // 利用可能な高さを算出
-      const viewportHeight = window.innerHeight;
-      const headerHeight = 72; // ヘッダーの高さ目安
-      const paddingTop = 8; // pt-2 = 8px
-      const paddingBottom = 8; // pb-2 = 8px
-      const rowCount = Math.max(visibleActions.length, 1);
-      const gridGap = Math.max(rowCount - 1, 0) * 6; // gap-1.5 = 6px
-
-      const availableHeight = viewportHeight - headerHeight - paddingTop - paddingBottom;
-      const cardHeightPerRow = (availableHeight - gridGap) / rowCount;
-
-      // スマホ一覧は少ない表示件数でも巨大化させず、全件表示時は1画面に収める
-      const minCardHeight = 44;
-      const maxCardHeight = 64;
-      const calculatedHeight = Math.min(Math.max(cardHeightPerRow, minCardHeight), maxCardHeight);
-
-      setCardHeight(calculatedHeight);
-    };
-
-    // 初回計算
-    calculateCardHeight();
-
-    // リサイズ向き変更を監視
-    window.addEventListener('resize', calculateCardHeight);
-    window.addEventListener('orientationchange', calculateCardHeight);
-
-    // クリーンアップ
-    return () => {
-      window.removeEventListener('resize', calculateCardHeight);
-      window.removeEventListener('orientationchange', calculateCardHeight);
-    };
-  }, [visibleActions.length]);
-
   // スプラッシュ表示中はLoadingを出さない（スプラッシュが前面に表示されるため）
   if ((loading || checkingConsent) && !splashVisible) {
     return <Loading />;
@@ -233,23 +198,20 @@ export default function HomePage(_props: HomePageProps = {}) {
 
       {/* メインコンテンツ */}
       <main className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-2 pb-2 sm:px-6 sm:pt-3 sm:pb-3 flex-1 min-h-0">
-        <div
-          className="flex h-full flex-col gap-1.5 md:grid md:h-auto md:grid-cols-4 md:gap-4"
-          style={cardHeight ? { gridAutoRows: `${cardHeight}px` } : { gridAutoRows: '1fr' }}
-        >
-          {visibleActions.map(({ key, title, description, href, icon: DefaultIcon, badge }, index) => {
+        <div className="flex h-full flex-col gap-2 md:grid md:h-auto md:grid-cols-4 md:gap-4 md:[grid-auto-rows:1fr]">
+          {visibleActions.map(({ key, title, label, description, href, icon: DefaultIcon, badge }, index) => {
             const Icon = isChristmasMode ? CHRISTMAS_ICONS[key] || DefaultIcon : DefaultIcon;
 
             return (
               <ActionCard
                 key={key}
                 title={title}
+                label={label}
                 description={description}
                 href={href}
                 icon={Icon}
                 badge={badge}
                 index={index}
-                cardHeight={cardHeight}
               />
             );
           })}
