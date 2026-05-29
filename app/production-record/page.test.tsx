@@ -360,6 +360,24 @@ describe('ProductionRecordPage データ表示と集計', () => {
     expect(pre?.textContent).toContain('2026年5月分');
     expect(pre?.textContent).toContain('モカ 70% / ブラジル 30%');
   });
+
+  it('「設定を編集」で月設定モーダルを既存値入り（initial=monthDoc）で開く', () => {
+    render(<ProductionRecordPage />);
+    fireEvent.click(screen.getByRole('button', { name: '設定を編集' }));
+
+    expect(screen.getByTestId('month-modal')).toBeInTheDocument();
+    // 編集モードでは選択中の月とその設定が初期値として渡る
+    expect(mocks.monthProps?.month).toBe('2026-05');
+    expect(mocks.monthProps?.initial).toEqual(MONTH_DOC);
+  });
+
+  it('新規作成時は月設定モーダルが空（initial=null）で開く', () => {
+    render(<ProductionRecordPage />);
+    fireEvent.click(screen.getByRole('button', { name: '対象月を作成' }));
+
+    expect(screen.getByTestId('month-modal')).toBeInTheDocument();
+    expect(mocks.monthProps?.initial).toBeNull();
+  });
 });
 
 describe('ProductionRecordPage エントリ保存の配線', () => {

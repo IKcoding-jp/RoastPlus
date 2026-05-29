@@ -73,6 +73,8 @@ export default function ProductionRecordPage() {
 
   // モーダル開閉（モーダルは show prop を持たず、親が条件レンダリングで開閉する）
   const [isMonthSettingsOpen, setIsMonthSettingsOpen] = useState(false);
+  // 月設定モーダルが編集モードか（true=選択中の月の設定を初期値入りで編集 / false=新規作成）
+  const [isEditingMonth, setIsEditingMonth] = useState(false);
   const [editingHandpick, setEditingHandpick] = useState<HandpickEntry | null>(null);
   const [isHandpickOpen, setIsHandpickOpen] = useState(false);
   const [editingRoast, setEditingRoast] = useState<RoastEntry | null>(null);
@@ -213,8 +215,18 @@ export default function ProductionRecordPage() {
     showToast('保存しました', 'success');
   };
 
-  // 新規作成（月設定モーダルを開くだけ。保存するまで selectedMonth は変えず画面遷移しない）
+  // 新規作成（月設定モーダルを空で開くだけ。保存するまで selectedMonth は変えず画面遷移しない）
   const handleCreateMonth = () => {
+    setIsEditingMonth(false);
+    setIsMonthSettingsOpen(true);
+  };
+
+  // 既存の月設定を編集（選択中の月の monthDoc を初期値にして開く。保存は同じ月キーで上書き=upsert）
+  const handleEditMonth = () => {
+    if (!monthDoc) {
+      return;
+    }
+    setIsEditingMonth(true);
     setIsMonthSettingsOpen(true);
   };
 
@@ -265,13 +277,26 @@ export default function ProductionRecordPage() {
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
             {monthOptions.length > 0 && (
-              <Select
-                label="対象月"
-                options={monthOptions}
-                value={selectedMonth}
-                onChange={(event) => setSelectedMonth(event.target.value)}
-                className="sm:w-[160px] !min-h-[42px] !py-2 !text-base"
-              />
+              <div className="flex items-end gap-2">
+                <Select
+                  label="対象月"
+                  options={monthOptions}
+                  value={selectedMonth}
+                  onChange={(event) => setSelectedMonth(event.target.value)}
+                  className="sm:w-[160px] !min-h-[42px] !py-2 !text-base"
+                />
+                {selectedMonth && monthDoc && (
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="secondary"
+                    onClick={handleEditMonth}
+                    className="!min-h-[42px] whitespace-nowrap !py-2 !text-base"
+                  >
+                    設定を編集
+                  </Button>
+                )}
+              </div>
             )}
             <div className="flex items-end gap-2">
               <Input
@@ -565,9 +590,12 @@ export default function ProductionRecordPage() {
       {/* モーダル群（モーダルは show prop を持たないため、親が条件レンダリングで開閉する） */}
       {isMonthSettingsOpen && (
         <MonthSettingsModal
-          month={newMonthInput}
-          initial={null}
-          onClose={() => setIsMonthSettingsOpen(false)}
+          month={isEditingMonth ? selectedMonth : newMonthInput}
+          initial={isEditingMonth ? monthDoc : null}
+          onClose={() => {
+            setIsMonthSettingsOpen(false);
+            setIsEditingMonth(false);
+          }}
           onSave={handleSaveMonth}
         />
       )}
