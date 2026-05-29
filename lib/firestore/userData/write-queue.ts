@@ -153,10 +153,6 @@ async function performWrite(userId: string, data: AppData, options: SaveUserData
         taskLabelHeaderTextRight: setOrDelete(data.userSettings.taskLabelHeaderTextRight),
       };
 
-      if (data.userSettings.roastTimerSettings !== undefined) {
-        userSettingsUpdate.roastTimerSettings = data.userSettings.roastTimerSettings;
-      }
-
       const hasAnyValue = Object.values(userSettingsUpdate).some((value) => value !== deleteField());
 
       if (!hasAnyValue) {
@@ -170,10 +166,6 @@ async function performWrite(userId: string, data: AppData, options: SaveUserData
 
     if (data.shuffleEvent === undefined) {
       cleanedData.shuffleEvent = deleteField();
-    }
-
-    if (data.roastTimerState === undefined) {
-      cleanedData.roastTimerState = deleteField();
     }
 
     const batchWriter = createBatchWriter();

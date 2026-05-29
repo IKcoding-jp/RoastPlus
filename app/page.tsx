@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import type { IconType } from 'react-icons';
 import { FaCoffee, FaUsers } from 'react-icons/fa';
 import { IoSettings } from 'react-icons/io5';
-import { MdCoffeeMaker, MdInventory2, MdTimer } from 'react-icons/md';
+import { MdCoffeeMaker, MdInventory2 } from 'react-icons/md';
 import { RiBookFill, RiCalendarScheduleFill } from 'react-icons/ri';
 import { Loading } from '@/components/Loading';
 import { ActionCard } from '@/components/home/ActionCard';
@@ -22,7 +22,6 @@ const Snowfall = dynamic(() => import('@/components/Snowfall').then((mod) => ({ 
   ssr: false,
 });
 import { FaTree, FaGift } from 'react-icons/fa';
-import { PiBellFill } from 'react-icons/pi';
 import { GiCandyCanes, GiGingerbreadMan } from 'react-icons/gi';
 import { BsStars } from 'react-icons/bs';
 
@@ -40,7 +39,6 @@ const CHRISTMAS_ICONS: Record<string, IconType> = {
   assignment: FaGift,
   schedule: BsStars,
   tasting: FaTree,
-  'roast-timer': PiBellFill,
   'defect-beans': GiGingerbreadMan,
   'production-packs': MdInventory2,
   'drip-guide': GiCandyCanes,
@@ -70,13 +68,6 @@ const ACTIONS: Action[] = [
     description: '試飲の感想を記録',
     href: '/tasting',
     icon: FaCoffee,
-  },
-  {
-    key: 'roast-timer',
-    title: 'ローストタイマー',
-    description: '最適なタイマーで焙煎',
-    href: '/roast-timer',
-    icon: MdTimer,
   },
   {
     key: 'defect-beans',

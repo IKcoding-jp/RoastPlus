@@ -72,7 +72,6 @@ const INITIAL_APP_DATA: AppData = {
   tastingRecords: [],
   notifications: [],
   encouragementCount: 0,
-  roastTimerRecords: [],
   dripRecipes: [],
 };
 
@@ -102,7 +101,6 @@ export function useAppData() {
         localData.tastingRecords.length > 0 ||
         localData.roastSchedules.length > 0 ||
         localData.todaySchedules.length > 0 ||
-        localData.roastTimerRecords.length > 0 ||
         (localData.dripRecipes?.length ?? 0) > 0;
 
       const incomingIsEmpty =
@@ -110,7 +108,6 @@ export function useAppData() {
         incomingData.tastingRecords.length === 0 &&
         incomingData.roastSchedules.length === 0 &&
         incomingData.todaySchedules.length === 0 &&
-        incomingData.roastTimerRecords.length === 0 &&
         (incomingData.dripRecipes?.length ?? 0) === 0;
 
       if (localHasData && incomingIsEmpty && !isUpdatingRef.current) {
@@ -231,8 +228,6 @@ export function useAppData() {
           ? (newDataOrUpdater as (currentData: AppData) => AppData)(currentData)
           : newDataOrUpdater;
 
-      const hasRoastTimerStateOverride = hasOwn(newData, 'roastTimerState');
-
       const normalizedData: AppData = {
         // 注意: teams, members, manager, taskLabels, assignments は
         // 担当表機能で独立したコレクション（/teams, /members, /taskLabels, /assignmentDays）で管理されています
@@ -248,10 +243,6 @@ export function useAppData() {
             ? newData.encouragementCount
             : (currentData.encouragementCount ?? 0)
           : (currentData.encouragementCount ?? 0),
-        roastTimerRecords: Array.isArray(newData.roastTimerRecords)
-          ? newData.roastTimerRecords
-          : currentData.roastTimerRecords,
-        roastTimerState: hasRoastTimerStateOverride ? newData.roastTimerState : currentData.roastTimerState,
         defectBeans: hasOwn(newData, 'defectBeans') ? newData.defectBeans : currentData.defectBeans,
         defectBeanSettings: hasOwn(newData, 'defectBeanSettings')
           ? newData.defectBeanSettings

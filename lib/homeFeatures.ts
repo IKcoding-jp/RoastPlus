@@ -15,11 +15,6 @@ export const HOME_FEATURES = [
     description: '試飲の感想を記録',
   },
   {
-    key: 'roast-timer',
-    title: 'ローストタイマー',
-    description: '最適なタイマーで焙煎',
-  },
-  {
     key: 'defect-beans',
     title: '欠点豆図鑑',
     description: '欠点豆の知識を共有',

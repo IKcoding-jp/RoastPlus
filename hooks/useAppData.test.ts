@@ -16,7 +16,6 @@ const INITIAL_APP_DATA: AppData = {
   tastingRecords: [],
   notifications: [],
   encouragementCount: 0,
-  roastTimerRecords: [],
   dripRecipes: [],
 };
 

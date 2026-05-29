@@ -12,7 +12,6 @@ interface A11yPage {
 
 const pages: A11yPage[] = [
   { name: 'ホーム', path: '/', authenticated: true },
-  { name: 'タイマー', path: '/roast-timer', authenticated: true },
   { name: 'スケジュール', path: '/schedule', authenticated: true },
   { name: 'テイスティング', path: '/tasting', authenticated: true },
   { name: 'ログイン', path: '/login' },

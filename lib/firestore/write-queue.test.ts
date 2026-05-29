@@ -43,7 +43,6 @@ function appData(overrides: Partial<AppData> = {}): AppData {
     tastingRecords: [],
     notifications: [],
     encouragementCount: 0,
-    roastTimerRecords: [],
     dripRecipes: [],
     ...overrides,
   };

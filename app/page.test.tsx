@@ -55,7 +55,6 @@ describe('HomePage', () => {
       'assignment',
       'schedule',
       'tasting',
-      'roast-timer',
       'defect-beans',
       'production-packs',
       'drip-guide',

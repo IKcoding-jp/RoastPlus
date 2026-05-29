@@ -1,12 +1,9 @@
 // 設定関連の型定義
 
-import type { RoastTimerSettings } from './timer';
-
 export interface UserSettings {
   selectedMemberId?: string; // 試飲記録用メンバー
   selectedManagerId?: string; // チェイス利用設定用
   homeHiddenFeatureKeys?: string[]; // ホーム表示設定（非表示にする機能キー）
-  roastTimerSettings?: RoastTimerSettings;
   taskLabelHeaderTextLeft?: string;
   taskLabelHeaderTextRight?: string;
 }
@@ -37,7 +34,6 @@ import type { TodaySchedule, RoastSchedule } from './schedule';
 import type { TastingSession, TastingRecord } from './tasting';
 import type { Notification } from './notification';
 import type { ShuffleEvent } from './team';
-import type { RoastTimerRecord, RoastTimerState } from './timer';
 import type { DefectBean, DefectBeanSettings } from './defect-beans';
 import type { DripRecipe } from './common';
 export interface AppData {
@@ -49,8 +45,6 @@ export interface AppData {
   userSettings?: UserSettings;
   shuffleEvent?: ShuffleEvent;
   encouragementCount?: number;
-  roastTimerRecords: RoastTimerRecord[];
-  roastTimerState?: RoastTimerState;
   defectBeans?: DefectBean[];
   defectBeanSettings?: DefectBeanSettings;
   dripRecipes?: DripRecipe[];

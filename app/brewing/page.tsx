@@ -2,13 +2,11 @@
 
 import { useAuth } from '@/lib/auth';
 import { Loading } from '@/components/Loading';
-import { useAppLifecycle } from '@/hooks/useAppLifecycle';
 import LoginPage from '@/app/login/page';
 import { FloatingNav } from '@/components/ui';
 
 export default function BrewingPage() {
   const { user, loading: authLoading } = useAuth();
-  useAppLifecycle();
 
   if (authLoading) {
     return <Loading />;

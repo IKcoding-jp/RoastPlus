@@ -65,7 +65,6 @@ describe('normalizeAppData', () => {
     expect(result.tastingRecords).toEqual([]);
     expect(result.notifications).toEqual([]);
     expect(result.encouragementCount).toBe(0);
-    expect(result.roastTimerRecords).toEqual([]);
   });
 
   it('undefined → defaultData', () => {
@@ -128,36 +127,10 @@ describe('normalizeAppData', () => {
         selectedMemberId: 'member-1',
         taskLabelHeaderTextLeft: '  左ヘッダー  ',
         homeHiddenFeatureKeys: ['drip-guide', 'settings', 'drip-guide', 'unknown'],
-        roastTimerSettings: {
-          timerSoundEnabled: false,
-          timerSoundFile: '/sounds/roasttimer/bell.mp3',
-          timerSoundVolume: 0.8,
-          notificationSoundEnabled: true,
-          notificationSoundFile: '/sounds/roasttimer/alarm.mp3',
-          notificationSoundVolume: 0.5,
-        },
       },
     } as never);
     expect(result.userSettings?.selectedMemberId).toBe('member-1');
     expect(result.userSettings?.taskLabelHeaderTextLeft).toBe('左ヘッダー');
     expect(result.userSettings?.homeHiddenFeatureKeys).toEqual(['drip-guide']);
-    expect(result.userSettings?.roastTimerSettings?.timerSoundEnabled).toBe(false);
-  });
-
-  it('roastTimerSettingsの音声ファイルパスマイグレーション', () => {
-    const result = normalizeAppData({
-      userSettings: {
-        roastTimerSettings: {
-          timerSoundEnabled: true,
-          timerSoundFile: '/sounds/alarm/bell.mp3', // 旧パス
-          timerSoundVolume: 0.5,
-          notificationSoundEnabled: true,
-          notificationSoundFile: '/sounds/alarm/alarm.mp3', // 旧パス
-          notificationSoundVolume: 0.5,
-        },
-      },
-    } as never);
-    expect(result.userSettings?.roastTimerSettings?.timerSoundFile).toBe('/sounds/roasttimer/bell.mp3');
-    expect(result.userSettings?.roastTimerSettings?.notificationSoundFile).toBe('/sounds/roasttimer/alarm.mp3');
   });
 });

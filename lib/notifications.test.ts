@@ -4,7 +4,6 @@ import {
   showNotification,
   scheduleNotification,
   cancelAllScheduledNotifications,
-  notifyRoastTimerComplete,
 } from './notifications';
 
 // Notification APIのモック
@@ -221,40 +220,6 @@ describe('notifications', () => {
     });
   });
 
-  describe('notifyRoastTimerComplete', () => {
-    beforeEach(() => {
-      MockNotification.permission = 'granted';
-      vi.useFakeTimers();
-    });
-
-    afterEach(() => {
-      vi.useRealTimers();
-    });
-
-    it('ローストタイマー完了通知を表示する', async () => {
-      await notifyRoastTimerComplete();
-
-      // 通知が表示されることを確認（エラーがないことを確認）
-      expect(consoleErrorSpy).not.toHaveBeenCalled();
-    });
-
-    it('スケジュールされた通知をキャンセルする', async () => {
-      // この関数内でcancelAllScheduledNotificationsが呼ばれることを確認
-      await notifyRoastTimerComplete();
-
-      // エラーがないことを確認
-      expect(consoleErrorSpy).not.toHaveBeenCalled();
-    });
-
-    it('権限がない場合も安全に処理する', async () => {
-      MockNotification.permission = 'denied';
-
-      await notifyRoastTimerComplete();
-
-      expect(consoleWarnSpy).toHaveBeenCalled();
-    });
-  });
-
   describe('実際のユースケース', () => {
     beforeEach(() => {
       MockNotification.permission = 'default';
@@ -276,14 +241,6 @@ describe('notifications', () => {
       await showNotification('テスト通知', {
         body: 'テスト本文',
       });
-
-      expect(consoleErrorSpy).not.toHaveBeenCalled();
-    });
-
-    it('ローストタイマー: 完了通知', async () => {
-      MockNotification.permission = 'granted';
-
-      await notifyRoastTimerComplete();
 
       expect(consoleErrorSpy).not.toHaveBeenCalled();
     });

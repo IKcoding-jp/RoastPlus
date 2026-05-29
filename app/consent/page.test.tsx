@@ -36,7 +36,6 @@ function appData(): AppData {
     tastingRecords: [],
     notifications: [],
     encouragementCount: 0,
-    roastTimerRecords: [],
     dripRecipes: [],
   };
 }

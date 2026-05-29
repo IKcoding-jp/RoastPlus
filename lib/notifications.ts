@@ -54,10 +54,10 @@ export async function showNotification(title: string, options?: NotificationOpti
     }
 
     const notification = new Notification(title, {
-      body: options?.body || 'ローストタイマーが完了しました',
+      body: options?.body || '通知',
       icon: options?.icon || '/icon-192x192.png',
       badge: options?.badge || '/icon-192x192.png',
-      tag: options?.tag || 'roast-timer',
+      tag: options?.tag || 'notification',
       requireInteraction: options?.requireInteraction !== false,
       ...options,
     });
@@ -108,7 +108,7 @@ export async function scheduleNotification(notificationId: number, scheduledTime
           setTimeout(async () => {
             await showNotification('🔥 焙煎完了！', {
               body: 'タッパーと木べらを持って焙煎室に行きましょう。',
-              tag: `roast-timer-${notificationId}`,
+              tag: `notification-${notificationId}`,
               requireInteraction: true,
             });
             scheduledNotificationIds.delete(notificationId);
@@ -131,17 +131,3 @@ export function cancelAllScheduledNotifications(): void {
   // Service Workerを使用している場合は、Service Workerにも通知を送信
 }
 
-/**
- * ローストタイマー完了時の通知
- */
-export async function notifyRoastTimerComplete(): Promise<void> {
-  // すべてのスケジュール通知をキャンセル
-  cancelAllScheduledNotifications();
-
-  // 通知を表示
-  await showNotification('🔥 焙煎完了！', {
-    body: 'タッパーと木べらを持って焙煎室に行きましょう。',
-    tag: 'roast-timer-complete',
-    requireInteraction: true,
-  });
-}

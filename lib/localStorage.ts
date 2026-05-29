@@ -1,26 +1,9 @@
-import type { RoastTimerSettings, RoastTimerState } from '@/types';
-
 // ローカルストレージ管理
 
 const SELECTED_MEMBER_ID_KEY = 'roastplus_selected_member_id';
-const ROAST_TIMER_STATE_KEY = 'roastplus_roast_timer_state';
-const ROAST_TIMER_SETTINGS_KEY = 'roastplus_roast_timer_settings';
 const DEVICE_ID_KEY = 'roastplus_device_id';
 const LAST_46_TASTE_KEY = 'roastplus_last_46_taste';
 const LAST_46_STRENGTH_KEY = 'roastplus_last_46_strength';
-
-const TIMER_STATE_VERSION = 1;
-const TIMER_SETTINGS_VERSION = 1;
-
-interface StoredRoastTimerState {
-  version: number;
-  state: RoastTimerState;
-}
-
-interface StoredRoastTimerSettings {
-  version: number;
-  settings: RoastTimerSettings;
-}
 
 const parseJson = <T>(value: string): T | null => {
   try {
@@ -51,82 +34,6 @@ export function getSelectedMemberId(): string | null {
   if (typeof window === 'undefined') return null;
 
   return localStorage.getItem(SELECTED_MEMBER_ID_KEY);
-}
-
-/**
- * ローストタイマー状態を保存
- */
-export function setRoastTimerState(state: RoastTimerState | null | undefined): void {
-  if (typeof window === 'undefined') return;
-
-  if (state === null || state === undefined) {
-    localStorage.removeItem(ROAST_TIMER_STATE_KEY);
-  } else {
-    const stored: StoredRoastTimerState = {
-      version: TIMER_STATE_VERSION,
-      state,
-    };
-    localStorage.setItem(ROAST_TIMER_STATE_KEY, JSON.stringify(stored));
-  }
-}
-
-/**
- * ローストタイマー状態を取得
- */
-export function getRoastTimerState(): RoastTimerState | null {
-  if (typeof window === 'undefined') return null;
-
-  const stored = localStorage.getItem(ROAST_TIMER_STATE_KEY);
-  if (!stored) return null;
-
-  const parsed = parseJson<StoredRoastTimerState | RoastTimerState>(stored);
-  if (!parsed) return null;
-
-  // バージョン付きデータ
-  if ('version' in parsed && parsed.version === TIMER_STATE_VERSION) {
-    return (parsed as StoredRoastTimerState).state;
-  }
-
-  // レガシーデータ（version未設定）→ v1として扱う
-  return parsed as RoastTimerState;
-}
-
-/**
- * ローストタイマー設定を保存
- */
-export function setRoastTimerSettings(settings: RoastTimerSettings | null | undefined): void {
-  if (typeof window === 'undefined') return;
-
-  if (settings === null || settings === undefined) {
-    localStorage.removeItem(ROAST_TIMER_SETTINGS_KEY);
-  } else {
-    const stored: StoredRoastTimerSettings = {
-      version: TIMER_SETTINGS_VERSION,
-      settings,
-    };
-    localStorage.setItem(ROAST_TIMER_SETTINGS_KEY, JSON.stringify(stored));
-  }
-}
-
-/**
- * ローストタイマー設定を取得
- */
-export function getRoastTimerSettings(): RoastTimerSettings | null {
-  if (typeof window === 'undefined') return null;
-
-  const stored = localStorage.getItem(ROAST_TIMER_SETTINGS_KEY);
-  if (!stored) return null;
-
-  const parsed = parseJson<StoredRoastTimerSettings | RoastTimerSettings>(stored);
-  if (!parsed) return null;
-
-  // バージョン付きデータ
-  if ('version' in parsed && parsed.version === TIMER_SETTINGS_VERSION) {
-    return (parsed as StoredRoastTimerSettings).settings;
-  }
-
-  // レガシーデータ（version未設定）→ v1として扱う
-  return parsed as RoastTimerSettings;
 }
 
 /**
