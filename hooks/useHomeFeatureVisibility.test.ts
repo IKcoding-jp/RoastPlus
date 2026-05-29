@@ -22,8 +22,6 @@ const baseData: AppData = {
   tastingRecords: [],
   notifications: [],
   encouragementCount: 0,
-  roastTimerRecords: [],
-  workProgresses: [],
   dripRecipes: [],
 };
 
@@ -38,17 +36,17 @@ describe('useHomeFeatureVisibility', () => {
     mockData = {
       ...baseData,
       userSettings: {
-        homeHiddenFeatureKeys: ['dev-stories'],
+        homeHiddenFeatureKeys: ['drip-guide'],
       },
     };
 
     const { result } = renderHook(() => useHomeFeatureVisibility());
 
     await waitFor(() => {
-      expect(result.current.hiddenKeys).toEqual(['dev-stories']);
+      expect(result.current.hiddenKeys).toEqual(['drip-guide']);
     });
 
-    expect(result.current.isVisible('dev-stories')).toBe(false);
+    expect(result.current.isVisible('drip-guide')).toBe(false);
     expect(result.current.isVisible('assignment')).toBe(true);
   });
 
@@ -63,7 +61,7 @@ describe('useHomeFeatureVisibility', () => {
     const { result } = renderHook(() => useHomeFeatureVisibility());
 
     await act(async () => {
-      result.current.updateFeatureHidden('dev-stories', true);
+      result.current.updateFeatureHidden('drip-guide', true);
     });
 
     expect(mockUpdateData).toHaveBeenCalledWith(expect.any(Function));
@@ -71,12 +69,12 @@ describe('useHomeFeatureVisibility', () => {
     const updater = mockUpdateData.mock.calls[0][0] as (currentData: AppData) => AppData;
     expect(updater(mockData).userSettings).toEqual({
       selectedMemberId: 'member-1',
-      homeHiddenFeatureKeys: ['dev-stories'],
+      homeHiddenFeatureKeys: ['drip-guide'],
     });
   });
 
   it('Firestore側に未設定なら既存localStorage値をアカウント設定へ移行する', async () => {
-    localStorage.setItem('roastplus_home_hidden_features', JSON.stringify(['dev-stories', 'settings']));
+    localStorage.setItem('roastplus_home_hidden_features', JSON.stringify(['drip-guide', 'settings']));
 
     renderHook(() => useHomeFeatureVisibility());
 
@@ -85,6 +83,6 @@ describe('useHomeFeatureVisibility', () => {
     });
 
     const updater = mockUpdateData.mock.calls[0][0] as (currentData: AppData) => AppData;
-    expect(updater(mockData).userSettings?.homeHiddenFeatureKeys).toEqual(['dev-stories']);
+    expect(updater(mockData).userSettings?.homeHiddenFeatureKeys).toEqual(['drip-guide']);
   });
 });

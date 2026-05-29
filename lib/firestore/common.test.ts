@@ -65,8 +65,6 @@ describe('normalizeAppData', () => {
     expect(result.tastingRecords).toEqual([]);
     expect(result.notifications).toEqual([]);
     expect(result.encouragementCount).toBe(0);
-    expect(result.roastTimerRecords).toEqual([]);
-    expect(result.workProgresses).toEqual([]);
   });
 
   it('undefined → defaultData', () => {
@@ -107,17 +105,6 @@ describe('normalizeAppData', () => {
     expect(result.encouragementCount).toBe(5);
   });
 
-  it('workProgressesのcompletedCount補完', () => {
-    const result = normalizeAppData({
-      workProgresses: [
-        { id: 'wp-1', status: 'pending', completedCount: 3, createdAt: '', updatedAt: '' },
-        { id: 'wp-2', status: 'pending', createdAt: '', updatedAt: '' },
-      ],
-    } as never);
-    expect(result.workProgresses[0].completedCount).toBe(3);
-    expect(result.workProgresses[1].completedCount).toBeUndefined();
-  });
-
   it('tastingSessionsのaiAnalysis関連フィールド保持', () => {
     const result = normalizeAppData({
       tastingSessions: [
@@ -139,37 +126,11 @@ describe('normalizeAppData', () => {
       userSettings: {
         selectedMemberId: 'member-1',
         taskLabelHeaderTextLeft: '  左ヘッダー  ',
-        homeHiddenFeatureKeys: ['dev-stories', 'settings', 'dev-stories', 'unknown'],
-        roastTimerSettings: {
-          timerSoundEnabled: false,
-          timerSoundFile: '/sounds/roasttimer/bell.mp3',
-          timerSoundVolume: 0.8,
-          notificationSoundEnabled: true,
-          notificationSoundFile: '/sounds/roasttimer/alarm.mp3',
-          notificationSoundVolume: 0.5,
-        },
+        homeHiddenFeatureKeys: ['drip-guide', 'settings', 'drip-guide', 'unknown'],
       },
     } as never);
     expect(result.userSettings?.selectedMemberId).toBe('member-1');
     expect(result.userSettings?.taskLabelHeaderTextLeft).toBe('左ヘッダー');
-    expect(result.userSettings?.homeHiddenFeatureKeys).toEqual(['dev-stories']);
-    expect(result.userSettings?.roastTimerSettings?.timerSoundEnabled).toBe(false);
-  });
-
-  it('roastTimerSettingsの音声ファイルパスマイグレーション', () => {
-    const result = normalizeAppData({
-      userSettings: {
-        roastTimerSettings: {
-          timerSoundEnabled: true,
-          timerSoundFile: '/sounds/alarm/bell.mp3', // 旧パス
-          timerSoundVolume: 0.5,
-          notificationSoundEnabled: true,
-          notificationSoundFile: '/sounds/alarm/alarm.mp3', // 旧パス
-          notificationSoundVolume: 0.5,
-        },
-      },
-    } as never);
-    expect(result.userSettings?.roastTimerSettings?.timerSoundFile).toBe('/sounds/roasttimer/bell.mp3');
-    expect(result.userSettings?.roastTimerSettings?.notificationSoundFile).toBe('/sounds/roasttimer/alarm.mp3');
+    expect(result.userSettings?.homeHiddenFeatureKeys).toEqual(['drip-guide']);
   });
 });

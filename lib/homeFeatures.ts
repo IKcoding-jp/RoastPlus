@@ -15,19 +15,9 @@ export const HOME_FEATURES = [
     description: '試飲の感想を記録',
   },
   {
-    key: 'roast-timer',
-    title: 'ローストタイマー',
-    description: '最適なタイマーで焙煎',
-  },
-  {
     key: 'defect-beans',
     title: '欠点豆図鑑',
     description: '欠点豆の知識を共有',
-  },
-  {
-    key: 'progress',
-    title: '作業進捗',
-    description: '進捗を可視化',
   },
   {
     key: 'production-packs',
@@ -38,16 +28,6 @@ export const HOME_FEATURES = [
     key: 'drip-guide',
     title: 'ドリップガイド',
     description: '淹れ方の手順',
-  },
-  {
-    key: 'coffee-trivia',
-    title: 'コーヒークイズ',
-    description: '楽しく学ぶコーヒー知識',
-  },
-  {
-    key: 'dev-stories',
-    title: '開発秘話',
-    description: '開発の裏話を覗く',
   },
   {
     key: 'settings',

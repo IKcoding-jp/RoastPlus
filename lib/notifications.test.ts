@@ -1,11 +1,5 @@
 import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
-import {
-  requestNotificationPermission,
-  showNotification,
-  scheduleNotification,
-  cancelAllScheduledNotifications,
-  notifyRoastTimerComplete,
-} from './notifications';
+import { requestNotificationPermission, showNotification } from './notifications';
 
 // Notification APIのモック
 class MockNotification {
@@ -147,114 +141,6 @@ describe('notifications', () => {
     });
   });
 
-  describe('scheduleNotification', () => {
-    beforeEach(() => {
-      MockNotification.permission = 'granted';
-      vi.useFakeTimers();
-
-      // navigator.serviceWorkerのモック
-      vi.stubGlobal('navigator', {
-        serviceWorker: {
-          ready: Promise.resolve({}),
-        },
-      });
-    });
-
-    afterEach(() => {
-      vi.useRealTimers();
-    });
-
-    it('将来の時刻に通知をスケジュールできる', async () => {
-      const futureTime = Date.now() + 10000; // 10秒後
-
-      await scheduleNotification(2, futureTime);
-
-      // スケジュールされた通知が実行されるまで時間を進める
-      vi.advanceTimersByTime(10000);
-
-      // 通知が表示されることを確認（エラーがないことを確認）
-      expect(consoleErrorSpy).not.toHaveBeenCalled();
-    });
-
-    it('過去の時刻の場合は即座に通知を表示しない', async () => {
-      const pastTime = Date.now() - 10000; // 10秒前
-
-      await scheduleNotification(3, pastTime);
-
-      // 通知は表示されない（delayが0以下）
-      expect(consoleErrorSpy).not.toHaveBeenCalled();
-    });
-
-    it('権限がない場合はスケジュールしない', async () => {
-      MockNotification.permission = 'denied';
-
-      await scheduleNotification(2, Date.now() + 10000);
-
-      expect(consoleWarnSpy).toHaveBeenCalled();
-    });
-
-    it('Service Workerが利用できない場合も処理を続行する', async () => {
-      // Service Workerを削除
-      vi.stubGlobal('navigator', {});
-
-      const futureTime = Date.now() + 5000;
-
-      await scheduleNotification(2, futureTime);
-
-      // エラーが発生しないことを確認
-      expect(consoleErrorSpy).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('cancelAllScheduledNotifications', () => {
-    it('スケジュールされた通知をキャンセルできる', () => {
-      // この関数は例外を投げないことを確認
-      expect(() => cancelAllScheduledNotifications()).not.toThrow();
-    });
-
-    it('複数回呼び出しても安全', () => {
-      cancelAllScheduledNotifications();
-      cancelAllScheduledNotifications();
-      cancelAllScheduledNotifications();
-
-      expect(consoleErrorSpy).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('notifyRoastTimerComplete', () => {
-    beforeEach(() => {
-      MockNotification.permission = 'granted';
-      vi.useFakeTimers();
-    });
-
-    afterEach(() => {
-      vi.useRealTimers();
-    });
-
-    it('ローストタイマー完了通知を表示する', async () => {
-      await notifyRoastTimerComplete();
-
-      // 通知が表示されることを確認（エラーがないことを確認）
-      expect(consoleErrorSpy).not.toHaveBeenCalled();
-    });
-
-    it('スケジュールされた通知をキャンセルする', async () => {
-      // この関数内でcancelAllScheduledNotificationsが呼ばれることを確認
-      await notifyRoastTimerComplete();
-
-      // エラーがないことを確認
-      expect(consoleErrorSpy).not.toHaveBeenCalled();
-    });
-
-    it('権限がない場合も安全に処理する', async () => {
-      MockNotification.permission = 'denied';
-
-      await notifyRoastTimerComplete();
-
-      expect(consoleWarnSpy).toHaveBeenCalled();
-    });
-  });
-
   describe('実際のユースケース', () => {
     beforeEach(() => {
       MockNotification.permission = 'default';
@@ -276,33 +162,6 @@ describe('notifications', () => {
       await showNotification('テスト通知', {
         body: 'テスト本文',
       });
-
-      expect(consoleErrorSpy).not.toHaveBeenCalled();
-    });
-
-    it('ローストタイマー: 完了通知', async () => {
-      MockNotification.permission = 'granted';
-
-      await notifyRoastTimerComplete();
-
-      expect(consoleErrorSpy).not.toHaveBeenCalled();
-    });
-
-    it('ローストタイマー: 事前通知のスケジュール', async () => {
-      MockNotification.permission = 'granted';
-
-      vi.stubGlobal('navigator', {
-        serviceWorker: {
-          ready: Promise.resolve({}),
-        },
-      });
-
-      const notificationTime = Date.now() + 60000; // 1分後
-
-      await scheduleNotification(2, notificationTime);
-
-      // 1分進める
-      vi.advanceTimersByTime(60000);
 
       expect(consoleErrorSpy).not.toHaveBeenCalled();
     });

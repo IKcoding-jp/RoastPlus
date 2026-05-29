@@ -82,23 +82,6 @@ describe('Firestore rules', () => {
     });
   });
 
-  describe('quiz_progress/{uid}', () => {
-    it('allows only the signed-in owner to read and write their quiz progress', async () => {
-      const ownerDoc = firestoreFor(OWN_UID).doc(`quiz_progress/${OWN_UID}`);
-      const otherDoc = firestoreFor(OTHER_UID).doc(`quiz_progress/${OWN_UID}`);
-      const anonymousDoc = firestoreFor().doc(`quiz_progress/${OWN_UID}`);
-
-      await assertFails(anonymousDoc.get());
-      await assertFails(anonymousDoc.set({ level: 1 }));
-
-      await assertSucceeds(ownerDoc.set({ level: 1 }));
-      await assertSucceeds(ownerDoc.get());
-
-      await assertFails(otherDoc.get());
-      await assertFails(otherDoc.set({ level: 1 }));
-    });
-  });
-
   describe('users/{uid}/assignmentDays/{date}', () => {
     it('allows only the signed-in owner to read and write assignment subcollection documents', async () => {
       const path = `users/${OWN_UID}/assignmentDays/2026-05-23`;
@@ -114,24 +97,6 @@ describe('Firestore rules', () => {
 
       await assertFails(otherDoc.get());
       await assertFails(otherDoc.set({ date: '2026-05-23', assignments: [] }));
-    });
-  });
-
-  describe('users/{uid}/workProgresses/{workProgressId}', () => {
-    it('allows only the signed-in owner to read and write work progress documents', async () => {
-      const path = `users/${OWN_UID}/workProgresses/wp-1`;
-      const ownerDoc = firestoreFor(OWN_UID).doc(path);
-      const otherDoc = firestoreFor(OTHER_UID).doc(path);
-      const anonymousDoc = firestoreFor().doc(path);
-
-      await assertFails(anonymousDoc.get());
-      await assertFails(anonymousDoc.set({ id: 'wp-1', status: 'pending' }));
-
-      await assertSucceeds(ownerDoc.set({ id: 'wp-1', status: 'pending' }));
-      await assertSucceeds(ownerDoc.get());
-
-      await assertFails(otherDoc.get());
-      await assertFails(otherDoc.set({ id: 'wp-1', status: 'pending' }));
     });
   });
 
@@ -160,24 +125,6 @@ describe('Firestore rules', () => {
       await assertFails(otherDoc.set(record));
       await assertFails(otherDoc.delete());
       await assertSucceeds(ownerDoc.delete());
-    });
-  });
-
-  describe('users/{uid}/_meta/dataSplits', () => {
-    it('allows only the signed-in owner to read and write data split metadata', async () => {
-      const path = `users/${OWN_UID}/_meta/dataSplits`;
-      const ownerDoc = firestoreFor(OWN_UID).doc(path);
-      const otherDoc = firestoreFor(OTHER_UID).doc(path);
-      const anonymousDoc = firestoreFor().doc(path);
-
-      await assertFails(anonymousDoc.get());
-      await assertFails(anonymousDoc.set({ workProgressesMigrated: true }));
-
-      await assertSucceeds(ownerDoc.set({ workProgressesMigrated: true }));
-      await assertSucceeds(ownerDoc.get());
-
-      await assertFails(otherDoc.get());
-      await assertFails(otherDoc.set({ workProgressesMigrated: true }));
     });
   });
 });

@@ -57,8 +57,6 @@ export const defaultData: AppData = {
   tastingRecords: [],
   notifications: [],
   encouragementCount: 0,
-  roastTimerRecords: [],
-  workProgresses: [],
   dripRecipes: [],
 };
 
@@ -89,21 +87,6 @@ export function normalizeAppData(data: Partial<AppData> | undefined | null): App
     tastingRecords: Array.isArray(data?.tastingRecords) ? data.tastingRecords : [],
     notifications: Array.isArray(data?.notifications) ? data.notifications : [],
     encouragementCount: typeof data?.encouragementCount === 'number' ? data.encouragementCount : 0,
-    roastTimerRecords: Array.isArray(data?.roastTimerRecords)
-      ? data.roastTimerRecords.map((record) => ({
-          ...record,
-          // roastDateが存在しない場合はcreatedAtから日付部分を取得、それもなければ現在日時の日付部分を使用
-          roastDate:
-            record.roastDate ||
-            (record.createdAt ? record.createdAt.split('T')[0] : new Date().toISOString().split('T')[0]),
-        }))
-      : [],
-    workProgresses: Array.isArray(data?.workProgresses)
-      ? data.workProgresses.map((wp) => ({
-          ...wp,
-          completedCount: typeof wp.completedCount === 'number' ? wp.completedCount : undefined,
-        }))
-      : [],
   };
 
   // userSettingsは存在する場合のみ処理。selectedMemberId/selectedManagerIdがundefinedの場合はフィールドを削除する。
@@ -131,33 +114,6 @@ export function normalizeAppData(data: Partial<AppData> | undefined | null): App
         cleanedUserSettings.taskLabelHeaderTextRight = trimmedRight;
       }
     }
-    // roastTimerSettingsを正規化
-    if (data.userSettings.roastTimerSettings && typeof data.userSettings.roastTimerSettings === 'object') {
-      const settings = data.userSettings.roastTimerSettings;
-      cleanedUserSettings.roastTimerSettings = {
-        timerSoundEnabled: typeof settings.timerSoundEnabled === 'boolean' ? settings.timerSoundEnabled : true,
-        timerSoundFile:
-          typeof settings.timerSoundFile === 'string'
-            ? settings.timerSoundFile.startsWith('/sounds/alarm/')
-              ? settings.timerSoundFile.replace('/sounds/alarm/', '/sounds/roasttimer/')
-              : settings.timerSoundFile
-            : '/sounds/roasttimer/alarm.mp3',
-        timerSoundVolume:
-          typeof settings.timerSoundVolume === 'number' ? Math.max(0, Math.min(1, settings.timerSoundVolume)) : 0.5,
-        notificationSoundEnabled:
-          typeof settings.notificationSoundEnabled === 'boolean' ? settings.notificationSoundEnabled : true,
-        notificationSoundFile:
-          typeof settings.notificationSoundFile === 'string'
-            ? settings.notificationSoundFile.startsWith('/sounds/alarm/')
-              ? settings.notificationSoundFile.replace('/sounds/alarm/', '/sounds/roasttimer/')
-              : settings.notificationSoundFile
-            : '/sounds/roasttimer/alarm.mp3',
-        notificationSoundVolume:
-          typeof settings.notificationSoundVolume === 'number'
-            ? Math.max(0, Math.min(1, settings.notificationSoundVolume))
-            : 0.5,
-      };
-    }
     if (Object.keys(cleanedUserSettings).length > 0) {
       normalized.userSettings = cleanedUserSettings;
     }
@@ -174,11 +130,6 @@ export function normalizeAppData(data: Partial<AppData> | undefined | null): App
     }
   }
 
-  // roastTimerStateは存在する場合のみ処理
-  if (data?.roastTimerState && typeof data.roastTimerState === 'object') {
-    normalized.roastTimerState = data.roastTimerState;
-  }
-
   // defectBeansは存在する場合のみ処理
   if (Array.isArray(data?.defectBeans)) {
     normalized.defectBeans = data.defectBeans;
@@ -192,11 +143,6 @@ export function normalizeAppData(data: Partial<AppData> | undefined | null): App
   // dripRecipesは存在する場合のみ処理
   if (Array.isArray(data?.dripRecipes)) {
     normalized.dripRecipes = data.dripRecipes;
-  }
-
-  // changelogEntriesは存在する場合のみ処理
-  if (Array.isArray(data?.changelogEntries)) {
-    normalized.changelogEntries = data.changelogEntries;
   }
 
   // userConsentは存在する場合のみ処理

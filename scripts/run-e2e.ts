@@ -110,14 +110,6 @@ function runCommand(command: string, args: string[], env: NodeJS.ProcessEnv, she
   return result.status ?? 1;
 }
 
-function runNpmScript(scriptName: string, env: NodeJS.ProcessEnv) {
-  if (process.platform === 'win32') {
-    return runCommand('cmd.exe', ['/d', '/s', '/c', `npm run ${scriptName}`], env);
-  }
-
-  return runCommand('npm', ['run', scriptName], env);
-}
-
 function startServer(port: string, env: NodeJS.ProcessEnv) {
   const server = spawn(process.execPath, ['./node_modules/next/dist/bin/next', 'dev', '--port', port], {
     cwd: process.cwd(),
@@ -174,11 +166,6 @@ async function main() {
 
     console.log(`[e2e] Reusing existing E2E server at http://localhost:${port}`);
   } else {
-    const generateExitCode = runNpmScript('generate:sound-list', env);
-    if (generateExitCode !== 0) {
-      process.exit(generateExitCode);
-    }
-
     console.log(`[e2e] Starting E2E server at http://localhost:${port}`);
     server = startServer(port, env);
 

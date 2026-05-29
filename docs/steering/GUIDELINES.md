@@ -143,10 +143,10 @@ TDDで実装（Red → Green → Refactor）
 | 関数 | camelCase | `calculateXP`, `updateStreak` |
 | 変数 | camelCase | `isLoading`, `userData` |
 | ブール値 | `is`, `has`, `should` 始まり | `isLoading`, `hasError`, `isDarkTheme` |
-| 定数 | UPPER_SNAKE_CASE | `CATEGORY_LABELS`, `XP_CONFIG` |
-| 型/インターフェース | PascalCase | `QuizQuestion`, `DripRecipe` |
-| ファイル（コンポーネント） | PascalCase | `QuizCard.tsx` |
-| ファイル（ユーティリティ） | camelCase | `gamification.ts` |
+| 定数 | UPPER_SNAKE_CASE | `MAX_MEMBERS`, `DEFAULT_RECIPES` |
+| 型/インターフェース | PascalCase | `DripRecipe`, `TastingSession` |
+| ファイル（コンポーネント） | PascalCase | `RecipeCard.tsx` |
+| ファイル（ユーティリティ） | camelCase | `dateUtils.ts` |
 
 ---
 
@@ -158,14 +158,14 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // 2. ローカルコンポーネント・モジュール（相対パス）
-import { QuizOption } from './QuizOption';
-import { calculateXP } from '@/lib/coffee-quiz/gamification';
+import { StepInfo } from './StepInfo';
+import { calculateRecipe } from '@/lib/drip-guide/recipe';
 
 // 3. 型（import type で明示）
-import type { QuizQuestion } from '@/lib/coffee-quiz/types';
+import type { DripRecipe } from '@/types/drip-guide';
 
 // 4. 定数
-import { CATEGORY_LABELS, DIFFICULTY_STYLES } from '@/lib/coffee-quiz/types';
+import { DEFAULT_RECIPES } from '@/lib/drip-guide/mockData';
 ```
 
 ---
@@ -178,15 +178,15 @@ import { CATEGORY_LABELS, DIFFICULTY_STYLES } from '@/lib/coffee-quiz/types';
 - 拡張（extends）が必要な場合
 
 ```typescript
-interface QuizQuestion {
+interface DripRecipe {
   id: string;
-  question: string;
-  options: string[];
-  correctIndex: number;
+  name: string;
+  beanAmount: number;
+  waterAmount: number;
 }
 
-interface ExtendedQuestion extends QuizQuestion {
-  explanation: string;
+interface CustomDripRecipe extends DripRecipe {
+  createdBy: string;
 }
 ```
 
@@ -196,10 +196,9 @@ interface ExtendedQuestion extends QuizQuestion {
 - 関数型
 
 ```typescript
-type QuizCategory = 'basics' | 'roasting' | 'extraction' | 'origin';
-type QuizDifficulty = 'easy' | 'medium' | 'hard';
-type CategoryLabels = Record<QuizCategory, string>;
-type OnSelectHandler = (index: number) => void;
+type RoastLevel = 'light' | 'medium' | 'dark';
+type ScheduleType = 'roast' | 'clean' | 'preheat';
+type OnSelectHandler = (id: string) => void;
 ```
 
 ---
@@ -379,19 +378,19 @@ const DIFFICULTY_STYLES = {
 
 ```typescript
 import { describe, it, expect } from 'vitest';
-import { calculateXP } from '@/lib/coffee-quiz/gamification';
+import { formatTime } from '@/lib/drip-guide/formatTime';
 
-describe('calculateXP', () => {
-  it('should calculate correct XP for easy difficulty', () => {
-    expect(calculateXP('easy')).toBe(10);
+describe('formatTime', () => {
+  it('should format seconds correctly', () => {
+    expect(formatTime(60)).toBe('1:00');
   });
 
-  it('should calculate correct XP for medium difficulty', () => {
-    expect(calculateXP('medium')).toBe(20);
+  it('should format minutes and seconds correctly', () => {
+    expect(formatTime(90)).toBe('1:30');
   });
 
-  it('should calculate correct XP for hard difficulty', () => {
-    expect(calculateXP('hard')).toBe(30);
+  it('should handle zero seconds', () => {
+    expect(formatTime(0)).toBe('0:00');
   });
 });
 ```
@@ -431,19 +430,19 @@ test('should handle async operation', async () => {
 
 ```typescript
 import { render, screen, fireEvent } from '@testing-library/react';
-import { QuizCard } from '@/components/coffee-quiz/QuizCard';
+import { RecipeCard } from '@/components/drip-guide/RecipeCard';
 
-test('should render quiz question', () => {
-  render(<QuizCard question="What is coffee?" options={['A', 'B']} />);
+test('should render recipe name', () => {
+  const recipe = { id: '1', name: 'BYSN Standard', beanAmount: 15, waterAmount: 240 };
+  render(<RecipeCard recipe={recipe} />);
 
-  expect(screen.getByText('What is coffee?')).toBeInTheDocument();
-  expect(screen.getByText('A')).toBeInTheDocument();
-  expect(screen.getByText('B')).toBeInTheDocument();
+  expect(screen.getByText('BYSN Standard')).toBeInTheDocument();
 });
 
-test('should call onSelect when option clicked', () => {
+test('should call onSelect when card clicked', () => {
   const onSelect = vi.fn();
-  render(<QuizCard question="Q" options={['A']} onSelect={onSelect} />);
+  const recipe = { id: '1', name: 'BYSN Standard', beanAmount: 15, waterAmount: 240 };
+  render(<RecipeCard recipe={recipe} onSelect={onSelect} />);
 
   fireEvent.click(screen.getByText('A'));
 
@@ -548,11 +547,11 @@ await act(async () => {
 
 ```typescript
 // 実際のimportパス
-import { fsrs } from '@/lib/coffee-quiz/fsrs';
+import { calculateRecipe } from '@/lib/drip-guide/recipe';
 
 // モックパス（完全一致必須）
-vi.mock('@/lib/coffee-quiz/fsrs', () => ({
-  fsrs: vi.fn(),
+vi.mock('@/lib/drip-guide/recipe', () => ({
+  calculateRecipe: vi.fn(),
 }));
 ```
 
@@ -792,7 +791,6 @@ gh pr create --base main --title "[Issue #123] タイトル" --body-file .tmp-pr
 |---------|--------|-----|------|--------|
 | `assignment-table/DesktopTableView.tsx` | `DesktopTableView` | 125 | 289 | 最優先 |
 | `assignment-table/TableModals.tsx` | `TableModals` | 117 | 414 | 最優先 |
-| `coffee-trivia/stats/page.tsx` | `(anonymous)` | 97 | 193 | 高 |
 
 ---
 
