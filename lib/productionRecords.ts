@@ -18,6 +18,7 @@ export const MAX_BLEND_ITEMS = 4;
 
 const WEIGHT_INPUT_ERROR = '0以上の数値で入力してください';
 const COUNT_INPUT_ERROR = '0以上の整数で入力してください';
+const BLEND_ITEMS_ERROR = '配合は1〜4件、各比率は0以上、合計100%で入力してください';
 
 export function isValidProductionMonth(month: string): boolean {
   if (!WORK_MONTH_PATTERN.test(month)) {
@@ -202,4 +203,22 @@ export function normalizeCountInput(value: number): number {
     throw new Error(COUNT_INPUT_ERROR);
   }
   return value;
+}
+
+export function validateBlendItems(items: BlendItem[]): void {
+  if (items.length < 1 || items.length > MAX_BLEND_ITEMS) {
+    throw new Error(BLEND_ITEMS_ERROR);
+  }
+
+  let sum = 0;
+  for (const item of items) {
+    if (!Number.isFinite(item.ratioPercent) || item.ratioPercent < 0) {
+      throw new Error(BLEND_ITEMS_ERROR);
+    }
+    sum += item.ratioPercent;
+  }
+
+  if (sum !== 100) {
+    throw new Error(BLEND_ITEMS_ERROR);
+  }
 }

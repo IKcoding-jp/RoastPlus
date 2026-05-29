@@ -17,6 +17,7 @@ import {
   sumHandpick,
   sumPackage,
   sumRoast,
+  validateBlendItems,
 } from './productionRecords';
 import type {
   BlendItem,
@@ -372,5 +373,48 @@ describe('normalizeCountInput', () => {
     expect(() => normalizeCountInput(1.5)).toThrow('0以上の整数で入力してください');
     expect(() => normalizeCountInput(Number.NaN)).toThrow('0以上の整数で入力してください');
     expect(() => normalizeCountInput(Number.POSITIVE_INFINITY)).toThrow('0以上の整数で入力してください');
+  });
+});
+
+describe('validateBlendItems', () => {
+  it('accepts 1 to 4 items whose ratios sum to exactly 100', () => {
+    expect(() =>
+      validateBlendItems([
+        { beanName: 'ブラジル', ratioPercent: 80 },
+        { beanName: 'グアテマラ', ratioPercent: 20 },
+      ])
+    ).not.toThrow();
+    expect(() => validateBlendItems([{ beanName: 'ブラジル', ratioPercent: 100 }])).not.toThrow();
+  });
+
+  it('throws when there are no items or more than 4', () => {
+    expect(() => validateBlendItems([])).toThrow();
+    expect(() =>
+      validateBlendItems([
+        { beanName: 'a', ratioPercent: 20 },
+        { beanName: 'b', ratioPercent: 20 },
+        { beanName: 'c', ratioPercent: 20 },
+        { beanName: 'd', ratioPercent: 20 },
+        { beanName: 'e', ratioPercent: 20 },
+      ])
+    ).toThrow();
+  });
+
+  it('throws when a ratio is negative', () => {
+    expect(() =>
+      validateBlendItems([
+        { beanName: 'a', ratioPercent: 120 },
+        { beanName: 'b', ratioPercent: -20 },
+      ])
+    ).toThrow();
+  });
+
+  it('throws when ratios do not sum to exactly 100', () => {
+    expect(() =>
+      validateBlendItems([
+        { beanName: 'a', ratioPercent: 80 },
+        { beanName: 'b', ratioPercent: 10 },
+      ])
+    ).toThrow();
   });
 });
