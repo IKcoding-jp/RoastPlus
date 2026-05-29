@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { DripRecipe } from '@/lib/drip-guide/types';
-import { playNotificationSound } from '@/lib/sounds';
+import { playDripCountdownAudio } from '@/lib/drip-guide/countdownAudio';
 import { useRunnerTimer } from '@/hooks/drip-guide/useRunnerTimer';
 import { CompletionScreen } from './runner/CompletionScreen';
 import { RunnerHeader } from './runner/RunnerHeader';
@@ -54,9 +54,7 @@ export const DripGuideRunner: React.FC<DripGuideRunnerProps> = ({ recipe }) => {
     const countdownTime = nextStep.startTimeSec - 3;
 
     if (currentTime >= countdownTime && !countdownSoundPlayedRef.current) {
-      playNotificationSound('/sounds/countdown/countdown.mp3', 1).catch((error) => {
-        console.error('Failed to play countdown sound:', error);
-      });
+      playDripCountdownAudio({ volume: 0.7 }).catch(() => {});
       countdownSoundPlayedRef.current = true;
     }
 
