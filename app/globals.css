@@ -732,3 +732,25 @@ select option {
 .animate-wobble-right {
   animation: wobble-right 1s ease-in-out infinite;
 }
+
+/* iOS Safari のネイティブ日付入力(date/month/time)の見た目をデスクトップと揃える正規化。
+   iOSは値テキストの周囲に独自マージンを付けて高さが膨らむため、それをリセットして
+   コンポーネント側の min-height / padding に従わせる。
+   フォーカス時の自動ズームは各入力の font-size を16px以上にして別途回避している。 */
+input[type='date']::-webkit-date-and-time-value,
+input[type='month']::-webkit-date-and-time-value,
+input[type='time']::-webkit-date-and-time-value,
+input[type='datetime-local']::-webkit-date-and-time-value {
+  margin: 0;
+  text-align: left;
+  line-height: normal;
+}
+
+/* カレンダー/ピッカー起動アイコンの大きさを端末間で揃える */
+input[type='date']::-webkit-calendar-picker-indicator,
+input[type='month']::-webkit-calendar-picker-indicator,
+input[type='datetime-local']::-webkit-calendar-picker-indicator {
+  width: 1.1rem;
+  height: 1.1rem;
+  cursor: pointer;
+}

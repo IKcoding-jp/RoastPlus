@@ -125,72 +125,104 @@ export function MonthSettingsModal({ month, initial, onSave, onClose }: MonthSet
       show={true}
       onClose={onClose}
       closeOnBackdropClick={false}
-      contentClassName="rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto bg-overlay border border-edge"
+      contentClassName="rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto bg-overlay border border-edge shadow-xl"
     >
-      <div className="sticky top-0 p-4 flex items-center justify-between z-20 border-b bg-surface border-edge">
+      <div className="sticky top-0 p-5 flex items-center justify-between z-20 border-b bg-surface border-edge">
         <h2 className="text-xl font-semibold text-ink">月設定（{formatMonthLabel(month)}）</h2>
         <IconButton onClick={onClose} rounded aria-label="閉じる">
           <HiX className="h-6 w-6" />
         </IconButton>
       </div>
 
-      <div className="p-4 space-y-4">
-        <NumberInput
-          label="生豆総量"
-          suffix="kg"
-          min={0}
-          step="0.01"
-          value={greenBeanTotal}
-          onChange={(e) => setGreenBeanTotal(e.target.value)}
-        />
-        <NumberInput
-          label="1袋粉量"
-          suffix="g"
-          min={0}
-          step="0.1"
-          value={powderPerPack}
-          onChange={(e) => setPowderPerPack(e.target.value)}
-        />
+      <div className="p-5 space-y-5">
+        {/* 月の基本設定：短い数値なので幅を絞って横並び（フル幅に伸ばさない） */}
+        <div className="flex flex-wrap gap-4">
+          <div className="w-40">
+            <NumberInput
+              label="生豆総量"
+              suffix="kg"
+              suffixInside
+              align="left"
+              min={0}
+              step="0.01"
+              placeholder="0"
+              value={greenBeanTotal}
+              onChange={(e) => setGreenBeanTotal(e.target.value)}
+            />
+          </div>
+          <div className="w-40">
+            <NumberInput
+              label="1袋粉量"
+              suffix="g"
+              suffixInside
+              align="left"
+              min={0}
+              step="0.1"
+              placeholder="0"
+              value={powderPerPack}
+              onChange={(e) => setPowderPerPack(e.target.value)}
+            />
+          </div>
+        </div>
 
-        <div className="space-y-2">
-          <p className="text-sm font-medium text-ink">配合（最大{MAX_BLEND_ITEMS}件・合計100%）</p>
-          {blendDrafts.map((item, index) => {
-            const ratio = parseFloat(item.ratioPercent) || 0;
-            const requiredKg = (greenBeanTotalGram * (ratio / 100)) / 1000;
-            return (
-              <div key={item.id} className="space-y-2 rounded-lg p-3 bg-ground">
-                <Input
-                  label="豆名"
-                  value={item.beanName}
-                  onChange={(e) => handleBlendChange(index, 'beanName', e.target.value)}
-                />
-                <div className="flex items-end gap-3">
-                  <div className="w-28 shrink-0">
+        <div className="space-y-3">
+          <div className="flex items-baseline justify-between">
+            <p className="text-sm font-semibold text-ink">配合</p>
+            <p className="text-xs text-ink-muted">最大{MAX_BLEND_ITEMS}件・合計100%</p>
+          </div>
+          {/* 配合は1行1件のコンパクトな表（列見出し＋区切り線・塗り無し）でスクロールを避ける */}
+          <div className="overflow-hidden rounded-xl border border-edge">
+            <div className="grid grid-cols-[1fr_100px_92px_auto] items-center gap-2 border-b border-edge px-3 py-2 text-[11px] font-medium text-ink-muted">
+              <span>豆名</span>
+              <span>比率</span>
+              <span>必要量</span>
+              <span className="sr-only">削除</span>
+            </div>
+            <div className="divide-y divide-edge">
+              {blendDrafts.map((item, index) => {
+                const ratio = parseFloat(item.ratioPercent) || 0;
+                const requiredKg = (greenBeanTotalGram * (ratio / 100)) / 1000;
+                return (
+                  <div key={item.id} className="grid grid-cols-[1fr_100px_92px_auto] items-center gap-2 px-3 py-2">
+                    <Input
+                      aria-label={`豆 ${index + 1}`}
+                      placeholder="豆名"
+                      className="!py-2 !shadow-none"
+                      value={item.beanName}
+                      onChange={(e) => handleBlendChange(index, 'beanName', e.target.value)}
+                    />
                     <NumberInput
-                      label="比率"
+                      aria-label="比率"
                       suffix="%"
+                      suffixInside
+                      align="left"
                       min={0}
+                      placeholder="0"
                       value={item.ratioPercent}
                       onChange={(e) => handleBlendChange(index, 'ratioPercent', e.target.value)}
                     />
+                    <div className="text-sm font-bold tabular-nums text-ink">
+                      {requiredKg.toFixed(2)}
+                      <span className="ml-0.5 text-xs font-medium text-ink-sub">kg</span>
+                    </div>
+                    {blendDrafts.length > 1 ? (
+                      <IconButton
+                        type="button"
+                        rounded
+                        aria-label={`豆 ${index + 1} を削除`}
+                        onClick={() => handleRemoveBlend(index)}
+                      >
+                        <HiX className="h-5 w-5" />
+                      </IconButton>
+                    ) : (
+                      <span className="w-11" />
+                    )}
                   </div>
-                  <p className="min-w-0 flex-1 pb-2.5 text-sm text-ink-sub">必要量 {requiredKg.toFixed(2)} kg</p>
-                  {blendDrafts.length > 1 && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      type="button"
-                      className="shrink-0"
-                      onClick={() => handleRemoveBlend(index)}
-                    >
-                      削除
-                    </Button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-          <div className="flex items-center justify-between">
+                );
+              })}
+            </div>
+          </div>
+          <div className="flex items-center justify-between pt-1">
             <Button
               variant="secondary"
               size="sm"
@@ -200,7 +232,13 @@ export function MonthSettingsModal({ month, initial, onSave, onClose }: MonthSet
             >
               豆を追加
             </Button>
-            <span className={`text-sm ${ratioSum === 100 ? 'text-info' : 'text-danger'}`}>配合合計: {ratioSum}%</span>
+            <span
+              className={`rounded-full px-3 py-1 text-sm font-semibold tabular-nums ${
+                ratioSum === 100 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'
+              }`}
+            >
+              配合合計 {ratioSum}%
+            </span>
           </div>
         </div>
 
@@ -211,7 +249,7 @@ export function MonthSettingsModal({ month, initial, onSave, onClose }: MonthSet
         )}
       </div>
 
-      <div className="sticky bottom-0 p-4 flex justify-end gap-2 border-t bg-surface border-edge">
+      <div className="sticky bottom-0 p-5 flex justify-end gap-2 border-t bg-surface border-edge">
         <Button variant="secondary" type="button" onClick={onClose}>
           キャンセル
         </Button>

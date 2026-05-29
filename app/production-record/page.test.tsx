@@ -27,12 +27,9 @@ vi.mock('@/hooks/useProductionRecord', () => ({
 vi.mock('@/lib/firestore/productionRecords', () => ({
   subscribeRecentProductionMonths: vi.fn(() => () => {}),
   saveProductionRecordMonth: vi.fn(async () => {}),
-  addHandpickEntry: vi.fn(async () => 'id'),
-  updateHandpickEntry: vi.fn(async () => {}),
-  addRoastEntry: vi.fn(async () => 'id'),
-  updateRoastEntry: vi.fn(async () => {}),
-  addPackageEntry: vi.fn(async () => 'id'),
-  updatePackageEntry: vi.fn(async () => {}),
+  saveHandpickEntry: vi.fn(async () => 'id'),
+  saveRoastEntry: vi.fn(async () => 'id'),
+  savePackageEntry: vi.fn(async () => 'id'),
 }));
 
 // ログインページをモック（識別用テキストのみ）

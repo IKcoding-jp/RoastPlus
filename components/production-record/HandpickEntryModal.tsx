@@ -87,54 +87,64 @@ export function HandpickEntryModal({ beanNames, initial, defaultWorkDate, onSave
       show={true}
       onClose={onClose}
       closeOnBackdropClick={false}
-      contentClassName="rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto bg-overlay border border-edge"
+      contentClassName="rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto bg-overlay border border-edge shadow-xl"
     >
-      <div className="sticky top-0 p-4 flex items-center justify-between z-20 border-b bg-surface border-edge">
+      <div className="sticky top-0 p-5 flex items-center justify-between z-20 border-b bg-surface border-edge">
         <h2 className="text-xl font-semibold text-ink">ハンドピック記録</h2>
         <IconButton onClick={onClose} rounded aria-label="閉じる">
           <HiX className="h-6 w-6" />
         </IconButton>
       </div>
 
-      <div className="p-4 space-y-4">
+      <div className="p-5 space-y-5">
         <Input label="作業日" type="date" value={workDate} onChange={(e) => setWorkDate(e.target.value)} />
-        <Select
-          label="豆の種類"
-          placeholder="選択してください"
-          options={beanNames.map((name) => ({ value: name, label: name }))}
-          value={beanName}
-          onChange={(e) => setBeanName(e.target.value)}
-        />
-        <Select
-          label="区分"
-          options={[
-            { value: 'first', label: SEGMENT_LABELS.first },
-            { value: 'second', label: SEGMENT_LABELS.second },
-          ]}
-          value={segment}
-          onChange={(e) => setSegment(e.target.value as HandpickSegment)}
-        />
-        <NumberInput
-          label="今回生豆重量"
-          suffix="kg"
-          min={0}
-          step="0.01"
-          value={greenBeanWeight}
-          onChange={(e) => setGreenBeanWeight(e.target.value)}
-        />
-        <NumberInput
-          label="欠点豆重量"
-          suffix="g"
-          min={0}
-          step={1}
-          value={defectBeanWeight}
-          onChange={(e) => setDefectBeanWeight(e.target.value)}
-        />
+        <div className="grid grid-cols-2 gap-4">
+          <Select
+            label="豆の種類"
+            placeholder="選択してください"
+            options={beanNames.map((name) => ({ value: name, label: name }))}
+            value={beanName}
+            onChange={(e) => setBeanName(e.target.value)}
+          />
+          <Select
+            label="区分"
+            options={[
+              { value: 'first', label: SEGMENT_LABELS.first },
+              { value: 'second', label: SEGMENT_LABELS.second },
+            ]}
+            value={segment}
+            onChange={(e) => setSegment(e.target.value as HandpickSegment)}
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <NumberInput
+            label="今回生豆重量"
+            suffix="kg"
+            suffixInside
+            align="left"
+            min={0}
+            step="0.01"
+            placeholder="0"
+            value={greenBeanWeight}
+            onChange={(e) => setGreenBeanWeight(e.target.value)}
+          />
+          <NumberInput
+            label="欠点豆重量"
+            suffix="g"
+            suffixInside
+            align="left"
+            min={0}
+            step={1}
+            placeholder="0"
+            value={defectBeanWeight}
+            onChange={(e) => setDefectBeanWeight(e.target.value)}
+          />
+        </div>
 
-        <div className="rounded-lg p-3 bg-ground">
-          <p className="text-sm text-ink-sub">
-            今回の欠点率: <span className="font-bold text-ink">{formatPercent(defectRate)}</span>
-          </p>
+        {/* 自動計算の出力：塗り無し・枠線のみで入力と区別 */}
+        <div className="overflow-hidden rounded-xl border border-edge px-3 py-2.5">
+          <div className="text-[11px] font-medium text-ink-muted">今回の欠点率</div>
+          <div className="mt-0.5 text-xl font-bold tabular-nums text-ink">{formatPercent(defectRate)}</div>
         </div>
 
         {error && (
@@ -144,7 +154,7 @@ export function HandpickEntryModal({ beanNames, initial, defaultWorkDate, onSave
         )}
       </div>
 
-      <div className="sticky bottom-0 p-4 flex justify-end gap-2 border-t bg-surface border-edge">
+      <div className="sticky bottom-0 p-5 flex justify-end gap-2 border-t bg-surface border-edge">
         <Button variant="secondary" type="button" onClick={onClose}>
           キャンセル
         </Button>

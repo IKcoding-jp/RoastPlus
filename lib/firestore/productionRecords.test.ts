@@ -408,15 +408,17 @@ describe('subscribeHandpickEntries', () => {
   });
 });
 
-describe('addHandpickEntry', () => {
+describe('saveHandpickEntry', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    firestoreMocks.transaction.get.mockResolvedValue({ exists: () => false, data: () => undefined });
   });
 
-  it('adds a handpick entry with an auto-generated id and returns it', async () => {
-    const { addHandpickEntry } = await import('./productionRecords');
+  it('upserts a handpick entry under a deterministic id (date + segment + bean) and returns it', async () => {
+    const { saveHandpickEntry } = await import('./productionRecords');
 
-    const id = await addHandpickEntry('user-1', '2026-08', {
+    const expectedId = `2026-08-10__first__${encodeURIComponent('ブラジル')}`;
+    const id = await saveHandpickEntry('user-1', '2026-08', {
       workDate: '2026-08-10',
       beanName: 'ブラジル',
       segment: 'first',
@@ -424,9 +426,9 @@ describe('addHandpickEntry', () => {
       defectBeanWeightGram: 300,
     });
 
-    expect(id).toBe('auto-generated-id');
-    expect(firestoreMocks.setDoc).toHaveBeenCalledWith(
-      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/handpickEntries/auto-generated-id' }),
+    expect(id).toBe(expectedId);
+    expect(firestoreMocks.transaction.set).toHaveBeenCalledWith(
+      expect.objectContaining({ path: `users/user-1/productionRecords/2026-08/handpickEntries/${expectedId}` }),
       {
         workDate: '2026-08-10',
         beanName: 'ブラジル',
@@ -437,36 +439,48 @@ describe('addHandpickEntry', () => {
         updatedAt: 'server-timestamp',
       }
     );
-  });
-});
-
-describe('updateHandpickEntry', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+    expect(firestoreMocks.transaction.delete).not.toHaveBeenCalled();
   });
 
-  it('merges the rebuilt handpick entry with a refreshed updatedAt', async () => {
-    const { updateHandpickEntry } = await import('./productionRecords');
+  it('preserves createdAt when overwriting an existing record (same key)', async () => {
+    firestoreMocks.transaction.get.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ createdAt: 'existing-created-at' }),
+    });
+    const { saveHandpickEntry } = await import('./productionRecords');
 
-    await updateHandpickEntry('user-1', '2026-08', 'entry-1', {
+    await saveHandpickEntry('user-1', '2026-08', {
       workDate: '2026-08-10',
-      beanName: 'グアテマラ',
-      segment: 'second',
-      greenBeanWeightGram: 12000,
-      defectBeanWeightGram: 0,
+      beanName: 'ブラジル',
+      segment: 'first',
+      greenBeanWeightGram: 10000,
+      defectBeanWeightGram: 300,
     });
 
-    expect(firestoreMocks.setDoc).toHaveBeenCalledWith(
-      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/handpickEntries/entry-1' }),
+    expect(firestoreMocks.transaction.set).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ createdAt: 'existing-created-at', updatedAt: 'server-timestamp' })
+    );
+  });
+
+  it('deletes the previous doc when editing changes the key (rekey)', async () => {
+    const { saveHandpickEntry } = await import('./productionRecords');
+
+    await saveHandpickEntry(
+      'user-1',
+      '2026-08',
       {
         workDate: '2026-08-10',
         beanName: 'グアテマラ',
         segment: 'second',
         greenBeanWeightGram: 12000,
         defectBeanWeightGram: 0,
-        updatedAt: 'server-timestamp',
       },
-      { merge: true }
+      'old-handpick-id'
+    );
+
+    expect(firestoreMocks.transaction.delete).toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/handpickEntries/old-handpick-id' })
     );
   });
 });
@@ -514,23 +528,24 @@ describe('subscribeRoastEntries', () => {
   });
 });
 
-describe('addRoastEntry', () => {
+describe('saveRoastEntry', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    firestoreMocks.transaction.get.mockResolvedValue({ exists: () => false, data: () => undefined });
   });
 
-  it('adds a roast entry with an auto-generated id and returns it', async () => {
-    const { addRoastEntry } = await import('./productionRecords');
+  it('upserts a roast entry under the work date as id (1日1件) and returns it', async () => {
+    const { saveRoastEntry } = await import('./productionRecords');
 
-    const id = await addRoastEntry('user-1', '2026-08', {
+    const id = await saveRoastEntry('user-1', '2026-08', {
       workDate: '2026-08-10',
       beforeRoastWeightGram: 10000,
       afterRoastWeightGram: 8200,
     });
 
-    expect(id).toBe('auto-generated-id');
-    expect(firestoreMocks.setDoc).toHaveBeenCalledWith(
-      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/roastEntries/auto-generated-id' }),
+    expect(id).toBe('2026-08-10');
+    expect(firestoreMocks.transaction.set).toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/roastEntries/2026-08-10' }),
       {
         workDate: '2026-08-10',
         beforeRoastWeightGram: 10000,
@@ -539,32 +554,25 @@ describe('addRoastEntry', () => {
         updatedAt: 'server-timestamp',
       }
     );
-  });
-});
-
-describe('updateRoastEntry', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+    expect(firestoreMocks.transaction.delete).not.toHaveBeenCalled();
   });
 
-  it('merges the rebuilt roast entry with a refreshed updatedAt', async () => {
-    const { updateRoastEntry } = await import('./productionRecords');
+  it('deletes the previous doc when the work date changes (rekey)', async () => {
+    const { saveRoastEntry } = await import('./productionRecords');
 
-    await updateRoastEntry('user-1', '2026-08', 'roast-1', {
-      workDate: '2026-08-11',
-      beforeRoastWeightGram: 12000,
-      afterRoastWeightGram: 9800,
-    });
+    await saveRoastEntry(
+      'user-1',
+      '2026-08',
+      { workDate: '2026-08-11', beforeRoastWeightGram: 12000, afterRoastWeightGram: 9800 },
+      '2026-08-10'
+    );
 
-    expect(firestoreMocks.setDoc).toHaveBeenCalledWith(
-      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/roastEntries/roast-1' }),
-      {
-        workDate: '2026-08-11',
-        beforeRoastWeightGram: 12000,
-        afterRoastWeightGram: 9800,
-        updatedAt: 'server-timestamp',
-      },
-      { merge: true }
+    expect(firestoreMocks.transaction.delete).toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/roastEntries/2026-08-10' })
+    );
+    expect(firestoreMocks.transaction.set).toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/roastEntries/2026-08-11' }),
+      expect.objectContaining({ workDate: '2026-08-11' })
     );
   });
 });
@@ -612,23 +620,24 @@ describe('subscribePackageEntries', () => {
   });
 });
 
-describe('addPackageEntry', () => {
+describe('savePackageEntry', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    firestoreMocks.transaction.get.mockResolvedValue({ exists: () => false, data: () => undefined });
   });
 
-  it('adds a package entry with an auto-generated id and returns it', async () => {
-    const { addPackageEntry } = await import('./productionRecords');
+  it('upserts a package entry under the work date as id (1日1件) and returns it', async () => {
+    const { savePackageEntry } = await import('./productionRecords');
 
-    const id = await addPackageEntry('user-1', '2026-08', {
+    const id = await savePackageEntry('user-1', '2026-08', {
       workDate: '2026-08-10',
       teamA: { goodCount: 120, defectiveCount: 4 },
       teamB: { goodCount: 90, defectiveCount: 2 },
     });
 
-    expect(id).toBe('auto-generated-id');
-    expect(firestoreMocks.setDoc).toHaveBeenCalledWith(
-      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/packageEntries/auto-generated-id' }),
+    expect(id).toBe('2026-08-10');
+    expect(firestoreMocks.transaction.set).toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/packageEntries/2026-08-10' }),
       {
         workDate: '2026-08-10',
         teamA: { goodCount: 120, defectiveCount: 4 },
@@ -637,32 +646,25 @@ describe('addPackageEntry', () => {
         updatedAt: 'server-timestamp',
       }
     );
-  });
-});
-
-describe('updatePackageEntry', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+    expect(firestoreMocks.transaction.delete).not.toHaveBeenCalled();
   });
 
-  it('merges the rebuilt package entry with a refreshed updatedAt', async () => {
-    const { updatePackageEntry } = await import('./productionRecords');
+  it('deletes the previous doc when the work date changes (rekey)', async () => {
+    const { savePackageEntry } = await import('./productionRecords');
 
-    await updatePackageEntry('user-1', '2026-08', 'pack-1', {
-      workDate: '2026-08-11',
-      teamA: { goodCount: 100, defectiveCount: 0 },
-      teamB: { goodCount: 80, defectiveCount: 1 },
-    });
-
-    expect(firestoreMocks.setDoc).toHaveBeenCalledWith(
-      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/packageEntries/pack-1' }),
+    await savePackageEntry(
+      'user-1',
+      '2026-08',
       {
         workDate: '2026-08-11',
         teamA: { goodCount: 100, defectiveCount: 0 },
         teamB: { goodCount: 80, defectiveCount: 1 },
-        updatedAt: 'server-timestamp',
       },
-      { merge: true }
+      '2026-08-10'
+    );
+
+    expect(firestoreMocks.transaction.delete).toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/packageEntries/2026-08-10' })
     );
   });
 });

@@ -7,7 +7,6 @@ import {
   query,
   runTransaction,
   serverTimestamp,
-  setDoc,
   type DocumentData,
   type Unsubscribe,
 } from 'firebase/firestore';
@@ -202,39 +201,47 @@ export function subscribeHandpickEntries(
   );
 }
 
-export async function addHandpickEntry(userId: string, month: string, input: HandpickEntryInput): Promise<string> {
-  const entry = buildHandpickEntry(input);
-  const docRef = doc(getHandpickEntriesCollectionRef(userId, month));
-
-  await setDoc(
-    docRef,
-    removeUndefinedFields({
-      ...entry,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    })
-  );
-
-  return docRef.id;
+/**
+ * ハンドピックの一意キー = 日付 + 区分 + 豆名。
+ * 同じキーの記録は重複させず上書き更新する（削除機能が無いため重複を作らない方針）。
+ * 豆名は任意文字を含み得るため encodeURIComponent で doc ID 安全にする。
+ */
+function buildHandpickEntryId(workDate: string, segment: HandpickSegment, beanName: string): string {
+  return `${workDate}__${segment}__${encodeURIComponent(beanName.trim())}`;
 }
 
-export async function updateHandpickEntry(
+/**
+ * ハンドピック記録を保存する（upsert）。
+ * previousId に編集中レコードのIDを渡すと、キー変更でIDが変わった場合に旧docを削除して付け替える。
+ */
+export async function saveHandpickEntry(
   userId: string,
   month: string,
-  entryId: string,
-  input: HandpickEntryInput
-): Promise<void> {
+  input: HandpickEntryInput,
+  previousId?: string
+): Promise<string> {
   const entry = buildHandpickEntry(input);
-  const docRef = doc(getHandpickEntriesCollectionRef(userId, month), entryId);
+  const id = buildHandpickEntryId(entry.workDate, entry.segment, entry.beanName);
+  const colRef = getHandpickEntriesCollectionRef(userId, month);
+  const docRef = doc(colRef, id);
 
-  await setDoc(
-    docRef,
-    {
-      ...entry,
-      updatedAt: serverTimestamp(),
-    },
-    { merge: true }
-  );
+  await runTransaction(getDb(), async (transaction) => {
+    const snapshot = await transaction.get(docRef);
+    const createdAt = snapshot.exists() ? (snapshot.data()?.createdAt ?? serverTimestamp()) : serverTimestamp();
+    if (previousId && previousId !== id) {
+      transaction.delete(doc(colRef, previousId));
+    }
+    transaction.set(
+      docRef,
+      removeUndefinedFields({
+        ...entry,
+        createdAt,
+        updatedAt: serverTimestamp(),
+      })
+    );
+  });
+
+  return id;
 }
 
 function normalizeRoastEntry(id: string, data: DocumentData): RoastEntry {
@@ -273,39 +280,38 @@ export function subscribeRoastEntries(
   );
 }
 
-export async function addRoastEntry(userId: string, month: string, input: RoastEntryInput): Promise<string> {
-  const entry = buildRoastEntry(input);
-  const docRef = doc(getRoastEntriesCollectionRef(userId, month));
-
-  await setDoc(
-    docRef,
-    removeUndefinedFields({
-      ...entry,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    })
-  );
-
-  return docRef.id;
-}
-
-export async function updateRoastEntry(
+/**
+ * 焙煎記録を保存する（upsert）。一意キー = 日付（1日1件）。
+ * previousId に編集中レコードのIDを渡すと、日付変更でIDが変わった場合に旧docを削除する。
+ */
+export async function saveRoastEntry(
   userId: string,
   month: string,
-  entryId: string,
-  input: RoastEntryInput
-): Promise<void> {
+  input: RoastEntryInput,
+  previousId?: string
+): Promise<string> {
   const entry = buildRoastEntry(input);
-  const docRef = doc(getRoastEntriesCollectionRef(userId, month), entryId);
+  const id = entry.workDate;
+  const colRef = getRoastEntriesCollectionRef(userId, month);
+  const docRef = doc(colRef, id);
 
-  await setDoc(
-    docRef,
-    {
-      ...entry,
-      updatedAt: serverTimestamp(),
-    },
-    { merge: true }
-  );
+  await runTransaction(getDb(), async (transaction) => {
+    const snapshot = await transaction.get(docRef);
+    const createdAt = snapshot.exists() ? (snapshot.data()?.createdAt ?? serverTimestamp()) : serverTimestamp();
+    if (previousId && previousId !== id) {
+      transaction.delete(doc(colRef, previousId));
+    }
+    transaction.set(
+      docRef,
+      removeUndefinedFields({
+        ...entry,
+        createdAt,
+        updatedAt: serverTimestamp(),
+      })
+    );
+  });
+
+  return id;
 }
 
 function normalizeTeamCounts(value: unknown): TeamCounts {
@@ -353,37 +359,36 @@ export function subscribePackageEntries(
   );
 }
 
-export async function addPackageEntry(userId: string, month: string, input: PackageEntryInput): Promise<string> {
-  const entry = buildPackageEntry(input);
-  const docRef = doc(getPackageEntriesCollectionRef(userId, month));
-
-  await setDoc(
-    docRef,
-    removeUndefinedFields({
-      ...entry,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    })
-  );
-
-  return docRef.id;
-}
-
-export async function updatePackageEntry(
+/**
+ * パッケージ記録を保存する（upsert）。一意キー = 日付（1日1件、A班/B班をまとめて1レコード）。
+ * previousId に編集中レコードのIDを渡すと、日付変更でIDが変わった場合に旧docを削除する。
+ */
+export async function savePackageEntry(
   userId: string,
   month: string,
-  entryId: string,
-  input: PackageEntryInput
-): Promise<void> {
+  input: PackageEntryInput,
+  previousId?: string
+): Promise<string> {
   const entry = buildPackageEntry(input);
-  const docRef = doc(getPackageEntriesCollectionRef(userId, month), entryId);
+  const id = entry.workDate;
+  const colRef = getPackageEntriesCollectionRef(userId, month);
+  const docRef = doc(colRef, id);
 
-  await setDoc(
-    docRef,
-    {
-      ...entry,
-      updatedAt: serverTimestamp(),
-    },
-    { merge: true }
-  );
+  await runTransaction(getDb(), async (transaction) => {
+    const snapshot = await transaction.get(docRef);
+    const createdAt = snapshot.exists() ? (snapshot.data()?.createdAt ?? serverTimestamp()) : serverTimestamp();
+    if (previousId && previousId !== id) {
+      transaction.delete(doc(colRef, previousId));
+    }
+    transaction.set(
+      docRef,
+      removeUndefinedFields({
+        ...entry,
+        createdAt,
+        updatedAt: serverTimestamp(),
+      })
+    );
+  });
+
+  return id;
 }

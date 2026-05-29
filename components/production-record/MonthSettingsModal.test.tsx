@@ -28,7 +28,7 @@ describe('MonthSettingsModal', () => {
     render(<MonthSettingsModal {...baseProps} onSave={onSave} />);
 
     fireEvent.change(screen.getByLabelText('生豆総量'), { target: { value: '20' } });
-    fireEvent.change(screen.getByLabelText('豆名'), { target: { value: 'ブラジル' } });
+    fireEvent.change(screen.getByLabelText('豆 1'), { target: { value: 'ブラジル' } });
     fireEvent.change(screen.getByLabelText('比率'), { target: { value: '80' } });
 
     fireEvent.click(screen.getByRole('button', { name: '保存' }));
@@ -42,7 +42,7 @@ describe('MonthSettingsModal', () => {
     render(<MonthSettingsModal {...baseProps} onSave={onSave} />);
 
     fireEvent.change(screen.getByLabelText('生豆総量'), { target: { value: '20' } });
-    fireEvent.change(screen.getByLabelText('豆名'), { target: { value: 'ブラジル' } });
+    fireEvent.change(screen.getByLabelText('豆 1'), { target: { value: 'ブラジル' } });
     fireEvent.change(screen.getByLabelText('比率'), { target: { value: '100' } });
 
     fireEvent.click(screen.getByRole('button', { name: '保存' }));

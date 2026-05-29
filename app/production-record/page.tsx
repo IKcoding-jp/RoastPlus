@@ -14,14 +14,11 @@ import { Badge, Button, Card, EmptyState, FloatingNav, Input, Select } from '@/c
 import { useProductionRecord } from '@/hooks/useProductionRecord';
 import { useAuth } from '@/lib/auth';
 import {
-  addHandpickEntry,
-  addPackageEntry,
-  addRoastEntry,
+  saveHandpickEntry,
+  savePackageEntry,
   saveProductionRecordMonth,
+  saveRoastEntry,
   subscribeRecentProductionMonths,
-  updateHandpickEntry,
-  updatePackageEntry,
-  updateRoastEntry,
 } from '@/lib/firestore/productionRecords';
 import {
   buildBlendLabel,
@@ -199,16 +196,12 @@ export default function ProductionRecordPage() {
     showToast('保存しました', 'success');
   };
 
-  // ハンドピックentryの保存（新規/編集を編集中entryの有無で切替）
+  // 各entryは「キーが同じなら上書き更新（upsert）」。編集中entryのidを渡し、キー変更時は旧docを付け替える。
   const handleSaveHandpick = async (input: HandpickEntryInput) => {
     if (!user || !selectedMonth) {
       return;
     }
-    if (editingHandpick) {
-      await updateHandpickEntry(user.uid, selectedMonth, editingHandpick.id, input);
-    } else {
-      await addHandpickEntry(user.uid, selectedMonth, input);
-    }
+    await saveHandpickEntry(user.uid, selectedMonth, input, editingHandpick?.id);
     showToast('保存しました', 'success');
   };
 
@@ -216,11 +209,7 @@ export default function ProductionRecordPage() {
     if (!user || !selectedMonth) {
       return;
     }
-    if (editingRoast) {
-      await updateRoastEntry(user.uid, selectedMonth, editingRoast.id, input);
-    } else {
-      await addRoastEntry(user.uid, selectedMonth, input);
-    }
+    await saveRoastEntry(user.uid, selectedMonth, input, editingRoast?.id);
     showToast('保存しました', 'success');
   };
 
@@ -228,17 +217,12 @@ export default function ProductionRecordPage() {
     if (!user || !selectedMonth) {
       return;
     }
-    if (editingPackage) {
-      await updatePackageEntry(user.uid, selectedMonth, editingPackage.id, input);
-    } else {
-      await addPackageEntry(user.uid, selectedMonth, input);
-    }
+    await savePackageEntry(user.uid, selectedMonth, input, editingPackage?.id);
     showToast('保存しました', 'success');
   };
 
-  // 新規作成（対象月を指定して月設定モーダルを開く）
+  // 新規作成（月設定モーダルを開くだけ。保存するまで selectedMonth は変えず画面遷移しない）
   const handleCreateMonth = () => {
-    setSelectedMonth(newMonthInput);
     setIsMonthSettingsOpen(true);
   };
 
@@ -267,10 +251,10 @@ export default function ProductionRecordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-page pt-24 pb-4 px-4 sm:px-6 lg:px-8 transition-colors duration-1000">
+    <div className="min-h-screen bg-page pt-20 pb-4 px-4 sm:px-6 lg:px-8 transition-colors duration-1000">
       <FloatingNav backHref="/" />
 
-      <div className="mx-auto flex w-full max-w-7xl flex-col gap-4">
+      <div className="mx-auto flex min-h-[calc(100vh-7.5rem)] w-full max-w-7xl flex-col gap-4">
         <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="mb-2 inline-flex items-center gap-2 text-sm font-semibold text-ink-muted">
@@ -287,14 +271,14 @@ export default function ProductionRecordPage() {
               <p className="mt-1 text-sm text-ink-sub">対象月を作成して記録を始めます。</p>
             )}
           </div>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
             {monthOptions.length > 0 && (
               <Select
                 label="対象月"
                 options={monthOptions}
                 value={selectedMonth}
                 onChange={(event) => setSelectedMonth(event.target.value)}
-                className="sm:w-[200px]"
+                className="sm:w-[160px] !min-h-[42px] !py-2 !text-base"
               />
             )}
             <div className="flex items-end gap-2">
@@ -303,14 +287,14 @@ export default function ProductionRecordPage() {
                 label="新規作成"
                 value={newMonthInput}
                 onChange={(event) => setNewMonthInput(event.target.value || getCurrentMonth())}
-                className="sm:w-[170px] !py-2 !text-base"
+                className="sm:w-[160px] !min-h-[42px] !py-2 !text-base"
               />
               <Button
                 type="button"
                 size="sm"
                 variant="primary"
                 onClick={handleCreateMonth}
-                className="whitespace-nowrap"
+                className="!min-h-[42px] whitespace-nowrap !py-2 !text-base"
               >
                 対象月を作成
               </Button>
@@ -318,9 +302,9 @@ export default function ProductionRecordPage() {
           </div>
         </header>
 
-        {/* 月生産単位が0件のときの初期表示 */}
+        {/* 月生産単位が0件のときの初期表示。残りの画面高さいっぱいに広げて中央に寄せる */}
         {monthOptions.length === 0 && !selectedMonth ? (
-          <Card className="p-6">
+          <Card className="flex flex-1 items-center justify-center p-6">
             <EmptyState
               title="生産記録がまだありません"
               description="右上の「対象月を作成」から対象月と配合・1袋粉量を設定すると、記録を始められます。"
@@ -346,16 +330,8 @@ export default function ProductionRecordPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-lg border border-edge bg-field p-3">
-                    <div className="text-xs font-semibold text-ink-muted">ハンドピック済み</div>
-                    <p className="mt-1 text-xl font-bold tabular-nums text-ink">
-                      {formatKg(handpickTotals.handpickedTotalGram)} kg
-                    </p>
-                  </div>
-                  <div className="rounded-lg border border-edge bg-field p-3">
-                    <div className="text-xs font-semibold text-ink-muted">欠点率</div>
-                    <p className="mt-1 text-xl font-bold tabular-nums text-ink">{formatPercent(handpickDefectRate)}</p>
-                  </div>
+                  <ColumnStat label="ハンドピック済み" value={formatKg(handpickTotals.handpickedTotalGram)} unit="kg" />
+                  <ColumnStat label="欠点率" value={formatPercent(handpickDefectRate)} />
                 </div>
 
                 <Button
@@ -410,17 +386,8 @@ export default function ProductionRecordPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-lg border border-edge bg-field p-3">
-                    <div className="text-xs font-semibold text-ink-muted">プレミックス袋数</div>
-                    <p className="mt-1 text-xl font-bold tabular-nums text-ink">
-                      {premix.bags} 袋
-                      <span className="ml-1 text-xs font-medium text-ink-muted">余り {premix.remainderGram} g</span>
-                    </p>
-                  </div>
-                  <div className="rounded-lg border border-edge bg-field p-3">
-                    <div className="text-xs font-semibold text-ink-muted">焙煎歩留まり</div>
-                    <p className="mt-1 text-xl font-bold tabular-nums text-ink">{formatPercent(roastYield)}</p>
-                  </div>
+                  <ColumnStat label="プレミックス袋数" value={premix.bags} unit="袋" />
+                  <ColumnStat label="焙煎歩留まり" value={formatPercent(roastYield)} />
                 </div>
 
                 <Button
@@ -472,18 +439,19 @@ export default function ProductionRecordPage() {
                 </div>
 
                 <div className="grid grid-cols-3 gap-2">
-                  <div className="rounded-lg border border-edge bg-field p-2.5">
-                    <div className="text-[11px] font-semibold text-ink-muted">良品</div>
-                    <p className="mt-1 text-lg font-bold tabular-nums text-info">{packageTotals.goodTotal}</p>
-                  </div>
-                  <div className="rounded-lg border border-edge bg-field p-2.5">
-                    <div className="text-[11px] font-semibold text-ink-muted">不良品</div>
-                    <p className="mt-1 text-lg font-bold tabular-nums text-danger">{packageTotals.defectiveTotal}</p>
-                  </div>
-                  <div className="rounded-lg border border-edge bg-field p-2.5">
-                    <div className="text-[11px] font-semibold text-ink-muted">生産個数</div>
-                    <p className="mt-1 text-lg font-bold tabular-nums text-ink">{packageTotals.producedTotal}</p>
-                  </div>
+                  <ColumnStat
+                    label="良品数"
+                    value={packageTotals.goodTotal}
+                    labelClassName="text-info"
+                    valueClassName="text-info"
+                  />
+                  <ColumnStat
+                    label="不良品数"
+                    value={packageTotals.defectiveTotal}
+                    labelClassName="text-danger"
+                    valueClassName="text-danger"
+                  />
+                  <ColumnStat label="生産個数" value={packageTotals.producedTotal} />
                 </div>
 
                 <Button
@@ -561,21 +529,31 @@ export default function ProductionRecordPage() {
                 </div>
               ) : (
                 <>
-                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                    <SummaryTile label="配合" value={summary.blendLabel} />
-                    <SummaryTile label="生豆重量" value={`${formatKg(summary.greenBeanTotalGram)} kg`} />
-                    <SummaryTile label="欠点豆重量" value={`${summary.defectBeanTotalGram} g`} />
+                  {/* 配合は数値ではないため独立した行にし、数値タイルの大きさを揃える */}
+                  <div className="rounded-xl border border-edge bg-surface p-4">
+                    <div className="text-xs font-semibold text-ink-muted">配合</div>
+                    <p className="mt-1 text-lg font-bold text-ink">{summary.blendLabel}</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                    <SummaryTile label="生豆重量" value={formatKg(summary.greenBeanTotalGram)} unit="kg" />
+                    <SummaryTile label="欠点豆重量" value={summary.defectBeanTotalGram} unit="g" />
                     <SummaryTile label="欠点率" value={formatPercent(summary.defectRate)} />
-                    <SummaryTile label="焙煎後重量" value={`${formatKg(summary.roastAfterTotalGram)} kg`} />
+                    <SummaryTile label="焙煎後重量" value={formatKg(summary.roastAfterTotalGram)} unit="kg" />
                     <SummaryTile label="水分蒸発率" value={formatPercent(summary.moistureLossRate)} />
-                    <SummaryTile label="30kg理論袋数" value={`${summary.thirtyKgTheoryPacks} 袋`} />
-                    <SummaryTile label="月良品数" value={summary.monthlyGoodCount} valueClassName="text-info" />
+                    <SummaryTile label="30kg理論袋数" value={summary.thirtyKgTheoryPacks} unit="袋" />
+                    <SummaryTile
+                      label="月良品数"
+                      value={summary.monthlyGoodCount}
+                      unit="個"
+                      valueClassName="text-info"
+                    />
                     <SummaryTile
                       label="月不良品数"
                       value={summary.monthlyDefectiveCount}
+                      unit="個"
                       valueClassName="text-danger"
                     />
-                    <SummaryTile label="月生産個数" value={summary.monthlyProducedCount} />
+                    <SummaryTile label="月生産個数" value={summary.monthlyProducedCount} unit="個" />
                     <SummaryTile label="不良率" value={formatPercent(summary.packageLossRate)} />
                   </div>
 
@@ -595,8 +573,8 @@ export default function ProductionRecordPage() {
       {/* モーダル群（モーダルは show prop を持たないため、親が条件レンダリングで開閉する） */}
       {isMonthSettingsOpen && (
         <MonthSettingsModal
-          month={selectedMonth || newMonthInput}
-          initial={monthDoc}
+          month={newMonthInput}
+          initial={null}
           onClose={() => setIsMonthSettingsOpen(false)}
           onSave={handleSaveMonth}
         />
@@ -640,17 +618,45 @@ export default function ProductionRecordPage() {
   );
 }
 
-interface SummaryTileProps {
+interface ColumnStatProps {
   label: string;
   value: React.ReactNode;
+  /** 数値の単位（小さく添える） */
+  unit?: string;
+  /** ラベルの色分け（良品=青/不良品=赤）。漢字が苦手でも色で判別できるようにする */
+  labelClassName?: string;
   valueClassName?: string;
 }
 
-function SummaryTile({ label, value, valueClassName }: SummaryTileProps) {
+/** 3列カード上部の統計タイル。全列で同じ構成・高さにし、入力ボタンの位置を一致させる */
+function ColumnStat({ label, value, unit, labelClassName, valueClassName }: ColumnStatProps) {
   return (
-    <div className="min-h-[86px] rounded-xl border border-edge bg-surface p-3">
+    <div className="rounded-lg border border-edge bg-field p-3">
+      <div className={`text-xs font-semibold ${labelClassName ?? 'text-ink-muted'}`}>{label}</div>
+      <p className={`mt-1 text-xl font-bold tabular-nums text-ink ${valueClassName ?? ''}`}>
+        {value}
+        {unit && <span className="ml-1 text-sm font-medium text-ink-muted">{unit}</span>}
+      </p>
+    </div>
+  );
+}
+
+interface SummaryTileProps {
+  label: string;
+  value: React.ReactNode;
+  /** 数値の単位（小さく添える）。比率など単位がない項目は省略する */
+  unit?: string;
+  valueClassName?: string;
+}
+
+function SummaryTile({ label, value, unit, valueClassName }: SummaryTileProps) {
+  return (
+    <div className="flex min-h-[88px] flex-col rounded-xl border border-edge bg-surface p-3">
       <div className="text-xs font-semibold text-ink-muted">{label}</div>
-      <p className={`mt-2 text-2xl font-bold tabular-nums text-ink ${valueClassName ?? ''}`}>{value}</p>
+      <p className={`mt-auto pt-2 text-2xl font-bold tabular-nums text-ink ${valueClassName ?? ''}`}>
+        {value}
+        {unit && <span className="ml-1 text-sm font-medium text-ink-sub">{unit}</span>}
+      </p>
     </div>
   );
 }

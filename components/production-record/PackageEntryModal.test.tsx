@@ -28,9 +28,10 @@ describe('PackageEntryModal', () => {
     fireEvent.change(goods[1], { target: { value: '95' } });
     fireEvent.change(defectives[1], { target: { value: '10' } });
 
-    expect(screen.getByText('185 個')).toBeInTheDocument();
-    expect(screen.getByText('15 個')).toBeInTheDocument();
-    expect(screen.getByText('200 個')).toBeInTheDocument();
+    // 合計タイルは値のみ表示（ラベルで意味を示す）
+    expect(screen.getByText('185')).toBeInTheDocument();
+    expect(screen.getByText('15')).toBeInTheDocument();
+    expect(screen.getByText('200')).toBeInTheDocument();
     expect(screen.getByText('7.5%')).toBeInTheDocument();
   });
 
