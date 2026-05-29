@@ -43,6 +43,14 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
       },
     },
+    {
+      // 生産記録は実Firestore（エミュレータ）を使う。認証はspec内でlocalStorage偽装するため setup 非依存。
+      name: 'production-record',
+      testMatch: /production-record\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+      },
+    },
   ],
   webServer: skipWebServer
     ? undefined

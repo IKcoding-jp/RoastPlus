@@ -55,4 +55,59 @@ describe('PackageEntryModal', () => {
       });
     });
   });
+
+  it('initial を渡すと編集用に各班の個数を反映する', async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    const initial = {
+      id: 'p1',
+      workDate: '2026-08-05',
+      teamA: { goodCount: 100, defectiveCount: 5 },
+      teamB: { goodCount: 90, defectiveCount: 10 },
+    };
+    render(<PackageEntryModal {...baseProps} onSave={onSave} initial={initial} />);
+
+    // 良品合計 190 / 不良品合計 15 / 生産個数 205 が初期値から計算される
+    expect(screen.getByText('190')).toBeInTheDocument();
+    expect(screen.getByText('205')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+    await vi.waitFor(() => {
+      expect(onSave).toHaveBeenCalledWith({
+        workDate: '2026-08-05',
+        teamA: { goodCount: 100, defectiveCount: 5 },
+        teamB: { goodCount: 90, defectiveCount: 10 },
+      });
+    });
+  });
+
+  it('作業日が空だと保存できずエラーを表示する', async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    render(<PackageEntryModal {...baseProps} defaultWorkDate="" onSave={onSave} />);
+
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it('個数に負の値が入ると保存できずエラーを表示する', async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    render(<PackageEntryModal {...baseProps} onSave={onSave} />);
+
+    fireEvent.change(screen.getAllByLabelText('良品数')[0], { target: { value: '-1' } });
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it('保存処理が失敗するとエラーを表示する', async () => {
+    const onSave = vi.fn().mockRejectedValue(new Error('保存失敗'));
+    render(<PackageEntryModal {...baseProps} onSave={onSave} />);
+
+    fireEvent.change(screen.getAllByLabelText('良品数')[0], { target: { value: '10' } });
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+  });
 });

@@ -56,4 +56,98 @@ describe('MonthSettingsModal', () => {
       });
     });
   });
+
+  it('initial を渡すと生豆総量・1袋粉量・配合を編集用に反映する', async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    const initial = {
+      month: '2026-08',
+      greenBeanTotalGram: 20000,
+      powderPerPackGram: 8.5,
+      blendItems: [
+        { beanName: 'ブラジル', ratioPercent: 60 },
+        { beanName: 'グアテマラ', ratioPercent: 40 },
+      ],
+    };
+    render(<MonthSettingsModal {...baseProps} onSave={onSave} initial={initial} />);
+
+    // 配合は2行に展開される
+    expect(screen.getByLabelText('豆 1')).toHaveValue('ブラジル');
+    expect(screen.getByLabelText('豆 2')).toHaveValue('グアテマラ');
+
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+    await vi.waitFor(() => {
+      expect(onSave).toHaveBeenCalledWith({
+        month: '2026-08',
+        greenBeanTotalGram: 20000,
+        powderPerPackGram: 8.5,
+        blendItems: [
+          { beanName: 'ブラジル', ratioPercent: 60 },
+          { beanName: 'グアテマラ', ratioPercent: 40 },
+        ],
+      });
+    });
+  });
+
+  it('生豆総量が0だと保存できずエラーを表示する', async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    render(<MonthSettingsModal {...baseProps} onSave={onSave} />);
+
+    fireEvent.change(screen.getByLabelText('豆 1'), { target: { value: 'ブラジル' } });
+    fireEvent.change(screen.getByLabelText('比率'), { target: { value: '100' } });
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it('1袋粉量が0だと保存できずエラーを表示する', async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    render(<MonthSettingsModal {...baseProps} onSave={onSave} />);
+
+    fireEvent.change(screen.getByLabelText('生豆総量'), { target: { value: '20' } });
+    fireEvent.change(screen.getByLabelText('1袋粉量'), { target: { value: '0' } });
+    fireEvent.change(screen.getByLabelText('豆 1'), { target: { value: 'ブラジル' } });
+    fireEvent.change(screen.getByLabelText('比率'), { target: { value: '100' } });
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it('豆名が空だと保存できずエラーを表示する', async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    render(<MonthSettingsModal {...baseProps} onSave={onSave} />);
+
+    fireEvent.change(screen.getByLabelText('生豆総量'), { target: { value: '20' } });
+    fireEvent.change(screen.getByLabelText('比率'), { target: { value: '100' } });
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it('「豆を追加」で配合行が増え、削除で減る', () => {
+    render(<MonthSettingsModal {...baseProps} />);
+
+    expect(screen.getByLabelText('豆 1')).toBeInTheDocument();
+    expect(screen.queryByLabelText('豆 2')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '豆を追加' }));
+    expect(screen.getByLabelText('豆 2')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '豆 2 を削除' }));
+    expect(screen.queryByLabelText('豆 2')).not.toBeInTheDocument();
+  });
+
+  it('保存処理が失敗するとエラーを表示する', async () => {
+    const onSave = vi.fn().mockRejectedValue(new Error('保存失敗'));
+    render(<MonthSettingsModal {...baseProps} onSave={onSave} />);
+
+    fireEvent.change(screen.getByLabelText('生豆総量'), { target: { value: '20' } });
+    fireEvent.change(screen.getByLabelText('豆 1'), { target: { value: 'ブラジル' } });
+    fireEvent.change(screen.getByLabelText('比率'), { target: { value: '100' } });
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+  });
 });

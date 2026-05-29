@@ -1,0 +1,12 @@
+rules_version = '2';
+// E2E（Playwright + Firestoreエミュレータ）専用のオープンルール。
+// E2Eモードの認証は localStorage 偽装で実 Firebase Auth トークンを持たないため、
+// 本番ルール（request.auth != null）では書き込みが拒否される。
+// 本番ルールの検証は別途 rules テスト（tests/rules）が担保する。このファイルはエミュレータ起動時のみ使用し、本番には絶対にデプロイしない。
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}

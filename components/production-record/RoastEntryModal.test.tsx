@@ -56,4 +56,72 @@ describe('RoastEntryModal', () => {
       });
     });
   });
+
+  it('initial を渡すと編集用に各フィールドへ初期値を反映する', async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    const initial = {
+      id: 'r1',
+      workDate: '2026-08-05',
+      beforeRoastWeightGram: 14000,
+      afterRoastWeightGram: 11000,
+    };
+    render(<RoastEntryModal {...baseProps} onSave={onSave} initial={initial} />);
+
+    // 焙煎歩留まり 11000/14000 = 78.6% が初期値から計算される
+    expect(screen.getByText('78.6%')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+    await vi.waitFor(() => {
+      expect(onSave).toHaveBeenCalledWith({
+        workDate: '2026-08-05',
+        beforeRoastWeightGram: 14000,
+        afterRoastWeightGram: 11000,
+      });
+    });
+  });
+
+  it('焙煎前重量が未入力だと保存できずエラーを表示する', async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    render(<RoastEntryModal {...baseProps} onSave={onSave} />);
+
+    fireEvent.change(screen.getByLabelText('焙煎後重量'), { target: { value: '8000' } });
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it('焙煎後重量が未入力だと保存できずエラーを表示する', async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    render(<RoastEntryModal {...baseProps} onSave={onSave} />);
+
+    fireEvent.change(screen.getByLabelText('焙煎前重量'), { target: { value: '10' } });
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it('作業日が空だと保存できずエラーを表示する', async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    render(<RoastEntryModal {...baseProps} defaultWorkDate="" onSave={onSave} />);
+
+    fireEvent.change(screen.getByLabelText('焙煎前重量'), { target: { value: '10' } });
+    fireEvent.change(screen.getByLabelText('焙煎後重量'), { target: { value: '8000' } });
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it('保存処理が失敗するとエラーを表示する', async () => {
+    const onSave = vi.fn().mockRejectedValue(new Error('保存失敗'));
+    render(<RoastEntryModal {...baseProps} onSave={onSave} />);
+
+    fireEvent.change(screen.getByLabelText('焙煎前重量'), { target: { value: '10' } });
+    fireEvent.change(screen.getByLabelText('焙煎後重量'), { target: { value: '8000' } });
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+  });
 });
