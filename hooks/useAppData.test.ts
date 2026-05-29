@@ -17,7 +17,6 @@ const INITIAL_APP_DATA: AppData = {
   notifications: [],
   encouragementCount: 0,
   roastTimerRecords: [],
-  workProgresses: [],
   dripRecipes: [],
 };
 
@@ -49,7 +48,7 @@ vi.mock('@/lib/firestore', () => ({
   saveUserData: (
     userId: string,
     data: AppData,
-    options?: { syncWorkProgresses?: boolean; updatedFields?: (keyof AppData)[] }
+    options?: { updatedFields?: (keyof AppData)[] }
   ) => mockSaveUserData(userId, data, options),
   subscribeUserData: (userId: string, callback: (data: AppData) => void) => mockSubscribeUserData(userId, callback),
   SAVE_USER_DATA_DEBOUNCE_MS: 500,
@@ -215,41 +214,9 @@ describe('useAppData', () => {
         expect.objectContaining({
           encouragementCount: 5,
         }),
-        expect.objectContaining({ syncWorkProgresses: false })
+        expect.objectContaining({ updatedFields: ['encouragementCount'] })
       );
       expect(result.current.data.encouragementCount).toBe(5);
-    });
-
-    it('workProgresses更新時だけサブコレクション同期を要求する', async () => {
-      const { result } = renderHook(() => useAppData());
-
-      await act(async () => {
-        await vi.runAllTimersAsync();
-      });
-
-      await act(async () => {
-        await result.current.updateData((currentData) => ({
-          ...currentData,
-          workProgresses: [
-            {
-              id: 'wp-1',
-              taskName: 'テスト作業',
-              status: 'pending',
-              createdAt: '2024-02-05T12:00:00.000Z',
-              updatedAt: '2024-02-05T12:00:00.000Z',
-            },
-          ],
-        }));
-        await vi.runAllTimersAsync();
-      });
-
-      expect(mockSaveUserData).toHaveBeenCalledWith(
-        'test-user-id',
-        expect.objectContaining({
-          workProgresses: [expect.objectContaining({ id: 'wp-1' })],
-        }),
-        expect.objectContaining({ syncWorkProgresses: true })
-      );
     });
 
     it('保存対象フィールドを変更されたキーだけに絞る', async () => {
@@ -274,7 +241,7 @@ describe('useAppData', () => {
           tastingSessions: [],
           tastingRecords: [],
         }),
-        { syncWorkProgresses: false, updatedFields: ['encouragementCount'] }
+        { updatedFields: ['encouragementCount'] }
       );
     });
 

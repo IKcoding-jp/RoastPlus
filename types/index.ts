@@ -9,5 +9,4 @@ export * from './timer';
 export * from './settings';
 export * from './notification';
 export * from './defect-beans';
-export * from './work-progress';
 export * from './production-pack-record';

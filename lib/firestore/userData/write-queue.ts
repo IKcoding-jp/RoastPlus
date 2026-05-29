@@ -1,10 +1,9 @@
 // ユーザーデータ書き込みキュー・リトライ管理
 // Write stream exhausted対策として同時書き込み数を制限する
 
-import { deleteField, doc, getDocs, writeBatch, type FieldValue, type WriteBatch } from 'firebase/firestore';
+import { deleteField, writeBatch, type FieldValue, type WriteBatch } from 'firebase/firestore';
 import { getDb, getUserDocRef, removeUndefinedFields } from '../common';
-import { getDataSplitsDocRef, getWorkProgressesCollectionRef } from '../workProgress/subcollection';
-import type { AppData, WorkProgress } from '@/types';
+import type { AppData } from '@/types';
 
 // デバウンス待機時間（ミリ秒）
 export const SAVE_USER_DATA_DEBOUNCE_MS = 300;
@@ -21,15 +20,12 @@ export const writeQueues = new Map<
     pendingPromise: { resolve: () => void; reject: (error: unknown) => void } | null;
   }
 >();
-const workProgressesSyncSignatures = new Map<string, string>();
 
 export function clearWriteQueueStateForTests(): void {
   writeQueues.clear();
-  workProgressesSyncSignatures.clear();
 }
 
 export interface SaveUserDataOptions {
-  syncWorkProgresses?: boolean;
   updatedFields?: (keyof AppData)[];
 }
 
@@ -82,12 +78,6 @@ function releaseWriteSlot(): void {
   }
 }
 
-function removeRootWorkProgresses(data: Record<string, unknown>): Record<string, unknown> {
-  const rootData = { ...data };
-  delete rootData.workProgresses;
-  return rootData;
-}
-
 function pickUpdatedFields(
   data: Record<string, unknown>,
   updatedFields: (keyof AppData)[] | undefined
@@ -107,25 +97,6 @@ function pickUpdatedFields(
 
 function hasWritableFields(data: Record<string, unknown>): boolean {
   return Object.keys(data).length > 0;
-}
-
-function stableStringify(value: unknown): string {
-  if (Array.isArray(value)) {
-    return `[${value.map((item) => stableStringify(item)).join(',')}]`;
-  }
-
-  if (value && typeof value === 'object') {
-    const entries = Object.entries(value as Record<string, unknown>)
-      .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
-      .map(([key, entryValue]) => `${JSON.stringify(key)}:${stableStringify(entryValue)}`);
-    return `{${entries.join(',')}}`;
-  }
-
-  return JSON.stringify(value);
-}
-
-function areFirestorePayloadsEqual(a: Record<string, unknown>, b: Record<string, unknown>): boolean {
-  return stableStringify(a) === stableStringify(b);
 }
 
 function createBatchWriter(): {
@@ -150,50 +121,6 @@ function createBatchWriter(): {
       }
     },
   };
-}
-
-async function applyWorkProgressSplitWrites(
-  userId: string,
-  batchWriter: ReturnType<typeof createBatchWriter>,
-  workProgresses: WorkProgress[]
-): Promise<void> {
-  const workProgressesCollectionRef = getWorkProgressesCollectionRef(userId);
-  const existingSnapshot = await getDocs(workProgressesCollectionRef);
-  const nextIds = new Set(workProgresses.map((workProgress) => workProgress.id));
-  const existingById = new Map(
-    existingSnapshot.docs.map((docSnapshot) => [
-      docSnapshot.id,
-      removeUndefinedFields({
-        ...docSnapshot.data(),
-        id: typeof docSnapshot.data().id === 'string' ? docSnapshot.data().id : docSnapshot.id,
-      }) as Record<string, unknown>,
-    ])
-  );
-
-  existingSnapshot.docs.forEach((docSnapshot) => {
-    if (!nextIds.has(docSnapshot.id)) {
-      batchWriter.add((batch) => batch.delete(docSnapshot.ref));
-    }
-  });
-
-  workProgresses.forEach((workProgress) => {
-    const cleanedWorkProgress = removeUndefinedFields(workProgress) as unknown as Record<string, unknown>;
-    const existingWorkProgress = existingById.get(workProgress.id);
-    if (!existingWorkProgress || !areFirestorePayloadsEqual(existingWorkProgress, cleanedWorkProgress)) {
-      batchWriter.add((batch) => batch.set(doc(workProgressesCollectionRef, workProgress.id), cleanedWorkProgress));
-    }
-  });
-
-  batchWriter.add((batch) =>
-    batch.set(
-      getDataSplitsDocRef(userId),
-      {
-        workProgressesMigrated: true,
-        workProgressesMigratedAt: new Date().toISOString(),
-      },
-      { merge: true }
-    )
-  );
 }
 
 // 実際の書き込み処理を行う関数
@@ -250,23 +177,11 @@ async function performWrite(userId: string, data: AppData, options: SaveUserData
     }
 
     const batchWriter = createBatchWriter();
-    const rootWriteData = removeRootWorkProgresses(pickUpdatedFields(cleanedData, options.updatedFields));
+    const rootWriteData = pickUpdatedFields(cleanedData, options.updatedFields);
     if (hasWritableFields(rootWriteData)) {
       batchWriter.add((batch) => batch.set(userDocRef, rootWriteData, { merge: true }));
     }
-    let syncedWorkProgressesSignature: string | null = null;
-    if (options.syncWorkProgresses === true) {
-      const nextSyncSignature = stableStringify(data.workProgresses);
-      const previousSyncSignature = workProgressesSyncSignatures.get(userId);
-      if (previousSyncSignature !== nextSyncSignature) {
-        await applyWorkProgressSplitWrites(userId, batchWriter, data.workProgresses);
-        syncedWorkProgressesSignature = nextSyncSignature;
-      }
-    }
     await batchWriter.commit();
-    if (syncedWorkProgressesSignature !== null) {
-      workProgressesSyncSignatures.set(userId, syncedWorkProgressesSignature);
-    }
   } finally {
     releaseWriteSlot();
   }

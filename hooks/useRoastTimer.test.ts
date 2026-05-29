@@ -32,7 +32,6 @@ const mockAppData: AppData = {
   notifications: [],
   encouragementCount: 0,
   roastTimerRecords: [],
-  workProgresses: [],
   userConsent: {
     hasAgreed: true,
     agreedAt: '2024-01-01T00:00:00.000Z',

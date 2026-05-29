@@ -66,7 +66,6 @@ describe('normalizeAppData', () => {
     expect(result.notifications).toEqual([]);
     expect(result.encouragementCount).toBe(0);
     expect(result.roastTimerRecords).toEqual([]);
-    expect(result.workProgresses).toEqual([]);
   });
 
   it('undefined → defaultData', () => {
@@ -105,17 +104,6 @@ describe('normalizeAppData', () => {
   it('encouragementCountが数値の場合 → そのまま', () => {
     const result = normalizeAppData({ encouragementCount: 5 } as never);
     expect(result.encouragementCount).toBe(5);
-  });
-
-  it('workProgressesのcompletedCount補完', () => {
-    const result = normalizeAppData({
-      workProgresses: [
-        { id: 'wp-1', status: 'pending', completedCount: 3, createdAt: '', updatedAt: '' },
-        { id: 'wp-2', status: 'pending', createdAt: '', updatedAt: '' },
-      ],
-    } as never);
-    expect(result.workProgresses[0].completedCount).toBe(3);
-    expect(result.workProgresses[1].completedCount).toBeUndefined();
   });
 
   it('tastingSessionsのaiAnalysis関連フィールド保持', () => {

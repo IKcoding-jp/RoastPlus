@@ -81,7 +81,6 @@ const INITIAL_APP_DATA: AppData = {
   notifications: [],
   encouragementCount: 0,
   roastTimerRecords: [],
-  workProgresses: [],
 };
 
 const mockUser = {

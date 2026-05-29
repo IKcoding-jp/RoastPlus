@@ -58,7 +58,6 @@ export const defaultData: AppData = {
   notifications: [],
   encouragementCount: 0,
   roastTimerRecords: [],
-  workProgresses: [],
   dripRecipes: [],
 };
 
@@ -96,12 +95,6 @@ export function normalizeAppData(data: Partial<AppData> | undefined | null): App
           roastDate:
             record.roastDate ||
             (record.createdAt ? record.createdAt.split('T')[0] : new Date().toISOString().split('T')[0]),
-        }))
-      : [],
-    workProgresses: Array.isArray(data?.workProgresses)
-      ? data.workProgresses.map((wp) => ({
-          ...wp,
-          completedCount: typeof wp.completedCount === 'number' ? wp.completedCount : undefined,
         }))
       : [],
   };

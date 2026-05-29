@@ -23,7 +23,6 @@ const baseData: AppData = {
   notifications: [],
   encouragementCount: 0,
   roastTimerRecords: [],
-  workProgresses: [],
   dripRecipes: [],
 };
 

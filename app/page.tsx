@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import type { IconType } from 'react-icons';
 import { FaCoffee, FaUsers } from 'react-icons/fa';
 import { IoSettings } from 'react-icons/io5';
-import { MdCoffeeMaker, MdInventory2, MdTimer, MdTimeline } from 'react-icons/md';
+import { MdCoffeeMaker, MdInventory2, MdTimer } from 'react-icons/md';
 import { RiBookFill, RiCalendarScheduleFill } from 'react-icons/ri';
 import { Loading } from '@/components/Loading';
 import { ActionCard } from '@/components/home/ActionCard';
@@ -21,7 +21,7 @@ import dynamic from 'next/dynamic';
 const Snowfall = dynamic(() => import('@/components/Snowfall').then((mod) => ({ default: mod.Snowfall })), {
   ssr: false,
 });
-import { FaTree, FaGift, FaSnowflake } from 'react-icons/fa';
+import { FaTree, FaGift } from 'react-icons/fa';
 import { PiBellFill } from 'react-icons/pi';
 import { GiCandyCanes, GiGingerbreadMan } from 'react-icons/gi';
 import { BsStars } from 'react-icons/bs';
@@ -42,7 +42,6 @@ const CHRISTMAS_ICONS: Record<string, IconType> = {
   tasting: FaTree,
   'roast-timer': PiBellFill,
   'defect-beans': GiGingerbreadMan,
-  progress: FaSnowflake,
   'production-packs': MdInventory2,
   'drip-guide': GiCandyCanes,
   settings: IoSettings,
@@ -85,13 +84,6 @@ const ACTIONS: Action[] = [
     description: '欠点豆の知識を共有',
     href: '/defect-beans',
     icon: RiBookFill,
-  },
-  {
-    key: 'progress',
-    title: '作業進捗',
-    description: '進捗を可視化',
-    href: '/progress',
-    icon: MdTimeline,
   },
   {
     key: 'production-packs',

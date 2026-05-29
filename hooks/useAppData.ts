@@ -73,7 +73,6 @@ const INITIAL_APP_DATA: AppData = {
   notifications: [],
   encouragementCount: 0,
   roastTimerRecords: [],
-  workProgresses: [],
   dripRecipes: [],
 };
 
@@ -104,7 +103,6 @@ export function useAppData() {
         localData.roastSchedules.length > 0 ||
         localData.todaySchedules.length > 0 ||
         localData.roastTimerRecords.length > 0 ||
-        localData.workProgresses.length > 0 ||
         (localData.dripRecipes?.length ?? 0) > 0;
 
       const incomingIsEmpty =
@@ -113,7 +111,6 @@ export function useAppData() {
         incomingData.roastSchedules.length === 0 &&
         incomingData.todaySchedules.length === 0 &&
         incomingData.roastTimerRecords.length === 0 &&
-        incomingData.workProgresses.length === 0 &&
         (incomingData.dripRecipes?.length ?? 0) === 0;
 
       if (localHasData && incomingIsEmpty && !isUpdatingRef.current) {
@@ -259,7 +256,6 @@ export function useAppData() {
         defectBeanSettings: hasOwn(newData, 'defectBeanSettings')
           ? newData.defectBeanSettings
           : currentData.defectBeanSettings,
-        workProgresses: Array.isArray(newData.workProgresses) ? newData.workProgresses : currentData.workProgresses,
         dripRecipes: hasOwn(newData, 'dripRecipes')
           ? Array.isArray(newData.dripRecipes)
             ? newData.dripRecipes
@@ -287,7 +283,6 @@ export function useAppData() {
 
       try {
         await saveUserData(user.uid, normalizedData, {
-          syncWorkProgresses: mutatedKeys.includes('workProgresses'),
           updatedFields: mutatedKeys,
         });
       } catch (error) {

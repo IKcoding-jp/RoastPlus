@@ -100,24 +100,6 @@ describe('Firestore rules', () => {
     });
   });
 
-  describe('users/{uid}/workProgresses/{workProgressId}', () => {
-    it('allows only the signed-in owner to read and write work progress documents', async () => {
-      const path = `users/${OWN_UID}/workProgresses/wp-1`;
-      const ownerDoc = firestoreFor(OWN_UID).doc(path);
-      const otherDoc = firestoreFor(OTHER_UID).doc(path);
-      const anonymousDoc = firestoreFor().doc(path);
-
-      await assertFails(anonymousDoc.get());
-      await assertFails(anonymousDoc.set({ id: 'wp-1', status: 'pending' }));
-
-      await assertSucceeds(ownerDoc.set({ id: 'wp-1', status: 'pending' }));
-      await assertSucceeds(ownerDoc.get());
-
-      await assertFails(otherDoc.get());
-      await assertFails(otherDoc.set({ id: 'wp-1', status: 'pending' }));
-    });
-  });
-
   describe('users/{uid}/productionPackRecords/{workDate}', () => {
     it('allows only the signed-in owner to read and write production pack records', async () => {
       const path = `users/${OWN_UID}/productionPackRecords/2026-05-24`;
@@ -146,24 +128,8 @@ describe('Firestore rules', () => {
     });
   });
 
-  describe('users/{uid}/_meta/dataSplits', () => {
-    it('allows only the signed-in owner to read and write data split metadata', async () => {
-      const path = `users/${OWN_UID}/_meta/dataSplits`;
-      const ownerDoc = firestoreFor(OWN_UID).doc(path);
-      const otherDoc = firestoreFor(OTHER_UID).doc(path);
-      const anonymousDoc = firestoreFor().doc(path);
-
-      await assertFails(anonymousDoc.get());
-      await assertFails(anonymousDoc.set({ workProgressesMigrated: true }));
-
-      await assertSucceeds(ownerDoc.set({ workProgressesMigrated: true }));
-      await assertSucceeds(ownerDoc.get());
-
-      await assertFails(otherDoc.get());
-      await assertFails(otherDoc.set({ workProgressesMigrated: true }));
-    });
-  });
 });
+
 
 describe('Storage rules', () => {
   it('allows only the owner to upload allowed defect bean images', async () => {

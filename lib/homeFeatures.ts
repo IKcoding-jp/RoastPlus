@@ -25,11 +25,6 @@ export const HOME_FEATURES = [
     description: '欠点豆の知識を共有',
   },
   {
-    key: 'progress',
-    title: '作業進捗',
-    description: '進捗を可視化',
-  },
-  {
     key: 'production-packs',
     title: 'パッケージ記録',
     description: '成功数と失敗数を記録',

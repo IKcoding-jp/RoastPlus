@@ -57,7 +57,6 @@ describe('HomePage', () => {
       'tasting',
       'roast-timer',
       'defect-beans',
-      'progress',
       'production-packs',
       'drip-guide',
       'settings',

@@ -39,7 +39,6 @@ import type { Notification } from './notification';
 import type { ShuffleEvent } from './team';
 import type { RoastTimerRecord, RoastTimerState } from './timer';
 import type { DefectBean, DefectBeanSettings } from './defect-beans';
-import type { WorkProgress } from './work-progress';
 import type { DripRecipe } from './common';
 export interface AppData {
   todaySchedules: TodaySchedule[];
@@ -54,7 +53,6 @@ export interface AppData {
   roastTimerState?: RoastTimerState;
   defectBeans?: DefectBean[];
   defectBeanSettings?: DefectBeanSettings;
-  workProgresses: WorkProgress[];
   dripRecipes?: DripRecipe[];
   userConsent?: UserConsent;
 }
