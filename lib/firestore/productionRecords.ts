@@ -7,12 +7,19 @@ import {
   query,
   runTransaction,
   serverTimestamp,
+  setDoc,
   type DocumentData,
   type Unsubscribe,
 } from 'firebase/firestore';
 import { getDb, removeUndefinedFields } from './common';
-import { buildProductionRecordMonth, isValidProductionMonth } from '@/lib/productionRecords';
-import type { ProductionRecordMonth, ProductionRecordMonthInput } from '@/types';
+import { buildHandpickEntry, buildProductionRecordMonth, isValidProductionMonth } from '@/lib/productionRecords';
+import type {
+  HandpickEntry,
+  HandpickEntryInput,
+  HandpickSegment,
+  ProductionRecordMonth,
+  ProductionRecordMonthInput,
+} from '@/types';
 
 export const RECENT_PRODUCTION_MONTHS_LIMIT = 24;
 
@@ -138,5 +145,82 @@ export function subscribeRecentProductionMonths(
       onError?.(error);
       callback([]);
     }
+  );
+}
+
+function normalizeHandpickSegment(value: unknown): HandpickSegment {
+  return value === 'second' ? 'second' : 'first';
+}
+
+function normalizeHandpickEntry(id: string, data: DocumentData): HandpickEntry {
+  const entry = buildHandpickEntry({
+    workDate: typeof data.workDate === 'string' ? data.workDate : '',
+    beanName: typeof data.beanName === 'string' ? data.beanName : '',
+    segment: normalizeHandpickSegment(data.segment),
+    greenBeanWeightGram: typeof data.greenBeanWeightGram === 'number' ? data.greenBeanWeightGram : 0,
+    defectBeanWeightGram: typeof data.defectBeanWeightGram === 'number' ? data.defectBeanWeightGram : 0,
+  });
+
+  return {
+    ...entry,
+    id,
+    createdAt: data.createdAt,
+    updatedAt: data.updatedAt,
+  };
+}
+
+export function subscribeHandpickEntries(
+  userId: string,
+  month: string,
+  callback: (entries: HandpickEntry[]) => void,
+  onError?: (error: Error) => void
+): Unsubscribe {
+  const entriesQuery = query(getHandpickEntriesCollectionRef(userId, month), orderBy('createdAt', 'desc'));
+
+  return onSnapshot(
+    entriesQuery,
+    (snapshot) => {
+      callback(snapshot.docs.map((entryDoc) => normalizeHandpickEntry(entryDoc.id, entryDoc.data())));
+    },
+    (error) => {
+      console.error('Failed to subscribe handpick entries:', error);
+      onError?.(error);
+      callback([]);
+    }
+  );
+}
+
+export async function addHandpickEntry(userId: string, month: string, input: HandpickEntryInput): Promise<string> {
+  const entry = buildHandpickEntry(input);
+  const docRef = doc(getHandpickEntriesCollectionRef(userId, month));
+
+  await setDoc(
+    docRef,
+    removeUndefinedFields({
+      ...entry,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    })
+  );
+
+  return docRef.id;
+}
+
+export async function updateHandpickEntry(
+  userId: string,
+  month: string,
+  entryId: string,
+  input: HandpickEntryInput
+): Promise<void> {
+  const entry = buildHandpickEntry(input);
+  const docRef = doc(getHandpickEntriesCollectionRef(userId, month), entryId);
+
+  await setDoc(
+    docRef,
+    {
+      ...entry,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
   );
 }

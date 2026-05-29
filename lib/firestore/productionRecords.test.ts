@@ -343,3 +343,130 @@ describe('subscribeRecentProductionMonths', () => {
     expect(callback).toHaveBeenCalledWith([]);
   });
 });
+
+describe('subscribeHandpickEntries', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('queries handpick entries ordered by createdAt desc and normalizes them with doc id', async () => {
+    firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, onNext: (snap: unknown) => void) => {
+      onNext(
+        collectionSnapshot([
+          {
+            id: 'entry-1',
+            data: {
+              workDate: '2026-08-10',
+              beanName: 'ブラジル',
+              segment: 'first',
+              greenBeanWeightGram: 10000,
+              defectBeanWeightGram: 300,
+              createdAt: 'created-at',
+              updatedAt: 'updated-at',
+            },
+          },
+        ])
+      );
+      return () => undefined;
+    });
+
+    const { subscribeHandpickEntries } = await import('./productionRecords');
+    const callback = vi.fn();
+
+    subscribeHandpickEntries('user-1', '2026-08', callback);
+
+    expect(firestoreMocks.orderBy).toHaveBeenCalledWith('createdAt', 'desc');
+    expect(callback).toHaveBeenCalledWith([
+      {
+        id: 'entry-1',
+        workDate: '2026-08-10',
+        beanName: 'ブラジル',
+        segment: 'first',
+        greenBeanWeightGram: 10000,
+        defectBeanWeightGram: 300,
+        createdAt: 'created-at',
+        updatedAt: 'updated-at',
+      },
+    ]);
+  });
+
+  it('forwards errors to onError and passes an empty array to the callback', async () => {
+    const error = new Error('permission-denied');
+    firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, _onNext: unknown, onErrorCb: (e: Error) => void) => {
+      onErrorCb(error);
+      return () => undefined;
+    });
+
+    const { subscribeHandpickEntries } = await import('./productionRecords');
+    const callback = vi.fn();
+    const onError = vi.fn();
+
+    subscribeHandpickEntries('user-1', '2026-08', callback, onError);
+
+    expect(onError).toHaveBeenCalledWith(error);
+    expect(callback).toHaveBeenCalledWith([]);
+  });
+});
+
+describe('addHandpickEntry', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('adds a handpick entry with an auto-generated id and returns it', async () => {
+    const { addHandpickEntry } = await import('./productionRecords');
+
+    const id = await addHandpickEntry('user-1', '2026-08', {
+      workDate: '2026-08-10',
+      beanName: 'ブラジル',
+      segment: 'first',
+      greenBeanWeightGram: 10000,
+      defectBeanWeightGram: 300,
+    });
+
+    expect(id).toBe('auto-generated-id');
+    expect(firestoreMocks.setDoc).toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/handpickEntries/auto-generated-id' }),
+      {
+        workDate: '2026-08-10',
+        beanName: 'ブラジル',
+        segment: 'first',
+        greenBeanWeightGram: 10000,
+        defectBeanWeightGram: 300,
+        createdAt: 'server-timestamp',
+        updatedAt: 'server-timestamp',
+      }
+    );
+  });
+});
+
+describe('updateHandpickEntry', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('merges the rebuilt handpick entry with a refreshed updatedAt', async () => {
+    const { updateHandpickEntry } = await import('./productionRecords');
+
+    await updateHandpickEntry('user-1', '2026-08', 'entry-1', {
+      workDate: '2026-08-10',
+      beanName: 'グアテマラ',
+      segment: 'second',
+      greenBeanWeightGram: 12000,
+      defectBeanWeightGram: 0,
+    });
+
+    expect(firestoreMocks.setDoc).toHaveBeenCalledWith(
+      expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08/handpickEntries/entry-1' }),
+      {
+        workDate: '2026-08-10',
+        beanName: 'グアテマラ',
+        segment: 'second',
+        greenBeanWeightGram: 12000,
+        defectBeanWeightGram: 0,
+        updatedAt: 'server-timestamp',
+      },
+      { merge: true }
+    );
+  });
+});
