@@ -87,7 +87,7 @@ export function HandpickEntryModal({ beanNames, initial, defaultWorkDate, onSave
       show={true}
       onClose={onClose}
       closeOnBackdropClick={false}
-      contentClassName="rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto bg-overlay border border-edge"
+      contentClassName="rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto bg-overlay border border-edge"
     >
       <div className="sticky top-0 p-4 flex items-center justify-between z-20 border-b bg-surface border-edge">
         <h2 className="text-xl font-semibold text-ink">ハンドピック記録</h2>

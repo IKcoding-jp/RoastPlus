@@ -54,7 +54,8 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
       themeStyles,
       error ? errorStyles : '',
       props.disabled ? disabledStyles : '',
-      suffix ? '' : 'w-full',
+      // suffix がある場合も flex 内で枠に収まるよう幅を制御する（狭い枠でのはみ出し防止）
+      suffix ? 'min-w-0 flex-1' : 'w-full',
       className,
     ]
       .filter(Boolean)

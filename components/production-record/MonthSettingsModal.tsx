@@ -125,7 +125,7 @@ export function MonthSettingsModal({ month, initial, onSave, onClose }: MonthSet
       show={true}
       onClose={onClose}
       closeOnBackdropClick={false}
-      contentClassName="rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto bg-overlay border border-edge"
+      contentClassName="rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto bg-overlay border border-edge"
     >
       <div className="sticky top-0 p-4 flex items-center justify-between z-20 border-b bg-surface border-edge">
         <h2 className="text-xl font-semibold text-ink">月設定（{formatMonthLabel(month)}）</h2>
@@ -158,29 +158,35 @@ export function MonthSettingsModal({ month, initial, onSave, onClose }: MonthSet
             const ratio = parseFloat(item.ratioPercent) || 0;
             const requiredKg = (greenBeanTotalGram * (ratio / 100)) / 1000;
             return (
-              <div key={item.id} className="flex items-end gap-2 rounded-lg p-3 bg-ground">
-                <div className="flex-1">
-                  <Input
-                    label="豆名"
-                    value={item.beanName}
-                    onChange={(e) => handleBlendChange(index, 'beanName', e.target.value)}
-                  />
+              <div key={item.id} className="space-y-2 rounded-lg p-3 bg-ground">
+                <Input
+                  label="豆名"
+                  value={item.beanName}
+                  onChange={(e) => handleBlendChange(index, 'beanName', e.target.value)}
+                />
+                <div className="flex items-end gap-3">
+                  <div className="w-28 shrink-0">
+                    <NumberInput
+                      label="比率"
+                      suffix="%"
+                      min={0}
+                      value={item.ratioPercent}
+                      onChange={(e) => handleBlendChange(index, 'ratioPercent', e.target.value)}
+                    />
+                  </div>
+                  <p className="min-w-0 flex-1 pb-2.5 text-sm text-ink-sub">必要量 {requiredKg.toFixed(2)} kg</p>
+                  {blendDrafts.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      type="button"
+                      className="shrink-0"
+                      onClick={() => handleRemoveBlend(index)}
+                    >
+                      削除
+                    </Button>
+                  )}
                 </div>
-                <div className="w-28">
-                  <NumberInput
-                    label="比率"
-                    suffix="%"
-                    min={0}
-                    value={item.ratioPercent}
-                    onChange={(e) => handleBlendChange(index, 'ratioPercent', e.target.value)}
-                  />
-                </div>
-                <div className="w-24 pb-2 text-right text-sm text-ink-sub">{requiredKg.toFixed(2)} kg</div>
-                {blendDrafts.length > 1 && (
-                  <Button variant="ghost" size="sm" type="button" onClick={() => handleRemoveBlend(index)}>
-                    削除
-                  </Button>
-                )}
               </div>
             );
           })}
