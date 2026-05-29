@@ -1,7 +1,10 @@
 import {
   collection,
   doc,
+  limit,
   onSnapshot,
+  orderBy,
+  query,
   runTransaction,
   serverTimestamp,
   type DocumentData,
@@ -112,4 +115,28 @@ export async function saveProductionRecordMonth(userId: string, input: Productio
       })
     );
   });
+}
+
+export function subscribeRecentProductionMonths(
+  userId: string,
+  callback: (records: ProductionRecordMonth[]) => void,
+  onError?: (error: Error) => void
+): Unsubscribe {
+  const monthsQuery = query(
+    getProductionRecordsCollectionRef(userId),
+    orderBy('month', 'desc'),
+    limit(RECENT_PRODUCTION_MONTHS_LIMIT)
+  );
+
+  return onSnapshot(
+    monthsQuery,
+    (snapshot) => {
+      callback(snapshot.docs.map((monthDoc) => normalizeProductionRecordMonth(monthDoc.id, monthDoc.data())));
+    },
+    (error) => {
+      console.error('Failed to subscribe recent production months:', error);
+      onError?.(error);
+      callback([]);
+    }
+  );
 }

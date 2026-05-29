@@ -283,3 +283,63 @@ describe('saveProductionRecordMonth', () => {
     );
   });
 });
+
+describe('subscribeRecentProductionMonths', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('queries recent months ordered by month desc with a limit of 24', async () => {
+    firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, onNext: (snap: unknown) => void) => {
+      onNext(
+        collectionSnapshot([
+          {
+            id: '2026-08',
+            data: {
+              month: '2026-08',
+              greenBeanTotalGram: 30000,
+              powderPerPackGram: 8.5,
+              blendItems: [{ beanName: 'ブラジル', ratioPercent: 100 }],
+            },
+          },
+        ])
+      );
+      return () => undefined;
+    });
+
+    const { subscribeRecentProductionMonths } = await import('./productionRecords');
+    const callback = vi.fn();
+
+    subscribeRecentProductionMonths('user-1', callback);
+
+    expect(firestoreMocks.orderBy).toHaveBeenCalledWith('month', 'desc');
+    expect(firestoreMocks.limit).toHaveBeenCalledWith(24);
+    expect(callback).toHaveBeenCalledWith([
+      {
+        month: '2026-08',
+        greenBeanTotalGram: 30000,
+        powderPerPackGram: 8.5,
+        blendItems: [{ beanName: 'ブラジル', ratioPercent: 100 }],
+        createdAt: undefined,
+        updatedAt: undefined,
+      },
+    ]);
+  });
+
+  it('forwards errors to onError and passes an empty array to the callback', async () => {
+    const error = new Error('permission-denied');
+    firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, _onNext: unknown, onErrorCb: (e: Error) => void) => {
+      onErrorCb(error);
+      return () => undefined;
+    });
+
+    const { subscribeRecentProductionMonths } = await import('./productionRecords');
+    const callback = vi.fn();
+    const onError = vi.fn();
+
+    subscribeRecentProductionMonths('user-1', callback, onError);
+
+    expect(onError).toHaveBeenCalledWith(error);
+    expect(callback).toHaveBeenCalledWith([]);
+  });
+});
