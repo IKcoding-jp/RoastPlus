@@ -3,6 +3,7 @@ import type {
   HandpickEntry,
   PackageEntry,
   ProductionRecordMonth,
+  ProductionRecordMonthInput,
   ProductionRecordMonthlySummary,
   RoastEntry,
   TeamCounts,
@@ -19,6 +20,9 @@ export const MAX_BLEND_ITEMS = 4;
 const WEIGHT_INPUT_ERROR = '0以上の数値で入力してください';
 const COUNT_INPUT_ERROR = '0以上の整数で入力してください';
 const BLEND_ITEMS_ERROR = '配合は1〜4件、各比率は0以上、合計100%で入力してください';
+const MONTH_INPUT_ERROR = '対象月が正しくありません';
+const GREEN_BEAN_TOTAL_ERROR = '生豆総量は0より大きい値で入力してください';
+const POWDER_PER_PACK_ERROR = '1袋粉量は0より大きい値で入力してください';
 
 export function isValidProductionMonth(month: string): boolean {
   if (!WORK_MONTH_PATTERN.test(month)) {
@@ -221,4 +225,24 @@ export function validateBlendItems(items: BlendItem[]): void {
   if (sum !== 100) {
     throw new Error(BLEND_ITEMS_ERROR);
   }
+}
+
+export function buildProductionRecordMonth(input: ProductionRecordMonthInput): ProductionRecordMonthInput {
+  if (!isValidProductionMonth(input.month)) {
+    throw new Error(MONTH_INPUT_ERROR);
+  }
+  validateBlendItems(input.blendItems);
+  if (!(input.greenBeanTotalGram > 0)) {
+    throw new Error(GREEN_BEAN_TOTAL_ERROR);
+  }
+  if (!(input.powderPerPackGram > 0)) {
+    throw new Error(POWDER_PER_PACK_ERROR);
+  }
+
+  return {
+    month: input.month,
+    greenBeanTotalGram: input.greenBeanTotalGram,
+    powderPerPackGram: input.powderPerPackGram,
+    blendItems: input.blendItems,
+  };
 }

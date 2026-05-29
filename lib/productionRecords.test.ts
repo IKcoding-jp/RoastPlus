@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildBlendLabel,
   buildMonthlySummary,
+  buildProductionRecordMonth,
   calculateDailyTheoryPacks,
   calculateDefectRate,
   calculateMoistureLossRate,
@@ -24,6 +25,7 @@ import type {
   HandpickEntry,
   PackageEntry,
   ProductionRecordMonth,
+  ProductionRecordMonthInput,
   RoastEntry,
   TeamCounts,
 } from '@/types';
@@ -415,6 +417,43 @@ describe('validateBlendItems', () => {
         { beanName: 'a', ratioPercent: 80 },
         { beanName: 'b', ratioPercent: 10 },
       ])
+    ).toThrow();
+  });
+});
+
+describe('buildProductionRecordMonth', () => {
+  const validInput: ProductionRecordMonthInput = {
+    month: '2026-08',
+    greenBeanTotalGram: 20000,
+    powderPerPackGram: 8.5,
+    blendItems: [
+      { beanName: 'ブラジル', ratioPercent: 80 },
+      { beanName: 'グアテマラ', ratioPercent: 20 },
+    ],
+  };
+
+  it('returns the validated input shape', () => {
+    expect(buildProductionRecordMonth(validInput)).toEqual(validInput);
+  });
+
+  it('throws for an invalid month', () => {
+    expect(() => buildProductionRecordMonth({ ...validInput, month: '2026-13' })).toThrow();
+  });
+
+  it('throws when green bean total is not greater than 0', () => {
+    expect(() => buildProductionRecordMonth({ ...validInput, greenBeanTotalGram: 0 })).toThrow();
+  });
+
+  it('throws when powder per pack is not greater than 0', () => {
+    expect(() => buildProductionRecordMonth({ ...validInput, powderPerPackGram: 0 })).toThrow();
+  });
+
+  it('throws when blend items are invalid', () => {
+    expect(() =>
+      buildProductionRecordMonth({
+        ...validInput,
+        blendItems: [{ beanName: 'a', ratioPercent: 90 }],
+      })
     ).toThrow();
   });
 });
