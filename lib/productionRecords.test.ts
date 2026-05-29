@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
+  buildBlendLabel,
   calculateDailyTheoryPacks,
   calculateDefectRate,
   calculateMoistureLossRate,
+  calculatePackageTotals,
   calculatePremixBags,
   calculateRoastYield,
   calculateThirtyKgTheoryPacks,
@@ -10,6 +12,7 @@ import {
   isValidProductionMonth,
   isValidWorkDate,
 } from './productionRecords';
+import type { BlendItem, TeamCounts } from '@/types';
 
 describe('isValidProductionMonth', () => {
   it('accepts real yyyy-MM months only', () => {
@@ -112,5 +115,47 @@ describe('calculateThirtyKgTheoryPacks', () => {
     expect(calculateThirtyKgTheoryPacks(0.031, 0.83, 0)).toBe(0);
     expect(calculateThirtyKgTheoryPacks(0.031, 0, 8.5)).toBe(0);
     expect(calculateThirtyKgTheoryPacks(0.031, -0.1, 8.5)).toBe(0);
+  });
+});
+
+describe('calculatePackageTotals', () => {
+  it('sums both teams and computes the defect rate', () => {
+    const teamA: TeamCounts = { goodCount: 1500, defectiveCount: 50 };
+    const teamB: TeamCounts = { goodCount: 1340, defectiveCount: 32 };
+    // good=2840, defective=82, produced=2922, defectRate=82/2922=0.02806...
+    expect(calculatePackageTotals(teamA, teamB)).toEqual({
+      goodTotal: 2840,
+      defectiveTotal: 82,
+      producedTotal: 2922,
+      defectRate: 82 / 2922,
+    });
+  });
+
+  it('returns defectRate 0 when produced total is 0', () => {
+    const empty: TeamCounts = { goodCount: 0, defectiveCount: 0 };
+    expect(calculatePackageTotals(empty, empty)).toEqual({
+      goodTotal: 0,
+      defectiveTotal: 0,
+      producedTotal: 0,
+      defectRate: 0,
+    });
+  });
+});
+
+describe('buildBlendLabel', () => {
+  it('joins blend items as "name ratio%" separated by " / "', () => {
+    const items: BlendItem[] = [
+      { beanName: 'ブラジル', ratioPercent: 80 },
+      { beanName: 'グアテマラ', ratioPercent: 20 },
+    ];
+    expect(buildBlendLabel(items)).toBe('ブラジル 80% / グアテマラ 20%');
+  });
+
+  it('handles a single blend item', () => {
+    expect(buildBlendLabel([{ beanName: 'ブラジル', ratioPercent: 100 }])).toBe('ブラジル 100%');
+  });
+
+  it('returns an empty string for no items', () => {
+    expect(buildBlendLabel([])).toBe('');
   });
 });

@@ -1,3 +1,5 @@
+import type { BlendItem, TeamCounts } from '@/types';
+
 const WORK_MONTH_PATTERN = /^\d{4}-\d{2}$/;
 const WORK_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -76,4 +78,20 @@ export function calculateThirtyKgTheoryPacks(
     return 0;
   }
   return Math.floor((THIRTY_KG_BASE_GRAM * (1 - defectRate) * roastYield) / powderPerPackGram);
+}
+
+export function calculatePackageTotals(
+  teamA: TeamCounts,
+  teamB: TeamCounts
+): { goodTotal: number; defectiveTotal: number; producedTotal: number; defectRate: number } {
+  const goodTotal = teamA.goodCount + teamB.goodCount;
+  const defectiveTotal = teamA.defectiveCount + teamB.defectiveCount;
+  const producedTotal = goodTotal + defectiveTotal;
+  const defectRate = producedTotal <= 0 ? 0 : defectiveTotal / producedTotal;
+
+  return { goodTotal, defectiveTotal, producedTotal, defectRate };
+}
+
+export function buildBlendLabel(blendItems: BlendItem[]): string {
+  return blendItems.map((item) => `${item.beanName} ${item.ratioPercent}%`).join(' / ');
 }
