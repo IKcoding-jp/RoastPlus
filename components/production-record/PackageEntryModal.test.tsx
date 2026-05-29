@@ -101,6 +101,18 @@ describe('PackageEntryModal', () => {
     expect(onSave).not.toHaveBeenCalled();
   });
 
+  it('個数に小数が入ると（切り捨てず）保存できずエラーを表示する', async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    render(<PackageEntryModal {...baseProps} onSave={onSave} />);
+
+    // 1.5 は parseInt で 1 に切り捨てず、整数エラーとして弾く（過少カウント防止）
+    fireEvent.change(screen.getAllByLabelText('良品数')[0], { target: { value: '1.5' } });
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
   it('保存処理が失敗するとエラーを表示する', async () => {
     const onSave = vi.fn().mockRejectedValue(new Error('保存失敗'));
     render(<PackageEntryModal {...baseProps} onSave={onSave} />);

@@ -373,6 +373,8 @@ describe('ProductionRecordPage データ表示と集計', () => {
 
   it('新規作成時は月設定モーダルが空（initial=null）で開く', () => {
     render(<ProductionRecordPage />);
+    // 既存月(2026-05)と重複しない月を指定する（重複月は作成がブロックされるため、当月の日付に依存させない）
+    fireEvent.change(screen.getByLabelText('新規作成'), { target: { value: '2026-07' } });
     fireEvent.click(screen.getByRole('button', { name: '対象月を作成' }));
 
     expect(screen.getByTestId('month-modal')).toBeInTheDocument();
@@ -494,5 +496,47 @@ describe('ProductionRecordPage CSV出力', () => {
 
     clickSpy.mockRestore();
     createElementSpy.mockRestore();
+  });
+});
+
+describe('ProductionRecordPage 月切替ローディング中のガード', () => {
+  beforeEach(() => {
+    setupWithData();
+  });
+
+  it('読み込み中は入力3ボタンを無効化する（前月設定での誤入力を防ぐ）', () => {
+    mocks.hookState.isLoading = true;
+    render(<ProductionRecordPage />);
+
+    expect(screen.getByRole('button', { name: '欠点豆を入力' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: '焙煎を入力' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'パッケージを入力' })).toBeDisabled();
+  });
+
+  it('読み込み完了後は入力3ボタンを有効化する', () => {
+    mocks.hookState.isLoading = false;
+    render(<ProductionRecordPage />);
+
+    expect(screen.getByRole('button', { name: '欠点豆を入力' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: '焙煎を入力' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'パッケージを入力' })).toBeEnabled();
+  });
+});
+
+describe('ProductionRecordPage 重複月の作成防止', () => {
+  beforeEach(() => {
+    // 既存月 2026-05 が存在する状態
+    setupWithData();
+  });
+
+  it('既存月を指定して「対象月を作成」を押すと、作成せず既存である旨を通知する', () => {
+    render(<ProductionRecordPage />);
+    // 新規作成欄に既存月(2026-05)を指定する
+    fireEvent.change(screen.getByLabelText('新規作成'), { target: { value: '2026-05' } });
+    fireEvent.click(screen.getByRole('button', { name: '対象月を作成' }));
+
+    // 月設定モーダルは開かず（無警告の上書きを防ぐ）、既存月である旨を通知する
+    expect(screen.queryByTestId('month-modal')).not.toBeInTheDocument();
+    expect(mocks.showToast).toHaveBeenCalledWith(expect.stringContaining('既に存在'), 'error');
   });
 });

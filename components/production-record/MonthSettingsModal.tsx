@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { HiX } from 'react-icons/hi';
 
 import { Modal, IconButton, Button, NumberInput, Input } from '@/components/ui';
-import { DEFAULT_POWDER_PER_PACK_GRAM, MAX_BLEND_ITEMS, validateBlendItems } from '@/lib/productionRecords';
+import { DEFAULT_POWDER_PER_PACK_GRAM, MAX_BLEND_ITEMS, formatKg, validateBlendItems } from '@/lib/productionRecords';
 import type { BlendItem, ProductionRecordMonth, ProductionRecordMonthInput } from '@/types';
 
 interface MonthSettingsModalProps {
@@ -12,6 +12,8 @@ interface MonthSettingsModalProps {
   month: string;
   /** 編集時の初期値 */
   initial?: ProductionRecordMonth | null;
+  /** 入力済みのハンドピック済み生豆重量合計(g)。生豆総量はこれを下回れない。新規作成時は0 */
+  handpickedTotalGram?: number;
   /** 保存ハンドラ */
   onSave: (input: ProductionRecordMonthInput) => Promise<void>;
   /** 閉じるハンドラ */
@@ -31,7 +33,13 @@ function formatMonthLabel(month: string): string {
   return `${year}年${Number(mon)}月分`;
 }
 
-export function MonthSettingsModal({ month, initial, onSave, onClose }: MonthSettingsModalProps) {
+export function MonthSettingsModal({
+  month,
+  initial,
+  handpickedTotalGram = 0,
+  onSave,
+  onClose,
+}: MonthSettingsModalProps) {
   // useId() を基点に連番でドラフト行の安定IDを生成する（乱数系APIは使わない）
   const idBase = useId();
   const idCounterRef = useRef(0);
@@ -87,6 +95,11 @@ export function MonthSettingsModal({ month, initial, onSave, onClose }: MonthSet
 
     if (greenBeanTotalGram <= 0) {
       setError('生豆総量は0より大きい値を入力してください');
+      return;
+    }
+    // 既に入力済みのハンドピック済み合計を下回る総量は、月合計CSVと詳細記録の整合を崩すため拒否する
+    if (greenBeanTotalGram < handpickedTotalGram) {
+      setError(`生豆総量はハンドピック済み合計（${formatKg(handpickedTotalGram)}kg）以上で入力してください`);
       return;
     }
     if (powderPerPackGram <= 0) {

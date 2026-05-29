@@ -34,13 +34,19 @@ export function PackageEntryModal({ initial, defaultWorkDate, onSave, onClose }:
     setTeamBDefective(String(initial.teamB.defectiveCount));
   }, [initial]);
 
+  // 個数は整数のみ許可。parseInt だと "1.5" を 1 に切り捨てて過少カウントになるため、
+  // Number で生入力のまま数値化し、handleSave で整数チェックして弾く（表示と保存の数値ソースを揃える）
+  const parseCount = (raw: string): number => {
+    const trimmed = raw.trim();
+    return trimmed === '' ? 0 : Number(trimmed);
+  };
   const teamA: TeamCounts = {
-    goodCount: parseInt(teamAGood, 10) || 0,
-    defectiveCount: parseInt(teamADefective, 10) || 0,
+    goodCount: parseCount(teamAGood),
+    defectiveCount: parseCount(teamADefective),
   };
   const teamB: TeamCounts = {
-    goodCount: parseInt(teamBGood, 10) || 0,
-    defectiveCount: parseInt(teamBDefective, 10) || 0,
+    goodCount: parseCount(teamBGood),
+    defectiveCount: parseCount(teamBDefective),
   };
   const totals = calculatePackageTotals(teamA, teamB);
 
@@ -50,7 +56,8 @@ export function PackageEntryModal({ initial, defaultWorkDate, onSave, onClose }:
       setError('作業日を入力してください');
       return;
     }
-    if (teamA.goodCount < 0 || teamA.defectiveCount < 0 || teamB.goodCount < 0 || teamB.defectiveCount < 0) {
+    const counts = [teamA.goodCount, teamA.defectiveCount, teamB.goodCount, teamB.defectiveCount];
+    if (counts.some((count) => !Number.isInteger(count) || count < 0)) {
       setError('個数は0以上の整数で入力してください');
       return;
     }

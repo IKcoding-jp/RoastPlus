@@ -145,6 +145,11 @@ describe('calculateThirtyKgTheoryPacks', () => {
     expect(calculateThirtyKgTheoryPacks(0.031, 0, 8.5)).toBe(0);
     expect(calculateThirtyKgTheoryPacks(0.031, -0.1, 8.5)).toBe(0);
   });
+
+  it('clamps to 0 when defectRate exceeds 1 (defect grams exceed handpicked grams)', () => {
+    // 欠点率が1を超えると (1 - defectRate) が負になるが、理論袋数は0でクランプする
+    expect(calculateThirtyKgTheoryPacks(1.2, 0.83, 8.5)).toBe(0);
+  });
 });
 
 describe('calculatePackageTotals', () => {

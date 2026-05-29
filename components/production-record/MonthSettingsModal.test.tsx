@@ -100,6 +100,40 @@ describe('MonthSettingsModal', () => {
     expect(onSave).not.toHaveBeenCalled();
   });
 
+  it('生豆総量がハンドピック済み合計を下回ると保存できずエラーを表示する', async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    // ハンドピック済み 15kg(15000g) に対し、生豆総量を 10kg へ下げようとすると弾く
+    render(<MonthSettingsModal {...baseProps} onSave={onSave} handpickedTotalGram={15000} />);
+
+    fireEvent.change(screen.getByLabelText('生豆総量'), { target: { value: '10' } });
+    fireEvent.change(screen.getByLabelText('豆 1'), { target: { value: 'ブラジル' } });
+    fireEvent.change(screen.getByLabelText('比率'), { target: { value: '100' } });
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+
+    expect(await screen.findByRole('alert')).toBeInTheDocument();
+    expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it('生豆総量がハンドピック済み合計以上なら保存できる', async () => {
+    const onSave = vi.fn().mockResolvedValue(undefined);
+    // ハンドピック済み 15kg に対し、生豆総量 20kg は許可する
+    render(<MonthSettingsModal {...baseProps} onSave={onSave} handpickedTotalGram={15000} />);
+
+    fireEvent.change(screen.getByLabelText('生豆総量'), { target: { value: '20' } });
+    fireEvent.change(screen.getByLabelText('豆 1'), { target: { value: 'ブラジル' } });
+    fireEvent.change(screen.getByLabelText('比率'), { target: { value: '100' } });
+    fireEvent.click(screen.getByRole('button', { name: '保存' }));
+
+    await vi.waitFor(() => {
+      expect(onSave).toHaveBeenCalledWith({
+        month: '2026-08',
+        greenBeanTotalGram: 20000,
+        powderPerPackGram: 8.5,
+        blendItems: [{ beanName: 'ブラジル', ratioPercent: 100 }],
+      });
+    });
+  });
+
   it('1袋粉量が0だと保存できずエラーを表示する', async () => {
     const onSave = vi.fn().mockResolvedValue(undefined);
     render(<MonthSettingsModal {...baseProps} onSave={onSave} />);

@@ -217,6 +217,12 @@ export default function ProductionRecordPage() {
 
   // 新規作成（月設定モーダルを空で開くだけ。保存するまで selectedMonth は変えず画面遷移しない）
   const handleCreateMonth = () => {
+    // 既存月と同じ対象月を「作成」すると、同じ月ドキュメントを現在値表示なしで上書きしてしまう。
+    // データ損失を防ぐため作成はブロックし、「対象月」から選んで編集するよう促す。
+    if (recentMonths.some((month) => month.month === newMonthInput)) {
+      showToast('その対象月は既に存在します。「対象月」から選んで設定を編集してください', 'error');
+      return;
+    }
     setIsEditingMonth(false);
     setIsMonthSettingsOpen(true);
   };
@@ -355,7 +361,7 @@ export default function ProductionRecordPage() {
                   type="button"
                   size="sm"
                   variant="primary"
-                  disabled={!selectedMonth || !monthDoc}
+                  disabled={!selectedMonth || !monthDoc || isLoading}
                   onClick={() => {
                     setEditingHandpick(null);
                     setIsHandpickOpen(true);
@@ -411,7 +417,7 @@ export default function ProductionRecordPage() {
                   type="button"
                   size="sm"
                   variant="primary"
-                  disabled={!selectedMonth || !monthDoc}
+                  disabled={!selectedMonth || !monthDoc || isLoading}
                   onClick={() => {
                     setEditingRoast(null);
                     setIsRoastOpen(true);
@@ -475,7 +481,7 @@ export default function ProductionRecordPage() {
                   type="button"
                   size="sm"
                   variant="primary"
-                  disabled={!selectedMonth || !monthDoc}
+                  disabled={!selectedMonth || !monthDoc || isLoading}
                   onClick={() => {
                     setEditingPackage(null);
                     setIsPackageOpen(true);
@@ -592,6 +598,7 @@ export default function ProductionRecordPage() {
         <MonthSettingsModal
           month={isEditingMonth ? selectedMonth : newMonthInput}
           initial={isEditingMonth ? monthDoc : null}
+          handpickedTotalGram={isEditingMonth ? handpickTotals.handpickedTotalGram : 0}
           onClose={() => {
             setIsMonthSettingsOpen(false);
             setIsEditingMonth(false);

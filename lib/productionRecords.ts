@@ -100,7 +100,9 @@ export function calculateThirtyKgTheoryPacks(
   if (powderPerPackGram <= 0 || roastYield <= 0) {
     return 0;
   }
-  return Math.floor((THIRTY_KG_BASE_GRAM * (1 - defectRate) * roastYield) / powderPerPackGram);
+  // 欠点率が1を超える異常入力では (1 - defectRate) が負になるため、0でクランプして負の袋数を防ぐ
+  // （calculateUsableGreenGram / calculatePremixBags と同じ非負クランプ方針）
+  return Math.floor((THIRTY_KG_BASE_GRAM * Math.max(0, 1 - defectRate) * roastYield) / powderPerPackGram);
 }
 
 export function calculatePackageTotals(
