@@ -25,6 +25,11 @@ export const HOME_FEATURES = [
     description: '成功数と失敗数を記録',
   },
   {
+    key: 'production-record',
+    title: '生産記録',
+    description: 'ハンドピック・焙煎・パッケージを記録',
+  },
+  {
     key: 'drip-guide',
     title: 'ドリップガイド',
     description: '淹れ方の手順',
