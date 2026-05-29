@@ -100,31 +100,76 @@ describe('Firestore rules', () => {
     });
   });
 
-  describe('users/{uid}/productionPackRecords/{workDate}', () => {
-    it('allows only the signed-in owner to read and write production pack records', async () => {
-      const path = `users/${OWN_UID}/productionPackRecords/2026-05-24`;
+  describe('users/{uid}/productionRecords/{month}', () => {
+    it('allows only the signed-in owner to read and write the month document', async () => {
+      const path = `users/${OWN_UID}/productionRecords/2026-08`;
       const ownerDoc = firestoreFor(OWN_UID).doc(path);
       const otherDoc = firestoreFor(OTHER_UID).doc(path);
       const anonymousDoc = firestoreFor().doc(path);
-      const record = {
-        workDate: '2026-05-24',
-        teamA: { successCount: 10, failureCount: 1 },
-        teamB: { successCount: 20, failureCount: 2 },
-        successTotal: 30,
-        failureTotal: 3,
-        total: 33,
+      const monthDoc = {
+        month: '2026-08',
+        greenBeanTotalGram: 30000,
+        powderPerPackGram: 8.5,
+        blendItems: [
+          { beanName: 'ブラジル', ratioPercent: 80 },
+          { beanName: 'グアテマラ', ratioPercent: 20 },
+        ],
       };
 
       await assertFails(anonymousDoc.get());
-      await assertFails(anonymousDoc.set(record));
+      await assertFails(anonymousDoc.set(monthDoc));
 
-      await assertSucceeds(ownerDoc.set(record));
+      await assertSucceeds(ownerDoc.set(monthDoc));
       await assertSucceeds(ownerDoc.get());
 
       await assertFails(otherDoc.get());
-      await assertFails(otherDoc.set(record));
-      await assertFails(otherDoc.delete());
-      await assertSucceeds(ownerDoc.delete());
+      await assertFails(otherDoc.set(monthDoc));
+    });
+
+    it('allows only the signed-in owner to read and write handpick/roast/package subcollection entries', async () => {
+      const handpickPath = `users/${OWN_UID}/productionRecords/2026-08/handpickEntries/entry_1`;
+      const roastPath = `users/${OWN_UID}/productionRecords/2026-08/roastEntries/entry_1`;
+      const packagePath = `users/${OWN_UID}/productionRecords/2026-08/packageEntries/entry_1`;
+
+      const handpickEntry = {
+        workDate: '2026-08-01',
+        beanName: 'ブラジル',
+        segment: 'first',
+        greenBeanWeightGram: 10000,
+        defectBeanWeightGram: 300,
+      };
+      const roastEntry = {
+        workDate: '2026-08-01',
+        beforeRoastWeightGram: 10000,
+        afterRoastWeightGram: 8500,
+      };
+      const packageEntry = {
+        workDate: '2026-08-01',
+        teamA: { goodCount: 100, defectiveCount: 2 },
+        teamB: { goodCount: 120, defectiveCount: 3 },
+      };
+
+      // ハンドピック: 本人は read/write 可、他人・未認証は拒否
+      await assertFails(firestoreFor().doc(handpickPath).get());
+      await assertFails(firestoreFor().doc(handpickPath).set(handpickEntry));
+      await assertSucceeds(firestoreFor(OWN_UID).doc(handpickPath).set(handpickEntry));
+      await assertSucceeds(firestoreFor(OWN_UID).doc(handpickPath).get());
+      await assertFails(firestoreFor(OTHER_UID).doc(handpickPath).get());
+      await assertFails(firestoreFor(OTHER_UID).doc(handpickPath).set(handpickEntry));
+
+      // 焙煎: 本人は read/write 可、他人・未認証は拒否
+      await assertFails(firestoreFor().doc(roastPath).set(roastEntry));
+      await assertSucceeds(firestoreFor(OWN_UID).doc(roastPath).set(roastEntry));
+      await assertSucceeds(firestoreFor(OWN_UID).doc(roastPath).get());
+      await assertFails(firestoreFor(OTHER_UID).doc(roastPath).get());
+      await assertFails(firestoreFor(OTHER_UID).doc(roastPath).set(roastEntry));
+
+      // パッケージ: 本人は read/write 可、他人・未認証は拒否
+      await assertFails(firestoreFor().doc(packagePath).set(packageEntry));
+      await assertSucceeds(firestoreFor(OWN_UID).doc(packagePath).set(packageEntry));
+      await assertSucceeds(firestoreFor(OWN_UID).doc(packagePath).get());
+      await assertFails(firestoreFor(OTHER_UID).doc(packagePath).get());
+      await assertFails(firestoreFor(OTHER_UID).doc(packagePath).set(packageEntry));
     });
   });
 });

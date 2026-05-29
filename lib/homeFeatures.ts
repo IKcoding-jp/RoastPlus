@@ -20,9 +20,9 @@ export const HOME_FEATURES = [
     description: '欠点豆の知識を共有',
   },
   {
-    key: 'production-packs',
-    title: 'パッケージ記録',
-    description: '成功数と失敗数を記録',
+    key: 'production-record',
+    title: '生産記録',
+    description: '月次の生産実績を記録',
   },
   {
     key: 'drip-guide',

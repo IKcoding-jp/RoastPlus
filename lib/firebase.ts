@@ -1,7 +1,7 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
-import { getFirestore } from 'firebase/firestore';
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
 import { initializeRoastPlusAppCheck } from './appCheck';
 
 const firebaseConfig = {
@@ -19,10 +19,12 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 declare global {
   interface Window {
     __ROASTPLUS_FUNCTIONS_EMULATOR_CONNECTED__?: boolean;
+    __ROASTPLUS_FIRESTORE_EMULATOR_CONNECTED__?: boolean;
   }
 }
 
 const functionsInstance = getFunctions(app);
+const firestoreInstance = getFirestore(app);
 
 initializeRoastPlusAppCheck(app);
 
@@ -38,7 +40,20 @@ if (
   window.__ROASTPLUS_FUNCTIONS_EMULATOR_CONNECTED__ = true;
 }
 
+// E2E（Playwright）では Firestore エミュレータへ接続する。env ガードで本番に影響しない。
+if (
+  typeof window !== 'undefined' &&
+  process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_EMULATOR === 'true' &&
+  !window.__ROASTPLUS_FIRESTORE_EMULATOR_CONNECTED__
+) {
+  const host = process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_EMULATOR_HOST || '127.0.0.1';
+  const port = Number(process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_EMULATOR_PORT || '8080');
+
+  connectFirestoreEmulator(firestoreInstance, host, port);
+  window.__ROASTPLUS_FIRESTORE_EMULATOR_CONNECTED__ = true;
+}
+
 export const auth = getAuth(app);
 export const functions = functionsInstance;
-export const db = getFirestore(app);
+export const db = firestoreInstance;
 export default app;

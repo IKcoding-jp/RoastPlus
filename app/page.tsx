@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import type { IconType } from 'react-icons';
 import { FaCoffee, FaUsers } from 'react-icons/fa';
 import { IoSettings } from 'react-icons/io5';
-import { MdCoffeeMaker, MdInventory2 } from 'react-icons/md';
+import { MdCoffeeMaker, MdFactory } from 'react-icons/md';
 import { RiBookFill, RiCalendarScheduleFill } from 'react-icons/ri';
 import { Loading } from '@/components/Loading';
 import { ActionCard } from '@/components/home/ActionCard';
@@ -40,7 +40,7 @@ const CHRISTMAS_ICONS: Record<string, IconType> = {
   schedule: BsStars,
   tasting: FaTree,
   'defect-beans': GiGingerbreadMan,
-  'production-packs': MdInventory2,
+  'production-record': MdFactory,
   'drip-guide': GiCandyCanes,
   settings: IoSettings,
 };
@@ -77,11 +77,11 @@ const ACTIONS: Action[] = [
     icon: RiBookFill,
   },
   {
-    key: 'production-packs',
-    title: 'パッケージ記録',
-    description: '成功数と失敗数を記録',
-    href: '/production-packs',
-    icon: MdInventory2,
+    key: 'production-record',
+    title: '生産記録',
+    description: '月次の生産実績を記録',
+    href: '/production-record',
+    icon: MdFactory,
   },
   {
     key: 'drip-guide',

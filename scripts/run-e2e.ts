@@ -4,7 +4,13 @@ import http from 'node:http';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import { buildJavaEnv, findJavaCandidate } from './lib/java';
+
 const DEFAULT_E2E_PORT = '3100';
+// E2E は Firestore エミュレータを使う（生産記録など実Firestore機能のため）。
+// e2e.env の projectId と一致させ、firebase.e2e.json のオープンルールで起動する。
+const E2E_FIREBASE_PROJECT_ID = 'demo-roastplus-e2e';
+const E2E_FIREBASE_CONFIG = 'firebase.e2e.json';
 const SERVER_TIMEOUT_MS = 120_000;
 const POLL_INTERVAL_MS = 1_000;
 const E2E_MODE_MARKER = 'data-roastplus-e2e-mode="true"';
@@ -50,6 +56,20 @@ export function isE2EModeHTML(html: string) {
 
 export function getServerProbeURL(port: string) {
   return `http://localhost:${port}/login/`;
+}
+
+/**
+ * Playwright へ渡す引数を内側 shell 用にクォートして1つの文字列にまとめる。
+ * emulators:exec が受け取るコマンド文字列は外側のダブルクォート内に置かれるため、POSIX では
+ * 各引数をシングルクォートで囲めば外側のダブルクォートと衝突せず引数境界（空白など）を保てる。
+ * Windows(cmd) はダブルクォートのネスト規則が複雑で実機検証が難しいため、従来どおり素の連結に
+ * 留める（空白を含まない引数は問題なく動作し、CI は引数なしで実行するため影響しない）。
+ */
+export function quotePlaywrightArgs(args: string[], platform: NodeJS.Platform = process.platform): string {
+  if (platform === 'win32') {
+    return args.join(' ');
+  }
+  return args.map((arg) => (/^[\w@%+=:,./-]+$/.test(arg) ? arg : `'${arg.replace(/'/g, `'\\''`)}'`)).join(' ');
 }
 
 function fetchServerHTML(url: string) {
@@ -150,6 +170,12 @@ async function main() {
     E2E_SKIP_WEB_SERVER: '1',
   };
 
+  // Firestore エミュレータの起動に Java 21+ が必要（rules テストと同条件）
+  const java = findJavaCandidate();
+  if (!java) {
+    throw new Error('Firebase Emulator requires Java 21 or newer. Install JDK 21+ or set JAVA_HOME.');
+  }
+
   let server: ChildProcess | null = null;
   const existingServerState = await inspectServer(serverURL);
 
@@ -177,8 +203,13 @@ async function main() {
   }
 
   try {
-    const playwrightCli = path.join(rootDir, 'node_modules', '@playwright', 'test', 'cli.js');
-    const exitCode = runCommand(process.execPath, [playwrightCli, 'test', ...process.argv.slice(2)], env);
+    // Playwright を Firestore エミュレータ内で実行する。
+    // emulators:exec はラップしたコマンドの実行中だけエミュレータを立ち上げ、終了後に片付ける。
+    const playwrightArgs = quotePlaywrightArgs(process.argv.slice(2));
+    const innerCommand = `npx playwright test${playwrightArgs ? ` ${playwrightArgs}` : ''}`;
+    const command = `firebase emulators:exec --project ${E2E_FIREBASE_PROJECT_ID} --config ${E2E_FIREBASE_CONFIG} --only firestore "${innerCommand}"`;
+    const execEnv = { ...buildJavaEnv(java), ...e2eEnv, E2E_PORT: port, E2E_SKIP_WEB_SERVER: '1' };
+    const exitCode = runCommand(command, [], execEnv, true);
     process.exitCode = exitCode;
   } finally {
     if (server) {

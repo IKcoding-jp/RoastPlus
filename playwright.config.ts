@@ -29,7 +29,7 @@ export default defineConfig({
     },
     {
       name: 'chromium',
-      testMatch: [/essential\.spec\.ts/, /production-packs\.spec\.ts/],
+      testMatch: [/essential\.spec\.ts/],
       use: {
         ...devices['Desktop Chrome'],
         storageState: 'playwright/.auth/e2e-user.json',
@@ -39,6 +39,14 @@ export default defineConfig({
     {
       name: 'a11y',
       testMatch: /accessibility\/a11y\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+      },
+    },
+    {
+      // 生産記録は実Firestore（エミュレータ）を使う。認証はspec内でlocalStorage偽装するため setup 非依存。
+      name: 'production-record',
+      testMatch: /production-record\.spec\.ts/,
       use: {
         ...devices['Desktop Chrome'],
       },

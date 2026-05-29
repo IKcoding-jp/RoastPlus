@@ -33,14 +33,26 @@ interface NumberInputProps extends Omit<React.InputHTMLAttributes<HTMLInputEleme
   suffix?: string;
   /** エラーメッセージ */
   error?: string;
+  /** 数値の揃え方（デフォルト center）。フォームでは right が読みやすい */
+  align?: 'left' | 'center' | 'right';
+  /** ラベルへ追加するクラス（良品=青/不良品=赤 などの色分け用） */
+  labelClassName?: string;
+  /** suffix を枠の内側（右端）に収める。フォームを洗練させたいときに使う */
+  suffixInside?: boolean;
 }
 
 export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
-  ({ label, suffix, error, className = '', id, ...props }, ref) => {
+  (
+    { label, suffix, error, align = 'center', labelClassName = '', suffixInside = false, className = '', id, ...props },
+    ref
+  ) => {
     const generatedId = useId();
     const inputId = id || generatedId;
 
-    const baseStyles = 'rounded-lg border-2 px-4 py-2 text-lg transition-all duration-200 min-h-[44px] text-center';
+    const hasInsideSuffix = Boolean(suffix && suffixInside);
+
+    const alignStyles = align === 'left' ? 'text-left' : align === 'right' ? 'text-right' : 'text-center';
+    const baseStyles = `rounded-lg border-2 px-4 py-2 text-lg transition-all duration-200 min-h-[44px] ${alignStyles}`;
 
     const themeStyles =
       'bg-field border-edge text-ink placeholder:text-ink-muted hover:border-edge-strong focus:border-spot focus:bg-field focus:outline-none focus:ring-2 focus:ring-spot-subtle';
@@ -49,20 +61,26 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
 
     const disabledStyles = 'opacity-50 cursor-not-allowed';
 
+    // 枠内 suffix のときは右側に単位ぶんの余白を確保する
+    const widthStyles = hasInsideSuffix ? 'w-full pr-10' : suffix ? 'min-w-0 flex-1' : 'w-full';
+
     const inputStyles = [
       baseStyles,
       themeStyles,
       error ? errorStyles : '',
       props.disabled ? disabledStyles : '',
-      suffix ? '' : 'w-full',
+      widthStyles,
       className,
     ]
       .filter(Boolean)
       .join(' ');
 
-    const labelStyles = 'block text-sm font-medium text-ink mb-2';
+    // 色分け指定があればそれを優先。なければ既定の text-ink。
+    const labelStyles = `block text-sm font-medium mb-2 ${labelClassName || 'text-ink'}`;
 
-    const suffixStyles = 'text-ink-sub font-bold ml-2';
+    const suffixStyles = hasInsideSuffix
+      ? 'pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm font-medium text-ink-sub'
+      : 'text-ink-sub font-bold ml-2';
 
     const errorTextStyles = 'text-error text-sm mt-1';
 
@@ -73,7 +91,7 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
             {label}
           </label>
         )}
-        <div className="flex items-center">
+        <div className={hasInsideSuffix ? 'relative' : 'flex items-center'}>
           <input
             ref={ref}
             id={inputId}
