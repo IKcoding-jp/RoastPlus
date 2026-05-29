@@ -72,8 +72,6 @@ describe('HomePage', () => {
   });
 
   it('スマホで表示機能が少ない場合もアクションを巨大化させない', () => {
-    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 390 });
-    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 844 });
     mocks.visibleKeys.clear();
     mocks.visibleKeys.add('settings');
 

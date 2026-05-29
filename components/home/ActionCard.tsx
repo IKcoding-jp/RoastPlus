@@ -44,7 +44,7 @@ export function ActionCard({ title, label, description, href, icon: Icon, badge,
         </div>
       )}
 
-      <span className="relative flex h-14 w-14 shrink-0 items-center justify-center self-center text-spot transition-all duration-300 md:h-14 md:w-14">
+      <span className="relative flex h-14 w-14 shrink-0 items-center justify-center self-center text-spot transition-all duration-300">
         <Icon className="relative z-10 h-8 w-8 md:h-11 md:w-11" />
       </span>
       <div className="relative z-10 flex min-w-0 flex-1 flex-col justify-center md:block md:flex-none md:text-center">
