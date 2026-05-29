@@ -4,6 +4,7 @@ import {
   buildHandpickEntry,
   buildMonthlySummary,
   buildPackageEntry,
+  buildProductionRecordCsv,
   buildProductionRecordMonth,
   buildRoastEntry,
   calculateDailyTheoryPacks,
@@ -17,6 +18,7 @@ import {
   escapeCsvCell,
   formatKg,
   formatPercent,
+  getProductionRecordCsvFileName,
   isValidProductionMonth,
   isValidWorkDate,
   normalizeCountInput,
@@ -34,6 +36,7 @@ import type {
   PackageEntryInput,
   ProductionRecordMonth,
   ProductionRecordMonthInput,
+  ProductionRecordMonthlySummary,
   RoastEntry,
   RoastEntryInput,
   TeamCounts,
@@ -562,5 +565,41 @@ describe('escapeCsvCell', () => {
     expect(escapeCsvCell('a"b')).toBe('"a""b"');
     expect(escapeCsvCell('a\nb')).toBe('"a\nb"');
     expect(escapeCsvCell('a\rb')).toBe('"a\rb"');
+  });
+});
+
+describe('buildProductionRecordCsv', () => {
+  it('builds a BOM csv with a 12-column header and one CRLF data row', () => {
+    const summary: ProductionRecordMonthlySummary = {
+      month: '2026-08',
+      blendLabel: 'ブラジル 80% / グアテマラ 20%',
+      greenBeanTotalGram: 20000,
+      defectBeanTotalGram: 620,
+      defectRate: 0.031,
+      roastBeforeTotalGram: 2000,
+      roastAfterTotalGram: 1660,
+      roastYield: 0.83,
+      moistureLossRate: 0.17,
+      premixBags: 38,
+      premixRemainderGram: 380,
+      thirtyKgTheoryPacks: 2838,
+      monthlyGoodCount: 2840,
+      monthlyDefectiveCount: 82,
+      monthlyProducedCount: 2922,
+      packageLossRate: 82 / 2922,
+    };
+
+    const header =
+      '対象月,配合,生豆重量kg,欠点豆重量g,欠点率,焙煎後重量kg,水分蒸発率,30kg理論袋数,月良品数,月不良品数,月生産個数,パッケージロス率';
+    // 配合はスラッシュを含むがカンマを含まないためクォート不要
+    const dataRow = '2026-08,ブラジル 80% / グアテマラ 20%,20.00,620,3.1%,1.66,17.0%,2838,2840,82,2922,2.8%';
+
+    expect(buildProductionRecordCsv(summary)).toBe(`﻿${header}\r\n${dataRow}`);
+  });
+});
+
+describe('getProductionRecordCsvFileName', () => {
+  it('uses the target month in the file name', () => {
+    expect(getProductionRecordCsvFileName('2026-08')).toBe('production-record-2026-08.csv');
   });
 });

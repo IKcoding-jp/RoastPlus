@@ -323,3 +323,42 @@ export function escapeCsvCell(value: string | number): string {
   const text = String(value);
   return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
 }
+
+export function buildProductionRecordCsv(summary: ProductionRecordMonthlySummary): string {
+  const header = [
+    '対象月',
+    '配合',
+    '生豆重量kg',
+    '欠点豆重量g',
+    '欠点率',
+    '焙煎後重量kg',
+    '水分蒸発率',
+    '30kg理論袋数',
+    '月良品数',
+    '月不良品数',
+    '月生産個数',
+    'パッケージロス率',
+  ];
+
+  const dataRow: Array<string | number> = [
+    summary.month,
+    summary.blendLabel,
+    formatKg(summary.greenBeanTotalGram),
+    summary.defectBeanTotalGram,
+    formatPercent(summary.defectRate),
+    formatKg(summary.roastAfterTotalGram),
+    formatPercent(summary.moistureLossRate),
+    summary.thirtyKgTheoryPacks,
+    summary.monthlyGoodCount,
+    summary.monthlyDefectiveCount,
+    summary.monthlyProducedCount,
+    formatPercent(summary.packageLossRate),
+  ];
+
+  const rows = [header, dataRow.map((cell) => String(cell))];
+  return `﻿${rows.map((row) => row.map(escapeCsvCell).join(',')).join('\r\n')}`;
+}
+
+export function getProductionRecordCsvFileName(month: string): string {
+  return `production-record-${month}.csv`;
+}
