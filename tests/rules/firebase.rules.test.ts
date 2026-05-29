@@ -127,6 +127,79 @@ describe('Firestore rules', () => {
       await assertSucceeds(ownerDoc.delete());
     });
   });
+
+  describe('users/{uid}/productionRecords/{month}', () => {
+    it('allows only the signed-in owner to read and write the month document', async () => {
+      const path = `users/${OWN_UID}/productionRecords/2026-08`;
+      const ownerDoc = firestoreFor(OWN_UID).doc(path);
+      const otherDoc = firestoreFor(OTHER_UID).doc(path);
+      const anonymousDoc = firestoreFor().doc(path);
+      const monthDoc = {
+        month: '2026-08',
+        greenBeanTotalGram: 30000,
+        powderPerPackGram: 8.5,
+        blendItems: [
+          { beanName: 'ブラジル', ratioPercent: 80 },
+          { beanName: 'グアテマラ', ratioPercent: 20 },
+        ],
+      };
+
+      await assertFails(anonymousDoc.get());
+      await assertFails(anonymousDoc.set(monthDoc));
+
+      await assertSucceeds(ownerDoc.set(monthDoc));
+      await assertSucceeds(ownerDoc.get());
+
+      await assertFails(otherDoc.get());
+      await assertFails(otherDoc.set(monthDoc));
+    });
+
+    it('allows only the signed-in owner to read and write handpick/roast/package subcollection entries', async () => {
+      const handpickPath = `users/${OWN_UID}/productionRecords/2026-08/handpickEntries/entry_1`;
+      const roastPath = `users/${OWN_UID}/productionRecords/2026-08/roastEntries/entry_1`;
+      const packagePath = `users/${OWN_UID}/productionRecords/2026-08/packageEntries/entry_1`;
+
+      const handpickEntry = {
+        workDate: '2026-08-01',
+        beanName: 'ブラジル',
+        segment: 'first',
+        greenBeanWeightGram: 10000,
+        defectBeanWeightGram: 300,
+      };
+      const roastEntry = {
+        workDate: '2026-08-01',
+        beforeRoastWeightGram: 10000,
+        afterRoastWeightGram: 8500,
+      };
+      const packageEntry = {
+        workDate: '2026-08-01',
+        teamA: { goodCount: 100, defectiveCount: 2 },
+        teamB: { goodCount: 120, defectiveCount: 3 },
+      };
+
+      // ハンドピック: 本人は read/write 可、他人・未認証は拒否
+      await assertFails(firestoreFor().doc(handpickPath).get());
+      await assertFails(firestoreFor().doc(handpickPath).set(handpickEntry));
+      await assertSucceeds(firestoreFor(OWN_UID).doc(handpickPath).set(handpickEntry));
+      await assertSucceeds(firestoreFor(OWN_UID).doc(handpickPath).get());
+      await assertFails(firestoreFor(OTHER_UID).doc(handpickPath).get());
+      await assertFails(firestoreFor(OTHER_UID).doc(handpickPath).set(handpickEntry));
+
+      // 焙煎: 本人は read/write 可、他人・未認証は拒否
+      await assertFails(firestoreFor().doc(roastPath).set(roastEntry));
+      await assertSucceeds(firestoreFor(OWN_UID).doc(roastPath).set(roastEntry));
+      await assertSucceeds(firestoreFor(OWN_UID).doc(roastPath).get());
+      await assertFails(firestoreFor(OTHER_UID).doc(roastPath).get());
+      await assertFails(firestoreFor(OTHER_UID).doc(roastPath).set(roastEntry));
+
+      // パッケージ: 本人は read/write 可、他人・未認証は拒否
+      await assertFails(firestoreFor().doc(packagePath).set(packageEntry));
+      await assertSucceeds(firestoreFor(OWN_UID).doc(packagePath).set(packageEntry));
+      await assertSucceeds(firestoreFor(OWN_UID).doc(packagePath).get());
+      await assertFails(firestoreFor(OTHER_UID).doc(packagePath).get());
+      await assertFails(firestoreFor(OTHER_UID).doc(packagePath).set(packageEntry));
+    });
+  });
 });
 
 describe('Storage rules', () => {
