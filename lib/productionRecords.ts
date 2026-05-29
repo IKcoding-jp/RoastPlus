@@ -45,3 +45,35 @@ export function calculatePremixBags(usableGreenGram: number): { bags: number; re
     remainderGram: usable % PREMIX_BAG_GRAM,
   };
 }
+
+export function calculateRoastYield(beforeTotalGram: number, afterTotalGram: number): number {
+  if (beforeTotalGram <= 0) {
+    return 0;
+  }
+  return afterTotalGram / beforeTotalGram;
+}
+
+export function calculateMoistureLossRate(roastYield: number): number {
+  if (roastYield <= 0) {
+    return 0;
+  }
+  return 1 - roastYield;
+}
+
+export function calculateDailyTheoryPacks(afterRoastGram: number, powderPerPackGram: number): number {
+  if (powderPerPackGram <= 0) {
+    return 0;
+  }
+  return Math.floor(afterRoastGram / powderPerPackGram);
+}
+
+export function calculateThirtyKgTheoryPacks(
+  defectRate: number,
+  roastYield: number,
+  powderPerPackGram: number
+): number {
+  if (powderPerPackGram <= 0 || roastYield <= 0) {
+    return 0;
+  }
+  return Math.floor((THIRTY_KG_BASE_GRAM * (1 - defectRate) * roastYield) / powderPerPackGram);
+}

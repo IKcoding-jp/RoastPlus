@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
+  calculateDailyTheoryPacks,
   calculateDefectRate,
+  calculateMoistureLossRate,
   calculatePremixBags,
+  calculateRoastYield,
+  calculateThirtyKgTheoryPacks,
   calculateUsableGreenGram,
   isValidProductionMonth,
   isValidWorkDate,
@@ -62,5 +66,51 @@ describe('calculatePremixBags', () => {
 
   it('treats negative usable grams as 0', () => {
     expect(calculatePremixBags(-1)).toEqual({ bags: 0, remainderGram: 0 });
+  });
+});
+
+describe('calculateRoastYield', () => {
+  it('returns after / before as a ratio', () => {
+    expect(calculateRoastYield(2000, 1660)).toBeCloseTo(0.83, 5);
+  });
+
+  it('returns 0 when before total is 0 or negative', () => {
+    expect(calculateRoastYield(0, 1660)).toBe(0);
+    expect(calculateRoastYield(-100, 1660)).toBe(0);
+  });
+});
+
+describe('calculateMoistureLossRate', () => {
+  it('returns 1 - roastYield', () => {
+    expect(calculateMoistureLossRate(0.83)).toBeCloseTo(0.17, 5);
+  });
+
+  it('returns 0 when roastYield is 0 or negative', () => {
+    expect(calculateMoistureLossRate(0)).toBe(0);
+    expect(calculateMoistureLossRate(-0.1)).toBe(0);
+  });
+});
+
+describe('calculateDailyTheoryPacks', () => {
+  it('floors after-roast grams divided by powder per pack', () => {
+    expect(calculateDailyTheoryPacks(1660, 8.5)).toBe(195);
+  });
+
+  it('returns 0 when powder per pack is 0 or negative', () => {
+    expect(calculateDailyTheoryPacks(1660, 0)).toBe(0);
+    expect(calculateDailyTheoryPacks(1660, -1)).toBe(0);
+  });
+});
+
+describe('calculateThirtyKgTheoryPacks', () => {
+  it('floors 30000 * (1 - defectRate) * roastYield / powder', () => {
+    // 30000 * (1 - 0.031) * 0.83 / 8.5 = 2838.07... -> 2838
+    expect(calculateThirtyKgTheoryPacks(0.031, 0.83, 8.5)).toBe(2838);
+  });
+
+  it('returns 0 when powder or roastYield is 0 or negative', () => {
+    expect(calculateThirtyKgTheoryPacks(0.031, 0.83, 0)).toBe(0);
+    expect(calculateThirtyKgTheoryPacks(0.031, 0, 8.5)).toBe(0);
+    expect(calculateThirtyKgTheoryPacks(0.031, -0.1, 8.5)).toBe(0);
   });
 });
