@@ -151,3 +151,76 @@ describe('subcollection refs', () => {
     expect(() => getHandpickEntriesCollectionRef('user-1', '2026-13')).toThrow('対象月が正しくありません');
   });
 });
+
+describe('subscribeProductionRecordMonth', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('normalizes the month document and passes it to the callback', async () => {
+    firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, onNext: (snap: unknown) => void) => {
+      onNext(
+        docSnapshot('2026-08', {
+          month: '2026-08',
+          greenBeanTotalGram: 30000,
+          powderPerPackGram: 8.5,
+          blendItems: [
+            { beanName: 'ブラジル', ratioPercent: 80 },
+            { beanName: 'グアテマラ', ratioPercent: 20 },
+          ],
+          createdAt: 'created-at',
+          updatedAt: 'updated-at',
+        })
+      );
+      return () => undefined;
+    });
+
+    const { subscribeProductionRecordMonth } = await import('./productionRecords');
+    const callback = vi.fn();
+
+    subscribeProductionRecordMonth('user-1', '2026-08', callback);
+
+    expect(callback).toHaveBeenCalledWith({
+      month: '2026-08',
+      greenBeanTotalGram: 30000,
+      powderPerPackGram: 8.5,
+      blendItems: [
+        { beanName: 'ブラジル', ratioPercent: 80 },
+        { beanName: 'グアテマラ', ratioPercent: 20 },
+      ],
+      createdAt: 'created-at',
+      updatedAt: 'updated-at',
+    });
+  });
+
+  it('passes null to the callback when the month document does not exist', async () => {
+    firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, onNext: (snap: unknown) => void) => {
+      onNext(docSnapshot('2026-08', null));
+      return () => undefined;
+    });
+
+    const { subscribeProductionRecordMonth } = await import('./productionRecords');
+    const callback = vi.fn();
+
+    subscribeProductionRecordMonth('user-1', '2026-08', callback);
+
+    expect(callback).toHaveBeenCalledWith(null);
+  });
+
+  it('forwards errors to onError and passes null to the callback', async () => {
+    const error = new Error('permission-denied');
+    firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, _onNext: unknown, onErrorCb: (e: Error) => void) => {
+      onErrorCb(error);
+      return () => undefined;
+    });
+
+    const { subscribeProductionRecordMonth } = await import('./productionRecords');
+    const callback = vi.fn();
+    const onError = vi.fn();
+
+    subscribeProductionRecordMonth('user-1', '2026-08', callback, onError);
+
+    expect(onError).toHaveBeenCalledWith(error);
+    expect(callback).toHaveBeenCalledWith(null);
+  });
+});
