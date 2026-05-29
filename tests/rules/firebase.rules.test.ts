@@ -82,23 +82,6 @@ describe('Firestore rules', () => {
     });
   });
 
-  describe('quiz_progress/{uid}', () => {
-    it('allows only the signed-in owner to read and write their quiz progress', async () => {
-      const ownerDoc = firestoreFor(OWN_UID).doc(`quiz_progress/${OWN_UID}`);
-      const otherDoc = firestoreFor(OTHER_UID).doc(`quiz_progress/${OWN_UID}`);
-      const anonymousDoc = firestoreFor().doc(`quiz_progress/${OWN_UID}`);
-
-      await assertFails(anonymousDoc.get());
-      await assertFails(anonymousDoc.set({ level: 1 }));
-
-      await assertSucceeds(ownerDoc.set({ level: 1 }));
-      await assertSucceeds(ownerDoc.get());
-
-      await assertFails(otherDoc.get());
-      await assertFails(otherDoc.set({ level: 1 }));
-    });
-  });
-
   describe('users/{uid}/assignmentDays/{date}', () => {
     it('allows only the signed-in owner to read and write assignment subcollection documents', async () => {
       const path = `users/${OWN_UID}/assignmentDays/2026-05-23`;

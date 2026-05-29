@@ -192,4 +192,3 @@ export function getLast46Strength(): string | null {
 
   return localStorage.getItem(LAST_46_STRENGTH_KEY);
 }
-
