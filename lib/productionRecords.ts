@@ -310,3 +310,11 @@ export function buildPackageEntry(input: PackageEntryInput): PackageEntryInput {
     },
   };
 }
+
+export function formatPercent(rate: number): string {
+  return `${(rate * 100).toFixed(1)}%`;
+}
+
+export function formatKg(gram: number): string {
+  return (gram / 1000).toFixed(2);
+}

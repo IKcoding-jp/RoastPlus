@@ -14,6 +14,8 @@ import {
   calculateRoastYield,
   calculateThirtyKgTheoryPacks,
   calculateUsableGreenGram,
+  formatKg,
+  formatPercent,
   isValidProductionMonth,
   isValidWorkDate,
   normalizeCountInput,
@@ -529,5 +531,21 @@ describe('buildPackageEntry', () => {
     expect(() => buildPackageEntry({ ...validInput, workDate: '2026-08' })).toThrow();
     expect(() => buildPackageEntry({ ...validInput, teamA: { goodCount: -1, defectiveCount: 0 } })).toThrow();
     expect(() => buildPackageEntry({ ...validInput, teamB: { goodCount: 1.5, defectiveCount: 0 } })).toThrow();
+  });
+});
+
+describe('formatPercent', () => {
+  it('formats a ratio as a percentage with one decimal place', () => {
+    expect(formatPercent(0.031)).toBe('3.1%');
+    expect(formatPercent(0.17)).toBe('17.0%');
+    expect(formatPercent(0)).toBe('0.0%');
+  });
+});
+
+describe('formatKg', () => {
+  it('formats grams as kilograms with two decimal places', () => {
+    expect(formatKg(20100)).toBe('20.10');
+    expect(formatKg(1660)).toBe('1.66');
+    expect(formatKg(0)).toBe('0.00');
   });
 });
