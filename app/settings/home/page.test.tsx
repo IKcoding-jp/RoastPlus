@@ -29,8 +29,8 @@ describe('HomeVisibilitySettingsPage', () => {
   it('機能のスイッチをOFFにするとアカウント設定へ非表示設定を保存する', () => {
     render(<HomeVisibilitySettingsPage />);
 
-    fireEvent.click(screen.getByRole('switch', { name: '開発秘話をホームに表示' }));
+    fireEvent.click(screen.getByRole('switch', { name: 'ドリップガイドをホームに表示' }));
 
-    expect(mockUpdateFeatureHidden).toHaveBeenCalledWith('dev-stories', true);
+    expect(mockUpdateFeatureHidden).toHaveBeenCalledWith('drip-guide', true);
   });
 });

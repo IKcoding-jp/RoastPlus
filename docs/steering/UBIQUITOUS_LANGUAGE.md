@@ -1,6 +1,6 @@
 # Ubiquitous Language
 
-**最終更新**: 2026-02-21
+**最終更新**: 2026-05-29
 
 コーヒー焙煎業務ドメインにおける共通用語定義。コード・UI・コミュニケーションで統一して使用する。
 
@@ -12,16 +12,14 @@
 
 | 用語 | 英語 | 定義 | コードでの使用例 |
 |-----|------|------|----------------|
-| **焙煎** | Roast | 生豆を加熱して焙煎豆にする工程 | `RoastTimer`, `RoastRecord` |
-| **焙煎記録** | RoastRecord | 焙煎時の温度・時間・豆の種類等を記録したデータ | `roastRecords` コレクション |
-| **焙煎タイマー** | RoastTimer | 焙煎時間を計測する機能 | `app/roast-timer/` |
+| **焙煎** | Roast | 生豆を加熱して焙煎豆にする工程 | `RoastSchedule`, `RoastLevel` |
+| **焙煎スケジュール** | RoastSchedule | 焙煎作業の予定（豆名・焙煎度・数量等） | `RoastSchedule` 型 |
 | **生豆** | GreenBean | 焙煎前のコーヒー豆 | `greenBeanWeight` |
 | **焙煎度** | RoastLevel | 浅煎り、中煎り、深煎りの度合い | `'light' \| 'medium' \| 'dark'` |
 | **ハゼ** | Crack | 焙煎中に豆が膨張して割れる音 | `firstCrack`, `secondCrack` |
 | **1ハゼ** | FirstCrack | 最初のハゼ（約200℃） | `firstCrackTime` |
 | **2ハゼ** | SecondCrack | 2回目のハゼ（約220℃） | `secondCrackTime` |
 | **投入** | Drop | 生豆を焙煎機に投入すること | `dropTime` |
-| **焙煎スケジュール** | RoastSchedule | 焙煎作業の予定（豆名・焙煎度・数量等） | `RoastSchedule` 型 |
 
 ### ドリップ関連
 
@@ -63,18 +61,6 @@
 | **欠点豆** | DefectBean | 品質基準を満たさないコーヒー豆 | `defectBeans` コレクション |
 | **時間ラベル** | TimeLabel | スケジュール画像から抽出された時間情報 | `TimeLabel` 型 |
 
-### ゲーミフィケーション
-
-| 用語 | 英語 | 定義 | コードでの使用例 |
-|-----|------|------|----------------|
-| **コーヒークイズ** | CoffeeQuiz | 知識学習用クイズ | `app/coffee-trivia/` |
-| **FSRS** | FSRS | Free Spaced Repetition Scheduler（間隔反復学習アルゴリズム） | `lib/coffee-quiz/fsrs.ts` |
-| **XP** | ExperiencePoint | 経験値（クイズ正解で獲得） | `currentXP`, `totalXP` |
-| **ストリーク** | Streak | 連続学習日数 | `currentStreak` |
-| **カテゴリ** | Category | クイズカテゴリ（basics, roasting, extraction, origin） | `QuizCategory` |
-| **難易度** | Difficulty | クイズ難易度（easy, medium, hard） | `QuizDifficulty` |
-| **レベル** | Level | ユーザーのレベル（経験値から算出） | `currentLevel` |
-
 ---
 
 ## 技術用語
@@ -104,7 +90,7 @@
 | **コレクション** | Collection | Firestoreのトップレベルコレクション | `users`, `defectBeans`, `_meta` |
 | **ドキュメント** | Document | Firestoreのドキュメント | `doc(db, 'users', userId)` |
 | **サブコレクション** | Subcollection | ドキュメント配下のコレクション | `users/{userId}/assignments` |
-| **ユーザードキュメント** | UserDocument | `users/{userId}` にフィールドとして格納されるユーザーデータ | 焙煎記録、クイズ進捗、レシピ等 |
+| **ユーザードキュメント** | UserDocument | `users/{userId}` にフィールドとして格納されるユーザーデータ | テイスティング記録、レシピ等 |
 
 ### 状態管理用語
 
@@ -142,17 +128,6 @@
 ---
 
 ## ドメインロジック用語
-
-### FSRS関連
-
-| 用語 | 英語 | 定義 | コードでの使用例 |
-|-----|------|------|----------------|
-| **復習間隔** | ReviewInterval | 次回復習までの日数 | `nextReviewDate` |
-| **難易度** | Difficulty | FSRSの難易度パラメータ（問題の難しさ） | `difficulty` |
-| **安定性** | Stability | FSRSの安定性パラメータ（記憶の定着度） | `stability` |
-| **想起確率** | Retrievability | 記憶の想起確率（時間経過で減衰） | `retrievability` |
-| **クイズ進捗** | QuizProgress | 問題ごとのFSRSパラメータと復習スケジュール | `QuizProgress` interface |
-| **ts-fsrs** | tsFSRS | FSRSアルゴリズムのTypeScript実装ライブラリ | `ts-fsrs` パッケージ |
 
 ### タイマー関連
 
@@ -192,7 +167,7 @@
 | 種類 | 規則 | 例 |
 |-----|------|-----|
 | Reactコンポーネント | PascalCase | `QuizCard`, `DripTimer`, `ThemeSelector` |
-| カスタムフック | `use` 始まり（camelCase） | `useRoastTimer`, `useAppTheme`, `useRecipeGuide` |
+| カスタムフック | `use` 始まり（camelCase） | `useAppTheme`, `useRecipeGuide` |
 | イベントハンドラ | `handle` 始まり（camelCase） | `handleSubmit`, `handleClick`, `handleThemeChange` |
 | コンテキスト | PascalCase + `Context` | `AuthContext`, `ThemeContext` |
 
@@ -205,8 +180,6 @@
 | **PWA** | Progressive Web App | アプリの種類 |
 | **OCR** | Optical Character Recognition | 画像からテキスト抽出 |
 | **AI** | Artificial Intelligence | OpenAI GPT-4o使用（Cloud Functions経由） |
-| **FSRS** | Free Spaced Repetition Scheduler | 間隔反復学習アルゴリズム |
-| **XP** | Experience Point | 経験値 |
 | **UI** | User Interface | ユーザーインターフェース |
 | **UX** | User Experience | ユーザー体験 |
 | **API** | Application Programming Interface | 外部サービス連携 |
@@ -227,14 +200,12 @@
 | 文脈 | 用語 | 例 |
 |-----|------|-----|
 | テイスティング | TastingSession | テイスティングセッション作成 |
-| クイズ | QuizSession | クイズセッション（1回のクイズ実施） |
 | ユーザーログイン | UserSession | ユーザーセッション（Firebase Auth） |
 
 ### 「タイマー」の使い分け
 
 | 文脈 | 用語 | 例 |
 |-----|------|-----|
-| 焙煎 | RoastTimer | 焙煎タイマー |
 | ドリップ | DripTimer | ドリップタイマー |
 | 汎用 | Timer | 汎用タイマー |
 
@@ -286,10 +257,10 @@
 
 | 場所 | 言語 | 例 |
 |-----|------|-----|
-| コード（変数名、関数名、型名） | 英語のみ | `calculateXP`, `RoastRecord` |
+| コード（変数名、関数名、型名） | 英語のみ | `formatTime`, `DripRecipe` |
 | UI表示（ユーザー向け） | 日本語 | 「保存しました」「担当表」 |
 | コードコメント | 日本語可（英語推奨） | `// 焙煎温度を記録` |
-| コミットメッセージ | 日本語（Conventional Commits形式） | `feat(#123): 焙煎タイマーに温度記録機能を追加` |
+| コミットメッセージ | 日本語（Conventional Commits形式） | `feat(#123): ドリップガイドに音声案内機能を追加` |
 | テスト記述（describe/it） | 日本語可 | `it('正しいXPを計算する')` |
 
 ---

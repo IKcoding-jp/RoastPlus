@@ -4,9 +4,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { IconType } from 'react-icons';
 import { FaCoffee, FaUsers } from 'react-icons/fa';
-import { IoSettings, IoSparkles } from 'react-icons/io5';
-import { RiLightbulbFlashFill } from 'react-icons/ri';
-import { MdCoffeeMaker, MdInventory2, MdTimer, MdTimeline } from 'react-icons/md';
+import { IoSettings } from 'react-icons/io5';
+import { MdCoffeeMaker, MdInventory2 } from 'react-icons/md';
 import { RiBookFill, RiCalendarScheduleFill } from 'react-icons/ri';
 import { Loading } from '@/components/Loading';
 import { ActionCard } from '@/components/home/ActionCard';
@@ -22,8 +21,7 @@ import dynamic from 'next/dynamic';
 const Snowfall = dynamic(() => import('@/components/Snowfall').then((mod) => ({ default: mod.Snowfall })), {
   ssr: false,
 });
-import { FaTree, FaGift, FaSnowflake, FaStar } from 'react-icons/fa';
-import { PiBellFill } from 'react-icons/pi';
+import { FaTree, FaGift } from 'react-icons/fa';
 import { GiCandyCanes, GiGingerbreadMan } from 'react-icons/gi';
 import { BsStars } from 'react-icons/bs';
 
@@ -41,13 +39,9 @@ const CHRISTMAS_ICONS: Record<string, IconType> = {
   assignment: FaGift,
   schedule: BsStars,
   tasting: FaTree,
-  'roast-timer': PiBellFill,
   'defect-beans': GiGingerbreadMan,
-  progress: FaSnowflake,
   'production-packs': MdInventory2,
   'drip-guide': GiCandyCanes,
-  'coffee-trivia': FaStar,
-  'dev-stories': FaSnowflake,
   settings: IoSettings,
 };
 
@@ -76,25 +70,11 @@ const ACTIONS: Action[] = [
     icon: FaCoffee,
   },
   {
-    key: 'roast-timer',
-    title: 'ローストタイマー',
-    description: '最適なタイマーで焙煎',
-    href: '/roast-timer',
-    icon: MdTimer,
-  },
-  {
     key: 'defect-beans',
     title: '欠点豆図鑑',
     description: '欠点豆の知識を共有',
     href: '/defect-beans',
     icon: RiBookFill,
-  },
-  {
-    key: 'progress',
-    title: '作業進捗',
-    description: '進捗を可視化',
-    href: '/progress',
-    icon: MdTimeline,
   },
   {
     key: 'production-packs',
@@ -109,20 +89,6 @@ const ACTIONS: Action[] = [
     description: '淹れ方の手順',
     href: '/drip-guide',
     icon: MdCoffeeMaker,
-  },
-  {
-    key: 'coffee-trivia',
-    title: 'コーヒークイズ',
-    description: '楽しく学ぶコーヒー知識',
-    href: '/coffee-trivia',
-    icon: IoSparkles,
-  },
-  {
-    key: 'dev-stories',
-    title: '開発秘話',
-    description: '開発の裏話を覗く',
-    href: '/dev-stories',
-    icon: RiLightbulbFlashFill,
   },
   {
     key: 'settings',

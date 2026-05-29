@@ -29,14 +29,14 @@ describe('homeFeatureVisibility', () => {
 
   it('未設定の場合はホーム機能をすべて表示する', () => {
     expect(isHomeFeatureVisible('assignment')).toBe(true);
-    expect(isHomeFeatureVisible('dev-stories')).toBe(true);
+    expect(isHomeFeatureVisible('drip-guide')).toBe(true);
   });
 
   it('非表示にした機能だけをlocalStorageに保存する', () => {
-    setHomeFeatureHidden('dev-stories', true);
+    setHomeFeatureHidden('drip-guide', true);
 
-    expect(getHiddenHomeFeatureKeys()).toEqual(['dev-stories']);
-    expect(isHomeFeatureVisible('dev-stories')).toBe(false);
+    expect(getHiddenHomeFeatureKeys()).toEqual(['drip-guide']);
+    expect(isHomeFeatureVisible('drip-guide')).toBe(false);
     expect(isHomeFeatureVisible('assignment')).toBe(true);
   });
 

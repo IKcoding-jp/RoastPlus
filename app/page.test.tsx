@@ -51,27 +51,17 @@ describe('HomePage', () => {
     mocks.push.mockClear();
     mocks.getUserData.mockClear();
     mocks.visibleKeys.clear();
-    [
-      'assignment',
-      'schedule',
-      'tasting',
-      'roast-timer',
-      'defect-beans',
-      'progress',
-      'production-packs',
-      'drip-guide',
-      'coffee-trivia',
-      'dev-stories',
-      'settings',
-    ].forEach((key) => mocks.visibleKeys.add(key));
+    ['assignment', 'schedule', 'tasting', 'defect-beans', 'production-packs', 'drip-guide', 'settings'].forEach((key) =>
+      mocks.visibleKeys.add(key)
+    );
   });
 
   it('非表示設定の機能カードをホームに表示しないが、その他は表示する', () => {
-    mocks.visibleKeys.delete('dev-stories');
+    mocks.visibleKeys.delete('drip-guide');
 
     render(<HomePage />);
 
-    expect(screen.queryByRole('button', { name: '開発秘話' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'ドリップガイド' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'その他' })).toBeInTheDocument();
   });
 

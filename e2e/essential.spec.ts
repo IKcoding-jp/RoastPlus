@@ -65,12 +65,6 @@ test.describe('RoastPlus essential E2E', () => {
     await page.getByRole('button', { name: 'スケジュール' }).click();
     await expect(page).toHaveURL(/\/schedule\/?$/);
     await expect(page.getByRole('button', { name: '日付を選択' }).first()).toBeVisible({ timeout: 15_000 });
-
-    await page.goto('/');
-    await expect(page.getByRole('button', { name: 'ローストタイマー' })).toBeVisible({ timeout: 20_000 });
-    await page.getByRole('button', { name: 'ローストタイマー' }).click();
-    await expect(page).toHaveURL(/\/roast-timer\/?$/);
-    await expect(page.getByRole('button', { name: 'スタート' })).toBeVisible({ timeout: 15_000 });
   });
 
   test('時計で現在の時間帯と次の区切りが分かる', async ({ page }) => {
@@ -91,24 +85,6 @@ test.describe('RoastPlus essential E2E', () => {
     await expect(page.getByText('16:35 掃除開始')).toBeVisible();
     await expect(page.getByText('掃除開始です')).toBeVisible();
     await expect(page.getByText('掃除開始です')).toBeHidden({ timeout: 6_500 });
-  });
-
-  test('ローストタイマーを開始し、一時停止、再開、終了できる', async ({ page }) => {
-    await page.goto('/roast-timer');
-
-    await page.getByRole('button', { name: '200g 8分' }).click();
-    await page.getByRole('button', { name: 'スタート' }).click();
-
-    await expect(page.getByRole('button', { name: '一時停止' })).toBeVisible({ timeout: 15_000 });
-    await page.getByRole('button', { name: '一時停止' }).click();
-
-    await expect(page.getByRole('button', { name: '再開' })).toBeVisible();
-    await page.getByRole('button', { name: '再開' }).click();
-
-    await expect(page.getByRole('button', { name: '一時停止' })).toBeVisible();
-    await page.getByRole('button', { name: 'スキップ' }).click();
-
-    await expect(page.getByRole('button', { name: 'リセット' })).toBeVisible({ timeout: 10_000 });
   });
 
   test('スケジュールの日付移動とモバイルタブ切り替えが動く', async ({ page }) => {
