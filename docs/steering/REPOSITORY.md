@@ -1,6 +1,6 @@
 # Repository Structure
 
-**最終更新**: 2026-05-27
+**最終更新**: 2026-05-29
 
 ---
 
@@ -49,14 +49,10 @@ roastplus/
 | `page.tsx` | ホーム画面 | ダッシュボード |
 | `layout.tsx` | ルートレイアウト | テーマプロバイダー、認証ラッパー |
 | `schedule/` | スケジュール管理 | OCR対応（画像→テキスト） |
-| `roast-timer/` | 焙煎タイマー | リアルタイム計測、記録 |
 | `tasting/` | テイスティングセッション | AI分析連携 |
 | `drip-guide/` | ドリップガイド | レシピ計算、ステップ実行 |
-| `coffee-trivia/` | コーヒークイズ | FSRS間隔反復学習 |
 | `assignment/` | 担当表 | チーム管理、シャッフル |
-| `roast-record/` | 焙煎記録 | 焙煎データ一覧 |
 | `defect-beans/` | 欠点豆 | 欠点豆の記録・管理 |
-| `progress/` | 作業進捗 | 日次進捗管理 |
 | `brewing/` | 抽出管理 | 抽出記録 |
 
 ### サブ機能
@@ -65,14 +61,12 @@ roastplus/
 |------------|------|------|
 | `settings/` | 設定 | ユーザー設定、テーマ切替 |
 | `notifications/` | 通知 | 通知一覧 |
-| `changelog/` | 変更履歴 | アプリ更新履歴 |
 | `clock/` | 時計 | 業務用時計表示 |
 | `contact/` | お問い合わせ | EmailJS連携 |
 | `login/` | ログイン | Firebase Auth |
 | `consent/` | 同意 | 利用規約同意 |
 | `terms/` | 利用規約 | 法的文書 |
 | `privacy-policy/` | プライバシーポリシー | 法的文書 |
-| `dev-stories/` | 開発ストーリー | 開発者向け |
 | `ui-test/` | UIテストページ | 開発環境専用。`page.dev.tsx` で `/dev/design-lab` へリダイレクト |
 
 ### 開発者向け
@@ -109,14 +103,10 @@ roastplus/
 | ディレクトリ | 機能 | 主なコンポーネント |
 |------------|------|------------------|
 | `home/` | ホーム画面 | ダッシュボードカード等 |
-| `roast-timer/` | 焙煎タイマー | TimerDisplay（リング）、TimerControls（操作）、SetupPanel（重量カード） |
 | `roast-scheduler/` | 焙煎スケジュール | スケジュール表示・編集 |
-| `roast-record-list/` | 焙煎記録一覧 | 記録リスト表示 |
 | `drip-guide/` | ドリップガイド | レシピ表示、ステップ実行 |
-| `coffee-quiz/` | コーヒークイズ | クイズカード、結果表示 |
 | `today-schedule/` | 本日のスケジュール | スケジュール一覧 |
 | `settings/` | 設定画面 | 設定フォーム |
-| `work-progress/` | 作業進捗 | 進捗表示・入力 |
 | `defect-beans/` | 欠点豆 | 欠点豆リスト |
 | `defect-bean-form/` | 欠点豆フォーム | 入力フォーム |
 | `camera-capture/` | カメラキャプチャ | 画像撮影UI |
@@ -124,10 +114,8 @@ roastplus/
 | `ocr-time-label-editor/` | OCR時間ラベル編集 | ラベル修正UI |
 | `date-picker/` | 日付選択 | カレンダーUI |
 | `notifications/` | 通知 | 通知リスト |
-| `changelog/` | 変更履歴 | 変更ログ表示 |
 | `clock/` | 時計 | 時計表示 |
 | `contact/` | お問い合わせ | 問い合わせフォーム |
-| `dev-stories/` | 開発ストーリー | ストーリー表示 |
 
 ---
 
@@ -139,8 +127,7 @@ roastplus/
 
 | ディレクトリ | 内容 | 主なファイル |
 |------------|------|------------|
-| `firestore/` | Firestore CRUD操作 | `common.ts`, `defectBeans.ts`, `index.ts`, `userData/`, `workProgress/` |
-| `coffee-quiz/` | クイズロジック全般 | `questions.ts`, `fsrs.ts`, `gamification.ts`, `badge.ts`, `level.ts`, `xp.ts`, `streak.ts`, `daily-goal.ts`, `stats.ts`, `debug.ts`, `sounds.ts` |
+| `firestore/` | Firestore CRUD操作 | `common.ts`, `defectBeans.ts`, `index.ts`, `userData/` |
 | `drip-guide/` | ドリップレシピ計算 | `recipe46.ts`, `recipeCalculator.ts`, `formatTime.ts`, `useRecipes.ts` |
 
 ### 単体ファイル
@@ -167,9 +154,6 @@ roastplus/
 | `clockSettings.ts` | 時計設定 |
 | `consent.ts` | 同意管理 |
 | `roastScheduleColors.ts` | 焙煎スケジュールの色設定 |
-| `roastTimerRecords.ts` | タイマー記録操作 |
-| `roastTimerSettings.ts` | タイマー設定 |
-| `roastTimerUtils.ts` | タイマーユーティリティ |
 | `timeSync.ts` | 時刻同期 |
 | `version.ts` | バージョン管理 |
 
@@ -184,7 +168,6 @@ roastplus/
 | ディレクトリ | 内容 |
 |------------|------|
 | `drip-guide/` | ドリップガイド関連フック |
-| `roast-timer/` | 焙煎タイマー関連フック |
 
 ### 単体フック
 
@@ -200,7 +183,6 @@ roastplus/
 | `useScheduleDateNavigation.ts` | スケジュール日付ナビゲーション |
 | `useScheduleImageProcessing.ts` | スケジュール画像処理 |
 | `useMediaQuery.ts` | メディアクエリ判定（レスポンシブ対応） |
-| `useRoastTimer.ts` | 焙煎タイマー操作 |
 | `useCameraCapture.ts` | カメラキャプチャ操作 |
 | `useDefectBeans.ts` | 欠点豆データ管理 |
 | `useDefectBeanSettings.ts` | 欠点豆設定 |
@@ -208,13 +190,9 @@ roastplus/
 | `useDeveloperMode.ts` | 開発者モード切替 |
 | `useMembers.ts` | メンバー管理 |
 | `useNotifications.ts` | 通知管理 |
-| `useQuizData.ts` | クイズデータ取得 |
-| `useQuizSession.ts` | クイズセッション管理 |
-| `useQuizSound.ts` | クイズサウンド管理 |
 | `useTastingFilters.ts` | テイスティングフィルター |
 | `useToast.ts` | トースト通知 |
 | `useTodayScheduleSync.ts` | 本日のスケジュール同期 |
-| `useWorkProgressActions.ts` | 作業進捗アクション |
 
 ---
 
@@ -232,9 +210,7 @@ roastplus/
 | `team.ts` | チーム・担当表型 |
 | `settings.ts` | 設定型 |
 | `notification.ts` | 通知型 |
-| `work-progress.ts` | 作業進捗型 |
 | `defect-beans.ts` | 欠点豆型 |
-| `changelog.ts` | 変更履歴型 |
 | `global.d.ts` | グローバル型宣言 |
 
 ---
@@ -306,14 +282,10 @@ e2e/
 │   └── test-data.ts       # ビューポート、閾値等のテストデータ
 ├── pages/                 # ページ単位のテスト
 │   ├── home.spec.ts
-│   ├── quiz.spec.ts
-│   ├── roast-timer.spec.ts
 │   ├── schedule.spec.ts
 │   └── tasting.spec.ts
 ├── flows/                 # ユーザーフロー統合テスト
-│   ├── data-management-flow.spec.ts
-│   ├── quiz-flow.spec.ts
-│   └── roast-timer-flow.spec.ts
+│   └── data-management-flow.spec.ts
 ├── responsive/            # レスポンシブテスト
 │   └── responsive.spec.ts
 ├── accessibility/         # アクセシビリティテスト（axe-core）
@@ -343,12 +315,10 @@ Claude Code 側の起動・設定ファイルのみを置く。
 |---------------------|------|
 | `sw.js` | カスタムService Worker（手書き、next-pwa不使用） |
 | `site.webmanifest` | PWAマニフェスト |
-| `sounds/` | 音声ファイル（タイマー音、クイズ音等） |
+| `sounds/` | 音声ファイル（タイマー音等） |
 | `animations/` | アニメーションファイル |
 | `images/` | 画像ファイル |
 | `avatars/` | アバター画像 |
-| `coffee-trivia/` | コーヒークイズ用画像 |
-| `dev-stories/` | 開発ストーリー用画像 |
 | `favicon.ico`, `favicon-*.png` | ファビコン各サイズ |
 | `android-chrome-*.png` | Android用アイコン各サイズ |
 | `apple-touch-icon.png` | iOS用アイコン |
@@ -381,7 +351,7 @@ Claude Code 側の起動・設定ファイルのみを置く。
 |-----|------|-----|
 | コンポーネント | PascalCase | `QuizCard.tsx`, `RoastLevelBadge.tsx` |
 | ユーティリティ | camelCase | `gamification.ts`, `dateUtils.ts` |
-| フック | camelCase（`use`プレフィックス） | `useAppTheme.ts`, `useRoastTimer.ts` |
+| フック | camelCase（`use`プレフィックス） | `useAppTheme.ts`, `useRecipeGuide.ts` |
 | 型定義 | camelCase（ケバブケースも可） | `common.ts`, `work-progress.ts` |
 | テスト | 対象ファイル名 + `.test` | `gamification.test.ts` |
 | ページ | `page.tsx`, `layout.tsx` | App Router標準 |

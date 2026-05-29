@@ -5,15 +5,6 @@ const DEVICE_ID_KEY = 'roastplus_device_id';
 const LAST_46_TASTE_KEY = 'roastplus_last_46_taste';
 const LAST_46_STRENGTH_KEY = 'roastplus_last_46_strength';
 
-const parseJson = <T>(value: string): T | null => {
-  try {
-    return JSON.parse(value) as T;
-  } catch (error) {
-    console.error('Failed to parse JSON from localStorage:', error);
-    return null;
-  }
-};
-
 /**
  * 選択されたメンバーIDを保存
  */

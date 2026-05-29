@@ -154,7 +154,6 @@ Firestore
 │   │   ├── roastSchedules                  # 焙煎スケジュール
 │   │   ├── tastingSessions                 # テイスティングセッション
 │   │   ├── tastingRecords                  # テイスティング記録
-│   │   ├── roastTimerRecords               # 焙煎タイマー記録
 │   │   └── dripRecipes                     # ドリップレシピ
 │   ├── (subcollections)
 │   │   ├── teams/{teamId}                  # チーム
@@ -166,10 +165,7 @@ Firestore
 │   │   ├── assignmentSettings/{settingId}  # 担当設定
 │   │   ├── managers/{managerId}            # 管理者
 │   │   ├── pairExclusions/{exclusionId}    # ペア除外設定
-│   │   ├── workProgresses/{workProgressId} # 作業進捗
 │   │   └── _meta/{document}                # 分割データ移行メタ情報
-│
-├── quiz_progress/{userId}                  # クイズ進捗データ
 │
 ├── defectBeans/{beanId}                    # 欠点豆データ
 │
@@ -291,8 +287,8 @@ npm run test:coverage
 
 | カテゴリ | ディレクトリ | 内容 |
 |---------|------------|------|
-| ページ統合 | `e2e/pages/` | home, quiz, roast-timer, schedule, tasting |
-| ユーザーフロー | `e2e/flows/` | data-management-flow, quiz-flow, roast-timer-flow |
+| ページ統合 | `e2e/pages/` | home, schedule, tasting |
+| ユーザーフロー | `e2e/flows/` | data-management-flow |
 | レスポンシブ | `e2e/responsive/` | 各ビューポートでの表示確認 |
 | アクセシビリティ | `e2e/accessibility/` | axe-coreによる自動検査 |
 | パフォーマンス | `e2e/performance/` | ページロード速度等 |
@@ -591,7 +587,7 @@ Storageの一括コピーや削除は本番データに直結するため、実�
 - **決定**: lib/, hooks/, components/ を機能単位でサブディレクトリに分割
 - **理由**:
   - 機能の凝集度を高め、変更影響範囲を限定
-  - 例: `lib/coffee-quiz/`, `hooks/drip-guide/`, `components/roast-timer/`
+  - 例: `lib/drip-guide/`, `hooks/drip-guide/`
   - 依存方向: `types/` → `lib/` → `hooks/` → `components/` → `app/`（循環依存禁止）
 
 ### ADR-011: next-themes + Tailwind v4 CSS変数によるテーマシステム

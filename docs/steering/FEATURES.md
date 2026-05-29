@@ -1,6 +1,6 @@
 # Features
 
-**最終更新**: 2026-05-26
+**最終更新**: 2026-05-29
 
 ---
 
@@ -9,13 +9,9 @@
 1. [担当表（Assignment）](#1-担当表assignment)
 2. [スケジュール（Schedule）](#2-スケジュールschedule)
 3. [試飲感想記録（Tasting）](#3-試飲感想記録tasting)
-4. [ローストタイマー（Roast Timer）](#4-ローストタイマーroast-timer)
-5. [コーヒー豆図鑑（Defect Beans）](#5-コーヒー豆図鑑defect-beans)
-6. [作業進捗（Work Progress）](#6-作業進捗work-progress)
-7. [ドリップガイド（Drip Guide）](#7-ドリップガイドdrip-guide)
-8. [コーヒークイズ（Coffee Quiz）](#8-コーヒークイズcoffee-quiz)
-9. [開発秘話（Dev Stories）](#9-開発秘話dev-stories)
-10. [その他](#10-その他)
+4. [コーヒー豆図鑑（Defect Beans）](#4-コーヒー豆図鑑defect-beans)
+5. [ドリップガイド（Drip Guide）](#5-ドリップガイドdrip-guide)
+6. [その他](#6-その他)
 
 ---
 
@@ -221,98 +217,7 @@ interface TastingSession {
 
 ---
 
-## 4. ローストタイマー（Roast Timer）
-
-### 目的
-焙煎時間の正確な計測、温度記録のOCR読み取り
-
-### 主要ユースケース
-1. 重量カード（200g/300g/500g）からタイマー時間を自動設定してスタート
-2. 温度ラベルOCR（Firebase Cloud Functions経由でGPT-4o Vision）
-3. 焙煎記録の保存（Firestore）
-4. 焙煎履歴の閲覧
-
-### UI構造（1画面3ステート）
-- **1画面で idle → running → completed がシームレスに遷移**（画面切替なし）
-- **ヘッダー**: FloatingNav（戻るボタン）+ 設定ボタン（pill型）— 全ステートで固定
-- **リングセクション**: `flex:1` で残りスペースを使い垂直中央配置 — 全ステートで同じ位置
-- **下部パネル**: `flex-shrink:0; height:230px` で固定 — ステートごとにコンテンツが切替
-- **レスポンシブ（768px以上）**: `flex-col md:flex-row` で左右分割。左パネル（50%）にリング（幅85%, max 340px）、右パネル（50%）にコントロール。`useMediaQuery` でFramer Motionアニメーション分岐
-  - idle: 重量カード3択 + スタートボタン（SetupPanel）
-  - running: 経過バー + 情報バッジ + 一時停止/スキップ（TimerControls）
-  - completed: 完了メッセージ + 統計 + リセット（TimerControls）
-
-### リングデザイン
-- SVG円形プログレス（r=116, strokeWidth=10, viewBox 290x290）
-- 60本のティックマーク（6°間隔、5目盛りごとにメジャーティック）
-- ステート別リング色: idle=`--edge-strong` / running=`--spot` / completed=`--success`
-- rAFベースの60fpsアニメーション（DOM直接操作）
-
-### UI実装ルール
-
-#### 共通コンポーネント使用
-- ✅ **必須**: `Button`, `Modal`, `FloatingNav` を使用
-- ❌ **禁止**: 独自のタイマー表示コンポーネント作成（既存の`TimerDisplay`を使用）
-
-#### テーマ対応
-- CSS変数（セマンティックトークン）による自動テーマ適用。ハードコード色は使用禁止
-
-### 技術要素
-
-| 要素 | 内容 |
-|-----|------|
-| **ページ** | `app/roast-timer/page.tsx` |
-| **コンポーネント** | `components/roast-timer/`（サブモジュール分割済み）<br>`TimerDisplay.tsx`, `TimerControls.tsx`, `SetupPanel.tsx` |
-| **フック** | `hooks/roast-timer/useRoastTimer.ts` |
-| **音声設定** | `lib/soundFiles.ts`（自動生成）← `scripts/generate-sound-list.ts`が`public/sounds/roasttimer/`をスキャン<br>`components/RoastTimerSettings.tsx`（音声選択UI） |
-| **OCR** | Firebase Cloud Functions v2 `ocrScheduleFromImage`（GPT-4o Vision）<br>クライアント: `httpsCallable(functions, 'ocrScheduleFromImage')` |
-| **Firestore** | `users/{userId}` ドキュメント内のフィールド |
-
-### 設計方針
-
-#### 状態管理
-- **ツール**: React useState（軽量なため）
-- **理由**: タイマーはページローカルの状態、グローバル状態不要
-
-#### OCR処理
-- **ツール**: Firebase Cloud Functions v2 経由でOpenAI GPT-4o Vision
-- **理由**: [ADR-004] Google Vision API → OpenAI統一。静的エクスポートのためAPI Routeは使用不可
-- **呼び出し方法**: `httpsCallable(functions, 'functionName')` によるCloud Functions呼び出し
-
-#### 音声設定
-- **タイマーサウンド**: `timerSoundFile`（Firestoreに保存）
-- **通知サウンド**: `notificationSoundFile`（Firestoreに保存）
-- **音声ファイル追加時**: `npm run generate:sound-list` を実行して`lib/soundFiles.ts`を再生成
-
-#### データ永続化
-- **ツール**: Firestore
-- **スキーマ**:
-```typescript
-interface RoastRecord {
-  id: string;
-  userId: string;
-  startTime: Timestamp;
-  endTime: Timestamp;
-  phases: {
-    phaseName: 'drop' | 'firstCrack' | 'secondCrack' | 'finish';
-    time: number; // 秒
-    temperature?: number; // ℃
-  }[];
-}
-```
-
-### 禁止事項
-1. ❌ 新しい状態管理ライブラリの導入
-2. ❌ サードパーティのタイマーライブラリの追加（独自実装を維持）
-3. ❌ タイマーロジックの根本的変更（バグ修正のみ）
-
-### 関連ADR
-- [ADR-004] OCR処理のOpenAI統一（`docs/steering/TECH_SPEC.md` 参照）
-- [ADR-010] サブモジュール分割（`docs/steering/TECH_SPEC.md` 参照）
-
----
-
-## 5. コーヒー豆図鑑（Defect Beans）
+## 4. コーヒー豆図鑑（Defect Beans）
 
 ### 目的
 欠点豆の種類・特徴・写真の参照
@@ -359,78 +264,7 @@ interface RoastRecord {
 
 ---
 
-## 6. 作業進捗（Work Progress）
-
-### 目的
-焙煎作業・業務タスクの進捗管理、数量・状態の記録
-
-### 主要ユースケース
-1. 作業進捗の一覧表示（グループ別・アーカイブ対応）
-2. 進捗作成・編集・削除
-3. 進捗記録の履歴管理（日付別の数量記録）
-4. クイック追加（QuickAddModal）
-5. フィルタリング・ソート
-6. アーカイブ機能
-
-### UI実装ルール
-
-#### 共通コンポーネント使用
-- ✅ **必須**: `Button`, `Card`, `Modal`, `Dialog` を使用
-- ❌ **禁止**: 独自のカード・ダイアログコンポーネントの作成
-
-#### テーマ対応
-- CSS変数による自動テーマ適用
-
-### 技術要素
-
-| 要素 | 内容 |
-|-----|------|
-| **ページ** | `app/progress/page.tsx` |
-| **ページコンポーネント** | `app/progress/components/NormalView.tsx`<br>`app/progress/components/ArchivedView.tsx`<br>`app/progress/components/ModeSelectDialog.tsx`<br>`app/progress/components/WorkProgressFormDialog.tsx`<br>`app/progress/components/GroupFormDialog.tsx`<br>`app/progress/components/FilterDialog.tsx`<br>`app/progress/components/ProgressHeader.tsx` |
-| **共有コンポーネント** | `components/work-progress/WorkProgressCard.tsx`<br>`components/work-progress/QuickAddModal.tsx`<br>`components/work-progress/ProgressHistoryEditDialog.tsx` |
-| **フック** | `hooks/useWorkProgressActions.ts` |
-| **型定義** | `types/work-progress.ts` |
-| **Firestore** | `users/{userId}/workProgresses/{workProgressId}` サブコレクション<br>旧フィールドからの読み取り・分割同期を考慮 |
-
-### 設計方針
-
-#### データモデル
-```typescript
-type WorkProgressStatus = 'pending' | 'in_progress' | 'completed';
-
-interface ProgressEntry {
-  id: string;
-  date: string;       // ISO 8601形式
-  amount: number;     // 進捗量（単位はweightフィールドから取得）
-  memo?: string;
-}
-
-interface WorkProgress {
-  id: string;
-  groupName?: string;        // グループ名（任意）
-  taskName?: string;         // 作業名（任意）
-  weight?: string;           // 数量（例: "10kg", "5個"）（任意）
-  status: WorkProgressStatus;
-  memo?: string;
-  startedAt?: string;        // ISO 8601形式
-  completedAt?: string;      // ISO 8601形式
-  createdAt: string;         // ISO 8601形式
-  updatedAt: string;         // ISO 8601形式
-  targetAmount?: number;     // 目標量
-  currentAmount?: number;    // 現在の進捗量（累積）
-  progressHistory?: ProgressEntry[];
-  completedCount?: number;   // 完成数
-  archivedAt?: string;       // ISO 8601形式
-}
-```
-
-### 禁止事項
-1. ❌ `targetAmount` なしの進捗管理廃止（目標量なし運用をサポート維持）
-2. ❌ アーカイブ機能の削除
-
----
-
-## 7. ドリップガイド（Drip Guide）
+## 5. ドリップガイド（Drip Guide）
 
 ### 目的
 ドリップ抽出手順の案内、レシピ管理
@@ -484,119 +318,7 @@ interface WorkProgress {
 
 ---
 
-## 8. コーヒークイズ（Coffee Quiz）
-
-### 目的
-コーヒー知識の習得、FSRS間隔反復学習
-
-### 主要ユースケース
-1. クイズ出題（カテゴリ: basics, roasting, extraction, origin）
-2. 難易度別（easy, medium, hard）
-3. XP獲得、ストリーク記録
-4. FSRS学習スケジューリング
-
-### UI実装ルール
-
-#### 共通コンポーネント使用
-- ✅ **必須**: `Button`, `Card`, `Badge` を使用
-- ❌ **禁止**: 独自のクイズカードコンポーネント作成（既存の`QuizCard`を使用）
-
-#### テーマ対応
-- CSS変数による自動テーマ適用
-
-### 技術要素
-
-| 要素 | 内容 |
-|-----|------|
-| **ページ** | `app/coffee-trivia/page.tsx`（クイズ実行）<br>`app/coffee-trivia/stats/page.tsx` (CCN: 97 - リファクタリング対象) |
-| **コンポーネント** | `components/coffee-quiz/QuizCard.tsx`<br>`components/coffee-quiz/QuizOption.tsx` |
-| **ロジック** | `lib/coffee-quiz/gamification.ts`（XP計算）<br>`lib/coffee-quiz/fsrs.ts`（FSRS計算） |
-| **Firestore** | `users/{userId}` ドキュメント内のフィールド（クイズ進捗、ユーザー統計） |
-
-### 設計方針
-
-#### FSRS（間隔反復学習）
-- **アルゴリズム**: Free Spaced Repetition Scheduler
-- **パラメータ**: difficulty, stability, retrievability
-- **復習間隔**: 次回復習日（`nextReviewDate`）を自動計算
-
-#### ゲーミフィケーション
-- **XP獲得**: 難易度に応じてXP付与（easy: 10, medium: 20, hard: 30）
-- **ストリーク**: 連続日数記録、途切れるとリセット
-- **レベル**: XPに応じてレベルアップ
-
-#### データモデル
-```typescript
-interface QuizProgress {
-  userId: string;
-  questionId: string;
-  difficulty: number;
-  stability: number;
-  nextReviewDate: Timestamp;
-  lastReviewDate: Timestamp;
-}
-
-interface UserStats {
-  userId: string;
-  totalXP: number;
-  currentLevel: number;
-  currentStreak: number;
-  longestStreak: number;
-}
-```
-
-### 禁止事項
-1. ❌ FSRSアルゴリズムの根本的変更（パラメータ調整のみ可）
-2. ❌ XP計算ロジックの変更（バランス崩壊の可能性）
-3. ❌ ストリークロジックの変更（ユーザー混乱の可能性）
-
-### 関連ADR
-- FSRS採用は将来的にADRとして追記予定（`docs/steering/TECH_SPEC.md`）
-
----
-
-## 9. 開発秘話（Dev Stories）
-
-### 目的
-開発チームのエピソード・開発の裏側を紹介するコンテンツページ
-
-### 主要ユースケース
-1. エピソード一覧の閲覧
-2. エピソード詳細の閲覧（キャラクター対話形式）
-3. エピソードの追加（静的データとして管理）
-
-### UI実装ルール
-
-#### 共通コンポーネント使用
-- ✅ **必須**: `FloatingNav` を使用
-- ❌ **禁止**: 独自のエピソードカードコンポーネント作成（既存の`EpisodeCard`を使用）
-
-#### テーマ対応
-- CSS変数による自動テーマ適用
-
-### 技術要素
-
-| 要素 | 内容 |
-|-----|------|
-| **ページ** | `app/dev-stories/page.tsx`（エピソード一覧）<br>`app/dev-stories/[id]/page.tsx`（エピソード詳細） |
-| **コンポーネント** | `components/dev-stories/EpisodeCard.tsx`<br>`components/dev-stories/CharacterAvatar.tsx`<br>`components/dev-stories/DialogueBubble.tsx`<br>`components/dev-stories/DialogueSection.tsx`<br>`components/dev-stories/DetailSection.tsx` |
-| **データ** | `data/dev-stories/episodes.ts`（エピソード一覧）<br>`data/dev-stories/episode-001.ts` 〜 `episode-006.ts`（各エピソード）<br>`data/dev-stories/characters.ts`（キャラクター定義）<br>`data/dev-stories/version-history.ts`（バージョン履歴連携） |
-| **認証** | 不要（公開コンテンツ） |
-
-### 設計方針
-
-#### コンテンツ管理
-- **静的データ**: `data/dev-stories/` に TypeScript で直接記述（Firestore不使用）
-- **キャラクター対話形式**: DialogueBubble + DialogueSection で表現
-- **エピソード追加**: `data/dev-stories/` に新ファイルを追加し、`episodes.ts` にエントリを追加
-
-### 禁止事項
-1. ❌ エピソードデータのFirestore移行（静的データを維持）
-2. ❌ 認証必須化（公開コンテンツのまま維持）
-
----
-
-## 10. その他
+## 6. その他
 
 ### スプラッシュ画面（Splash Screen）
 
@@ -820,10 +542,6 @@ ESLintカスタムルール（`no-raw-button`, `no-raw-checkbox`, `no-raw-select
 - **技術**: タブ切替式サイドナビ、既存registry.tsx/splashPatterns連携
 - **統合元**: `/ui-test`（リダイレクト）、`/dev/splash-preview`（リダイレクト）
 
-### 変更履歴（Changelog）
-- **目的**: リリースノート表示
-- **技術**: マークダウンファイル読み込み
-
 ### お問い合わせ（Contact）
 - **目的**: ユーザーからの質問・不具合報告・要望受付
 - **パス**: `/contact`
@@ -849,12 +567,9 @@ ESLintカスタムルール（`no-raw-button`, `no-raw-checkbox`, `no-raw-select
 | データ種別 | 格納場所 | 備考 |
 |-----------|---------|------|
 | ユーザー情報 | `users/{userId}` ドキュメント | プロファイル、設定等 |
-| 焙煎記録 | `users/{userId}` のフィールド | |
 | ドリップレシピ | `users/{userId}` のフィールド | |
-| クイズ進捗 | `users/{userId}` のフィールド | |
 | テイスティング | `users/{userId}` のフィールド | |
 | スケジュール | `users/{userId}` のフィールド | |
-| 作業進捗 | `users/{userId}/workProgresses/{workProgressId}` | サブコレクション。旧フィールドは互換読み取り・移行補助の対象 |
 | 担当表 | `users/{userId}` 配下のサブコレクション | Assignment固有のデータ構造 |
 | 欠点豆 | `defectBeans` コレクション | 共有データ（全ユーザー共通） |
 | メタデータ | `_meta` コレクション | システム管理用 |
