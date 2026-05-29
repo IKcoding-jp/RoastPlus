@@ -22,7 +22,7 @@ export const HOME_FEATURES = [
   {
     key: 'production-record',
     title: '生産記録',
-    description: 'ハンドピック・焙煎・パッケージを記録',
+    description: '月次の生産実績を記録',
   },
   {
     key: 'drip-guide',
