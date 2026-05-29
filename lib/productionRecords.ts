@@ -1,11 +1,14 @@
 import type {
   BlendItem,
   HandpickEntry,
+  HandpickEntryInput,
   PackageEntry,
+  PackageEntryInput,
   ProductionRecordMonth,
   ProductionRecordMonthInput,
   ProductionRecordMonthlySummary,
   RoastEntry,
+  RoastEntryInput,
   TeamCounts,
 } from '@/types';
 
@@ -23,6 +26,10 @@ const BLEND_ITEMS_ERROR = '配合は1〜4件、各比率は0以上、合計100%�
 const MONTH_INPUT_ERROR = '対象月が正しくありません';
 const GREEN_BEAN_TOTAL_ERROR = '生豆総量は0より大きい値で入力してください';
 const POWDER_PER_PACK_ERROR = '1袋粉量は0より大きい値で入力してください';
+const WORK_DATE_ERROR = '作業日が正しくありません';
+const HANDPICK_SEGMENT_ERROR = '区分は1回目または2回目を選択してください';
+const HANDPICK_GREEN_ERROR = '今回生豆重量は0より大きい値で入力してください';
+const ROAST_WEIGHT_ERROR = '焙煎前後の重量を正しく入力してください';
 
 export function isValidProductionMonth(month: string): boolean {
   if (!WORK_MONTH_PATTERN.test(month)) {
@@ -244,5 +251,62 @@ export function buildProductionRecordMonth(input: ProductionRecordMonthInput): P
     greenBeanTotalGram: input.greenBeanTotalGram,
     powderPerPackGram: input.powderPerPackGram,
     blendItems: input.blendItems,
+  };
+}
+
+export function buildHandpickEntry(input: HandpickEntryInput): HandpickEntryInput {
+  if (!isValidWorkDate(input.workDate)) {
+    throw new Error(WORK_DATE_ERROR);
+  }
+  if (input.segment !== 'first' && input.segment !== 'second') {
+    throw new Error(HANDPICK_SEGMENT_ERROR);
+  }
+  if (!(input.greenBeanWeightGram > 0)) {
+    throw new Error(HANDPICK_GREEN_ERROR);
+  }
+  const defectBeanWeightGram = normalizeWeightInput(input.defectBeanWeightGram);
+
+  return {
+    workDate: input.workDate,
+    beanName: input.beanName,
+    segment: input.segment,
+    greenBeanWeightGram: input.greenBeanWeightGram,
+    defectBeanWeightGram,
+  };
+}
+
+export function buildRoastEntry(input: RoastEntryInput): RoastEntryInput {
+  if (!isValidWorkDate(input.workDate)) {
+    throw new Error(WORK_DATE_ERROR);
+  }
+  if (!(input.beforeRoastWeightGram > 0) || !(input.afterRoastWeightGram > 0)) {
+    throw new Error(ROAST_WEIGHT_ERROR);
+  }
+  if (input.afterRoastWeightGram > input.beforeRoastWeightGram) {
+    throw new Error(ROAST_WEIGHT_ERROR);
+  }
+
+  return {
+    workDate: input.workDate,
+    beforeRoastWeightGram: input.beforeRoastWeightGram,
+    afterRoastWeightGram: input.afterRoastWeightGram,
+  };
+}
+
+export function buildPackageEntry(input: PackageEntryInput): PackageEntryInput {
+  if (!isValidWorkDate(input.workDate)) {
+    throw new Error(WORK_DATE_ERROR);
+  }
+
+  return {
+    workDate: input.workDate,
+    teamA: {
+      goodCount: normalizeCountInput(input.teamA.goodCount),
+      defectiveCount: normalizeCountInput(input.teamA.defectiveCount),
+    },
+    teamB: {
+      goodCount: normalizeCountInput(input.teamB.goodCount),
+      defectiveCount: normalizeCountInput(input.teamB.defectiveCount),
+    },
   };
 }

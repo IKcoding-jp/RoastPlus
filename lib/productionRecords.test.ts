@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildBlendLabel,
+  buildHandpickEntry,
   buildMonthlySummary,
+  buildPackageEntry,
   buildProductionRecordMonth,
+  buildRoastEntry,
   calculateDailyTheoryPacks,
   calculateDefectRate,
   calculateMoistureLossRate,
@@ -23,10 +26,13 @@ import {
 import type {
   BlendItem,
   HandpickEntry,
+  HandpickEntryInput,
   PackageEntry,
+  PackageEntryInput,
   ProductionRecordMonth,
   ProductionRecordMonthInput,
   RoastEntry,
+  RoastEntryInput,
   TeamCounts,
 } from '@/types';
 
@@ -455,5 +461,73 @@ describe('buildProductionRecordMonth', () => {
         blendItems: [{ beanName: 'a', ratioPercent: 90 }],
       })
     ).toThrow();
+  });
+});
+
+describe('buildHandpickEntry', () => {
+  const validInput: HandpickEntryInput = {
+    workDate: '2026-08-01',
+    beanName: 'ブラジル',
+    segment: 'first',
+    greenBeanWeightGram: 10000,
+    defectBeanWeightGram: 320,
+  };
+
+  it('returns the validated input shape', () => {
+    expect(buildHandpickEntry(validInput)).toEqual(validInput);
+  });
+
+  it('accepts the second segment and zero defect weight', () => {
+    expect(buildHandpickEntry({ ...validInput, segment: 'second', defectBeanWeightGram: 0 })).toEqual({
+      ...validInput,
+      segment: 'second',
+      defectBeanWeightGram: 0,
+    });
+  });
+
+  it('throws for invalid work date, segment, or weights', () => {
+    expect(() => buildHandpickEntry({ ...validInput, workDate: '2026-08' })).toThrow();
+    expect(() => buildHandpickEntry({ ...validInput, segment: 'third' as HandpickEntryInput['segment'] })).toThrow();
+    expect(() => buildHandpickEntry({ ...validInput, greenBeanWeightGram: 0 })).toThrow();
+    expect(() => buildHandpickEntry({ ...validInput, defectBeanWeightGram: -1 })).toThrow();
+  });
+});
+
+describe('buildRoastEntry', () => {
+  const validInput: RoastEntryInput = {
+    workDate: '2026-08-01',
+    beforeRoastWeightGram: 2000,
+    afterRoastWeightGram: 1660,
+  };
+
+  it('returns the validated input shape', () => {
+    expect(buildRoastEntry(validInput)).toEqual(validInput);
+  });
+
+  it('throws for invalid date, non-positive weights, or after > before', () => {
+    expect(() => buildRoastEntry({ ...validInput, workDate: '2026/08/01' })).toThrow();
+    expect(() => buildRoastEntry({ ...validInput, beforeRoastWeightGram: 0 })).toThrow();
+    expect(() => buildRoastEntry({ ...validInput, afterRoastWeightGram: 0 })).toThrow();
+    expect(() =>
+      buildRoastEntry({ ...validInput, beforeRoastWeightGram: 1000, afterRoastWeightGram: 1100 })
+    ).toThrow();
+  });
+});
+
+describe('buildPackageEntry', () => {
+  const validInput: PackageEntryInput = {
+    workDate: '2026-08-01',
+    teamA: { goodCount: 1000, defectiveCount: 30 },
+    teamB: { goodCount: 500, defectiveCount: 20 },
+  };
+
+  it('returns the validated input shape', () => {
+    expect(buildPackageEntry(validInput)).toEqual(validInput);
+  });
+
+  it('throws for invalid date or non-integer/negative counts', () => {
+    expect(() => buildPackageEntry({ ...validInput, workDate: '2026-08' })).toThrow();
+    expect(() => buildPackageEntry({ ...validInput, teamA: { goodCount: -1, defectiveCount: 0 } })).toThrow();
+    expect(() => buildPackageEntry({ ...validInput, teamB: { goodCount: 1.5, defectiveCount: 0 } })).toThrow();
   });
 });
