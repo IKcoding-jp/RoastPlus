@@ -60,7 +60,6 @@ describe('HomePage', () => {
       'progress',
       'production-packs',
       'drip-guide',
-      'coffee-trivia',
       'dev-stories',
       'settings',
     ].forEach((key) => mocks.visibleKeys.add(key));
