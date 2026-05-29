@@ -51,15 +51,9 @@ describe('HomePage', () => {
     mocks.push.mockClear();
     mocks.getUserData.mockClear();
     mocks.visibleKeys.clear();
-    [
-      'assignment',
-      'schedule',
-      'tasting',
-      'defect-beans',
-      'production-packs',
-      'drip-guide',
-      'settings',
-    ].forEach((key) => mocks.visibleKeys.add(key));
+    ['assignment', 'schedule', 'tasting', 'defect-beans', 'production-packs', 'drip-guide', 'settings'].forEach((key) =>
+      mocks.visibleKeys.add(key)
+    );
   });
 
   it('非表示設定の機能カードをホームに表示しないが、その他は表示する', () => {

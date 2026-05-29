@@ -44,11 +44,8 @@ vi.mock('@/lib/auth', () => ({
 
 vi.mock('@/lib/firestore', () => ({
   getUserData: (userId: string) => mockGetUserData(userId),
-  saveUserData: (
-    userId: string,
-    data: AppData,
-    options?: { updatedFields?: (keyof AppData)[] }
-  ) => mockSaveUserData(userId, data, options),
+  saveUserData: (userId: string, data: AppData, options?: { updatedFields?: (keyof AppData)[] }) =>
+    mockSaveUserData(userId, data, options),
   subscribeUserData: (userId: string, callback: (data: AppData) => void) => mockSubscribeUserData(userId, callback),
   SAVE_USER_DATA_DEBOUNCE_MS: 500,
 }));

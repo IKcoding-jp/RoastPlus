@@ -127,9 +127,7 @@ describe('Firestore rules', () => {
       await assertSucceeds(ownerDoc.delete());
     });
   });
-
 });
-
 
 describe('Storage rules', () => {
   it('allows only the owner to upload allowed defect bean images', async () => {
