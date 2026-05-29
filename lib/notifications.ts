@@ -5,9 +5,6 @@
 
 import { isE2EMode } from './e2eMode';
 
-// スケジュールされた通知IDの管理
-const scheduledNotificationIds = new Set<number>();
-
 /**
  * 通知権限をリクエスト
  */
@@ -76,58 +73,3 @@ export async function showNotification(title: string, options?: NotificationOpti
     console.error('Failed to show notification:', error);
   }
 }
-
-/**
- * スケジュール通知を設定
- *
- * @param notificationId 通知ID（2=手動、3=おすすめ）
- * @param scheduledTime 通知を表示する時刻（ミリ秒）
- */
-export async function scheduleNotification(notificationId: number, scheduledTime: number): Promise<void> {
-  try {
-    const hasPermission = await requestNotificationPermission();
-    if (!hasPermission) {
-      console.warn('Notification permission not granted');
-      return;
-    }
-
-    // Service Workerを使用したスケジュール通知
-    // 現在の実装では、Service Workerの登録が必要
-    if ('serviceWorker' in navigator && 'Notification' in window) {
-      try {
-        await navigator.serviceWorker.ready;
-
-        // 通知をスケジュール（実際の実装はService Worker側で行う）
-        // ここでは通知IDを記録
-        scheduledNotificationIds.add(notificationId);
-
-        // タイマー完了時刻に通知を表示するための処理
-        // 実際の実装では、Service WorkerのpostMessageを使用
-        const delay = scheduledTime - Date.now();
-        if (delay > 0) {
-          setTimeout(async () => {
-            await showNotification('🔥 焙煎完了！', {
-              body: 'タッパーと木べらを持って焙煎室に行きましょう。',
-              tag: `notification-${notificationId}`,
-              requireInteraction: true,
-            });
-            scheduledNotificationIds.delete(notificationId);
-          }, delay);
-        }
-      } catch (error) {
-        console.error('Failed to schedule notification:', error);
-      }
-    }
-  } catch (error) {
-    console.error('Failed to schedule notification:', error);
-  }
-}
-
-/**
- * すべてのスケジュール通知をキャンセル
- */
-export function cancelAllScheduledNotifications(): void {
-  scheduledNotificationIds.clear();
-  // Service Workerを使用している場合は、Service Workerにも通知を送信
-}
-

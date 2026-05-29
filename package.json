@@ -3,8 +3,8 @@
   "version": "0.17.7",
   "private": true,
   "scripts": {
-    "dev": "npm run generate:sound-list && next dev",
-    "build": "npm run generate:sound-list && next build",
+    "dev": "next dev",
+    "build": "next build",
     "start": "next start",
     "deploy:prod": "firebase use default && npm run build && firebase deploy",
     "lint": "eslint",
@@ -15,7 +15,6 @@
     "test:run": "vitest run",
     "test:rules": "tsx scripts/run-rules-tests.ts",
     "test:coverage": "vitest run --coverage",
-    "generate:sound-list": "tsx scripts/generate-sound-list.ts",
     "prepare": "husky",
     "secrets:scan": "gitleaks git --redact --no-banner --log-opts=\"origin/main..HEAD\"",
     "secrets:scan:staged": "gitleaks git --staged --redact --no-banner",
