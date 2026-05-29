@@ -173,10 +173,7 @@ export function buildMonthlySummary(
   const defectRate = calculateDefectRate(handpickTotals.defectTotalGram, handpickTotals.handpickedTotalGram);
   const roastYield = calculateRoastYield(roastTotals.beforeTotalGram, roastTotals.afterTotalGram);
   const moistureLossRate = calculateMoistureLossRate(roastYield);
-  const usableGreenGram = calculateUsableGreenGram(
-    handpickTotals.handpickedTotalGram,
-    handpickTotals.defectTotalGram
-  );
+  const usableGreenGram = calculateUsableGreenGram(handpickTotals.handpickedTotalGram, handpickTotals.defectTotalGram);
   const premix = calculatePremixBags(usableGreenGram);
   const thirtyKgTheoryPacks = calculateThirtyKgTheoryPacks(defectRate, roastYield, monthDoc.powderPerPackGram);
   const packageLossRate =

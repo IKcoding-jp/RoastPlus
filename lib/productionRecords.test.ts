@@ -514,9 +514,7 @@ describe('buildRoastEntry', () => {
     expect(() => buildRoastEntry({ ...validInput, workDate: '2026/08/01' })).toThrow();
     expect(() => buildRoastEntry({ ...validInput, beforeRoastWeightGram: 0 })).toThrow();
     expect(() => buildRoastEntry({ ...validInput, afterRoastWeightGram: 0 })).toThrow();
-    expect(() =>
-      buildRoastEntry({ ...validInput, beforeRoastWeightGram: 1000, afterRoastWeightGram: 1100 })
-    ).toThrow();
+    expect(() => buildRoastEntry({ ...validInput, beforeRoastWeightGram: 1000, afterRoastWeightGram: 1100 })).toThrow();
   });
 });
 
