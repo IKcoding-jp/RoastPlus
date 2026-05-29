@@ -4,10 +4,8 @@ declare global {
   }
 }
 
-type AudioContextLike = Pick<
-  AudioContext,
-  'currentTime' | 'destination' | 'createOscillator' | 'createGain'
-> & Partial<Pick<AudioContext, 'state' | 'resume'>>;
+type AudioContextLike = Pick<AudioContext, 'currentTime' | 'destination' | 'createOscillator' | 'createGain'> &
+  Partial<Pick<AudioContext, 'state' | 'resume'>>;
 
 interface PlayDripCountdownOptions {
   volume: number;
@@ -61,7 +59,7 @@ function tone(
   osc.type = type;
   osc.frequency.setValueAtTime(freq, start);
   amp.gain.setValueAtTime(0.0001, start);
-  amp.gain.exponentialRampToValueAtTime(Math.max(0.0001, vol), start + 0.010);
+  amp.gain.exponentialRampToValueAtTime(Math.max(0.0001, vol), start + 0.01);
   amp.gain.exponentialRampToValueAtTime(0.0001, start + dur + release);
   osc.connect(amp);
   amp.connect(master);
@@ -81,11 +79,11 @@ async function scheduleCountdown(ctx: AudioContextLike, volume: number): Promise
 
   // ポン × 3（t+0, t+1, t+2）
   for (let i = 0; i < 3; i++) {
-    tone(ctx, master, now + i, 370, 0.07, 'triangle', 0.20, 0.10);
+    tone(ctx, master, now + i, 370, 0.07, 'triangle', 0.2, 0.1);
   }
 
   // ピーン！（t+3）: main + overtone
-  tone(ctx, master, now + 3, 1046.5, 0.28, 'sine', 0.28, 0.60);
+  tone(ctx, master, now + 3, 1046.5, 0.28, 'sine', 0.28, 0.6);
   tone(ctx, master, now + 3, 1046.5 * 2.01, 0.14, 'sine', 0.0504, 0.36);
 
   return true;
@@ -93,10 +91,7 @@ async function scheduleCountdown(ctx: AudioContextLike, volume: number): Promise
 
 export function isDripCountdownAudioReady(): boolean {
   if (!dripCountdownAudioContext) return false;
-  return (
-    dripCountdownAudioContext.state !== 'suspended' &&
-    dripCountdownAudioContext.state !== 'closed'
-  );
+  return dripCountdownAudioContext.state !== 'suspended' && dripCountdownAudioContext.state !== 'closed';
 }
 
 export async function playDripCountdownAudio(options: PlayDripCountdownOptions): Promise<boolean> {

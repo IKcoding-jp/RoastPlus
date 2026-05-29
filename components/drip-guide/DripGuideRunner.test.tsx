@@ -105,31 +105,33 @@ describe('DripGuideRunner', () => {
     });
 
     it('nextStep の 3 秒前に playDripCountdownAudio を呼ぶ', async () => {
-      let capturedOnTick: (t: number) => void = () => {};
+      let capturedOnTick: (updater: (prev: number) => number) => void = () => {};
       vi.mocked(useRunnerTimer).mockImplementation(({ onTick }) => {
         capturedOnTick = onTick;
+        return { current: null };
       });
 
       render(<DripGuideRunner recipe={autoRecipe} />);
 
       await act(async () => {
-        capturedOnTick(27); // step-2 は 30s 開始 → countdown は 30-3=27s
+        capturedOnTick(() => 27); // step-2 は 30s 開始 → countdown は 30-3=27s
       });
 
       expect(playDripCountdownAudio).toHaveBeenCalledWith({ volume: 0.7 });
     });
 
     it('同じカウントダウン区間で 2 回以上呼ばれない', async () => {
-      let capturedOnTick: (t: number) => void = () => {};
+      let capturedOnTick: (updater: (prev: number) => number) => void = () => {};
       vi.mocked(useRunnerTimer).mockImplementation(({ onTick }) => {
         capturedOnTick = onTick;
+        return { current: null };
       });
 
       render(<DripGuideRunner recipe={autoRecipe} />);
 
       await act(async () => {
-        capturedOnTick(27);
-        capturedOnTick(28); // 同じカウントダウン区間内の 2 回目
+        capturedOnTick(() => 27);
+        capturedOnTick(() => 28); // 同じカウントダウン区間内の 2 回目
       });
 
       expect(playDripCountdownAudio).toHaveBeenCalledTimes(1);
