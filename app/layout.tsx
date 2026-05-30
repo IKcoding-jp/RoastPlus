@@ -1,5 +1,11 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
+
+import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
+import { SplashScreenWrapper } from '@/components/SplashScreenWrapper';
+import { ThemeProvider } from '@/components/ThemeProvider';
+import { ToastProvider } from '@/components/Toast';
+
 import './globals.css';
 
 const inter = localFont({
@@ -19,10 +25,6 @@ const playfair = localFont({
   display: 'swap',
   fallback: ['Georgia', 'Times New Roman', 'serif'],
 });
-import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
-import { SplashScreenWrapper } from '@/components/SplashScreenWrapper';
-import { ToastProvider } from '@/components/Toast';
-import { ThemeProvider } from '@/components/ThemeProvider';
 
 export const metadata: Metadata = {
   title: 'RoastPlus',
