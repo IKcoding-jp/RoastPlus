@@ -11,6 +11,12 @@ import { StartHintDialog } from './StartHintDialog';
 import { Start46Dialog } from './Start46Dialog';
 import { calculateRecipeForServings } from '@/lib/drip-guide/recipeCalculator';
 
+const ICE_FLASH_HINTS = [
+  { title: '氷を準備', body: '1人前あたり60〜80gの氷を用意してください。' },
+  { title: '挽き目はやや細かめ', body: 'ホットより少し細かめに挽くのがおすすめです。' },
+  { title: '湯温は90〜91℃', body: '沸かしたては避け、少し落ち着かせたお湯を使います。' },
+];
+
 interface RecipeListProps {
   recipes: DripRecipe[];
   onDelete: (id: string) => void;
@@ -75,7 +81,7 @@ export const RecipeList: React.FC<RecipeListProps> = ({ recipes, onDelete }) => 
 
   // デフォルトレシピの表示順序を明示的に指定（BYSN → 井崎 → 粕谷）
   const sortedRecipes = useMemo(() => {
-    const defaultOrder = ['recipe-001', 'recipe-003', 'recipe-046'];
+    const defaultOrder = ['recipe-001', 'recipe-003', 'recipe-046', 'recipe-ice-flash'];
     return [...recipes].sort((a, b) => {
       const indexA = defaultOrder.indexOf(a.id);
       const indexB = defaultOrder.indexOf(b.id);
@@ -215,6 +221,7 @@ export const RecipeList: React.FC<RecipeListProps> = ({ recipes, onDelete }) => 
           servings={startTargetRecipe ? getServingsForRecipe(startTargetRecipe.id) : undefined}
           recipeName={startTargetRecipe?.name}
           isManualMode={startTargetRecipe?.isManualMode}
+          extraHints={startTargetRecipe?.id === 'recipe-ice-flash' ? ICE_FLASH_HINTS : undefined}
         />
       )}
     </>
