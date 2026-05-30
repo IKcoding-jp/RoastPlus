@@ -160,4 +160,61 @@ export const MOCK_RECIPES: DripRecipe[] = [
       },
     ],
   },
+
+  // アイスコーヒー（急冷式） - デフォルトレシピ（削除不可） - 1人前基準
+  {
+    id: 'recipe-ice-flash',
+    name: 'アイスコーヒー（急冷式）',
+    beanName: 'お好みの豆',
+    beanAmountGram: 20,
+    totalWaterGram: 150,
+    totalDurationSec: 150,
+    purpose: '濃いめに淹れて氷で一気に冷やす急冷式',
+    description:
+      '濃いめに淹れたコーヒーを氷で一気に冷やす急冷式アイスコーヒーです。氷で薄まる分を見越して、豆を多めの20gにします。挽き目はホットより少し細かめ、湯温は90〜91℃が目安です。氷は1人前あたり60〜80gを用意してください。',
+    createdAt: '2024-06-01T00:00:00Z',
+    updatedAt: '2024-06-01T00:00:00Z',
+    isDefault: true,
+    isManualMode: false,
+    steps: [
+      {
+        id: 'step-1',
+        startTimeSec: 0,
+        title: '蒸らし',
+        description: '粉全体にまんべんなくお湯を注いで均一に湿らせます。30秒蒸らします。',
+        targetTotalWater: 45,
+        note: '粉全体が均一に膨らむのを確認',
+      },
+      {
+        id: 'step-2',
+        startTimeSec: 30,
+        title: '2投目',
+        description: '中心から「の」の字を描くように注ぎます。',
+        targetTotalWater: 90,
+      },
+      {
+        id: 'step-3',
+        startTimeSec: 60,
+        title: '3投目',
+        description: '同様に注ぎ足します。',
+        targetTotalWater: 120,
+      },
+      {
+        id: 'step-4',
+        startTimeSec: 90,
+        title: '4投目',
+        description: '残りを注ぎきります。ここで注ぎ終わりです。',
+        targetTotalWater: 150,
+        note: '注ぎ終わったら落ち切りを待つ',
+      },
+      {
+        id: 'step-5',
+        startTimeSec: 150,
+        title: '氷で急冷',
+        description:
+          '落ち切った濃いコーヒーを、氷（1人前あたり60〜80g）を入れた容器に注いで一気に冷やします。冷えたらグラスに移します。',
+        note: '氷の量はお好みで調整',
+      },
+    ],
+  },
 ];
