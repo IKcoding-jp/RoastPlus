@@ -228,7 +228,9 @@ export function validateBlendItems(items: BlendItem[]): void {
     sum += item.ratioPercent;
   }
 
-  if (sum !== 100) {
+  // 浮動小数点の丸め誤差(例: 33.3+33.3+33.4=100.00000000000001)で正当な配合が
+  // 弾かれないよう、厳密等価ではなく許容誤差で合計100%を判定する。
+  if (Math.abs(sum - 100) > 0.01) {
     throw new Error(BLEND_ITEMS_ERROR);
   }
 }
