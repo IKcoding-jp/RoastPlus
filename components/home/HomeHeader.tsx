@@ -15,12 +15,7 @@ export function HomeHeader() {
         {/* ロゴ（クリスマス時のみツリー＋赤いR、それ以外は太字一体型） */}
         <div className="flex items-center gap-2 cursor-default select-none">
           {isChristmasMode && (
-            <svg
-              data-testid="christmas-tree"
-              aria-hidden="true"
-              viewBox="0 0 24 24"
-              className="h-8 w-8 shrink-0"
-            >
+            <svg data-testid="christmas-tree" aria-hidden="true" viewBox="0 0 24 24" className="h-8 w-8 shrink-0">
               <path
                 d="M12 0.4l.95 2.05 2.25.25-1.7 1.5.45 2.2L12 5.5 9.75 6.6l.45-2.2-1.7-1.5 2.25-.25z"
                 fill="#ffcc33"
