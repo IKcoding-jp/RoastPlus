@@ -39,11 +39,11 @@ export function HomeHeader() {
               </div>
             </div>
           ) : (
-            <div className="flex items-baseline gap-[3px]">
-              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-semibold tracking-tight text-header-text leading-none">
+            <div className="flex items-baseline">
+              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] text-header-text leading-none">
                 Roast
               </span>
-              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-bold tracking-tight text-header-accent leading-none">
+              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] text-header-accent leading-none">
                 Plus
               </span>
             </div>
