@@ -437,6 +437,27 @@ describe('validateBlendItems', () => {
       ])
     ).toThrow();
   });
+
+  it('浮動小数点で合計が約100%(33.3+33.3+33.4)の配合を許可する', () => {
+    // sum !== 100 の厳密等価では 100.00000000000001 となり正当な配合が誤って弾かれる
+    expect(() =>
+      validateBlendItems([
+        { beanName: 'a', ratioPercent: 33.3 },
+        { beanName: 'b', ratioPercent: 33.3 },
+        { beanName: 'c', ratioPercent: 33.4 },
+      ])
+    ).not.toThrow();
+  });
+
+  it('合計が明確に100%から外れる場合(誤差0.01超)はエラー', () => {
+    expect(() =>
+      validateBlendItems([
+        { beanName: 'a', ratioPercent: 33.3 },
+        { beanName: 'b', ratioPercent: 33.3 },
+        { beanName: 'c', ratioPercent: 33.3 },
+      ])
+    ).toThrow();
+  });
 });
 
 describe('buildProductionRecordMonth', () => {
