@@ -13,7 +13,7 @@ describe('MOCK_RECIPES アイスコーヒー（急冷式）', () => {
     expect(ice?.totalWaterGram).toBe(150);
     expect(ice?.isManualMode).toBe(false);
     expect(ice?.isDefault).toBe(true);
-    expect(ice?.totalDurationSec).toBe(210);
+    expect(ice?.totalDurationSec).toBe(150);
   });
 
   it('自動モードで最終ステップが表示されるよう、totalDurationSecは最終ステップ開始時刻より後である', () => {
@@ -28,8 +28,8 @@ describe('MOCK_RECIPES アイスコーヒー（急冷式）', () => {
     expect(ice?.steps.map((s) => s.targetTotalWater)).toEqual([45, 90, 120, 150, undefined]);
   });
 
-  it('各ステップの開始時刻が0/30/60/90/150秒', () => {
-    expect(ice?.steps.map((s) => s.startTimeSec)).toEqual([0, 30, 60, 90, 150]);
+  it('各ステップの開始時刻が0/30/60/90/120秒', () => {
+    expect(ice?.steps.map((s) => s.startTimeSec)).toEqual([0, 30, 60, 90, 120]);
   });
 
   it('最終ステップは氷で急冷する手順', () => {
