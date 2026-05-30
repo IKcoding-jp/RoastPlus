@@ -1,7 +1,24 @@
 import type { Metadata, Viewport } from 'next';
-// TEMPORARY: Google Fonts disabled for build - will re-enable after deployment
-// import { Geist, Geist_Mono, Noto_Serif_JP, Playfair_Display, Nunito } from "next/font/google";
+import localFont from 'next/font/local';
 import './globals.css';
+
+const inter = localFont({
+  src: './fonts/Inter-latin.woff2',
+  variable: '--font-inter',
+  weight: '100 900',
+  display: 'swap',
+  fallback: ['Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'sans-serif'],
+});
+
+const playfair = localFont({
+  src: [
+    { path: './fonts/PlayfairDisplay-latin.woff2', style: 'normal', weight: '400 900' },
+    { path: './fonts/PlayfairDisplay-latin-italic.woff2', style: 'italic', weight: '400 900' },
+  ],
+  variable: '--font-playfair',
+  display: 'swap',
+  fallback: ['Georgia', 'Times New Roman', 'serif'],
+});
 import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
 import { SplashScreenWrapper } from '@/components/SplashScreenWrapper';
 import { ToastProvider } from '@/components/Toast';
@@ -38,7 +55,7 @@ export default function RootLayout({
   const e2eMode = process.env.NEXT_PUBLIC_E2E_MODE === 'true';
 
   return (
-    <html lang="ja" suppressHydrationWarning>
+    <html lang="ja" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <body
         className="antialiased font-serif bg-page"
         data-roastplus-e2e-mode={e2eMode ? 'true' : 'false'}
