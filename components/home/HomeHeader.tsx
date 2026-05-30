@@ -12,14 +12,50 @@ export function HomeHeader() {
   return (
     <header className="shrink-0 relative z-50 transition-all duration-1000 bg-header-bg shadow-lg">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-        {/* ロゴ（テーマトークンで色が切り替わるため通常/クリスマス共通） */}
-        <div className="flex items-baseline cursor-default select-none">
-          <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] text-header-text leading-none">
-            Roast
-          </span>
-          <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] text-header-accent leading-none">
-            Plus
-          </span>
+        {/* ロゴ（クリスマス時のみツリー＋赤いR、それ以外は太字一体型） */}
+        <div className="flex items-center gap-2 cursor-default select-none">
+          {isChristmasMode && (
+            <svg
+              data-testid="christmas-tree"
+              aria-hidden="true"
+              viewBox="0 0 24 24"
+              className="h-8 w-8 shrink-0"
+            >
+              <path
+                d="M12 0.4l.95 2.05 2.25.25-1.7 1.5.45 2.2L12 5.5 9.75 6.6l.45-2.2-1.7-1.5 2.25-.25z"
+                fill="#ffcc33"
+              />
+              <polygon points="12,4 16.5,10 7.5,10" fill="#1a8a3a" />
+              <polygon points="12,8 18,15 6,15" fill="#1a8a3a" />
+              <polygon points="12,12 19.5,20 4.5,20" fill="#1a8a3a" />
+              <rect x="10.8" y="20" width="2.4" height="2.8" fill="#6b4423" />
+              <circle cx="10.3" cy="13" r="0.9" fill="#e23636" />
+              <circle cx="13.6" cy="17" r="0.9" fill="#d4af37" />
+              <circle cx="11.2" cy="18.4" r="0.8" fill="#f8f1e7" />
+            </svg>
+          )}
+          {isChristmasMode ? (
+            <div className="flex items-baseline">
+              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] text-[#e23636] leading-none">
+                R
+              </span>
+              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] text-header-text leading-none">
+                oast
+              </span>
+              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] text-header-accent leading-none">
+                Plus
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-baseline">
+              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] text-header-text leading-none">
+                Roast
+              </span>
+              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] text-header-accent leading-none">
+                Plus
+              </span>
+            </div>
+          )}
         </div>
 
         {/* ボタン群 */}

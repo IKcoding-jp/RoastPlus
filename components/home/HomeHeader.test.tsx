@@ -31,20 +31,27 @@ describe('HomeHeader', () => {
     expect(roast.className).toMatch(/font-extrabold/);
     expect(plus.className).toMatch(/font-extrabold/);
     expect(plus.className).toMatch(/text-header-accent/);
+    expect(screen.queryByTestId('christmas-tree')).not.toBeInTheDocument();
   });
 
-  it('クリスマスモード: 専用ロゴではなく通常と同じ太字ワードマークを使う（一本化）', () => {
+  it('クリスマスモード: R=赤・oast=クリーム・Plus=金の太字ワードマーク＋緑ツリーを表示', () => {
     mocks.isChristmasMode = true;
     render(<HomeHeader />);
 
-    // ワードマークは1つだけ（Playfair版との二重描画がない）
-    const roast = screen.getByText('Roast');
+    const r = screen.getByText('R');
+    const oast = screen.getByText('oast');
     const plus = screen.getByText('Plus');
-    expect(roast.className).toMatch(/font-extrabold/);
+
+    // 太字Interは維持
+    expect(r.className).toMatch(/font-extrabold/);
+    expect(oast.className).toMatch(/font-extrabold/);
     expect(plus.className).toMatch(/font-extrabold/);
-    // テーマトークンで色が切り替わるため、クラスは通常と同じ text-header-text / text-header-accent
-    expect(roast.className).toMatch(/text-header-text/);
+    // 配色: R=赤(明示), oast=テーマトークン(クリーム), Plus=テーマトークン(金)
+    expect(r.className).toMatch(/text-\[#e23636\]/);
+    expect(oast.className).toMatch(/text-header-text/);
     expect(plus.className).toMatch(/text-header-accent/);
+    // クリスマスツリーアイコンを表示
+    expect(screen.getByTestId('christmas-tree')).toBeInTheDocument();
   });
 
   it('デジタル時計ボタンを表示する', () => {
