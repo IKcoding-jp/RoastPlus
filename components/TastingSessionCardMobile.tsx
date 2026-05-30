@@ -54,7 +54,7 @@ export function TastingSessionCardMobile({
                       </h3>
                       <div className="flex items-center gap-2">
                         <span
-                          className="px-2 py-0.5 text-[9px] font-bold rounded-full shadow-sm"
+                          className="px-2.5 py-1 text-[11px] font-bold rounded-full shadow-sm"
                           style={{
                             backgroundColor: getRoastBadgeStyle(session.roastLevel).bg,
                             color: getRoastBadgeStyle(session.roastLevel).text,
@@ -62,7 +62,7 @@ export function TastingSessionCardMobile({
                         >
                           {session.roastLevel}
                         </span>
-                        <span className={`text-[10px] ${textMutedClass}`}>{formatDate(session.createdAt)}</span>
+                        <span className={`text-[12px] ${textMutedClass}`}>{formatDate(session.createdAt)}</span>
                       </div>
                     </div>
                   </div>
@@ -73,19 +73,19 @@ export function TastingSessionCardMobile({
                   {/* 感想セクション */}
                   <div className="flex-1 min-h-0 overflow-hidden">
                     <div className="flex items-center gap-2 mb-2">
-                      <Quotes size={16} weight="fill" className={textPrimaryClass} />
-                      <h4 className={`text-sm font-bold ${textPrimaryClass}`}>感想</h4>
-                      <span className={`text-[10px] font-bold ${textMutedClass} ml-auto`}>{recordCount}件の記録</span>
+                      <Quotes size={18} weight="fill" className={textPrimaryClass} />
+                      <h4 className={`text-[15px] font-bold ${textPrimaryClass}`}>感想</h4>
+                      <span className={`text-[12px] font-bold ${textMutedClass} ml-auto`}>{recordCount}件の記録</span>
                     </div>
 
-                    <div className="relative h-[calc(100%-28px)]">
+                    <div className="relative h-[calc(100%-32px)]">
                       <div className="h-full overflow-y-auto pr-2 pb-3 [scrollbar-width:thin] [scrollbar-color:var(--edge-strong)_var(--ground)] [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-ground [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-edge-strong">
                         {comments.length > 0 ? (
                           <ul className="space-y-2">
                             {comments.map((comment, commentIndex) => (
                               <li
                                 key={commentIndex}
-                                className={`text-[13px] italic ${textSecondaryClass} leading-snug pl-3 border-l-2 ${cardBorderClass}`}
+                                className={`text-[15px] italic ${textSecondaryClass} leading-relaxed pl-3 border-l-2 ${cardBorderClass}`}
                               >
                                 {comment}
                               </li>
@@ -113,10 +113,10 @@ export function TastingSessionCardMobile({
                           { label: '香り', value: averageScores.aroma, color: '#00897b' },
                         ].map((item) => (
                           <div key={item.label} className="flex items-center gap-2">
-                            <span className={`text-[9px] font-bold ${textSecondaryClass} w-9 flex-shrink-0`}>
+                            <span className={`text-[12px] font-bold ${textSecondaryClass} w-11 flex-shrink-0`}>
                               {item.label}
                             </span>
-                            <div className={`flex-1 h-1 ${bgMutedClass} rounded overflow-hidden`}>
+                            <div className={`flex-1 h-1.5 ${bgMutedClass} rounded overflow-hidden`}>
                               <div
                                 className="h-full transition-all duration-500"
                                 style={{
@@ -125,7 +125,7 @@ export function TastingSessionCardMobile({
                                 }}
                               />
                             </div>
-                            <span className={`text-[9px] font-bold ${textSecondaryClass} w-6 text-right`}>
+                            <span className={`text-[12px] font-bold ${textSecondaryClass} w-8 text-right`}>
                               {item.value.toFixed(1)}
                             </span>
                           </div>
@@ -158,13 +158,13 @@ export function TastingSessionCardMobile({
                           setAiModalSession(session);
                         }}
                         fullWidth
-                        className="justify-between !px-3 !py-2"
+                        className="justify-between !px-3 !py-2.5"
                       >
                         <div className="flex items-center gap-2">
-                          <Notepad size={16} weight="fill" className={iconAccentClass} />
-                          <span className={`text-xs font-bold ${textPrimaryClass}`}>AIコーヒーマイスター</span>
+                          <Notepad size={18} weight="fill" className={iconAccentClass} />
+                          <span className={`text-sm font-bold ${textPrimaryClass}`}>AIコーヒーマイスター</span>
                         </div>
-                        <CaretRight size={16} weight="bold" className={textMutedClass} />
+                        <CaretRight size={18} weight="bold" className={textMutedClass} />
                       </Button>
                     )}
                   </div>
