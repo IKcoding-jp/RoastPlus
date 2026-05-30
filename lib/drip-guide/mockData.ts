@@ -168,7 +168,7 @@ export const MOCK_RECIPES: DripRecipe[] = [
     beanName: 'お好みの豆',
     beanAmountGram: 20,
     totalWaterGram: 150,
-    totalDurationSec: 150,
+    totalDurationSec: 210,
     purpose: '濃いめに淹れて氷で一気に冷やす急冷式',
     description:
       '濃いめに淹れたコーヒーを氷で一気に冷やす急冷式アイスコーヒーです。氷で薄まる分を見越して、豆を多めの20gにします。挽き目はホットより少し細かめ、湯温は90〜91℃が目安です。氷は1人前あたり60〜80gを用意してください。',

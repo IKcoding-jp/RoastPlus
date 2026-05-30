@@ -13,7 +13,14 @@ describe('MOCK_RECIPES アイスコーヒー（急冷式）', () => {
     expect(ice?.totalWaterGram).toBe(150);
     expect(ice?.isManualMode).toBe(false);
     expect(ice?.isDefault).toBe(true);
-    expect(ice?.totalDurationSec).toBe(150);
+    expect(ice?.totalDurationSec).toBe(210);
+  });
+
+  it('自動モードで最終ステップが表示されるよう、totalDurationSecは最終ステップ開始時刻より後である', () => {
+    // useRunnerTimer は next >= totalDurationSec で完了するため、
+    // 最終ステップ開始 < totalDurationSec でないと急冷ステップが表示されない
+    const lastStepStart = ice?.steps[ice.steps.length - 1].startTimeSec ?? 0;
+    expect(ice?.totalDurationSec).toBeGreaterThan(lastStepStart);
   });
 
   it('5ステップで、注湯の累計湯量が45/90/120/150', () => {
