@@ -1,7 +1,6 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { FaTree, FaStar } from 'react-icons/fa';
 import { HiClock } from 'react-icons/hi';
 import { useChristmasMode } from '@/hooks/useChristmasMode';
 import { IconButton } from '@/components/ui';
@@ -13,37 +12,41 @@ export function HomeHeader() {
   return (
     <header className="shrink-0 relative z-50 transition-all duration-1000 bg-header-bg shadow-lg">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
-        {/* ロゴ */}
-        <div className="flex items-center gap-2.5 cursor-default select-none group">
+        {/* ロゴ（クリスマス時のみツリー＋赤いR、それ以外は太字一体型） */}
+        <div className="flex items-center gap-2 cursor-default select-none">
+          {isChristmasMode && (
+            <svg data-testid="christmas-tree" aria-hidden="true" viewBox="0 0 24 24" className="h-8 w-8 shrink-0">
+              <path
+                d="M12 0.4l.95 2.05 2.25.25-1.7 1.5.45 2.2L12 5.5 9.75 6.6l.45-2.2-1.7-1.5 2.25-.25z"
+                fill="#ffcc33"
+              />
+              <polygon points="12,4 16.5,10 7.5,10" fill="#1a8a3a" />
+              <polygon points="12,8 18,15 6,15" fill="#1a8a3a" />
+              <polygon points="12,12 19.5,20 4.5,20" fill="#1a8a3a" />
+              <rect x="10.8" y="20" width="2.4" height="2.8" fill="#6b4423" />
+              <circle cx="10.3" cy="13" r="0.9" fill="#e23636" />
+              <circle cx="13.6" cy="17" r="0.9" fill="#d4af37" />
+              <circle cx="11.2" cy="18.4" r="0.8" fill="#f8f1e7" />
+            </svg>
+          )}
           {isChristmasMode ? (
-            <div className="flex items-center gap-1">
-              <div className="relative flex items-center justify-center p-1">
-                <FaTree className="text-[#1a472a] text-2xl md:text-4xl drop-shadow-[0_0_15px_rgba(212,175,55,0.4)] transition-all duration-700 group-hover:scale-105" />
-                <FaStar className="absolute -top-0.5 text-[#ffcc33] text-[10px] animate-pulse drop-shadow-[0_0_8px_#ffcc33]" />
-                <div className="absolute top-[35%] left-[45%] w-1 h-1 bg-[#e23636] rounded-full shadow-[0_0_6px_#e23636] animate-pulse"></div>
-                <div className="absolute top-[55%] right-[35%] w-1 h-1 bg-[#d4af37] rounded-full shadow-[0_0_6px_#d4af37] animate-pulse [animation-delay:0.3s]"></div>
-                <div className="absolute top-[70%] left-[38%] w-0.5 h-0.5 bg-[#f8f1e7] rounded-full shadow-[0_0_4px_white] animate-pulse [animation-delay:0.6s]"></div>
-              </div>
-
-              <div className="relative flex flex-col items-center">
-                <span className="text-2xl md:text-4xl tracking-[0.08em] flex items-center leading-none font-[var(--font-playfair)] italic">
-                  <span className="text-[#e23636] relative drop-shadow-[0_0_10px_rgba(226,54,54,0.3)] font-bold">
-                    R
-                  </span>
-                  <span className="text-[#f8f1e7] drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">oast</span>
-                  <span className="text-[#d4af37] ml-1 font-bold drop-shadow-[0_0_15px_rgba(212,175,55,0.5)]">
-                    Plus
-                  </span>
-                </span>
-                <div className="w-full h-[1.5px] mt-0.5 bg-gradient-to-r from-transparent via-[#d4af37]/60 to-transparent shadow-[0_1px_8px_rgba(212,175,55,0.4)]"></div>
-              </div>
+            <div className="flex items-baseline">
+              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] text-[#e23636] leading-none">
+                R
+              </span>
+              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] text-header-text leading-none">
+                oast
+              </span>
+              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] text-header-accent leading-none">
+                Plus
+              </span>
             </div>
           ) : (
-            <div className="flex items-baseline gap-[3px]">
-              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-semibold tracking-tight text-header-text leading-none">
+            <div className="flex items-baseline">
+              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] text-header-text leading-none">
                 Roast
               </span>
-              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-bold tracking-tight text-header-accent leading-none">
+              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] text-header-accent leading-none">
                 Plus
               </span>
             </div>
