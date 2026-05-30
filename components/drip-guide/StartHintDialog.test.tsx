@@ -35,4 +35,25 @@ describe('StartHintDialog', () => {
     render(<StartHintDialog {...defaultProps} />);
     expect(screen.queryByText('手順はタップで進みます')).not.toBeInTheDocument();
   });
+
+  it('extraHintsを渡すと各項目を表示する', () => {
+    render(
+      <StartHintDialog
+        {...defaultProps}
+        extraHints={[
+          { title: '氷を準備', body: '1人前あたり60〜80g' },
+          { title: '挽き目', body: 'ホットより少し細かめ' },
+        ]}
+      />
+    );
+    expect(screen.getByText('氷を準備')).toBeInTheDocument();
+    expect(screen.getByText('1人前あたり60〜80g')).toBeInTheDocument();
+    expect(screen.getByText('挽き目')).toBeInTheDocument();
+  });
+
+  it('extraHintsを渡さなくても従来のヒントは表示される', () => {
+    render(<StartHintDialog {...defaultProps} />);
+    expect(screen.getByText('湯量は総量表示です')).toBeInTheDocument();
+    expect(screen.queryByText('氷を準備')).not.toBeInTheDocument();
+  });
 });

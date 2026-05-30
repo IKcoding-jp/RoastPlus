@@ -14,6 +14,7 @@ interface StartHintDialogProps {
   servings?: number;
   recipeName?: string;
   isManualMode?: boolean;
+  extraHints?: { title: string; body: string }[];
 }
 
 const overlayMotion = {
@@ -37,6 +38,7 @@ export const StartHintDialog: React.FC<StartHintDialogProps> = ({
   servings,
   recipeName,
   isManualMode,
+  extraHints,
 }) => {
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -117,6 +119,18 @@ export const StartHintDialog: React.FC<StartHintDialogProps> = ({
                     </div>
                   </div>
                 )}
+
+                {extraHints?.map((hint) => (
+                  <div key={hint.title} className="flex gap-3">
+                    <div className="mt-1 flex h-9 w-9 items-center justify-center text-spot">
+                      <Coffee size={18} weight="duotone" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold text-ink">{hint.title}</p>
+                      <p className="text-ink-sub">{hint.body}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <div className="flex items-center justify-between px-5 pb-5 pt-1">
