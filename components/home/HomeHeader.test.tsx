@@ -21,6 +21,7 @@ describe('HomeHeader（通常モード）', () => {
     expect(roast).toBeInTheDocument();
     expect(plus).toBeInTheDocument();
     // 一体型: 親コンテナに gap 系クラスを持たない
+    expect(roast.parentElement).toBeTruthy();
     expect(roast.parentElement?.className).not.toMatch(/gap-/);
     // 太い一体型: 両セグメントとも extrabold
     expect(roast.className).toMatch(/font-extrabold/);
