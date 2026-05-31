@@ -11,7 +11,7 @@ import { EmptyScheduleState } from '@/components/schedule/EmptyScheduleState';
 
 interface TodayScheduleProps {
   data: AppData | null;
-  onUpdate: (data: AppData) => void;
+  onUpdate: (data: AppData) => Promise<void> | void;
   selectedDate: string;
   isToday: boolean;
   onCamera?: () => void;

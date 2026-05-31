@@ -12,6 +12,7 @@ import { useAuth } from '@/lib/auth';
 import { useTastingFilters } from '@/hooks/useTastingFilters';
 import { motion } from 'framer-motion';
 import { Button, IconButton, EmptyState } from '@/components/ui';
+import { useToastContext } from '@/components/Toast';
 
 const SAMPLE_TASTING_PREFIX = 'sample-tasting-';
 
@@ -114,6 +115,7 @@ export function TastingSessionList({
   filterButtonContainerId,
   filterButtonContainerIdMobile,
 }: TastingSessionListProps) {
+  const { showToast } = useToastContext();
   const router = useRouter();
   const { user } = useAuth();
   const userId = user?.uid ?? null;
@@ -183,26 +185,31 @@ export function TastingSessionList({
   }, [sampleButtonContainerId, filterButtonContainerId, filterButtonContainerIdMobile]);
 
   // AI分析結果をFirestoreに保存するコールバック
-  const handleUpdateSession = (sessionId: string, aiAnalysis: string, recordCount: number) => {
+  const handleUpdateSession = async (sessionId: string, aiAnalysis: string, recordCount: number) => {
     if (!onUpdate) return;
 
-    onUpdate((currentData) => {
-      const updatedSessions = currentData.tastingSessions.map((session) =>
-        session.id === sessionId
-          ? {
-              ...session,
-              aiAnalysis,
-              aiAnalysisUpdatedAt: new Date().toISOString(),
-              aiAnalysisRecordCount: recordCount,
-            }
-          : session
-      );
+    try {
+      await onUpdate((currentData) => {
+        const updatedSessions = currentData.tastingSessions.map((session) =>
+          session.id === sessionId
+            ? {
+                ...session,
+                aiAnalysis,
+                aiAnalysisUpdatedAt: new Date().toISOString(),
+                aiAnalysisRecordCount: recordCount,
+              }
+            : session
+        );
 
-      return {
-        ...currentData,
-        tastingSessions: updatedSessions,
-      };
-    });
+        return {
+          ...currentData,
+          tastingSessions: updatedSessions,
+        };
+      });
+    } catch (error) {
+      console.error('Failed to save tasting session:', error);
+      showToast('試飲セッションの保存に失敗しました。通信を確認してもう一度お試しください。', 'error');
+    }
   };
 
   const handleApplyFilters = (filters: {
@@ -293,7 +300,9 @@ export function TastingSessionList({
         ...currentData.tastingRecords.filter((record) => !record.id.startsWith(SAMPLE_TASTING_PREFIX)),
         ...sampleRecords,
       ],
-    }));
+    }))?.catch((error) => {
+      console.error('Failed to add sample data:', error);
+    });
   };
 
   const filterButtonDesktop = (

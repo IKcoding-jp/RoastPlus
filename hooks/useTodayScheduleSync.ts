@@ -3,7 +3,7 @@ import type { AppData, TodaySchedule, TimeLabel } from '@/types';
 
 interface UseTodayScheduleSyncOptions {
   data: AppData | null;
-  onUpdate: (data: AppData) => void;
+  onUpdate: (data: AppData) => Promise<void> | void;
   selectedDate: string;
   currentSchedule: TodaySchedule;
 }
@@ -120,7 +120,9 @@ export function useTodayScheduleSync({ data, onUpdate, selectedDate, currentSche
         todayScheduleIdRef.current = updatedSchedule.id;
         lastDataRef.current = newTimeLabelsStr;
 
-        onUpdateRef.current(updatedData);
+        Promise.resolve(onUpdateRef.current(updatedData)).catch((error) => {
+          console.error('Failed to auto-save today schedule:', error);
+        });
 
         setTimeout(() => {
           isUpdatingRef.current = false;
@@ -211,7 +213,9 @@ export function useTodayScheduleSync({ data, onUpdate, selectedDate, currentSche
               todaySchedules: updatedSchedules,
             };
 
-            onUpdateRef.current(updatedData);
+            Promise.resolve(onUpdateRef.current(updatedData)).catch((error) => {
+              console.error('Failed to auto-save today schedule:', error);
+            });
           }
         }
       }
