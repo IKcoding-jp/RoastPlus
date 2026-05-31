@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { User, onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
-import { clearIndexedDbPersistence, terminate } from 'firebase/firestore';
+import { clearIndexedDbPersistence, terminate, waitForPendingWrites } from 'firebase/firestore';
 import { auth, db } from './firebase';
 import { getE2EUser, isE2EMode, isE2ESignedIn, signOutE2EUser } from './e2eMode';
 
@@ -76,20 +76,24 @@ export async function signOut() {
     return;
   }
 
+  // オフライン時はログアウトを止める:
+  // 1) 未送信のオフライン変更を失わないため 2) 共有端末でキャッシュを安全に消せないため
+  if (typeof navigator !== 'undefined' && !navigator.onLine) {
+    const offlineError = new Error('オフラインのためログアウトできません');
+    offlineError.name = 'OfflineLogoutError';
+    throw offlineError;
+  }
+
   try {
+    // 未送信のオフライン書き込みをサーバーへ反映してからサインアウトする
+    await waitForPendingWrites(db);
     await firebaseSignOut(auth);
-    // 共有端末対策: ログアウト時に端末ローカルのオフラインキャッシュ(IndexedDB)を消す。
-    // 永続化したFirestoreデータがログアウトやブラウザ再起動後も端末に残らないようにする。
-    // terminate でインスタンスを停止してから clearIndexedDbPersistence で消す必要がある。
-    // この後は db が終了状態になるため、呼び出し側はフルリロードで再初期化する。
-    try {
-      await terminate(db);
-      await clearIndexedDbPersistence(db);
-    } catch (cacheError) {
-      console.error('ローカルキャッシュのクリアに失敗しました:', cacheError);
-    }
+    // 共有端末対策: ローカルキャッシュ(IndexedDB)を消す。
+    // terminate でインスタンスを停止してから clear する必要がある。
+    await terminate(db);
+    await clearIndexedDbPersistence(db);
   } catch (error) {
-    console.error('ログアウトエラー:', error);
-    throw error;
+    console.error('ログアウト処理でエラー:', error);
+    throw error; // 呼び出し側に失敗を伝える(クリア未完了をユーザーへ通知)
   }
 }

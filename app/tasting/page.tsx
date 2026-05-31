@@ -75,43 +75,43 @@ function TastingPageContent() {
       );
     }
 
-    const handleSave = async (updatedSession: TastingSession) => {
-      try {
-        const updatedSessions = tastingSessions.map((s) =>
-          s.id === sessionId ? { ...updatedSession, userId: user.uid } : s
-        );
-        await updateData({
+    const handleSave = (updatedSession: TastingSession) => {
+      const updatedSessions = tastingSessions.map((s) =>
+        s.id === sessionId ? { ...updatedSession, userId: user.uid } : s
+      );
+      showToast('セッションを更新しました', 'success');
+      router.push('/tasting');
+      Promise.resolve(
+        updateData({
           ...data,
           tastingSessions: updatedSessions,
-        });
-        showToast('セッションを更新しました', 'success');
-        router.push('/tasting');
-      } catch (error) {
+        })
+      ).catch((error) => {
         console.error('Failed to update session:', error);
         showToast('セッションの更新に失敗しました', 'error');
-      }
+      });
     };
 
-    const handleDelete = async (id: string) => {
+    const handleDelete = (id: string) => {
       const confirmDelete = window.confirm('このセッションを削除しますか？この操作は取り消せません。');
       if (!confirmDelete) return;
 
-      try {
-        setIsRedirectingAfterDelete(true);
-        // セッションに関連する記録も削除
-        const updatedRecords = tastingRecords.filter((r) => r.sessionId !== id);
-        const updatedSessions = tastingSessions.filter((s) => s.id !== id);
-        await updateData({
+      // セッションに関連する記録も削除
+      const updatedRecords = tastingRecords.filter((r) => r.sessionId !== id);
+      const updatedSessions = tastingSessions.filter((s) => s.id !== id);
+      setIsRedirectingAfterDelete(true);
+      router.push('/tasting');
+      Promise.resolve(
+        updateData({
           ...data,
           tastingSessions: updatedSessions,
           tastingRecords: updatedRecords,
-        });
-        router.push('/tasting');
-      } catch (error) {
+        })
+      ).catch((error) => {
         console.error('Failed to delete session:', error);
         setIsRedirectingAfterDelete(false);
         showToast('セッションの削除に失敗しました', 'error');
-      }
+      });
     };
 
     const handleCancel = () => {
@@ -152,41 +152,41 @@ function TastingPageContent() {
       );
     }
 
-    const handleSave = async (updatedRecord: TastingRecord) => {
-      try {
-        const updatedRecords = tastingRecords.map((r) =>
-          r.id === recordId ? { ...updatedRecord, userId: user.uid } : r
-        );
-        await updateData({
+    const handleSave = (updatedRecord: TastingRecord) => {
+      const updatedRecords = tastingRecords.map((r) =>
+        r.id === recordId ? { ...updatedRecord, userId: user.uid } : r
+      );
+      showToast('記録を保存しました', 'success');
+      router.push('/tasting');
+      Promise.resolve(
+        updateData({
           ...data,
           tastingRecords: updatedRecords,
-        });
-        showToast('記録を保存しました', 'success');
-        router.push('/tasting');
-      } catch (error) {
+        })
+      ).catch((error) => {
         console.error('Failed to save record:', error);
         showToast('記録の保存に失敗しました', 'error');
-      }
+      });
     };
 
-    const handleDelete = async (id: string) => {
+    const handleDelete = (id: string) => {
       const confirmDelete = window.confirm('この記録を削除しますか？');
       if (!confirmDelete) return;
 
-      try {
-        setIsRedirectingAfterDelete(true);
-        const updatedRecords = tastingRecords.filter((r) => r.id !== id);
-        await updateData({
+      const updatedRecords = tastingRecords.filter((r) => r.id !== id);
+      setIsRedirectingAfterDelete(true);
+      showToast('記録を削除しました', 'success');
+      router.push('/tasting');
+      Promise.resolve(
+        updateData({
           ...data,
           tastingRecords: updatedRecords,
-        });
-        showToast('記録を削除しました', 'success');
-        router.push('/tasting');
-      } catch (error) {
+        })
+      ).catch((error) => {
         console.error('Failed to delete record:', error);
         setIsRedirectingAfterDelete(false);
         showToast('記録の削除に失敗しました', 'error');
-      }
+      });
     };
 
     const handleCancel = () => {

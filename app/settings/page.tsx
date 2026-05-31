@@ -86,8 +86,15 @@ export default function SettingsPage() {
       // signOut で Firestore インスタンスを終了したため、フルリロードで再初期化する
       window.location.href = '/login';
     } catch (error) {
+      if (error instanceof Error && error.name === 'OfflineLogoutError') {
+        showToast(
+          'オフラインです。変更を保存し安全にログアウトするため、通信が回復してからもう一度お試しください。',
+          'error'
+        );
+        return;
+      }
       console.error('ログアウトエラー:', error);
-      showToast('ログアウトに失敗しました。', 'error');
+      showToast('ログアウトに失敗しました。他のタブを閉じてからもう一度お試しください。', 'error');
     }
   };
 
