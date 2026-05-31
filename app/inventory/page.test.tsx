@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor, within } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import type { InventoryItem } from '@/types';
 
 const mockUseAuth = vi.fn();
@@ -50,8 +50,9 @@ describe('InventoryPage', () => {
     ];
     mockUseInventory.mockReturnValue({ items, isLoading: false });
     render(<InventoryPage />);
-    // 見出し(h1)に「要発注 2」と件数を表示する（h2「要発注リスト」と区別するため role で特定）
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('要発注 2');
+    // 件数バッジは「要発注リスト」見出し(h2)に表示する。
+    // h1「在庫・不足品」と区別するため name で特定し、要発注数(=2)を含むことを確認する。
+    expect(screen.getByRole('heading', { name: /要発注リスト/ })).toHaveTextContent('2');
   });
 
   it('(F) 品目が空かつ非ローディングなら全品目セクションに空状態を表示する', () => {
@@ -74,15 +75,13 @@ describe('InventoryPage', () => {
     mockUseInventory.mockReturnValue({ items, isLoading: false });
     render(<InventoryPage />);
 
-    // 1件目「ドリップ袋」の編集ボタンを押す（Card 単位で特定）
-    const cardA = screen.getByText('ドリップ袋').closest('[class*="rounded"]') as HTMLElement;
-    fireEvent.click(within(cardA).getByRole('button', { name: '編集' }));
+    // 1件目「ドリップ袋」の編集ボタンを押す（編集はアイコンボタンで aria-label に品目名を含む）
+    fireEvent.click(screen.getByRole('button', { name: 'ドリップ袋を編集' }));
     expect((screen.getByLabelText('品目名') as HTMLInputElement).value).toBe('ドリップ袋');
 
     // モーダルを閉じてから2件目「ラベル」を編集 → 値が入れ替わる
     fireEvent.click(screen.getByRole('button', { name: 'キャンセル' }));
-    const cardB = screen.getByText('ラベル').closest('[class*="rounded"]') as HTMLElement;
-    fireEvent.click(within(cardB).getByRole('button', { name: '編集' }));
+    fireEvent.click(screen.getByRole('button', { name: 'ラベルを編集' }));
     expect((screen.getByLabelText('品目名') as HTMLInputElement).value).toBe('ラベル');
   });
 
@@ -93,19 +92,18 @@ describe('InventoryPage', () => {
     mockUseInventory.mockReturnValue({ items, isLoading: false });
     render(<InventoryPage />);
 
-    // 削除ボタン押下では即時に削除されない
-    fireEvent.click(screen.getByRole('button', { name: '削除' }));
+    // 削除ボタン（アイコンボタン）押下では即時に削除されない
+    fireEvent.click(screen.getByRole('button', { name: 'ドリップ袋を削除' }));
     expect(deleteInventoryItem).not.toHaveBeenCalled();
 
     // 確認ダイアログが表示される
     expect(screen.getByText('品目を削除しますか？')).toBeInTheDocument();
     expect(screen.getByText('共有在庫なので全員に反映されます')).toBeInTheDocument();
 
-    // ダイアログの確定ボタンで初めて削除される。
-    // 確認表示中は一覧の「削除」とダイアログの「削除」の2つが存在するため、
-    // ダイアログ内（タイトルと同じコンテナ配下）の確定ボタンに限定する。
-    const dialogPanel = screen.getByText('品目を削除しますか？').closest('div') as HTMLElement;
-    fireEvent.click(within(dialogPanel).getByRole('button', { name: '削除' }));
+    // ダイアログの確定ボタン「削除」で初めて削除される。
+    // 一覧の削除はアイコンボタン（aria-label に品目名を含む）なので、
+    // ダイアログの確定ボタン「削除」とは name で区別できる。
+    fireEvent.click(screen.getByRole('button', { name: '削除' }));
     await waitFor(() => expect(deleteInventoryItem).toHaveBeenCalledWith('a'));
   });
 });

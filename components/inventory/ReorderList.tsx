@@ -1,5 +1,6 @@
 'use client';
 
+import { MdCheck } from 'react-icons/md';
 import { Card, Button, Badge, EmptyState } from '@/components/ui';
 import { selectReorderItems, STATUS_LABELS, CATEGORY_LABELS } from '@/lib/inventory';
 import type { InventoryItem, InventoryStatus } from '@/types';
@@ -43,7 +44,7 @@ export function ReorderList({ items, onResolve }: ReorderListProps) {
                 <div className="flex flex-1 items-center justify-between gap-3 p-4">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="truncate font-medium text-ink">{item.name}</span>
+                      <span className="truncate font-bold text-ink">{item.name}</span>
                       <Badge variant={variant}>{STATUS_LABELS[item.status]}</Badge>
                     </div>
                     <div className="mt-1 text-sm text-ink-sub">{CATEGORY_LABELS[item.category]}</div>
@@ -51,9 +52,10 @@ export function ReorderList({ items, onResolve }: ReorderListProps) {
                   <Button
                     variant="success"
                     onClick={() => onResolve(item)}
-                    className="shrink-0"
+                    className="shrink-0 gap-2"
                     aria-label={`${item.name}を対応済みにする`}
                   >
+                    <MdCheck className="h-5 w-5" aria-hidden="true" />
                     対応済みにする
                   </Button>
                 </div>
