@@ -307,9 +307,9 @@ describe('useAppData', () => {
       });
 
       await act(async () => {
-        await expect(
-          result.current.updateData({ ...mockUserData, encouragementCount: 10 })
-        ).rejects.toThrow('Save failed');
+        await expect(result.current.updateData({ ...mockUserData, encouragementCount: 10 })).rejects.toThrow(
+          'Save failed'
+        );
         await vi.runAllTimersAsync();
       });
 
@@ -501,9 +501,9 @@ describe('useAppData', () => {
       });
 
       await act(async () => {
-        await expect(
-          result.current.updateData({ ...mockUserData, encouragementCount: 10 })
-        ).rejects.toThrow('Save failed');
+        await expect(result.current.updateData({ ...mockUserData, encouragementCount: 10 })).rejects.toThrow(
+          'Save failed'
+        );
         await vi.runAllTimersAsync();
       });
 
@@ -526,9 +526,9 @@ describe('useAppData', () => {
       mockGetUserData.mockRejectedValue(recoveryError);
 
       await act(async () => {
-        await expect(
-          result.current.updateData({ ...mockUserData, encouragementCount: 10 })
-        ).rejects.toThrow('Save failed');
+        await expect(result.current.updateData({ ...mockUserData, encouragementCount: 10 })).rejects.toThrow(
+          'Save failed'
+        );
         await vi.runAllTimersAsync();
       });
 
