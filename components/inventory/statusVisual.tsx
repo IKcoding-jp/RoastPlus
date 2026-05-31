@@ -13,10 +13,7 @@ import type { InventoryStatus } from '@/types';
 export interface StatusVisual {
   /** 日本語ラベル（十分/少ない/切れた） */
   label: string;
-  /**
-   * セグメント選択中の塗り(背景+文字色)。
-   * warning(黄)は白文字だとコントラスト不足のため、可読性確保で濃文字にする。
-   */
+  /** セグメント選択中の塗り(背景+文字色)。 */
   segActive: string;
   /** 淡色チップの背景（要発注タグ用） */
   subtleBg: string;
@@ -36,7 +33,7 @@ export const STATUS_VISUAL: Record<InventoryStatus, StatusVisual> = {
   },
   low: {
     label: STATUS_LABELS.low,
-    segActive: 'bg-warning text-gray-900',
+    segActive: 'bg-warning text-white',
     subtleBg: 'bg-warning-subtle',
     text: 'text-warning',
     dot: 'bg-warning',

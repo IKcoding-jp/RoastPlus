@@ -1,7 +1,7 @@
 'use client';
 
 import { FiCheck, FiCheckCircle } from 'react-icons/fi';
-import { Card, Button } from '@/components/ui';
+import { Card } from '@/components/ui';
 import { selectReorderItems, CATEGORY_LABELS, formatUpdatedBy } from '@/lib/inventory';
 import { STATUS_VISUAL } from './statusVisual';
 import type { InventoryItem } from '@/types';
@@ -15,6 +15,8 @@ interface ReorderListProps {
  * 要発注リスト。1枚のカード内に行を border で区切って並べるリスト型。
  * 各行は「品目名 + 状態タグ(淡色) + 補足」と、塗らない success ゴーストの「対応済みにする」。
  * 空のときは安心感のあるチェック付きメッセージを出す。
+ *
+ * CTA は共通 Button だとタップ用に大きすぎるため、デザイン指定のコンパクトな専用ボタンを用いる。
  */
 export function ReorderList({ items, onResolve }: ReorderListProps) {
   const reorder = selectReorderItems(items);
@@ -46,15 +48,16 @@ export function ReorderList({ items, onResolve }: ReorderListProps) {
                     {CATEGORY_LABELS[item.category]} · {formatUpdatedBy(item.updatedBy)}
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
+                {/* eslint-disable-next-line local/no-raw-button -- デザイン指定のコンパクトな success ゴーストCTA。共通Buttonはサイズが合わない */}
+                <button
+                  type="button"
                   onClick={() => onResolve(item)}
                   aria-label={`${item.name}を対応済みにする`}
-                  className="shrink-0 gap-1.5 !border !border-success !text-success hover:!bg-success-subtle max-sm:w-full"
+                  className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-[10px] border border-success px-3 py-[7px] text-[13px] font-bold text-success transition-colors hover:bg-success-subtle focus:outline-none focus-visible:ring-2 focus-visible:ring-success/40 motion-reduce:transition-none max-sm:w-full"
                 >
                   <FiCheck className="h-4 w-4" aria-hidden="true" />
                   対応済みにする
-                </Button>
+                </button>
               </li>
             );
           })}
