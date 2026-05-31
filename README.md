@@ -161,6 +161,12 @@ Remove-Item Env:E2E_PORT
 
 ---
 
+## 運用ドキュメント
+
+- [バックアップ運用手順](docs/steering/BACKUP_OPERATIONS.md) — Firestore / Storage の手動バックアップ・復元手順
+
+---
+
 ## ライセンス
 
 社内運用向けの実用コードとして管理し、利用範囲や導入方針はリポジトリ内の運用ルールに従って判断してください。
