@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
@@ -8,6 +8,7 @@ import { Loading } from '@/components/Loading';
 import { Input, Button } from '@/components/ui';
 import { E2E_EMAIL, E2E_PASSWORD, isE2EMode, signInE2EUser } from '@/lib/e2eMode';
 import { getSafeReturnUrl } from '@/lib/returnUrl';
+import { useToastContext } from '@/components/Toast';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -16,6 +17,18 @@ function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { showToast } = useToastContext();
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.localStorage.getItem('roastplus_cache_clear_failed') === '1') {
+      window.localStorage.removeItem('roastplus_cache_clear_failed');
+      showToast(
+        'ログアウト時に端末内のデータを完全に消去できませんでした。共有端末の場合は、他のRoastPlusのタブを閉じてからもう一度ログアウトしてください。',
+        'error'
+      );
+    }
+  }, [showToast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

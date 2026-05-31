@@ -290,6 +290,8 @@ export function useAppData() {
           .catch((err) => {
             console.error('Failed to recover data:', err);
           });
+
+        throw saveError;
       } finally {
         if (mutatedKeys.length > 0) {
           pendingSaveCountRef.current = Math.max(0, pendingSaveCountRef.current - 1);

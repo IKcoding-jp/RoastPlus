@@ -8,10 +8,11 @@ import { RoastScheduleMemoDialog } from './RoastScheduleMemoDialog';
 import { ScheduleCard } from './roast-scheduler/ScheduleCard';
 import { Button } from '@/components/ui';
 import { EmptyScheduleState } from '@/components/schedule/EmptyScheduleState';
+import { useToastContext } from '@/components/Toast';
 
 interface RoastSchedulerTabProps {
   data: AppData | null;
-  onUpdate: (data: AppData) => void;
+  onUpdate: (data: AppData) => Promise<void> | void;
   selectedDate: string; // YYYY-MM-DD形式
   isToday: boolean; // 選択日が今日かどうか
   onCamera?: () => void;
@@ -24,6 +25,7 @@ export function RoastSchedulerTab({
   isToday: _isToday,
   onCamera,
 }: RoastSchedulerTabProps) {
+  const { showToast } = useToastContext();
   const [editingSchedule, setEditingSchedule] = useState<RoastSchedule | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [draggedId, setDraggedId] = useState<string | null>(null);
@@ -66,7 +68,7 @@ export function RoastSchedulerTab({
     setIsAdding(false);
   };
 
-  const handleSave = (schedule: RoastSchedule) => {
+  const handleSave = async (schedule: RoastSchedule) => {
     if (!data) return;
     // 全スケジュールを取得（選択日でフィルタリングする前）
     const allSchedules = data.roastSchedules || [];
@@ -149,12 +151,16 @@ export function RoastSchedulerTab({
       roastSchedules: updatedSchedules,
     };
 
-    onUpdate(updatedData);
+    // オフラインでもUIを即座に閉じる(楽観的更新)。保存はバックグラウンドで行い、失敗時のみトースト。
     setIsAdding(false);
     setEditingSchedule(null);
+    Promise.resolve(onUpdate(updatedData)).catch((error) => {
+      console.error('Failed to save schedule:', error);
+      showToast('スケジュールの保存に失敗しました。通信を確認してもう一度お試しください。', 'error');
+    });
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (!data) return;
     // 全スケジュールから削除（選択日でフィルタリングする前）
     const allSchedules = data.roastSchedules || [];
@@ -163,10 +169,14 @@ export function RoastSchedulerTab({
       ...data,
       roastSchedules: updatedSchedules,
     };
-    onUpdate(updatedData);
+    // 削除も楽観的に反映し、UIを即座に更新する。保存はバックグラウンドで行い、失敗時のみトースト。
     if (editingSchedule?.id === id) {
       setEditingSchedule(null);
     }
+    Promise.resolve(onUpdate(updatedData)).catch((error) => {
+      console.error('Failed to delete schedule:', error);
+      showToast('スケジュールの保存に失敗しました。通信を確認してもう一度お試しください。', 'error');
+    });
   };
 
   const handleDialogCancel = () => {
@@ -189,7 +199,7 @@ export function RoastSchedulerTab({
     setDragOverId(null);
   };
 
-  const handleDrop = (e: React.DragEvent, targetId: string) => {
+  const handleDrop = async (e: React.DragEvent, targetId: string) => {
     e.preventDefault();
     setDragOverId(null);
 
@@ -255,8 +265,12 @@ export function RoastSchedulerTab({
       roastSchedules: updatedSchedules,
     };
 
-    onUpdate(updatedData);
+    // 並べ替えも楽観的に反映する。保存はバックグラウンドで行い、失敗時のみトースト。
     setDraggedId(null);
+    Promise.resolve(onUpdate(updatedData)).catch((error) => {
+      console.error('Failed to reorder schedule:', error);
+      showToast('スケジュールの保存に失敗しました。通信を確認してもう一度お試しください。', 'error');
+    });
   };
 
   const handleDragEnd = () => {

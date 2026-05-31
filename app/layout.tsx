@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 
+import { OfflineBanner } from '@/components/OfflineBanner';
 import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
 import { SplashScreenWrapper } from '@/components/SplashScreenWrapper';
 import { ThemeProvider } from '@/components/ThemeProvider';
@@ -66,7 +67,10 @@ export default function RootLayout({
         <SplashScreenWrapper />
         <ServiceWorkerRegistration />
         <ThemeProvider>
-          <ToastProvider>{children}</ToastProvider>
+          <ToastProvider>
+            <OfflineBanner />
+            {children}
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

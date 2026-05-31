@@ -57,6 +57,7 @@ export async function saveUserData(userId: string, data: AppData, options: SaveU
     }
     queue.pendingPromise = { resolve, reject };
   });
+  queue.currentSavePromise = promise;
 
   // 最新のデータをキューに保存
   queue.pendingData = data;

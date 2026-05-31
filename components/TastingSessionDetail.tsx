@@ -13,7 +13,7 @@ import { Card, RoastLevelBadge } from '@/components/ui';
 interface TastingSessionDetailProps {
   session: TastingSession;
   data: AppData;
-  onUpdate: (data: AppData) => void;
+  onUpdate: (data: AppData) => Promise<void> | void;
 }
 
 export function TastingSessionDetail({ session, data, onUpdate }: TastingSessionDetailProps) {
@@ -28,76 +28,66 @@ export function TastingSessionDetail({ session, data, onUpdate }: TastingSession
   // 編集対象の記録を取得（編集モードの場合）
   const editingRecord = editingRecordId ? sessionRecords.find((r) => r.id === editingRecordId) || null : null;
 
-  const handleRecordSave = async (record: TastingRecord) => {
-    try {
-      const newRecord: TastingRecord = {
-        ...record,
-        userId: user?.uid || '',
-        sessionId: session.id,
-      };
+  const handleRecordSave = (record: TastingRecord) => {
+    const newRecord: TastingRecord = {
+      ...record,
+      userId: user?.uid || '',
+      sessionId: session.id,
+    };
 
-      // 既存の記録を上書きする場合（record.idが存在する、または同じセッション内で同じメンバーの記録がある場合）
-      const existingRecordById = tastingRecords.find((r) => r.id === record.id);
-      const existingRecordByMember = sessionRecords.find((r) => r.memberId === record.memberId && r.id !== record.id);
+    // 既存の記録を上書きする場合（record.idが存在する、または同じセッション内で同じメンバーの記録がある場合）
+    const existingRecordById = tastingRecords.find((r) => r.id === record.id);
+    const existingRecordByMember = sessionRecords.find((r) => r.memberId === record.memberId && r.id !== record.id);
 
-      if (existingRecordById) {
-        // IDで既存記録が見つかった場合（編集モード）
-        const updatedRecords = tastingRecords.map((r) => (r.id === record.id ? newRecord : r));
-        await onUpdate({
-          ...data,
-          tastingRecords: updatedRecords,
-        });
-        // 編集モードを解除
-        setEditingRecordId(null);
-      } else if (existingRecordByMember) {
-        // 同じメンバーの記録が既にある場合（上書き）
-        const updatedRecords = tastingRecords.map((r) => (r.id === existingRecordByMember.id ? newRecord : r));
-        await onUpdate({
-          ...data,
-          tastingRecords: updatedRecords,
-        });
-        // 編集モードに切り替える
-        setEditingRecordId(existingRecordByMember.id);
-      } else {
-        // 新規追加の場合
-        const updatedRecords = [...tastingRecords, newRecord];
-        await onUpdate({
-          ...data,
-          tastingRecords: updatedRecords,
-        });
-        // 編集モードに切り替える（新規作成した記録を編集モードにする）
-        setEditingRecordId(newRecord.id);
-      }
+    let updatedRecords: TastingRecord[];
+    if (existingRecordById) {
+      // IDで既存記録が見つかった場合（編集モード）
+      updatedRecords = tastingRecords.map((r) => (r.id === record.id ? newRecord : r));
+      setEditingRecordId(null);
+    } else if (existingRecordByMember) {
+      // 同じメンバーの記録が既にある場合（上書き）
+      updatedRecords = tastingRecords.map((r) => (r.id === existingRecordByMember.id ? newRecord : r));
+      setEditingRecordId(existingRecordByMember.id);
+    } else {
+      // 新規追加の場合
+      updatedRecords = [...tastingRecords, newRecord];
+      setEditingRecordId(newRecord.id);
+    }
 
-      // 保存が完了してから試飲記録一覧ページに遷移
-      router.push('/tasting');
-    } catch (error) {
+    // 楽観的UI: 先に遷移し、バックグラウンドで保存する
+    router.push('/tasting');
+    Promise.resolve(
+      onUpdate({
+        ...data,
+        tastingRecords: updatedRecords,
+      })
+    ).catch((error) => {
       console.error('Failed to save tasting record:', error);
       showToast('記録の保存に失敗しました。もう一度お試しください。', 'error');
-    }
+    });
   };
 
-  const handleRecordDelete = async (recordId: string) => {
+  const handleRecordDelete = (recordId: string) => {
     const confirmDelete = window.confirm('この記録を削除しますか？');
     if (!confirmDelete) return;
 
-    try {
-      const updatedRecords = tastingRecords.filter((r) => r.id !== recordId);
-      await onUpdate({
+    const updatedRecords = tastingRecords.filter((r) => r.id !== recordId);
+    // 削除した記録が編集対象だった場合、編集モードを解除
+    if (editingRecordId === recordId) {
+      setEditingRecordId(null);
+    }
+
+    // 楽観的UI: 先に遷移し、バックグラウンドで削除する
+    router.push('/tasting');
+    Promise.resolve(
+      onUpdate({
         ...data,
         tastingRecords: updatedRecords,
-      });
-      // 削除した記録が編集対象だった場合、編集モードを解除
-      if (editingRecordId === recordId) {
-        setEditingRecordId(null);
-      }
-
-      // 削除が完了してから試飲記録一覧ページに遷移
-      router.push('/tasting');
-    } catch (error) {
+      })
+    ).catch((error) => {
       console.error('Failed to delete tasting record:', error);
       showToast('記録の削除に失敗しました。もう一度お試しください。', 'error');
-    }
+    });
   };
 
   const handleCancel = () => {

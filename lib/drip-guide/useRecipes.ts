@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { DripRecipe } from './types';
 import { MOCK_RECIPES } from './mockData';
 import { useAppData } from '@/hooks/useAppData';
+import { useToastContext } from '@/components/Toast';
 
 const STORAGE_KEY = 'roastplus_drip_recipes';
 const MIGRATION_FLAG_KEY = 'roastplus_drip_recipes_migrated_to_firestore';
@@ -25,6 +26,7 @@ function migrateRecipeTo1Serving(recipe: DripRecipe): DripRecipe {
 
 export function useRecipes() {
   const { data, updateData, isLoading: appDataLoading } = useAppData();
+  const { showToast } = useToastContext();
   const [isLoaded, setIsLoaded] = useState(false);
   const [migrationChecked, setMigrationChecked] = useState(false);
 
@@ -139,19 +141,24 @@ export function useRecipes() {
   })();
 
   const addRecipe = useCallback(
-    (recipe: DripRecipe) => {
+    async (recipe: DripRecipe) => {
       const currentRecipes = data.dripRecipes || [];
       const newRecipes = [...currentRecipes, recipe];
-      updateData({
-        ...data,
-        dripRecipes: newRecipes,
-      });
+      try {
+        await updateData({
+          ...data,
+          dripRecipes: newRecipes,
+        });
+      } catch (error) {
+        console.error('Failed to add recipe:', error);
+        showToast('レシピの保存に失敗しました。通信を確認してもう一度お試しください。', 'error');
+      }
     },
-    [data, updateData]
+    [data, updateData, showToast]
   );
 
   const updateRecipe = useCallback(
-    (recipe: DripRecipe) => {
+    async (recipe: DripRecipe) => {
       const currentRecipes = data.dripRecipes || [];
       const defaultRecipeIds = new Set(MOCK_RECIPES.filter((r) => r.isDefault).map((r) => r.id));
 
@@ -166,16 +173,21 @@ export function useRecipes() {
         newRecipes.push(updatedRecipe);
       }
 
-      updateData({
-        ...data,
-        dripRecipes: newRecipes,
-      });
+      try {
+        await updateData({
+          ...data,
+          dripRecipes: newRecipes,
+        });
+      } catch (error) {
+        console.error('Failed to update recipe:', error);
+        showToast('レシピの保存に失敗しました。通信を確認してもう一度お試しください。', 'error');
+      }
     },
-    [data, updateData]
+    [data, updateData, showToast]
   );
 
   const deleteRecipe = useCallback(
-    (id: string) => {
+    async (id: string) => {
       // デフォルトレシピは削除できない
       const recipeToDelete = recipes.find((r) => r.id === id);
       if (recipeToDelete?.isDefault) {
@@ -185,12 +197,17 @@ export function useRecipes() {
 
       const currentRecipes = data.dripRecipes || [];
       const newRecipes = currentRecipes.filter((r) => r.id !== id);
-      updateData({
-        ...data,
-        dripRecipes: newRecipes,
-      });
+      try {
+        await updateData({
+          ...data,
+          dripRecipes: newRecipes,
+        });
+      } catch (error) {
+        console.error('Failed to delete recipe:', error);
+        showToast('レシピの保存に失敗しました。通信を確認してもう一度お試しください。', 'error');
+      }
     },
-    [recipes, data, updateData]
+    [recipes, data, updateData, showToast]
   );
 
   const getRecipe = useCallback(

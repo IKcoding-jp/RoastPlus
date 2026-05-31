@@ -1,7 +1,14 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { connectFunctionsEmulator, getFunctions } from 'firebase/functions';
-import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore';
+import {
+  connectFirestoreEmulator,
+  getFirestore,
+  initializeFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  type Firestore,
+} from 'firebase/firestore';
 import { initializeRoastPlusAppCheck } from './appCheck';
 
 const firebaseConfig = {
@@ -24,7 +31,28 @@ declare global {
 }
 
 const functionsInstance = getFunctions(app);
-const firestoreInstance = getFirestore(app);
+
+function createFirestore(): Firestore {
+  const useEmulator = process.env.NEXT_PUBLIC_FIREBASE_FIRESTORE_EMULATOR === 'true';
+
+  // ブラウザ以外（ビルド/SSR）、またはエミュレータ接続時はオフライン永続化を使わない
+  if (typeof window === 'undefined' || useEmulator) {
+    return getFirestore(app);
+  }
+
+  try {
+    // IndexedDB にオフライン永続化。複数タブでも安全なマネージャを使用
+    return initializeFirestore(app, {
+      localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+    });
+  } catch (error) {
+    // IndexedDB 不可・二重初期化などのフォールバック（機能は落とさない）
+    console.warn('Firestore offline persistence unavailable, using memory cache:', error);
+    return getFirestore(app);
+  }
+}
+
+const firestoreInstance = createFirestore();
 
 initializeRoastPlusAppCheck(app);
 
