@@ -13,7 +13,7 @@ export function OfflineBanner() {
     <div
       role="status"
       aria-live="polite"
-      className="fixed top-0 inset-x-0 z-[60] bg-warning text-page text-center text-sm font-medium py-1.5 px-4"
+      className="fixed top-0 inset-x-0 z-40 pointer-events-none bg-warning text-page text-center text-sm font-medium py-1.5 px-4"
     >
       オフライン：変更は接続が戻ったときに保存されます
     </div>

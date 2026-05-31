@@ -84,16 +84,20 @@ export async function signOut() {
     throw offlineError;
   }
 
+  // ここまでは db を終了していないので、失敗したら呼び出し側に伝えてそのまま留まれる
+  await waitForPendingWrites(db);
+  await firebaseSignOut(auth);
+
+  // ここから先は db を terminate するため、呼び出し側は必ずフルリロードする。
+  // terminate 後に clear が失敗(多タブ等)しても、db は終了済みなのでリロードは必須。
+  // よってクリア失敗は再throwせずログのみに留め、signOut は正常終了させてリロードを保証する。
   try {
-    // 未送信のオフライン書き込みをサーバーへ反映してからサインアウトする
-    await waitForPendingWrites(db);
-    await firebaseSignOut(auth);
-    // 共有端末対策: ローカルキャッシュ(IndexedDB)を消す。
-    // terminate でインスタンスを停止してから clear する必要がある。
     await terminate(db);
     await clearIndexedDbPersistence(db);
-  } catch (error) {
-    console.error('ログアウト処理でエラー:', error);
-    throw error; // 呼び出し側に失敗を伝える(クリア未完了をユーザーへ通知)
+  } catch (cacheError) {
+    console.error(
+      'ログアウト時のローカルキャッシュのクリアに失敗しました(端末に一部データが残る可能性があります):',
+      cacheError
+    );
   }
 }
