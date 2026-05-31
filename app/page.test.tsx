@@ -7,6 +7,7 @@ const mocks = vi.hoisted(() => ({
   push: vi.fn(),
   getUserData: vi.fn().mockResolvedValue({}),
   visibleKeys: new Set<string>(),
+  inventoryItems: [] as unknown[],
 }));
 
 vi.mock('next/navigation', () => ({
@@ -46,14 +47,29 @@ vi.mock('@/hooks/useHomeFeatureVisibility', () => ({
   }),
 }));
 
+vi.mock('@/hooks/useInventory', () => ({
+  useInventory: () => ({
+    items: mocks.inventoryItems,
+    isLoading: false,
+  }),
+}));
+
 describe('HomePage', () => {
   beforeEach(() => {
     mocks.push.mockClear();
     mocks.getUserData.mockClear();
     mocks.visibleKeys.clear();
-    ['assignment', 'schedule', 'tasting', 'defect-beans', 'production-record', 'drip-guide', 'settings'].forEach(
-      (key) => mocks.visibleKeys.add(key)
-    );
+    mocks.inventoryItems = [];
+    [
+      'assignment',
+      'schedule',
+      'tasting',
+      'defect-beans',
+      'production-record',
+      'inventory',
+      'drip-guide',
+      'settings',
+    ].forEach((key) => mocks.visibleKeys.add(key));
   });
 
   it('非表示設定の機能カードをホームに表示しないが、その他は表示する', () => {
