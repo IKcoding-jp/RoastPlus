@@ -1,0 +1,81 @@
+import { describe, it, expect } from 'vitest';
+import {
+  isReorderStatus,
+  selectReorderItems,
+  countReorderItems,
+  normalizeInventoryStatus,
+  normalizeInventoryCategory,
+  buildInventoryItemInput,
+  STATUS_LABELS,
+  CATEGORY_LABELS,
+} from './inventory';
+import type { InventoryItem } from '@/types';
+
+function makeItem(id: string, status: InventoryItem['status']): InventoryItem {
+  return { id, name: id, category: 'consumable', status, updatedBy: 'tester' };
+}
+
+describe('isReorderStatus', () => {
+  it('low と out が要発注', () => {
+    expect(isReorderStatus('low')).toBe(true);
+    expect(isReorderStatus('out')).toBe(true);
+    expect(isReorderStatus('enough')).toBe(false);
+  });
+});
+
+describe('selectReorderItems / countReorderItems', () => {
+  it('low と out だけを抽出し件数を返す', () => {
+    const items = [makeItem('a', 'enough'), makeItem('b', 'low'), makeItem('c', 'out')];
+    expect(selectReorderItems(items).map((i) => i.id)).toEqual(['b', 'c']);
+    expect(countReorderItems(items)).toBe(2);
+  });
+});
+
+describe('normalizeInventoryStatus', () => {
+  it('正しい値はそのまま、未知の値は enough にフォールバック', () => {
+    expect(normalizeInventoryStatus('low')).toBe('low');
+    expect(normalizeInventoryStatus('xxx')).toBe('enough');
+    expect(normalizeInventoryStatus(undefined)).toBe('enough');
+  });
+});
+
+describe('normalizeInventoryCategory', () => {
+  it('正しい値はそのまま、未知の値は consumable にフォールバック', () => {
+    expect(normalizeInventoryCategory('green-bean')).toBe('green-bean');
+    expect(normalizeInventoryCategory('xxx')).toBe('consumable');
+  });
+});
+
+describe('buildInventoryItemInput', () => {
+  it('name をトリムし、status/category を正規化する', () => {
+    const result = buildInventoryItemInput({
+      name: '  ドリップ袋 ',
+      category: 'material',
+      status: 'low',
+      note: ' 残りわずか ',
+    });
+    expect(result).toEqual({ name: 'ドリップ袋', category: 'material', status: 'low', note: '残りわずか' });
+  });
+
+  it('note が空文字/空白のみなら省略する', () => {
+    const result = buildInventoryItemInput({ name: '砂糖', category: 'consumable', status: 'enough', note: '   ' });
+    expect(result.note).toBeUndefined();
+  });
+
+  it('name が空ならエラー', () => {
+    expect(() => buildInventoryItemInput({ name: '   ', category: 'consumable', status: 'enough' })).toThrow(
+      '品目名を入力してください'
+    );
+  });
+});
+
+describe('ラベル定数', () => {
+  it('全 status / category にラベルがある', () => {
+    expect(STATUS_LABELS.enough).toBe('十分');
+    expect(STATUS_LABELS.low).toBe('少ない');
+    expect(STATUS_LABELS.out).toBe('切れた');
+    expect(CATEGORY_LABELS['green-bean']).toBe('生豆');
+    expect(CATEGORY_LABELS.material).toBe('資材');
+    expect(CATEGORY_LABELS.consumable).toBe('消耗品');
+  });
+});

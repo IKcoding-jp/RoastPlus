@@ -25,3 +25,11 @@ export {
   subscribePackageEntries,
   savePackageEntry,
 } from './productionRecords';
+export {
+  getInventoryCollectionRef,
+  subscribeInventoryItems,
+  addInventoryItem,
+  updateInventoryItem,
+  setInventoryItemStatus,
+  deleteInventoryItem,
+} from './inventory';
