@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useAuth, signOut } from '@/lib/auth';
 import { useDeveloperMode } from '@/hooks/useDeveloperMode';
 import { useAppTheme } from '@/hooks/useAppTheme';
@@ -19,7 +18,6 @@ import { formatConsentDate } from '@/lib/consent';
 import { UserConsent } from '@/types';
 
 export default function SettingsPage() {
-  const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const {
     isAvailable: isDeveloperModeAvailable,
@@ -85,7 +83,8 @@ export default function SettingsPage() {
   const handleLogout = async () => {
     try {
       await signOut();
-      router.push('/login');
+      // signOut で Firestore インスタンスを終了したため、フルリロードで再初期化する
+      window.location.href = '/login';
     } catch (error) {
       console.error('ログアウトエラー:', error);
       showToast('ログアウトに失敗しました。', 'error');

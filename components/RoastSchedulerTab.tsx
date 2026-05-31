@@ -151,14 +151,13 @@ export function RoastSchedulerTab({
       roastSchedules: updatedSchedules,
     };
 
-    try {
-      await onUpdate(updatedData);
-    } catch (error) {
-      console.error('Failed to save schedule:', error);
-      showToast('スケジュールの保存に失敗しました。通信を確認してもう一度お試しください。', 'error');
-    }
+    // オフラインでもUIを即座に閉じる(楽観的更新)。保存はバックグラウンドで行い、失敗時のみトースト。
     setIsAdding(false);
     setEditingSchedule(null);
+    Promise.resolve(onUpdate(updatedData)).catch((error) => {
+      console.error('Failed to save schedule:', error);
+      showToast('スケジュールの保存に失敗しました。通信を確認してもう一度お試しください。', 'error');
+    });
   };
 
   const handleDelete = async (id: string) => {
@@ -170,15 +169,14 @@ export function RoastSchedulerTab({
       ...data,
       roastSchedules: updatedSchedules,
     };
-    try {
-      await onUpdate(updatedData);
-    } catch (error) {
-      console.error('Failed to delete schedule:', error);
-      showToast('スケジュールの保存に失敗しました。通信を確認してもう一度お試しください。', 'error');
-    }
+    // 削除も楽観的に反映し、UIを即座に更新する。保存はバックグラウンドで行い、失敗時のみトースト。
     if (editingSchedule?.id === id) {
       setEditingSchedule(null);
     }
+    Promise.resolve(onUpdate(updatedData)).catch((error) => {
+      console.error('Failed to delete schedule:', error);
+      showToast('スケジュールの保存に失敗しました。通信を確認してもう一度お試しください。', 'error');
+    });
   };
 
   const handleDialogCancel = () => {
@@ -267,13 +265,12 @@ export function RoastSchedulerTab({
       roastSchedules: updatedSchedules,
     };
 
-    try {
-      await onUpdate(updatedData);
-    } catch (error) {
+    // 並べ替えも楽観的に反映する。保存はバックグラウンドで行い、失敗時のみトースト。
+    setDraggedId(null);
+    Promise.resolve(onUpdate(updatedData)).catch((error) => {
       console.error('Failed to reorder schedule:', error);
       showToast('スケジュールの保存に失敗しました。通信を確認してもう一度お試しください。', 'error');
-    }
-    setDraggedId(null);
+    });
   };
 
   const handleDragEnd = () => {

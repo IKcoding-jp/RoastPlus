@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { User, onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
-import { auth } from './firebase';
+import { clearIndexedDbPersistence, terminate } from 'firebase/firestore';
+import { auth, db } from './firebase';
 import { getE2EUser, isE2EMode, isE2ESignedIn, signOutE2EUser } from './e2eMode';
 
 /**
@@ -77,6 +78,16 @@ export async function signOut() {
 
   try {
     await firebaseSignOut(auth);
+    // 共有端末対策: ログアウト時に端末ローカルのオフラインキャッシュ(IndexedDB)を消す。
+    // 永続化したFirestoreデータがログアウトやブラウザ再起動後も端末に残らないようにする。
+    // terminate でインスタンスを停止してから clearIndexedDbPersistence で消す必要がある。
+    // この後は db が終了状態になるため、呼び出し側はフルリロードで再初期化する。
+    try {
+      await terminate(db);
+      await clearIndexedDbPersistence(db);
+    } catch (cacheError) {
+      console.error('ローカルキャッシュのクリアに失敗しました:', cacheError);
+    }
   } catch (error) {
     console.error('ログアウトエラー:', error);
     throw error;
