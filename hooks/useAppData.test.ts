@@ -306,12 +306,12 @@ describe('useAppData', () => {
         await vi.runAllTimersAsync();
       });
 
-      const updatePromise = act(async () => {
-        await result.current.updateData({ ...mockUserData, encouragementCount: 10 });
+      await act(async () => {
+        await expect(
+          result.current.updateData({ ...mockUserData, encouragementCount: 10 })
+        ).rejects.toThrow('Save failed');
         await vi.runAllTimersAsync();
       });
-
-      await updatePromise;
 
       expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to save data:', error);
       expect(mockGetUserData).toHaveBeenCalledTimes(2); // 初回読み込み + エラー後の再取得
@@ -489,11 +489,9 @@ describe('useAppData', () => {
   });
 
   describe('updateData - リカバリエラーハンドリング', () => {
-    it('保存エラー後のデータ再取得も失敗した場合のエラーハンドリング', async () => {
+    it('保存失敗時に updateData が reject し、エラーがログされる', async () => {
       const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       const saveError = new Error('Save failed');
-      const recoveryError = new Error('Recovery also failed');
-
       mockSaveUserData.mockRejectedValue(saveError);
 
       const { result } = renderHook(() => useAppData());
@@ -502,18 +500,40 @@ describe('useAppData', () => {
         await vi.runAllTimersAsync();
       });
 
-      // 再取得も失敗するように設定
-      mockGetUserData.mockRejectedValue(recoveryError);
-
       await act(async () => {
-        await result.current.updateData({ ...mockUserData, encouragementCount: 10 });
+        await expect(
+          result.current.updateData({ ...mockUserData, encouragementCount: 10 })
+        ).rejects.toThrow('Save failed');
         await vi.runAllTimersAsync();
       });
 
-      // 保存エラーとリカバリエラーの両方がログされる
+      expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to save data:', saveError);
+      consoleErrorSpy.mockRestore();
+    });
+
+    it('保存失敗後の再取得も失敗した場合、両方のエラーがログされ reject する', async () => {
+      const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const saveError = new Error('Save failed');
+      const recoveryError = new Error('Recovery also failed');
+      mockSaveUserData.mockRejectedValue(saveError);
+
+      const { result } = renderHook(() => useAppData());
+
+      await act(async () => {
+        await vi.runAllTimersAsync();
+      });
+
+      mockGetUserData.mockRejectedValue(recoveryError);
+
+      await act(async () => {
+        await expect(
+          result.current.updateData({ ...mockUserData, encouragementCount: 10 })
+        ).rejects.toThrow('Save failed');
+        await vi.runAllTimersAsync();
+      });
+
       expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to save data:', saveError);
       expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to recover data:', recoveryError);
-
       consoleErrorSpy.mockRestore();
     });
   });
