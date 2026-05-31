@@ -25,6 +25,26 @@ export function clearWriteQueueStateForTests(): void {
   writeQueues.clear();
 }
 
+/**
+ * デバウンス待機中のユーザーデータ書き込みを即座に実行して完了を待つ。
+ * ログアウト時など、保留中の編集を確実にサーバーへ送ってから後処理する用途。
+ */
+export async function flushPendingUserDataWrites(userId: string): Promise<void> {
+  const queue = writeQueues.get(userId);
+  if (!queue) return;
+  if (queue.timeoutId) {
+    clearTimeout(queue.timeoutId);
+    queue.timeoutId = null;
+  }
+  if (queue.pendingData) {
+    const data = queue.pendingData;
+    const options = queue.pendingOptions ?? {};
+    queue.pendingData = null;
+    queue.pendingOptions = null;
+    await executeWrite(userId, data, options);
+  }
+}
+
 export interface SaveUserDataOptions {
   updatedFields?: (keyof AppData)[];
 }

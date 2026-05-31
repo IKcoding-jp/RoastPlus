@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { User, onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
 import { clearIndexedDbPersistence, terminate, waitForPendingWrites } from 'firebase/firestore';
 import { auth, db } from './firebase';
+import { flushPendingUserDataWrites } from '@/lib/firestore';
 import { getE2EUser, isE2EMode, isE2ESignedIn, signOutE2EUser } from './e2eMode';
 
 /**
@@ -85,6 +86,11 @@ export async function signOut() {
   }
 
   // ここまでは db を終了していないので、失敗したら呼び出し側に伝えてそのまま留まれる
+  const uid = auth.currentUser?.uid;
+  // アプリ独自のデバウンス待機中の書き込みを先に送信してから、Firestore の保留書き込みを待つ
+  if (uid) {
+    await flushPendingUserDataWrites(uid);
+  }
   await waitForPendingWrites(db);
   await firebaseSignOut(auth);
 
@@ -99,5 +105,10 @@ export async function signOut() {
       'ログアウト時のローカルキャッシュのクリアに失敗しました(端末に一部データが残る可能性があります):',
       cacheError
     );
+    try {
+      window.localStorage.setItem('roastplus_cache_clear_failed', '1');
+    } catch {
+      // localStorage 不可環境は無視
+    }
   }
 }

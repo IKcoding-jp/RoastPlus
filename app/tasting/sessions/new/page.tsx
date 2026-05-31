@@ -40,25 +40,34 @@ export default function NewTastingSessionPage() {
 
   const tastingSessions = Array.isArray(data.tastingSessions) ? data.tastingSessions : [];
 
-  const handleSave = (session: TastingSession) => {
+  const handleSave = async (session: TastingSession) => {
     const newSession: TastingSession = {
       ...session,
       userId: user.uid,
     };
 
-    const updatedSessions = [...tastingSessions, newSession];
-    // 楽観的UI: 先に遷移し、バックグラウンドで保存する
-    // 静的エクスポート時には動的ルートが存在しないため、一覧ページに遷移する
-    router.push('/tasting');
-    Promise.resolve(
-      updateData({
-        ...data,
-        tastingSessions: updatedSessions,
-      })
-    ).catch((error) => {
-      console.error('Failed to save tasting session:', error);
-      showToast('セッションの保存に失敗しました。通信を確認してもう一度お試しください。', 'error');
-    });
+    const next = {
+      ...data,
+      tastingSessions: [...tastingSessions, newSession],
+    };
+
+    if (typeof navigator !== 'undefined' && navigator.onLine) {
+      // オンライン: 保存成功を待ってから遷移。失敗時はフォームを残して再入力できるようにする。
+      try {
+        await updateData(next);
+        router.push('/tasting');
+      } catch (error) {
+        console.error('Failed to save tasting session:', error);
+        showToast('セッションの保存に失敗しました。もう一度お試しください。', 'error');
+      }
+    } else {
+      // オフライン: 書き込みはローカルキューに入り、接続復帰時に自動同期される。遷移してよい。
+      router.push('/tasting');
+      Promise.resolve(updateData(next)).catch((error) => {
+        console.error('Failed to save tasting session:', error);
+        showToast('セッションの保存に失敗しました。通信を確認してください。', 'error');
+      });
+    }
   };
 
   const handleCancel = () => {
