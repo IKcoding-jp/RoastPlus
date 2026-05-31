@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import type { AppData, TodaySchedule, TimeLabel } from '@/types';
+import { useToastContext } from '@/components/Toast';
 
 interface UseTodayScheduleSyncOptions {
   data: AppData | null;
@@ -27,11 +28,18 @@ export function useTodayScheduleSync({ data, onUpdate, selectedDate, currentSche
   const lastSelectedDateRef = useRef<string>(selectedDate);
   const localTimeLabelsRef = useRef<TimeLabel[]>(currentSchedule.timeLabels || []);
 
+  const { showToast } = useToastContext();
+  const showToastRef = useRef(showToast);
+
   // 最新の参照を保持
   useEffect(() => {
     dataRef.current = data;
     onUpdateRef.current = onUpdate;
   }, [data, onUpdate]);
+
+  useEffect(() => {
+    showToastRef.current = showToast;
+  }, [showToast]);
 
   useEffect(() => {
     lastSelectedDateRef.current = selectedDate;
@@ -122,6 +130,10 @@ export function useTodayScheduleSync({ data, onUpdate, selectedDate, currentSche
 
         Promise.resolve(onUpdateRef.current(updatedData)).catch((error) => {
           console.error('Failed to auto-save today schedule:', error);
+          showToastRef.current(
+            '本日のスケジュールの保存に失敗しました。通信を確認してもう一度お試しください。',
+            'error'
+          );
         });
 
         setTimeout(() => {
@@ -215,6 +227,10 @@ export function useTodayScheduleSync({ data, onUpdate, selectedDate, currentSche
 
             Promise.resolve(onUpdateRef.current(updatedData)).catch((error) => {
               console.error('Failed to auto-save today schedule:', error);
+              showToastRef.current(
+                '本日のスケジュールの保存に失敗しました。通信を確認してもう一度お試しください。',
+                'error'
+              );
             });
           }
         }

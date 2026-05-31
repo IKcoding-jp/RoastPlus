@@ -6,7 +6,7 @@ import { useAuth } from '@/lib/auth';
 import { useAppData } from '@/hooks/useAppData';
 import { TastingSessionForm } from '@/components/TastingSessionForm';
 import { Loading } from '@/components/Loading';
-import type { TastingSession } from '@/types';
+import type { AppData, TastingSession } from '@/types';
 import { useToastContext } from '@/components/Toast';
 import { FloatingNav } from '@/components/ui';
 
@@ -41,33 +41,31 @@ export default function NewTastingSessionPage() {
   const tastingSessions = Array.isArray(data.tastingSessions) ? data.tastingSessions : [];
 
   const handleSave = async (session: TastingSession) => {
-    const newSession: TastingSession = {
-      ...session,
-      userId: user.uid,
-    };
+    const newSession: TastingSession = { ...session, userId: user.uid };
+    const next: AppData = { ...data, tastingSessions: [...tastingSessions, newSession] };
 
-    const next = {
-      ...data,
-      tastingSessions: [...tastingSessions, newSession],
-    };
-
-    if (typeof navigator !== 'undefined' && navigator.onLine) {
-      // オンライン: 保存成功を待ってから遷移。失敗時はフォームを残して再入力できるようにする。
-      try {
-        await updateData(next);
-        router.push('/tasting');
-      } catch (error) {
+    // 保存を投げ、結果(成功/失敗)を待つ。ただし一定時間で応答が来なければ
+    // (オフライン/到達不能とみなして)ローカルにキュー済みとして楽観的に遷移する。
+    const SAVE_WAIT_MS = 4000;
+    const savePromise = Promise.resolve(updateData(next)).then(
+      () => 'ok' as const,
+      (error) => {
         console.error('Failed to save tasting session:', error);
-        showToast('セッションの保存に失敗しました。もう一度お試しください。', 'error');
+        return 'error' as const;
       }
-    } else {
-      // オフライン: 書き込みはローカルキューに入り、接続復帰時に自動同期される。遷移してよい。
-      router.push('/tasting');
-      Promise.resolve(updateData(next)).catch((error) => {
-        console.error('Failed to save tasting session:', error);
-        showToast('セッションの保存に失敗しました。通信を確認してください。', 'error');
-      });
+    );
+    const outcome = await Promise.race([
+      savePromise,
+      new Promise<'pending'>((resolve) => setTimeout(() => resolve('pending'), SAVE_WAIT_MS)),
+    ]);
+
+    if (outcome === 'error') {
+      // すぐに失敗した(rules/quota等)。フォームを残して再入力できるようにする。
+      showToast('セッションの保存に失敗しました。もう一度お試しください。', 'error');
+      return;
     }
+    // 'ok'(保存成功) または 'pending'(応答待ち=ローカルにキュー済み)。どちらも遷移してよい。
+    router.push('/tasting');
   };
 
   const handleCancel = () => {

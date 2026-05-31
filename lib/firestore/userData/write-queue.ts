@@ -18,6 +18,7 @@ export const writeQueues = new Map<
     isWriting: boolean;
     retryCount: number;
     pendingPromise: { resolve: () => void; reject: (error: unknown) => void } | null;
+    currentSavePromise?: Promise<void>;
   }
 >();
 
@@ -32,16 +33,31 @@ export function clearWriteQueueStateForTests(): void {
 export async function flushPendingUserDataWrites(userId: string): Promise<void> {
   const queue = writeQueues.get(userId);
   if (!queue) return;
+
+  // 1) デバウンス待機中の書き込みを即時実行する
   if (queue.timeoutId) {
     clearTimeout(queue.timeoutId);
     queue.timeoutId = null;
+    if (queue.pendingData) {
+      const data = queue.pendingData;
+      const options = queue.pendingOptions ?? {};
+      queue.pendingData = null;
+      queue.pendingOptions = null;
+      try {
+        await executeWrite(userId, data, options);
+      } catch {
+        // 失敗は呼び出し側の saveUserData promise 側で処理される
+      }
+    }
   }
-  if (queue.pendingData) {
-    const data = queue.pendingData;
-    const options = queue.pendingOptions ?? {};
-    queue.pendingData = null;
-    queue.pendingOptions = null;
-    await executeWrite(userId, data, options);
+
+  // 2) 既に実行中(in-flight)の書き込みがあれば、その完了も待つ
+  if (queue.currentSavePromise) {
+    try {
+      await queue.currentSavePromise;
+    } catch {
+      // 同上(失敗はログアウト処理を止めない)
+    }
   }
 }
 
