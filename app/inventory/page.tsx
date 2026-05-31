@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { MdInventory2 } from 'react-icons/md';
+import { MdInventory2, MdAdd } from 'react-icons/md';
 import { Button, Card, Dialog, EmptyState, FloatingNav } from '@/components/ui';
 import { InventoryItemRow } from '@/components/inventory/InventoryItemRow';
 import { InventoryItemModal } from '@/components/inventory/InventoryItemModal';
@@ -166,8 +166,9 @@ export default function InventoryPage() {
                 setEditing(null);
                 setModalOpen(true);
               }}
-              className="shrink-0"
+              className="!min-h-0 shrink-0 gap-1.5 !rounded-[10px] !px-4 !py-2 !text-sm"
             >
+              <MdAdd className="h-4 w-4" aria-hidden="true" />
               品目を追加
             </Button>
           </div>

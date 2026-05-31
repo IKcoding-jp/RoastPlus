@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Modal, Input, Select, Textarea, Button } from '@/components/ui';
+import { Modal, Input, Select, Textarea } from '@/components/ui';
 import { StatusToggle } from './StatusToggle';
 import { CATEGORY_LABELS } from '@/lib/inventory';
 import type { InventoryCategory, InventoryItem, InventoryItemInput, InventoryStatus } from '@/types';
@@ -10,6 +10,10 @@ const CATEGORY_OPTIONS = (Object.keys(CATEGORY_LABELS) as InventoryCategory[]).m
   value,
   label: CATEGORY_LABELS[value],
 }));
+
+// 共通 Input/Select/Textarea は text-lg・厚いpaddingで大きいため、在庫まわりの
+// コンパクト基調(13〜14px・控えめpadding)に合わせて className で上書きする。
+const FIELD_CLASS = '!min-h-0 !rounded-[10px] !border !px-3 !py-2 !text-sm';
 
 interface InventoryItemModalProps {
   /** モーダルの表示/非表示 */
@@ -47,13 +51,20 @@ export function InventoryItemModal({ open, initial, onClose, onSave }: Inventory
       <div className="flex flex-col gap-4 p-6">
         <h2 className="text-lg font-bold text-ink">{isEditing ? '品目を編集' : '品目を追加'}</h2>
 
-        <Input label="品目名" value={name} onChange={(e) => setName(e.target.value)} placeholder="例: ドリップ袋" />
+        <Input
+          label="品目名"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="例: ドリップ袋"
+          className={FIELD_CLASS}
+        />
 
         <Select
           label="カテゴリ"
           value={category}
           options={CATEGORY_OPTIONS}
           onChange={(e) => setCategory(e.target.value as InventoryCategory)}
+          className={FIELD_CLASS}
         />
 
         <div>
@@ -67,15 +78,27 @@ export function InventoryItemModal({ open, initial, onClose, onSave }: Inventory
           onChange={(e) => setNote(e.target.value)}
           rows={2}
           placeholder="例: 残りわずか"
+          className={FIELD_CLASS}
         />
 
-        <div className="flex justify-end gap-2">
-          <Button variant="ghost" onClick={onClose}>
+        <div className="flex justify-end gap-2 pt-1">
+          {/* eslint-disable-next-line local/no-raw-button -- モーダルのコンパクト基調に合わせた小型フッターボタン。共通Buttonはサイズが合わない */}
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-[38px] items-center justify-center rounded-[10px] px-4 text-[13px] font-bold text-ink-sub transition-colors hover:bg-ground focus:outline-none focus-visible:ring-2 focus-visible:ring-spot/40"
+          >
             キャンセル
-          </Button>
-          <Button variant="primary" onClick={handleSave} disabled={!canSave}>
+          </button>
+          {/* eslint-disable-next-line local/no-raw-button -- 同上 */}
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={!canSave}
+            className="inline-flex h-[38px] items-center justify-center rounded-[10px] bg-btn-primary px-4 text-[13px] font-bold text-white shadow-sm transition-colors hover:bg-btn-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-spot/40 disabled:cursor-not-allowed disabled:opacity-50"
+          >
             保存
-          </Button>
+          </button>
         </div>
       </div>
     </Modal>
