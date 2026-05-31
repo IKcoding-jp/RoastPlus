@@ -49,7 +49,9 @@ export function useHomeFeatureVisibility() {
         ...currentData.userSettings,
         homeHiddenFeatureKeys: localHiddenKeys,
       },
-    }));
+    })).catch((error) => {
+      console.error('Failed to save home feature visibility:', error);
+    });
   }, [accountHiddenKeys, isLoading, localHiddenKeys, updateData]);
 
   const updateFeatureHidden = useCallback(
@@ -67,7 +69,9 @@ export function useHomeFeatureVisibility() {
           ...currentData.userSettings,
           homeHiddenFeatureKeys: nextKeys,
         },
-      }));
+      })).catch((error) => {
+        console.error('Failed to save home feature visibility:', error);
+      });
     },
     [hiddenKeys, updateData]
   );
@@ -81,7 +85,9 @@ export function useHomeFeatureVisibility() {
         ...currentData.userSettings,
         homeHiddenFeatureKeys: [],
       },
-    }));
+    })).catch((error) => {
+      console.error('Failed to save home feature visibility:', error);
+    });
   }, [updateData]);
 
   const isVisible = useCallback((key: HomeFeatureKey) => !hiddenKeys.includes(key), [hiddenKeys]);

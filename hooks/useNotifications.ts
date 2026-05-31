@@ -2,12 +2,14 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useAppData } from './useAppData';
+import { useToastContext } from '@/components/Toast';
 import type { Notification } from '@/types';
 
 const READ_IDS_STORAGE_KEY = 'roastplus_notification_read_ids';
 
 export function useNotifications() {
   const { data, updateData, isLoading: appDataLoading } = useAppData();
+  const { showToast } = useToastContext();
   const [readIds, setReadIds] = useState<string[]>(() => {
     if (typeof window === 'undefined') return [];
     try {
@@ -58,9 +60,11 @@ export function useNotifications() {
           ];
 
           if (newNotifications.length !== firestoreNotifications.length) {
-            void updateData({
+            updateData({
               ...currentData,
               notifications: newNotifications,
+            }).catch((error) => {
+              console.error('Failed to migrate notifications:', error);
             });
           }
 
@@ -104,24 +108,34 @@ export function useNotifications() {
         id: crypto.randomUUID(),
       };
       const updatedNotifications = [...notifications, newNotification];
-      await updateData({
-        ...data,
-        notifications: updatedNotifications,
-      });
+      try {
+        await updateData({
+          ...data,
+          notifications: updatedNotifications,
+        });
+      } catch (error) {
+        console.error('Failed to save notification:', error);
+        showToast('通知の保存に失敗しました。通信を確認してもう一度お試しください。', 'error');
+      }
     },
-    [notifications, data, updateData]
+    [notifications, data, updateData, showToast]
   );
 
   // 通知を更新
   const updateNotification = useCallback(
     async (id: string, updates: Partial<Notification>) => {
       const updatedNotifications = notifications.map((n) => (n.id === id ? { ...n, ...updates } : n));
-      await updateData({
-        ...data,
-        notifications: updatedNotifications,
-      });
+      try {
+        await updateData({
+          ...data,
+          notifications: updatedNotifications,
+        });
+      } catch (error) {
+        console.error('Failed to save notification:', error);
+        showToast('通知の保存に失敗しました。通信を確認してもう一度お試しください。', 'error');
+      }
     },
-    [notifications, data, updateData]
+    [notifications, data, updateData, showToast]
   );
 
   // 通知を削除
@@ -136,12 +150,17 @@ export function useNotifications() {
       } catch (error) {
         console.error('Failed to update readIds in localStorage:', error);
       }
-      await updateData({
-        ...data,
-        notifications: updatedNotifications,
-      });
+      try {
+        await updateData({
+          ...data,
+          notifications: updatedNotifications,
+        });
+      } catch (error) {
+        console.error('Failed to save notification:', error);
+        showToast('通知の保存に失敗しました。通信を確認してもう一度お試しください。', 'error');
+      }
     },
-    [notifications, readIds, data, updateData]
+    [notifications, readIds, data, updateData, showToast]
   );
 
   return {

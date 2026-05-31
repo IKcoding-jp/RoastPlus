@@ -5,15 +5,25 @@ import { useToastContext } from '@/components/Toast';
 interface UseScheduleOCRProps {
   data: AppData | null;
   selectedDate: string;
-  updateData: (data: AppData) => void;
+  updateData: (data: AppData) => Promise<void>;
 }
 
 export function useScheduleOCR({ data, selectedDate, updateData }: UseScheduleOCRProps) {
   const { showToast } = useToastContext();
 
   const handleOCRSuccess = useCallback(
-    (mode: 'replace' | 'add', timeLabels: TimeLabel[], roastSchedules: RoastSchedule[]) => {
+    async (mode: 'replace' | 'add', timeLabels: TimeLabel[], roastSchedules: RoastSchedule[]) => {
       if (!data) return;
+
+      const persist = async (next: AppData) => {
+        try {
+          await updateData(next);
+          showToast('スケジュールを読み取りました。', 'success');
+        } catch (error) {
+          console.error('Failed to save OCR schedule:', error);
+          showToast('スケジュールの保存に失敗しました。通信を確認してもう一度お試しください。', 'error');
+        }
+      };
 
       // 既存のデータとマージするか確認
       const existingTodaySchedule = data.todaySchedules?.find((s) => s.date === selectedDate);
@@ -40,7 +50,7 @@ export function useScheduleOCR({ data, selectedDate, updateData }: UseScheduleOC
           ...roastSchedules,
         ];
 
-        updateData({
+        await persist({
           ...data,
           todaySchedules: updatedTodaySchedules,
           roastSchedules: updatedRoastSchedules,
@@ -84,14 +94,12 @@ export function useScheduleOCR({ data, selectedDate, updateData }: UseScheduleOC
         // ローストスケジュールを追加
         const updatedRoastSchedules = [...(data.roastSchedules || []), ...roastSchedules];
 
-        updateData({
+        await persist({
           ...data,
           todaySchedules: updatedTodaySchedules,
           roastSchedules: updatedRoastSchedules,
         });
       }
-
-      showToast('スケジュールを読み取りました。', 'success');
     },
     [data, selectedDate, updateData, showToast]
   );

@@ -29,6 +29,7 @@ describe('useHomeFeatureVisibility', () => {
   beforeEach(() => {
     localStorage.clear();
     mockUpdateData.mockReset();
+    mockUpdateData.mockResolvedValue(undefined);
     mockData = { ...baseData };
   });
 
