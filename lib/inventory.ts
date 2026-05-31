@@ -28,8 +28,15 @@ export function isReorderStatus(status: InventoryStatus): boolean {
   return status === 'low' || status === 'out';
 }
 
+/**
+ * 要発注(low / out)品目を抽出する。
+ * 緊急度順に out(切れた)を low(少ない)より前に並べる。
+ * 同一 status 内は元の順序を維持する(Array.prototype.sort は安定ソート)。
+ */
 export function selectReorderItems(items: InventoryItem[]): InventoryItem[] {
-  return items.filter((item) => isReorderStatus(item.status));
+  const reorderItems = items.filter((item) => isReorderStatus(item.status));
+  const urgency: Record<'out' | 'low', number> = { out: 0, low: 1 };
+  return reorderItems.sort((a, b) => urgency[a.status as 'out' | 'low'] - urgency[b.status as 'out' | 'low']);
 }
 
 export function countReorderItems(items: InventoryItem[]): number {

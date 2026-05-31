@@ -2,6 +2,7 @@ import {
   addDoc,
   collection,
   deleteDoc,
+  deleteField,
   doc,
   onSnapshot,
   orderBy,
@@ -9,6 +10,7 @@ import {
   serverTimestamp,
   setDoc,
   type DocumentData,
+  type FieldValue,
   type Unsubscribe,
 } from 'firebase/firestore';
 import { getDb, removeUndefinedFields } from './common';
@@ -67,11 +69,18 @@ export async function addInventoryItem(input: InventoryItemInput, updatedBy: str
 /** 既存品目の内容を更新（merge）。createdAt は触らない。 */
 export async function updateInventoryItem(id: string, input: InventoryItemInput, updatedBy: string): Promise<void> {
   const normalized = buildInventoryItemInput(input);
-  await setDoc(
-    doc(getInventoryCollectionRef(), id),
-    removeUndefinedFields({ ...normalized, updatedBy, updatedAt: serverTimestamp() }),
-    { merge: true }
-  );
+  // merge:true のため、note を空にしても通常は既存値が残ってしまう。
+  // buildInventoryItemInput は空メモ時に note を省略するので、その場合は
+  // deleteField() を明示セットして Firestore 側の note を削除する。
+  // ※ deleteField() の FieldValue は removeUndefinedFields の再帰で
+  //   ただのオブジェクトに変換されセンチネルが壊れるため、クリーニング後に付与する。
+  const payload: { updatedBy: string; updatedAt: FieldValue; note?: string | FieldValue } & Partial<
+    Omit<InventoryItemInput, 'note'>
+  > = removeUndefinedFields({ ...normalized, updatedBy, updatedAt: serverTimestamp() });
+  if (normalized.note === undefined) {
+    payload.note = deleteField();
+  }
+  await setDoc(doc(getInventoryCollectionRef(), id), payload, { merge: true });
 }
 
 /** ステータスだけを1タップ変更（merge）。 */

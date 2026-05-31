@@ -28,6 +28,10 @@ export function StatusToggle({ value, onChange, disabled }: StatusToggleProps) {
     <div className="flex gap-2" role="group" aria-label="在庫状態">
       {STATUS_ORDER.map((status) => {
         const selected = status === value;
+        // warning(黄/金)背景はテーマ非依存の固定色。text-ink等のテーマ変数は
+        // ダークテーマで明色に反転し再び読めなくなるため、黄背景上は固定の濃色で上書きする。
+        // Button の className は variantStyles の後に連結されるため text-page を上書きできる。
+        const warningTextOverride = selected && SELECTED_VARIANT[status] === 'warning' ? ' text-gray-900' : '';
         return (
           <Button
             key={status}
@@ -37,7 +41,7 @@ export function StatusToggle({ value, onChange, disabled }: StatusToggleProps) {
             aria-pressed={selected}
             disabled={disabled}
             onClick={() => onChange(status)}
-            className="flex-1"
+            className={`flex-1${warningTextOverride}`}
           >
             {STATUS_LABELS[status]}
           </Button>

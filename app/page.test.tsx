@@ -108,4 +108,27 @@ describe('HomePage', () => {
     // アクセシブルネームは機能名のまま（aria-label）であること
     expect(screen.getByRole('button', { name: '担当表' })).toBeInTheDocument();
   });
+
+  it('要発注品があるとき在庫バッジは件数だけでなく意味の伝わる文言を表示する', () => {
+    mocks.inventoryItems = [
+      { id: 'a', name: 'ドリップ袋', category: 'consumable', status: 'out', updatedBy: 'u1' },
+      { id: 'b', name: 'カップ', category: 'consumable', status: 'low', updatedBy: 'u1' },
+    ];
+
+    render(<HomePage />);
+
+    // 「2」だけだと完了ラベル風で誤解されるため、「要発注」を含む文言で意味を明示する
+    expect(screen.getByText('要発注2')).toBeInTheDocument();
+    // 件数のみのバッジ（誤解を招く表記）は存在しないこと
+    expect(screen.queryByText('2')).not.toBeInTheDocument();
+  });
+
+  it('要発注品がないとき在庫バッジ（件数付き）を表示しない', () => {
+    mocks.inventoryItems = [{ id: 'a', name: 'ドリップ袋', category: 'consumable', status: 'enough', updatedBy: 'u1' }];
+
+    render(<HomePage />);
+
+    // 「不足品を共有・要発注」は説明文なので除外し、件数付きバッジ（要発注N）のみ判定する
+    expect(screen.queryByText(/^要発注\d+$/)).not.toBeInTheDocument();
+  });
 });

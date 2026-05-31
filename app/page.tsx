@@ -137,7 +137,7 @@ export default function HomePage(_props: HomePageProps = {}) {
   const { items: inventoryItems } = useInventory();
   const reorderCount = countReorderItems(inventoryItems);
   const visibleActions = ACTIONS.filter((action) => isVisible(action.key)).map((action) =>
-    action.key === 'inventory' ? { ...action, badge: reorderCount > 0 ? String(reorderCount) : undefined } : action
+    action.key === 'inventory' ? { ...action, badge: reorderCount > 0 ? `要発注${reorderCount}` : undefined } : action
   );
 
   // スプラッシュ画面の表示時間を管理（フェードアウト時間を加味）

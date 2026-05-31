@@ -24,10 +24,23 @@ describe('isReorderStatus', () => {
 });
 
 describe('selectReorderItems / countReorderItems', () => {
-  it('low と out だけを抽出し件数を返す', () => {
+  it('low と out だけを抽出し、out を先頭に並べ件数を返す', () => {
     const items = [makeItem('a', 'enough'), makeItem('b', 'low'), makeItem('c', 'out')];
-    expect(selectReorderItems(items).map((i) => i.id)).toEqual(['b', 'c']);
+    expect(selectReorderItems(items).map((i) => i.id)).toEqual(['c', 'b']);
     expect(countReorderItems(items)).toBe(2);
+  });
+
+  it('緊急度順に out(切れた)を low(少ない)より前に並べる', () => {
+    const items = [makeItem('a', 'low'), makeItem('b', 'out'), makeItem('c', 'low'), makeItem('d', 'out')];
+    expect(selectReorderItems(items).map((i) => i.id)).toEqual(['b', 'd', 'a', 'c']);
+  });
+
+  it('同一 status 内は元の順序を維持する(安定ソート)', () => {
+    const items = [makeItem('x', 'out'), makeItem('y', 'out'), makeItem('z', 'out')];
+    expect(selectReorderItems(items).map((i) => i.id)).toEqual(['x', 'y', 'z']);
+
+    const lows = [makeItem('p', 'low'), makeItem('q', 'low'), makeItem('r', 'low')];
+    expect(selectReorderItems(lows).map((i) => i.id)).toEqual(['p', 'q', 'r']);
   });
 });
 

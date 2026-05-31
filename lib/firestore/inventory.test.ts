@@ -4,6 +4,7 @@ const mockAddDoc = vi.fn();
 const mockSetDoc = vi.fn();
 const mockDeleteDoc = vi.fn();
 const mockServerTimestamp = vi.fn(() => 'SERVER_TS');
+const mockDeleteField = vi.fn(() => 'DELETE_FIELD');
 
 vi.mock('firebase/firestore', () => ({
   collection: vi.fn(() => ({ __type: 'collection' })),
@@ -11,6 +12,7 @@ vi.mock('firebase/firestore', () => ({
   addDoc: (...args: unknown[]) => mockAddDoc(...args),
   setDoc: (...args: unknown[]) => mockSetDoc(...args),
   deleteDoc: (...args: unknown[]) => mockDeleteDoc(...args),
+  deleteField: () => mockDeleteField(),
   serverTimestamp: () => mockServerTimestamp(),
   onSnapshot: vi.fn(),
   orderBy: vi.fn(() => ({ __type: 'orderBy' })),
@@ -22,7 +24,7 @@ vi.mock('./common', () => ({
   removeUndefinedFields: <T>(obj: T) => obj,
 }));
 
-import { addInventoryItem, setInventoryItemStatus, deleteInventoryItem } from './inventory';
+import { addInventoryItem, updateInventoryItem, setInventoryItemStatus, deleteInventoryItem } from './inventory';
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -41,6 +43,36 @@ describe('addInventoryItem', () => {
       createdAt: 'SERVER_TS',
       updatedAt: 'SERVER_TS',
     });
+  });
+});
+
+describe('updateInventoryItem', () => {
+  it('note を空にした更新で deleteField の削除指示が setDoc payload に入る', async () => {
+    await updateInventoryItem('item-1', { name: 'ドリップ袋', category: 'material', status: 'low' }, 'tester');
+    expect(mockSetDoc).toHaveBeenCalledTimes(1);
+    const [, payload, options] = mockSetDoc.mock.calls[0];
+    expect(payload).toMatchObject({
+      name: 'ドリップ袋',
+      category: 'material',
+      status: 'low',
+      updatedBy: 'tester',
+      updatedAt: 'SERVER_TS',
+      note: 'DELETE_FIELD',
+    });
+    expect(mockDeleteField).toHaveBeenCalledTimes(1);
+    expect(options).toEqual({ merge: true });
+  });
+
+  it('note を入力した更新では deleteField を使わず文字列を保存する', async () => {
+    await updateInventoryItem(
+      'item-1',
+      { name: 'ドリップ袋', category: 'material', status: 'low', note: ' 在庫少なめ ' },
+      'tester'
+    );
+    expect(mockSetDoc).toHaveBeenCalledTimes(1);
+    const [, payload] = mockSetDoc.mock.calls[0];
+    expect(payload).toMatchObject({ note: '在庫少なめ' });
+    expect(mockDeleteField).not.toHaveBeenCalled();
   });
 });
 
