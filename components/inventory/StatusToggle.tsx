@@ -1,31 +1,8 @@
 'use client';
 
 import { Button } from '@/components/ui';
-import { STATUS_LABELS } from '@/lib/inventory';
+import { STATUS_VISUAL, STATUS_VISUAL_ORDER } from './statusVisual';
 import type { InventoryStatus } from '@/types';
-
-const STATUS_ORDER: InventoryStatus[] = ['enough', 'low', 'out'];
-
-/**
- * 信号機メタファーで状態を色分けするセグメントコントロール。
- * 選択中は該当色で塗り、未選択は outline(枠付き)で 3 つが揃ったセグメントに見せる。
- * enough=success(緑) / low=warning(黄) / out=danger(赤)。
- * Button の variant 取りうる値は components/ui/Button.tsx の ButtonProps で確認済み。
- */
-const SELECTED_VARIANT: Record<InventoryStatus, 'success' | 'warning' | 'danger'> = {
-  enough: 'success',
-  low: 'warning',
-  out: 'danger',
-};
-
-/**
- * 未選択時の状態ドット色(セマンティック)。色覚多様性に配慮しラベル文字も併記する。
- */
-const DOT_COLOR: Record<InventoryStatus, string> = {
-  enough: 'bg-success',
-  low: 'bg-warning',
-  out: 'bg-danger',
-};
 
 interface StatusToggleProps {
   value: InventoryStatus;
@@ -33,31 +10,40 @@ interface StatusToggleProps {
   disabled?: boolean;
 }
 
+/**
+ * 在庫状態のセグメントコントロール。
+ * ニュートラルの外枠(bg-ground)の中で、選択中の1つだけが状態色で塗られる。
+ * 各セグメントは「ドット + ラベル」で状態を示し、色だけに依存しない。
+ */
 export function StatusToggle({ value, onChange, disabled }: StatusToggleProps) {
   return (
-    <div className="flex gap-2" role="group" aria-label="在庫状態">
-      {STATUS_ORDER.map((status) => {
+    <div
+      className="inline-flex w-full gap-0.5 rounded-[10px] border border-edge bg-ground p-0.5 sm:w-auto"
+      role="group"
+      aria-label="在庫状態"
+    >
+      {STATUS_VISUAL_ORDER.map((status) => {
+        const visual = STATUS_VISUAL[status];
         const selected = status === value;
-        // warning(黄/金)背景はテーマ非依存の固定色。text-ink等のテーマ変数は
-        // ダークテーマで明色に反転し再び読めなくなるため、黄背景上は固定の濃色で上書きする。
-        // Button の className は variantStyles の後に連結されるため text-page を上書きできる。
-        const warningTextOverride = selected && SELECTED_VARIANT[status] === 'warning' ? ' text-gray-900' : '';
-        // 状態ドットの色: 未選択は信号機色(セマンティック)で直感化。選択中はボタンが
-        // 該当色で塗られ文字が白/濃色になるため、ドットは bg-current で文字色を継承し視認性を確保する。
-        const dotColor = selected ? 'bg-current' : DOT_COLOR[status];
         return (
           <Button
             key={status}
             type="button"
-            size="lg"
-            variant={selected ? SELECTED_VARIANT[status] : 'outline'}
+            variant="ghost"
             aria-pressed={selected}
             disabled={disabled}
             onClick={() => onChange(status)}
-            className={`flex-1 gap-2${warningTextOverride}`}
+            className={`!min-h-0 h-[34px] flex-1 gap-1.5 rounded-[7px] !px-3 !py-0 text-[13px] font-bold transition-colors motion-reduce:transition-none sm:min-w-[72px] sm:flex-none ${
+              selected
+                ? `${visual.segActive} shadow-sm hover:opacity-95`
+                : 'bg-transparent text-ink-muted hover:bg-transparent hover:text-ink-sub'
+            }`}
           >
-            <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${dotColor}`} aria-hidden="true" />
-            {STATUS_LABELS[status]}
+            <span
+              className={`h-[7px] w-[7px] shrink-0 rounded-full bg-current ${selected ? 'opacity-100' : 'opacity-50'}`}
+              aria-hidden="true"
+            />
+            {visual.label}
           </Button>
         );
       })}

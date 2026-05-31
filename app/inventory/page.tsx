@@ -2,26 +2,77 @@
 
 import { useState } from 'react';
 import { MdInventory2 } from 'react-icons/md';
-import { Button, Badge, Dialog, EmptyState, FloatingNav } from '@/components/ui';
-import { InventoryItemCard } from '@/components/inventory/InventoryItemCard';
+import { Button, Card, Dialog, EmptyState, FloatingNav } from '@/components/ui';
+import { InventoryItemRow } from '@/components/inventory/InventoryItemRow';
 import { InventoryItemModal } from '@/components/inventory/InventoryItemModal';
 import { ReorderList } from '@/components/inventory/ReorderList';
 import { useAuth } from '@/lib/auth';
 import { useInventory } from '@/hooks/useInventory';
 import { useToastContext } from '@/components/Toast';
+import { isE2EMode } from '@/lib/e2eMode';
 import { addInventoryItem, updateInventoryItem, setInventoryItemStatus, deleteInventoryItem } from '@/lib/firestore';
 import { countReorderItems } from '@/lib/inventory';
 import type { InventoryItem, InventoryItemInput, InventoryStatus } from '@/types';
 
+// E2Eモード(スクショ/デザイン検証)専用のサンプル品目。
+// 本番Firestoreは認証を要するため通常起動時は空になる。本番では isE2EMode() が false なので使われない。
+const E2E_SAMPLE_ITEMS: InventoryItem[] = [
+  {
+    id: 'e1',
+    name: '三方袋',
+    category: 'consumable',
+    status: 'enough',
+    updatedBy: 'kensaku.ikeda04@example.com',
+    updatedAt: '2026-06-01T07:17:00',
+  },
+  {
+    id: 'e2',
+    name: 'ドリップパック',
+    category: 'consumable',
+    status: 'out',
+    updatedBy: 'kensaku.ikeda04@example.com',
+    updatedAt: '2026-06-01T07:19:00',
+  },
+  {
+    id: 'e3',
+    name: 'ブレンド生豆',
+    category: 'green-bean',
+    status: 'low',
+    updatedBy: 'kensaku.ikeda04@example.com',
+    updatedAt: '2026-06-01T06:58:00',
+  },
+  {
+    id: 'e4',
+    name: 'テイクアウトカップ M',
+    category: 'material',
+    status: 'enough',
+    updatedBy: 'miyuki.sato@example.com',
+    updatedAt: '2026-05-31T18:40:00',
+  },
+  {
+    id: 'e5',
+    name: 'ペーパーフィルター',
+    category: 'consumable',
+    status: 'low',
+    updatedBy: 'miyuki.sato@example.com',
+    updatedAt: '2026-05-31T18:42:00',
+  },
+];
+
 export default function InventoryPage() {
   const { user, loading } = useAuth();
-  const { items, isLoading } = useInventory();
+  const { items: liveItems, isLoading } = useInventory();
   const { showToast } = useToastContext();
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<InventoryItem | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<InventoryItem | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // E2Eモードかつ実データが空のときだけ、デザイン検証用サンプルを表示する
+  const usingSampleData = isE2EMode() && liveItems.length === 0;
+  const items = usingSampleData ? E2E_SAMPLE_ITEMS : liveItems;
+  // サンプル表示中はローディングを出さない（本番では usingSampleData が false なので従来どおり）
+  const showLoading = isLoading && !usingSampleData;
   const updatedBy = user?.displayName || user?.email || 'unknown';
   const reorderCount = countReorderItems(items);
 
@@ -89,62 +140,77 @@ export default function InventoryPage() {
     }
   };
 
-  const handleOpenEdit = (item: InventoryItem) => {
+  const openEdit = (item: InventoryItem) => {
     setEditing(item);
     setModalOpen(true);
   };
 
   return (
-    <div className="min-h-screen bg-page pt-20 pb-8 px-4 sm:px-6 lg:px-8 transition-colors duration-1000">
+    <div className="min-h-screen bg-page px-4 pb-16 pt-20 transition-colors duration-1000 sm:px-6 sm:pb-20">
       <FloatingNav backHref="/" />
 
-      <div className="mx-auto flex w-full max-w-3xl flex-col gap-6">
-        <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <div className="mb-2 inline-flex items-center gap-2 text-sm font-semibold text-ink-muted">
-              <MdInventory2 className="h-5 w-5" />
-              <span>INVENTORY</span>
-            </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-ink">在庫・不足品</h1>
-            <p className="mt-1 text-sm text-ink-sub">不足品をチームで共有し、発注漏れを防ぎます。</p>
+      <div className="mx-auto w-full max-w-3xl">
+        <header>
+          <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-bold tracking-[0.14em] text-ink-muted">
+            <MdInventory2 className="h-[15px] w-[15px]" />
+            INVENTORY
           </div>
-          <Button
-            variant="primary"
-            onClick={() => {
-              setEditing(null);
-              setModalOpen(true);
-            }}
-          >
-            品目を追加
-          </Button>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-[22px] font-bold tracking-[0.01em] text-ink sm:text-[26px]">在庫・不足品</h1>
+              <p className="mt-1 text-[13.5px] text-ink-sub">不足品をチームで共有し、発注漏れを防ぎます。</p>
+            </div>
+            <Button
+              variant="primary"
+              onClick={() => {
+                setEditing(null);
+                setModalOpen(true);
+              }}
+              className="shrink-0"
+            >
+              品目を追加
+            </Button>
+          </div>
         </header>
 
-        <section>
-          <h2 className="mb-2 flex items-center gap-2 text-lg font-semibold text-ink">
-            要発注リスト
-            {reorderCount > 0 && <Badge variant="danger">{reorderCount}</Badge>}
-          </h2>
+        <section className="mt-7">
+          <div className="mb-2.5 flex items-center gap-2 pl-0.5">
+            <h2 className="text-[15px] font-bold text-ink">要発注リスト</h2>
+            <span
+              className={`inline-grid h-5 min-w-5 place-items-center rounded-full px-1.5 text-xs font-bold ${
+                reorderCount > 0 ? 'bg-danger-subtle text-danger' : 'bg-ground text-ink-muted'
+              }`}
+            >
+              {reorderCount}
+            </span>
+          </div>
           <ReorderList items={items} onResolve={handleResolve} />
         </section>
 
-        <section>
-          <h2 className="mb-2 text-lg font-semibold text-ink">すべての品目</h2>
-          {isLoading ? (
-            <div className="text-ink-sub">読み込み中...</div>
+        <section className="mt-7">
+          <div className="mb-2.5 pl-0.5">
+            <h2 className="text-[15px] font-bold text-ink">すべての品目</h2>
+          </div>
+          {showLoading ? (
+            <Card variant="table">
+              <div className="p-4 text-sm text-ink-sub">読み込み中...</div>
+            </Card>
           ) : items.length === 0 ? (
             <EmptyState title="品目がありません" description="「品目を追加」から在庫を登録しましょう" />
           ) : (
-            <div className="flex flex-col gap-2">
-              {items.map((item) => (
-                <InventoryItemCard
-                  key={item.id}
-                  item={item}
-                  onEdit={handleOpenEdit}
-                  onDelete={setDeleteTarget}
-                  onStatusChange={handleStatusChange}
-                />
-              ))}
-            </div>
+            <Card variant="table">
+              <div className="divide-y divide-edge-subtle">
+                {items.map((item) => (
+                  <InventoryItemRow
+                    key={item.id}
+                    item={item}
+                    onEdit={openEdit}
+                    onDelete={setDeleteTarget}
+                    onStatusChange={handleStatusChange}
+                  />
+                ))}
+              </div>
+            </Card>
           )}
         </section>
       </div>

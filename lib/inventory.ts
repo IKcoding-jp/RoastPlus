@@ -63,3 +63,13 @@ export function buildInventoryItemInput(input: InventoryItemInput): InventoryIte
   }
   return result;
 }
+
+/**
+ * 最終更新者の表示名を整形する。
+ * メール形式（@を含む）なら @ より前のローカル部だけを返し、共有現場で個人の
+ * メールアドレス全体が露出しないようにする。displayName（@を含まない）はそのまま返す。
+ */
+export function formatUpdatedBy(updatedBy: string): string {
+  const atIndex = updatedBy.indexOf('@');
+  return atIndex > 0 ? updatedBy.slice(0, atIndex) : updatedBy;
+}

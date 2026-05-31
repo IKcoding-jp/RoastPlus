@@ -6,6 +6,7 @@ import {
   normalizeInventoryStatus,
   normalizeInventoryCategory,
   buildInventoryItemInput,
+  formatUpdatedBy,
   STATUS_LABELS,
   CATEGORY_LABELS,
 } from './inventory';
@@ -90,5 +91,19 @@ describe('ラベル定数', () => {
     expect(CATEGORY_LABELS['green-bean']).toBe('生豆');
     expect(CATEGORY_LABELS.material).toBe('資材');
     expect(CATEGORY_LABELS.consumable).toBe('消耗品');
+  });
+});
+
+describe('formatUpdatedBy', () => {
+  it('メール形式なら @ より前のローカル部だけを返す', () => {
+    expect(formatUpdatedBy('kensaku.ikeda04@gmail.com')).toBe('kensaku.ikeda04');
+  });
+
+  it('@ を含まない表示名はそのまま返す', () => {
+    expect(formatUpdatedBy('池田')).toBe('池田');
+  });
+
+  it('先頭が @ の場合はそのまま返す(ローカル部が空にならないようにする)', () => {
+    expect(formatUpdatedBy('@handle')).toBe('@handle');
   });
 });

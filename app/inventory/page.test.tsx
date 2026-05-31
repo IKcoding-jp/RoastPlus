@@ -50,9 +50,10 @@ describe('InventoryPage', () => {
     ];
     mockUseInventory.mockReturnValue({ items, isLoading: false });
     render(<InventoryPage />);
-    // 件数バッジは「要発注リスト」見出し(h2)に表示する。
-    // h1「在庫・不足品」と区別するため name で特定し、要発注数(=2)を含むことを確認する。
-    expect(screen.getByRole('heading', { name: /要発注リスト/ })).toHaveTextContent('2');
+    // 件数バッジは「要発注リスト」見出しの隣の pill。見出しを含む section-head の
+    // テキストに要発注数(=2)が出ることを確認する（h1「在庫・不足品」とは name で区別）。
+    const reorderHeading = screen.getByRole('heading', { name: '要発注リスト' });
+    expect(reorderHeading.parentElement).toHaveTextContent('要発注リスト2');
   });
 
   it('(F) 品目が空かつ非ローディングなら全品目セクションに空状態を表示する', () => {
