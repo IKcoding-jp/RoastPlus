@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/lib/auth';
 import { getDefectBeanMasterData } from '@/lib/firestore';
+import { getCachedMasterDefectBeans, setCachedMasterDefectBeans } from '@/lib/defectBeanCache';
 import { uploadDefectBeanImage, deleteDefectBeanImage } from '@/lib/storage';
 import { compressImage } from '@/lib/imageCompression';
 import { useAppData } from './useAppData';
@@ -14,7 +15,9 @@ export function useDefectBeans() {
   const [masterDefectBeans, setMasterDefectBeans] = useState<DefectBean[]>([]);
   const [masterLoading, setMasterLoading] = useState(true);
 
-  // マスターデータを取得
+  // マスターデータを取得（stale-while-revalidate）
+  // キャッシュがあれば即座に表示してローディングを終了し、裏で最新を取得して更新する。
+  // これにより図鑑を開くたびのフルフェッチ待ちをなくし、高速に表示できる。
   useEffect(() => {
     // 認証チェックが完了するまで待つ
     if (authLoading) {
@@ -27,20 +30,39 @@ export function useDefectBeans() {
       return;
     }
 
+    let cancelled = false;
+
+    // キャッシュがあれば即座に反映（スピナーを出さずに表示）
+    const cached = getCachedMasterDefectBeans();
+    if (cached) {
+      setMasterDefectBeans(cached);
+      setMasterLoading(false);
+    }
+
     const loadMasterData = async () => {
       try {
         const masterData = await getDefectBeanMasterData();
+        if (cancelled) return;
         setMasterDefectBeans(masterData);
+        setCachedMasterDefectBeans(masterData);
       } catch (error) {
         console.error('Failed to load master defect beans:', error);
-        // エラー時も空配列を設定してローディングを終了
-        setMasterDefectBeans([]);
+        // キャッシュがある場合はそのまま表示を維持し、なければ空配列を設定
+        if (!cancelled && !cached) {
+          setMasterDefectBeans([]);
+        }
       } finally {
-        setMasterLoading(false);
+        if (!cancelled) {
+          setMasterLoading(false);
+        }
       }
     };
 
     loadMasterData();
+
+    return () => {
+      cancelled = true;
+    };
   }, [user, authLoading]);
 
   // 全欠点豆（マスター + ユーザー追加）を取得

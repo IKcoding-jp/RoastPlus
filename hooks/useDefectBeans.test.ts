@@ -1,7 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useDefectBeans } from './useDefectBeans';
+import { clearCachedMasterDefectBeans } from '@/lib/defectBeanCache';
 import type { AppData, DefectBean } from '@/types';
+
+// 各テストはマスターデータのキャッシュが無い状態から開始する
+// （メモリ/localStorageキャッシュがテスト間で持ち越されないようにする）
+beforeEach(() => {
+  clearCachedMasterDefectBeans();
+});
 
 // モック関数（vi.mockファクトリ内で参照可能なようにmockプレフィックスを使用）
 const mockUseAuth = vi.fn();
