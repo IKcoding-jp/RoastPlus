@@ -101,7 +101,11 @@ export function useScheduleImageProcessing({ selectedDate, onSuccess }: UseSched
         let errorMessage = 'スケジュールの読み取りに失敗しました。画像を確認して再度お試しください。';
         let errorDetails = normalized.rawMessage;
 
-        if (code === 'unauthenticated' || message.includes('unauthenticated')) {
+        if (
+          code === 'unauthenticated' ||
+          code.endsWith('/unauthenticated') ||
+          message.toLowerCase().includes('unauthenticated')
+        ) {
           errorMessage = '認証が必要です。再度ログインしてください。';
         } else if (
           code === 'functions/not-found' ||
