@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { splashPatterns } from '@/components/splash/patterns';
 
-const SPLASH_DISPLAY_TIME = 2800;
+export const SPLASH_DISPLAY_TIME = 2800;
 const SPLASH_SHOWN_KEY = 'roastplus_splash_shown';
 const REPLAY_SPLASH_EVENT = 'replay-splash';
 

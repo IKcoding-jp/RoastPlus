@@ -5,6 +5,9 @@ import { HiClock } from 'react-icons/hi';
 import { useChristmasMode } from '@/hooks/useChristmasMode';
 import { IconButton } from '@/components/ui';
 
+const LOGO_TEXT_BASE =
+  'text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] leading-none';
+
 export function HomeHeader() {
   const router = useRouter();
   const { isChristmasMode } = useChristmasMode();
@@ -31,24 +34,14 @@ export function HomeHeader() {
           )}
           {isChristmasMode ? (
             <div className="flex items-baseline">
-              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] text-[#e23636] leading-none">
-                R
-              </span>
-              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] text-header-text leading-none">
-                oast
-              </span>
-              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] text-header-accent leading-none">
-                Plus
-              </span>
+              <span className={`${LOGO_TEXT_BASE} text-[#e23636]`}>R</span>
+              <span className={`${LOGO_TEXT_BASE} text-header-text`}>oast</span>
+              <span className={`${LOGO_TEXT_BASE} text-header-accent`}>Plus</span>
             </div>
           ) : (
             <div className="flex items-baseline">
-              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] text-header-text leading-none">
-                Roast
-              </span>
-              <span className="text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] text-header-accent leading-none">
-                Plus
-              </span>
+              <span className={`${LOGO_TEXT_BASE} text-header-text`}>Roast</span>
+              <span className={`${LOGO_TEXT_BASE} text-header-accent`}>Plus</span>
             </div>
           )}
         </div>
