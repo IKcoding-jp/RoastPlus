@@ -168,24 +168,20 @@ export function TastingSessionFilterModal({
       {/* 日付範囲 */}
       <FilterSection label="日付範囲">
         <div className="grid grid-cols-2 gap-2">
-          <div className="flex flex-col gap-1">
-            <span className="text-[11px] text-ink-muted">開始日</span>
-            <Input
-              type="date"
-              value={tempDateFrom}
-              onChange={(e) => setTempDateFrom(e.target.value)}
-              className={inputControlClassName}
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-[11px] text-ink-muted">終了日</span>
-            <Input
-              type="date"
-              value={tempDateTo}
-              onChange={(e) => setTempDateTo(e.target.value)}
-              className={inputControlClassName}
-            />
-          </div>
+          <Input
+            type="date"
+            label="開始日"
+            value={tempDateFrom}
+            onChange={(e) => setTempDateFrom(e.target.value)}
+            className={inputControlClassName}
+          />
+          <Input
+            type="date"
+            label="終了日"
+            value={tempDateTo}
+            onChange={(e) => setTempDateTo(e.target.value)}
+            className={inputControlClassName}
+          />
         </div>
       </FilterSection>
 
