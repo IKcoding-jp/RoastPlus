@@ -16,10 +16,12 @@ interface ActionCardProps {
   index: number;
 }
 
+const CARD_ANIMATION_DELAY_MS = 60;
+
 export function ActionCard({ title, label, description, href, icon: Icon, badge, index }: ActionCardProps) {
   const router = useRouter();
   const cardStyle = {
-    animationDelay: `${index * 60}ms`,
+    animationDelay: `${index * CARD_ANIMATION_DELAY_MS}ms`,
   } as CSSProperties;
 
   return (

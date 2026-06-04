@@ -17,6 +17,7 @@ import { getUserData } from '@/lib/firestore';
 import { needsConsent } from '@/lib/consent';
 import type { HomeFeatureKey } from '@/lib/homeFeatures';
 import dynamic from 'next/dynamic';
+import { SPLASH_DISPLAY_TIME } from '@/lib/constants';
 
 const Snowfall = dynamic(() => import('@/components/Snowfall').then((mod) => ({ default: mod.Snowfall })), {
   ssr: false,
@@ -45,8 +46,6 @@ const CHRISTMAS_ICONS: Record<string, IconType> = {
   'drip-guide': GiCandyCanes,
   settings: IoSettings,
 };
-
-const SPLASH_DISPLAY_TIME = 2800; // スプラッシュ画面の表示時間（SplashScreen.tsx と同値）
 
 const ACTIONS: Action[] = [
   {
