@@ -26,15 +26,10 @@ export const PRIVACY_POLICY_SECTIONS: PrivacyPolicySection[] = [
       '【業務データ】',
       '・担当表（メンバー名、タスク割り当てなど）',
       '・スケジュール（日時、作業内容など）',
+      '・生産記録（ハンドピック重量、焙煎重量、パッケージ数など）',
       '・試飲感想記録（評価スコア、感想コメント、豆名など）',
-      '・ローストタイマー（焙煎時間、豆名、焙煎レベルなど）',
       '・欠点豆図鑑（欠点豆の名前、特徴など）',
-      '・作業進捗（タスク名、進捗状況、完了日時など）',
       '・ドリップガイド（レシピ名、抽出手順など）',
-      '',
-      '【学習データ】',
-      '・クイズ回答履歴',
-      '・獲得XP・レベル情報',
       '',
       '【画像データ】',
       '・欠点豆の画像（Firebase Storageに保存）',
@@ -48,7 +43,6 @@ export const PRIVACY_POLICY_SECTIONS: PrivacyPolicySection[] = [
       '・問い合わせフォームに入力した名前、メールアドレス、お問い合わせ種別、本文',
       '',
       '【デバイス情報】',
-      '・デバイスID（焙煎タイマーの同期用）',
       '・操作タイムスタンプ',
     ],
   },
@@ -165,4 +159,4 @@ export const PRIVACY_POLICY_SECTIONS: PrivacyPolicySection[] = [
   },
 ];
 
-export const PRIVACY_POLICY_LAST_UPDATED = '2026年5月23日';
+export const PRIVACY_POLICY_LAST_UPDATED = '2026年6月5日';

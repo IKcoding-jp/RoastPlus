@@ -1,8 +1,8 @@
 # RoastPlus
 
-**コーヒー焙煎現場向け PWA**
+**ドリップパックコーヒー製造現場向け PWA**
 
-> iPad で現場に置いて使える、作業の見取り図に寄せた業務支援ツール
+> iPad で現場に置いて使う業務支援ツール
 
 <p>
   <img src="https://img.shields.io/badge/Next.js-16-black?logo=next.js" alt="Next.js" />
@@ -17,16 +17,16 @@
 
 ## このアプリの立ち位置
 
-RoastPlus は、焙煎・試験・抽出業務の現場で、**実際に使われること**を前提に作った社内ツールです。  
-開発当初は 8 名体制でしたが、現在は 5 名での運用を前提に、使う機能を絞って運用性を上げています。
+RoastPlus は、ドリップパックコーヒーの製造現場で、**実際に使われること**を前提に作った社内ツールです。  
+少人数でも迷わず使えることを目指して、使う機能を絞って運用性を上げています。
 
-目的は「機能を増やすこと」ではなく、現場の人数が少ないときでも:
+目的は**属人化の解消**です。障碍のあるスタッフが働く現場のため、担当者が変わっても誰でも:
 
 - 迷わず見える
 - 誤操作しにくい
 - 作業区切りがその場で分かる
 
-を満たすことです。
+を実現できることを優先しています。
 
 ---
 
@@ -46,26 +46,15 @@ RoastPlus は、焙煎・試験・抽出業務の現場で、**実際に使わ�
 ### 既存機能（運用で必要に応じて使う）
 
 - 担当表
-- 焙煎タイマー・記録
+- スケジュール
 - 試飲感想の記録
+- 欠点豆図鑑
+- 生産記録
 - ドリップガイド
-- 欠点豆の情報共有
-- コーヒー豆図鑑・クイズ
 
 ### 運用方針
 
-使われない機能は「将来追加」より先に、まず既存機能の表示とフローをシンプル化して運用側のストレスを下げる方針です。
-
----
-
-## 主要な画面
-
-- `/clock`  
-  作業効率を直接支える中核画面。区切り時刻の管理と通知がメインです。
-- `/`  
-  メインダッシュボード。各機能への導線。
-- `settings/home`, `settings/theme`, `settings`  
-  テーマや表示、時計機能の設定。
+新機能より、今ある機能を使いやすくすることを優先する。
 
 ---
 
@@ -96,35 +85,13 @@ iPad 実機確認がある場合は同一ネットワークからアクセスし
 ### よく使うコマンド
 
 ```bash
-npm run dev        # 開発サーバ起動（音声ファイル一覧を生成してからNext.js起動）
+npm run dev        # 開発サーバ起動
 npm run typecheck  # TypeScript型チェック
 npm run lint       # ESLint
 npm run test:run   # Vitestを1回実行
 npm run test:rules # Firestore Rulesテスト
 npm run build      # 本番ビルド（productionではstatic exportでout/を生成）
 npm run test:e2e   # Playwright E2E
-```
-
-### E2Eテストのローカル実行
-
-`npm run test:e2e` は E2E 専用に `http://localhost:3100` を使います。
-通常は `scripts/run-e2e.ts` が開発サーバーを起動してから Playwright を実行します。
-
-既に E2E 用サーバーが `3100` で動いている場合、ローカルではそれを再利用します。
-CI では意図しないサーバーを使わないよう、既存サーバーがある場合は失敗させます。
-
-Windows で `3100` の利用状況を確認する場合:
-
-```powershell
-Get-NetTCPConnection -LocalPort 3100 -ErrorAction SilentlyContinue
-```
-
-別ポートで実行したい場合:
-
-```powershell
-$env:E2E_PORT = '3101'
-npm run test:e2e
-Remove-Item Env:E2E_PORT
 ```
 
 ---
@@ -147,17 +114,11 @@ Remove-Item Env:E2E_PORT
 
 ## ビルドと配信
 
+本番URL: https://roastplus-72fa6.web.app
+
 本番ビルドは Next.js の static export です。`next.config.ts` では production 時のみ `output: 'export'` が有効になり、Firebase Hosting は `firebase.json` の設定どおり `out/` を配信します。
 
 `public/` 配下は本番でそのまま配信される公開素材置き場です。秘密情報、テスト用ファイル、デバッグ用ファイルは置かないでください。
-
----
-
-## 実運用での現状
-
-- 利用者: 5 名（現場運用）
-- 主軸利用機能: 時計・作業チャイム
-- 方向性: 使われる導線を優先し、画面・操作を最適化
 
 ---
 
@@ -165,8 +126,3 @@ Remove-Item Env:E2E_PORT
 
 - [バックアップ運用手順](docs/steering/BACKUP_OPERATIONS.md) — Firestore / Storage の手動バックアップ・復元手順
 
----
-
-## ライセンス
-
-社内運用向けの実用コードとして管理し、利用範囲や導入方針はリポジトリ内の運用ルールに従って判断してください。
