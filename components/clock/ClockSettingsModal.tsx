@@ -254,16 +254,32 @@ export function ClockSettingsModal({
                   </div>
 
                   {workChimeSettings.soundEnabled && (
-                    <div className="flex items-center justify-between py-3 px-1 min-h-[44px]">
-                      <span className="text-sm font-medium" style={{ color: themeColors.text }}>
-                        チャイム音
-                      </span>
+                    <div className="flex items-center justify-between gap-3 py-3 px-1 min-h-[44px]">
+                      <div>
+                        <span className="text-sm font-medium block" style={{ color: themeColors.text }}>
+                          チャイム音
+                        </span>
+                        <span className="text-xs" style={{ color: themeColors.uiText }}>
+                          この端末で音を再生できる状態にします
+                        </span>
+                      </div>
                       {isWorkChimeAudioEnabled ? (
-                        <span className="text-sm font-medium" style={{ color: themeColors.accent }}>
+                        <span className="inline-flex min-h-8 items-center gap-1.5 rounded-full border border-success/20 bg-success-subtle px-3 text-sm font-bold text-success">
+                          <span className="h-2 w-2 rounded-full bg-current" aria-hidden="true" />
                           有効
                         </span>
                       ) : (
-                        <Button type="button" variant="secondary" size="sm" onClick={onEnableWorkChimeAudio}>
+                        <Button
+                          type="button"
+                          variant="primary"
+                          size="sm"
+                          onClick={onEnableWorkChimeAudio}
+                          className="!px-3"
+                          style={{
+                            backgroundColor: themeColors.accent,
+                            color: themeColors.bg,
+                          }}
+                        >
                           <MdVolumeUp className="mr-1.5 h-4 w-4" />
                           音を有効化
                         </Button>
