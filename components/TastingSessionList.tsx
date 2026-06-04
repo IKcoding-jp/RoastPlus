@@ -417,7 +417,6 @@ export function TastingSessionList({
             sessions={filteredAndSortedSessions}
             tastingRecords={visibleTastingRecords}
             activeMemberCount={activeMemberCount}
-            router={router}
             onUpdateSession={handleUpdateSession}
           />
         </div>
