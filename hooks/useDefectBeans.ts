@@ -42,9 +42,16 @@ export function useDefectBeans() {
     const loadMasterData = async () => {
       try {
         const masterData = await getDefectBeanMasterData();
-        if (cancelled) return;
-        setMasterDefectBeans(masterData);
-        setCachedMasterDefectBeans(masterData);
+        // 古いフェッチ（再実行でキャンセル済み）は新しいデータを上書きしない
+        if (!cancelled) {
+          setMasterDefectBeans(masterData);
+        }
+        // 取得できたデータをキャッシュに保存する。
+        // 空配列は一時的なエラー（getDefectBeanMasterDataは失敗時に[]を返す）の
+        // 可能性があるため保存しない（空のキャッシュで図鑑が空表示になるのを防ぐ）。
+        if (masterData.length > 0) {
+          setCachedMasterDefectBeans(masterData);
+        }
       } catch (error) {
         console.error('Failed to load master defect beans:', error);
         // キャッシュがある場合はそのまま表示を維持し、なければ空配列を設定
@@ -52,9 +59,10 @@ export function useDefectBeans() {
           setMasterDefectBeans([]);
         }
       } finally {
-        if (!cancelled) {
-          setMasterLoading(false);
-        }
+        // ローディングは常に解除する。
+        // effectの再実行で古いフェッチがキャンセルされても確実に解除し、
+        // 無限ローディングを防ぐ（アンマウント後のsetStateは安全なno-op）。
+        setMasterLoading(false);
       }
     };
 

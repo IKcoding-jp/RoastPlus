@@ -167,6 +167,51 @@ describe('useDefectBeans - isLoading', () => {
   });
 });
 
+describe('useDefectBeans - 無限ローディング防止（リグレッション）', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    mockUseAuth.mockReturnValue({ user: mockUser, loading: false });
+    mockUseAppData.mockReturnValue({
+      data: INITIAL_APP_DATA,
+      updateData: mockUpdateData,
+      isLoading: false,
+    });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.clearAllMocks();
+  });
+
+  it('user変更でeffectが再実行され古いフェッチがキャンセルされても、フェッチ完了でローディングが解除される', async () => {
+    // 1回目: あとで解決するフェッチ / 2回目以降: 解決しない（ハングする）フェッチ
+    let resolveFirst: (value: DefectBean[]) => void = () => {};
+    const firstFetch = new Promise<DefectBean[]>((resolve) => {
+      resolveFirst = resolve;
+    });
+    mockGetDefectBeanMasterData.mockReturnValueOnce(firstFetch).mockReturnValue(new Promise(() => {}));
+
+    const { result, rerender } = renderHook(() => useDefectBeans());
+
+    // 1回目フェッチ進行中はローディング
+    expect(result.current.isLoading).toBe(true);
+
+    // user参照が変わりeffectが再実行される（1回目フェッチをキャンセル、2回目フェッチ＝ハング開始）
+    const refreshedUser = { uid: 'test-user-id', email: 'test@example.com', displayName: 'Test User' };
+    mockUseAuth.mockReturnValue({ user: refreshedUser, loading: false });
+    rerender();
+
+    // 1回目フェッチが完了する
+    await act(async () => {
+      resolveFirst([MASTER_BEAN]);
+      await vi.runAllTimersAsync();
+    });
+
+    // 2回目フェッチは未解決のままだが、無限ローディングにならずローディングが解除されている
+    expect(result.current.isLoading).toBe(false);
+  });
+});
+
 describe('useDefectBeans - マスターデータのロード', () => {
   beforeEach(() => {
     vi.useFakeTimers();
