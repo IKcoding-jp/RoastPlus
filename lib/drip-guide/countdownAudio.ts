@@ -89,11 +89,6 @@ async function scheduleCountdown(ctx: AudioContextLike, volume: number): Promise
   return true;
 }
 
-function isDripCountdownAudioReady(): boolean {
-  if (!dripCountdownAudioContext) return false;
-  return dripCountdownAudioContext.state !== 'suspended' && dripCountdownAudioContext.state !== 'closed';
-}
-
 export async function playDripCountdownAudio(options: PlayDripCountdownOptions): Promise<boolean> {
   const ctx = options.audioContext ?? getAudioContext();
   if (!ctx) return false;
