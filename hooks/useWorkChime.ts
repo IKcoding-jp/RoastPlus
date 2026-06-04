@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { isWorkChimeAudioReady, playWorkChime, unlockWorkChimeAudio } from '@/lib/workChimeAudio';
+import { isWorkChimeAudioReady, playWorkChime, resumeWorkChimeAudio, unlockWorkChimeAudio } from '@/lib/workChimeAudio';
 import {
   getCurrentWorkChimePeriod,
   getDueWorkChimeSince,
@@ -120,10 +120,17 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
     playedKeysRef.current = [...playedKeysRef.current, due.playKey].slice(-50);
     setActiveChime(due);
 
-    if (settings.soundEnabled && isAudioEnabled) {
-      void playWorkChime(due.kind, { volume: settings.volume }).then((didPlay) => {
-        if (!didPlay) setIsAudioEnabled(false);
-      });
+    // 発火時は React の isAudioEnabled フラグ（古い値の可能性あり）ではなく、
+    // AudioContext の生きた状態 isWorkChimeAudioReady() で判定する。
+    // これにより iOS の interrupted 自動復帰後も確実に鳴り、未アンロック時は
+    // 余計な AudioContext 生成やコンソール警告を避けられる。結果でフラグを自己修復する。
+    const audioReady = isWorkChimeAudioReady();
+    if (settings.soundEnabled && audioReady) {
+      void playWorkChime(due.kind, { volume: settings.volume }).then(setIsAudioEnabled);
+    } else if (!audioReady) {
+      // 鳴らせない状態なので有効フラグを下げ、「有効化」ボタンを出して
+      // 次のユーザー操作で復帰できるようにする。
+      setIsAudioEnabled(false);
     }
 
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -131,16 +138,18 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
       setActiveChime(null);
       timerRef.current = null;
     }, 5000);
-  }, [isAudioEnabled, now, settings]);
+  }, [now, settings]);
 
+  // フォアグラウンド復帰時、suspended でも即 disable せず resume を試みて自動復旧する。
   useEffect(() => {
     if (typeof window === 'undefined' || typeof document === 'undefined') return;
-    if (!isAudioEnabled) return;
 
     const refreshAudioState = () => {
-      if (!isWorkChimeAudioReady()) {
-        setIsAudioEnabled(false);
+      if (isWorkChimeAudioReady()) {
+        setIsAudioEnabled(true);
+        return;
       }
+      void resumeWorkChimeAudio().then(setIsAudioEnabled);
     };
 
     window.addEventListener('focus', refreshAudioState);
@@ -152,7 +161,32 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
       window.removeEventListener('pageshow', refreshAudioState);
       document.removeEventListener('visibilitychange', refreshAudioState);
     };
-  }, [isAudioEnabled]);
+  }, []);
+
+  // 画面上の任意のユーザー操作でオーディオを自動的に有効化する。
+  // ボタンを押し直さなくても、タップ／クリック／キー操作だけで suspended から復帰できる。
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+
+    const handleGesture = () => {
+      if (isWorkChimeAudioReady()) {
+        setIsAudioEnabled(true);
+        return;
+      }
+      void unlockWorkChimeAudio().then(setIsAudioEnabled);
+    };
+
+    const options: AddEventListenerOptions = { passive: true };
+    document.addEventListener('pointerdown', handleGesture, options);
+    document.addEventListener('keydown', handleGesture, options);
+    document.addEventListener('touchend', handleGesture, options);
+
+    return () => {
+      document.removeEventListener('pointerdown', handleGesture);
+      document.removeEventListener('keydown', handleGesture);
+      document.removeEventListener('touchend', handleGesture);
+    };
+  }, []);
 
   useEffect(() => {
     return () => {

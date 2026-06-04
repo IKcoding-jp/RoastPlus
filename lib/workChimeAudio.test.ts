@@ -100,6 +100,20 @@ describe('workChimeAudio', () => {
     expect(mock.ctx.createOscillator).toHaveBeenCalled();
   });
 
+  it('iOSのinterrupted状態でも再開してからチャイムをスケジュールする', async () => {
+    const resume = vi.fn(() => Promise.resolve());
+    // iOS 独自の 'interrupted' 状態（型上は存在しないためキャスト）。
+    const mock = createAudioContextMock({
+      state: 'interrupted' as AudioContextState,
+      resume,
+    });
+
+    await playWorkChime('break', { volume: 0.8, audioContext: mock.ctx });
+
+    expect(resume).toHaveBeenCalledTimes(1);
+    expect(mock.ctx.createOscillator).toHaveBeenCalled();
+  });
+
   it('音声有効化時にAudioContextを作成して無音チャイムで初期化する', async () => {
     const resume = vi.fn(() => Promise.resolve());
     const mock = createAudioContextMock({ state: 'suspended', resume });

@@ -5,12 +5,14 @@ import { useWorkChime } from './useWorkChime';
 
 const playWorkChimeMock = vi.fn();
 const unlockWorkChimeAudioMock = vi.fn(() => Promise.resolve(true));
+const resumeWorkChimeAudioMock = vi.fn(() => Promise.resolve(true));
 const isWorkChimeAudioReadyMock = vi.fn(() => true);
 
 vi.mock('@/lib/workChimeAudio', () => ({
   isWorkChimeAudioReady: () => isWorkChimeAudioReadyMock(),
   playWorkChime: (...args: unknown[]) => playWorkChimeMock(...args),
   unlockWorkChimeAudio: () => unlockWorkChimeAudioMock(),
+  resumeWorkChimeAudio: () => resumeWorkChimeAudioMock(),
 }));
 
 const createLocalStorageMock = () => {
@@ -40,11 +42,15 @@ describe('useWorkChime', () => {
     playWorkChimeMock.mockResolvedValue(true);
     unlockWorkChimeAudioMock.mockReset();
     unlockWorkChimeAudioMock.mockResolvedValue(true);
+    resumeWorkChimeAudioMock.mockReset();
+    resumeWorkChimeAudioMock.mockResolvedValue(true);
     isWorkChimeAudioReadyMock.mockReset();
     isWorkChimeAudioReadyMock.mockReturnValue(true);
   });
 
-  it('音の有効化前でも該当時刻は通知を表示する', () => {
+  it('音の有効化前（AudioContext未準備）は鳴らさず通知だけ表示する', () => {
+    isWorkChimeAudioReadyMock.mockReturnValue(false);
+
     const { result } = renderHook(() => useWorkChime(localDate(10, 45)));
 
     expect(playWorkChimeMock).not.toHaveBeenCalled();
@@ -102,6 +108,8 @@ describe('useWorkChime', () => {
   });
 
   it('PWA復帰などで区切り時刻の秒をまたいでも通知を表示する', () => {
+    isWorkChimeAudioReadyMock.mockReturnValue(false);
+
     const { result, rerender } = renderHook(({ now }) => useWorkChime(now), {
       initialProps: { now: localDate(10, 44, 59) },
     });
@@ -163,7 +171,7 @@ describe('useWorkChime', () => {
     expect(result.current.activeChime).toBeNull();
   });
 
-  it('AudioContextが停止した状態で復帰したら音の有効化を解除する', async () => {
+  it('復帰時にAudioContextを再開できれば音の有効化を維持する', async () => {
     const { result } = renderHook(() => useWorkChime(localDate(10, 40)));
 
     await act(async () => {
@@ -172,12 +180,53 @@ describe('useWorkChime', () => {
     });
     expect(result.current.isAudioEnabled).toBe(true);
 
+    // iOS で suspended/interrupted になった想定。focus で resume を試みて成功する。
     isWorkChimeAudioReadyMock.mockReturnValue(false);
+    resumeWorkChimeAudioMock.mockResolvedValue(true);
 
-    act(() => {
+    await act(async () => {
       window.dispatchEvent(new Event('focus'));
+      await Promise.resolve();
+    });
+
+    expect(resumeWorkChimeAudioMock).toHaveBeenCalled();
+    expect(result.current.isAudioEnabled).toBe(true);
+  });
+
+  it('復帰時にAudioContextを再開できなければ音の有効化を解除する', async () => {
+    const { result } = renderHook(() => useWorkChime(localDate(10, 40)));
+
+    await act(async () => {
+      result.current.enableAudio();
+      await Promise.resolve();
+    });
+    expect(result.current.isAudioEnabled).toBe(true);
+
+    // resume が失敗（suspended でユーザー操作が必要）した想定。
+    isWorkChimeAudioReadyMock.mockReturnValue(false);
+    resumeWorkChimeAudioMock.mockResolvedValue(false);
+
+    await act(async () => {
+      window.dispatchEvent(new Event('focus'));
+      await Promise.resolve();
     });
 
     expect(result.current.isAudioEnabled).toBe(false);
+  });
+
+  it('画面上のユーザー操作（pointerdown）でオーディオを自動有効化する', async () => {
+    isWorkChimeAudioReadyMock.mockReturnValue(false);
+    unlockWorkChimeAudioMock.mockResolvedValue(true);
+
+    const { result } = renderHook(() => useWorkChime(localDate(10, 40)));
+    expect(result.current.isAudioEnabled).toBe(false);
+
+    await act(async () => {
+      document.dispatchEvent(new Event('pointerdown'));
+      await Promise.resolve();
+    });
+
+    expect(unlockWorkChimeAudioMock).toHaveBeenCalled();
+    expect(result.current.isAudioEnabled).toBe(true);
   });
 });
