@@ -31,14 +31,14 @@ Claude Code では本ファイルを最優先し、`AGENTS.md` は Codex との�
 
 非自明な作業では、実装前に関連する `docs/steering/` を確認します。
 
-| 場面 | 参照するドキュメント |
-|---|---|
-| 目的・スコープ確認 | `docs/steering/PRODUCT.md` |
-| 機能仕様・禁止事項 | `docs/steering/FEATURES.md` |
-| 技術制約・ADR | `docs/steering/TECH_SPEC.md` |
-| ファイル配置・依存方向 | `docs/steering/REPOSITORY.md` |
-| 実装・テスト・Git運用 | `docs/steering/GUIDELINES.md` |
-| 命名・用語 | `docs/steering/UBIQUITOUS_LANGUAGE.md` |
+| 場面                   | 参照するドキュメント                   |
+| ---------------------- | -------------------------------------- |
+| 目的・スコープ確認     | `docs/steering/PRODUCT.md`             |
+| 機能仕様・禁止事項     | `docs/steering/FEATURES.md`            |
+| 技術制約・ADR          | `docs/steering/TECH_SPEC.md`           |
+| ファイル配置・依存方向 | `docs/steering/REPOSITORY.md`          |
+| 実装・テスト・Git運用  | `docs/steering/GUIDELINES.md`          |
+| 命名・用語             | `docs/steering/UBIQUITOUS_LANGUAGE.md` |
 
 機能追加・削除、データ構造変更、認証・認可・Rules・Functions変更では、実装後に `docs/steering/` の更新要否も確認します。
 
@@ -62,17 +62,27 @@ npm run docs:check
 失敗した場合は、出力された不整合候補を見て、現行仕様に合わせてドキュメントを更新します。
 過去の仕様・計画を残す `docs/superpowers/` は履歴扱いのため、この自動チェックの対象外です。
 
+## PR作成後のCI監視
+
+ユーザーがPR作成まで依頼した場合、PR作成で作業完了にしません。
+
+1. PR作成後、`gh pr checks --watch` または GitHubコネクタでCIを監視する。
+2. CIが失敗した場合は、失敗jobとログを確認し、原因を説明する。
+3. 修正できる失敗は修正し、コミット、push、再監視を行う。
+4. すべての必須チェックが通り、マージ可能な状態になるまで繰り返す。
+5. マージはユーザーが行う。AIエージェントは明示依頼なしにマージしない。
+
 ## Superpowers スキルの使い方
 
 `AGENTS.md` の「Skill活用方針」は Codex 向けの説明を多く含むため、Claude Code では必要な場面だけ以下を使います。
 
-| 場面 | 使うスキル |
-|---|---|
-| 新機能・設計 | `superpowers:brainstorming` → `superpowers:writing-plans` |
-| バグ修正 | `superpowers:systematic-debugging` |
-| 実装 | `superpowers:test-driven-development` |
-| 完了前の確認 | `superpowers:verification-before-completion` |
-| PR前のレビュー | `superpowers:requesting-code-review` |
+| 場面           | 使うスキル                                                |
+| -------------- | --------------------------------------------------------- |
+| 新機能・設計   | `superpowers:brainstorming` → `superpowers:writing-plans` |
+| バグ修正       | `superpowers:systematic-debugging`                        |
+| 実装           | `superpowers:test-driven-development`                     |
+| 完了前の確認   | `superpowers:verification-before-completion`              |
+| PR前のレビュー | `superpowers:requesting-code-review`                      |
 
 関係ないスキルを同時に使いすぎず、作業内容に必要なものだけ選びます。
 
