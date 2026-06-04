@@ -28,6 +28,19 @@ function clampVolume(value: number): number {
   return Math.max(0, Math.min(1, value));
 }
 
+// iOS/iPadOS は標準外の 'interrupted' 状態を持つ（画面スリープ・自動ロック・他アプリの音声・
+// コントロールセンター等で遷移する）。'suspended' と同様に resume が必要だが、'interrupted' は
+// ユーザー操作なしでも resume できる点が異なる。state は型上 'interrupted' を含まないため緩く扱う。
+type AudioContextStateLike = AudioContextState | 'interrupted' | undefined;
+
+function getContextState(ctx: AudioContextLike): AudioContextStateLike {
+  return ctx.state as AudioContextStateLike;
+}
+
+function needsResume(state: AudioContextStateLike): boolean {
+  return state === 'suspended' || state === 'interrupted';
+}
+
 let workChimeAudioContext: AudioContextLike | null = null;
 
 function createAudioContext(): AudioContextLike | null {
@@ -36,7 +49,19 @@ function createAudioContext(): AudioContextLike | null {
   const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
   if (!AudioContextConstructor) return null;
 
-  return new AudioContextConstructor();
+  const ctx = new AudioContextConstructor();
+
+  // iOS: 'interrupted' へ遷移したら（画面スリープ・他アプリの音声等）ユーザー操作なしで
+  // resume を試みて自動復帰する。'suspended' はジェスチャが必要なためここでは何もしない。
+  if (typeof ctx.addEventListener === 'function') {
+    ctx.addEventListener('statechange', () => {
+      if (getContextState(ctx) === 'interrupted') {
+        void ctx.resume?.().catch(() => {});
+      }
+    });
+  }
+
+  return ctx;
 }
 
 function getAudioContext(): AudioContextLike | null {
@@ -47,8 +72,9 @@ function getAudioContext(): AudioContextLike | null {
 }
 
 async function resumeAudioContext(ctx: AudioContextLike): Promise<boolean> {
-  if (ctx.state === 'closed') return false;
-  if (ctx.state !== 'suspended') return true;
+  const state = getContextState(ctx);
+  if (state === 'closed') return false;
+  if (!needsResume(state)) return true;
   if (!ctx.resume) return false;
 
   try {
@@ -132,7 +158,13 @@ async function scheduleWorkChime(ctx: AudioContextLike, kind: WorkChimeKind, vol
 
 export function isWorkChimeAudioReady(): boolean {
   if (!workChimeAudioContext) return false;
-  return workChimeAudioContext.state !== 'suspended' && workChimeAudioContext.state !== 'closed';
+  const state = getContextState(workChimeAudioContext);
+  return state !== 'suspended' && state !== 'closed' && state !== 'interrupted';
+}
+
+export async function resumeWorkChimeAudio(): Promise<boolean> {
+  if (!workChimeAudioContext) return false;
+  return resumeAudioContext(workChimeAudioContext);
 }
 
 export async function unlockWorkChimeAudio(): Promise<boolean> {
