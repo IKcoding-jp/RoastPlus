@@ -33,7 +33,7 @@ import type {
   TeamCounts,
 } from '@/types';
 
-export const RECENT_PRODUCTION_MONTHS_LIMIT = 24;
+const RECENT_PRODUCTION_MONTHS_LIMIT = 24;
 
 function assertValidMonth(month: string): void {
   if (!isValidProductionMonth(month)) {

@@ -40,7 +40,6 @@ export { Input } from './Input';
 export { Button } from './Button';
 
 export { Select } from './Select';
-export type { SelectOption } from './Select';
 
 export { Textarea } from './Textarea';
 
@@ -66,11 +65,7 @@ export { Badge } from './Badge';
 
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './Tabs';
 
-export { ProgressBar } from './ProgressBar';
-
 export { EmptyState } from './EmptyState';
-
-export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from './Accordion';
 
 export { BackLink } from './BackLink';
 

@@ -6,7 +6,7 @@ import { useState, useCallback, useEffect } from 'react';
 const DEVELOPER_MODE_PASSWORD = '4869';
 const STORAGE_KEY = 'roastplus_developer_mode';
 
-export function isDeveloperModeAvailable(): boolean {
+function isDeveloperModeAvailable(): boolean {
   return process.env.NODE_ENV !== 'production';
 }
 
