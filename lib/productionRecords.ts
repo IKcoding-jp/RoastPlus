@@ -16,8 +16,8 @@ const WORK_MONTH_PATTERN = /^\d{4}-\d{2}$/;
 const WORK_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 export const DEFAULT_POWDER_PER_PACK_GRAM = 8.5;
-export const PREMIX_BAG_GRAM = 500;
-export const THIRTY_KG_BASE_GRAM = 30000;
+const PREMIX_BAG_GRAM = 500;
+const THIRTY_KG_BASE_GRAM = 30000;
 export const MAX_BLEND_ITEMS = 4;
 
 const WEIGHT_INPUT_ERROR = '0以上の数値で入力してください';

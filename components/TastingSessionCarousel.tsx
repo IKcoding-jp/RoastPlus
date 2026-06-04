@@ -1,5 +1,4 @@
 import { useRef, useEffect, useState, useMemo } from 'react';
-import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import type { TastingRecord, TastingSession } from '@/types';
 import { calculateAverageScores, getRecordsBySessionId } from '@/lib/tastingUtils';
 import { useTastingAIAnalysis } from '@/hooks/useTastingAIAnalysis';
@@ -10,8 +9,6 @@ interface TastingSessionCarouselProps {
   sessions: TastingSession[];
   tastingRecords: TastingRecord[];
   activeMemberCount: number;
-  /** @deprecated router is no longer used internally, kept for backward compatibility */
-  router?: AppRouterInstance;
   onUpdateSession?: (sessionId: string, aiAnalysis: string, recordCount: number) => void;
 }
 
@@ -63,8 +60,6 @@ export function TastingSessionCarousel({
   sessions,
   tastingRecords,
   activeMemberCount,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  router: _router,
   onUpdateSession,
 }: TastingSessionCarouselProps) {
   const desktopScrollContainerRef = useRef<HTMLDivElement>(null);
