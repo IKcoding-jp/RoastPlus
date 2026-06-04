@@ -5,8 +5,7 @@ import { HiClock } from 'react-icons/hi';
 import { useChristmasMode } from '@/hooks/useChristmasMode';
 import { IconButton } from '@/components/ui';
 
-const LOGO_TEXT_BASE =
-  'text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] leading-none';
+const LOGO_TEXT_BASE = 'text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] leading-none';
 
 export function HomeHeader() {
   const router = useRouter();
