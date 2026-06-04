@@ -170,12 +170,14 @@ export function TastingSessionFilterModal({
         <div className="grid grid-cols-2 gap-2">
           <Input
             type="date"
+            label="開始日"
             value={tempDateFrom}
             onChange={(e) => setTempDateFrom(e.target.value)}
             className={inputControlClassName}
           />
           <Input
             type="date"
+            label="終了日"
             value={tempDateTo}
             onChange={(e) => setTempDateTo(e.target.value)}
             className={inputControlClassName}
