@@ -243,22 +243,47 @@ export default function ClockPage() {
         )}
 
         {shouldShowAudioEnableButton && (
-          <div className="mt-4 flex justify-center">
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              onClick={enableAudio}
-              className="!min-h-11 border"
+          <div className="mt-4 flex justify-center px-4">
+            <div
+              className="grid w-full max-w-lg grid-cols-[auto_1fr] items-center gap-3 rounded-2xl border p-3 text-left shadow-card sm:grid-cols-[auto_1fr_auto] sm:p-3.5"
               style={{
-                backgroundColor: colors.uiBg,
+                backgroundColor: colors.bg,
                 borderColor: colors.accent,
-                color: colors.text,
               }}
             >
-              <MdVolumeUp className="mr-1.5 h-5 w-5" aria-hidden="true" />
-              チャイム音を有効化
-            </Button>
+              <div
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
+                style={{
+                  backgroundColor: `${colors.accent}20`,
+                  color: colors.accent,
+                }}
+                aria-hidden="true"
+              >
+                <MdVolumeUp className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-sm font-bold leading-snug" style={{ color: colors.text }}>
+                  チャイム音の準備が必要です
+                </p>
+                <p className="mt-0.5 text-xs font-medium leading-relaxed" style={{ color: colors.uiText }}>
+                  iPadの制限により、初回だけボタン操作で音を有効化します。
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="primary"
+                size="sm"
+                onClick={enableAudio}
+                className="col-span-2 mt-1 w-full !min-h-11 !px-4 sm:col-span-1 sm:mt-0 sm:w-auto"
+                style={{
+                  backgroundColor: colors.accent,
+                  color: '#FFFFFF',
+                }}
+              >
+                <MdVolumeUp className="mr-1.5 h-4 w-4" aria-hidden="true" />
+                音を有効化
+              </Button>
+            </div>
           </div>
         )}
       </div>
