@@ -149,19 +149,18 @@ export function TastingSessionFilterModal({
 
       {/* ソート */}
       <FilterSection label="ソート">
-        <div className="grid grid-cols-3 gap-1.5">
+        <div className="flex flex-col gap-1">
           {sortOptions.map((opt) => (
-            <FilterOptionButton
+            <FilterSortOption
               key={opt.id}
               selected={tempSortOption === opt.id}
+              icon={opt.icon}
               type="button"
               aria-pressed={tempSortOption === opt.id}
               onClick={() => setTempSortOption(opt.id)}
-              className="!min-h-[40px] !px-1 !text-[12px] whitespace-nowrap gap-1"
             >
-              {opt.icon}
               {opt.label}
-            </FilterOptionButton>
+            </FilterSortOption>
           ))}
         </div>
       </FilterSection>
