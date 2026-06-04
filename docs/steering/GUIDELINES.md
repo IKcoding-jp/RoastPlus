@@ -1,6 +1,6 @@
 # Implementation Guidelines
 
-**最終更新**: 2026-05-28
+**最終更新**: 2026-06-05
 
 ---
 
@@ -139,8 +139,8 @@ TDDで実装（Red → Green → Refactor）
 
 | 種類 | 規則 | 例 |
 |-----|------|-----|
-| コンポーネント | PascalCase | `QuizCard`, `DripTimer` |
-| 関数 | camelCase | `calculateXP`, `updateStreak` |
+| コンポーネント | PascalCase | `PackageEntryModal`, `DripTimer` |
+| 関数 | camelCase | `buildMonthlySummary`, `calculateRoastYield` |
 | 変数 | camelCase | `isLoading`, `userData` |
 | ブール値 | `is`, `has`, `should` 始まり | `isLoading`, `hasError`, `isDarkTheme` |
 | 定数 | UPPER_SNAKE_CASE | `MAX_MEMBERS`, `DEFAULT_RECIPES` |
@@ -159,10 +159,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 // 2. ローカルコンポーネント・モジュール（相対パス）
 import { StepInfo } from './StepInfo';
-import { calculateRecipe } from '@/lib/drip-guide/recipe';
+import { calculateRecipe } from '@/lib/drip-guide/recipeCalculator';
 
 // 3. 型（import type で明示）
-import type { DripRecipe } from '@/types/drip-guide';
+import type { DripRecipe } from '@/lib/drip-guide/types';
 
 // 4. 定数
 import { DEFAULT_RECIPES } from '@/lib/drip-guide/mockData';
@@ -326,7 +326,7 @@ const DIFFICULTY_STYLES = {
 - **モーダル背景は `bg-overlay`** → `bg-surface` はダークテーマで半透明のため禁止
 - **ハードコード色（`bg-white`, `text-gray-800`等）禁止** → セマンティックトークン（`bg-page`, `text-ink`等）を使用
 - **コーヒー色アクセントは `header-bg`** → `#4E3526` / `#211714` 等のハードコード禁止、`bg-header-bg` CSS変数を使用（7テーマ自動対応）
-- **新規コンポーネント追加時は `registry.tsx` への登録必須** → `/dev/design-lab` に自動表示
+- **新規共通UI追加時は `components/ui/index.ts` へexportし、`.test.tsx` を追加** → 実装漏れをテストで検出
 
 > **自動チェック**: ESLintカスタムルール（`no-raw-button`, `no-raw-checkbox`, `no-raw-select`）により、生のHTML要素の使用はlint時に自動検出される。共通UIコンポーネントの使用漏れを防止する。
 
@@ -334,12 +334,12 @@ const DIFFICULTY_STYLES = {
 
 ### レスポンシブデザイン
 
-- **モバイルファースト**: デフォルトはモバイル表示
-- **ブレークポイント**: `md`（768px）以上でタブレット/PC向けレイアウト
+- **iPad中心**: 現場設置のiPadで読みやすく、押しやすい表示を優先
+- **補助端末対応**: 個人端末は補助操作、PCは保守・確認用途としてレスポンシブ対応
 
 ```tsx
 <div className="flex flex-col md:flex-row">
-  {/* モバイル: 縦並び、タブレット以上: 横並び */}
+  {/* 狭い画面: 縦並び、iPad/PC: 横並び */}
 </div>
 ```
 
@@ -430,23 +430,21 @@ test('should handle async operation', async () => {
 
 ```typescript
 import { render, screen, fireEvent } from '@testing-library/react';
-import { RecipeCard } from '@/components/drip-guide/RecipeCard';
+import { Button } from '@/components/ui';
 
-test('should render recipe name', () => {
-  const recipe = { id: '1', name: 'BYSN Standard', beanAmount: 15, waterAmount: 240 };
-  render(<RecipeCard recipe={recipe} />);
+test('should render button label', () => {
+  render(<Button>保存</Button>);
 
-  expect(screen.getByText('BYSN Standard')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: '保存' })).toBeInTheDocument();
 });
 
-test('should call onSelect when card clicked', () => {
-  const onSelect = vi.fn();
-  const recipe = { id: '1', name: 'BYSN Standard', beanAmount: 15, waterAmount: 240 };
-  render(<RecipeCard recipe={recipe} onSelect={onSelect} />);
+test('should call onClick when button clicked', () => {
+  const onClick = vi.fn();
+  render(<Button onClick={onClick}>保存</Button>);
 
-  fireEvent.click(screen.getByText('A'));
+  fireEvent.click(screen.getByRole('button', { name: '保存' }));
 
-  expect(onSelect).toHaveBeenCalledWith(0);
+  expect(onClick).toHaveBeenCalledTimes(1);
 });
 ```
 
@@ -458,31 +456,17 @@ test('should call onSelect when card clicked', () => {
 
 ```
 e2e/
-├── fixtures/          # カスタムフィクスチャ・テストデータ
-│   ├── test-base.ts   # mockFirebase, isRedirectedToLogin
-│   └── test-data.ts   # viewports, performanceThresholds
-├── pages/             # ページ単位テスト
-├── flows/             # ユーザーフロー（複数ページ横断）
-├── responsive/        # レスポンシブテスト（mobile/tablet/desktop）
-├── accessibility/     # axe-core自動スキャン + キーボードナビゲーション
-└── performance/       # ページロード時間・CLS・メモリリーク
+├── auth.setup.ts          # E2E用認証状態作成
+├── e2e.env                # E2E用環境変数
+├── essential.spec.ts      # 主要画面の最小導線
+├── production-record.spec.ts # 生産記録の代表フロー
+└── accessibility/
+    └── a11y.spec.ts       # axe-core自動スキャン
 ```
 
 #### 認証が必要なページのテストパターン
 
-```typescript
-import { isRedirectedToLogin } from '../fixtures/test-base';
-
-test('認証済みの場合のみ動作する機能', async ({ page }) => {
-  await page.goto('/schedule');
-  await page.waitForLoadState('domcontentloaded');
-
-  const isLogin = await isRedirectedToLogin(page);
-  test.skip(isLogin, '認証が必要なためスキップ');
-
-  // 認証済みの場合のテスト
-});
-```
+認証が必要なE2Eは、まず `e2e/auth.setup.ts` で認証状態を作成し、各specでその状態を使う。具体的な設定は `playwright.config.ts` と既存specを正とする。
 
 #### コマンド
 
@@ -619,7 +603,7 @@ Closes #123
 
 #### スコープ例
 - コンポーネント名: `header`, `modal`
-- 機能名: `auth`, `timer`, `quiz`
+- 機能名: `auth`, `clock`, `production-record`
 - レイヤー名: `api`, `ui`
 
 ---
@@ -629,7 +613,7 @@ Closes #123
 ```powershell
 # 1. コミット（ユーザーから明示依頼がある場合のみ）
 git add .
-git commit -m "feat(quiz): FSRS機能を追加"
+git commit -m "feat(production-record): 月合計CSVを追加"
 
 # 2. プッシュ
 git push -u origin fix/#123-xxx

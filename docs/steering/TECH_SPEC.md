@@ -1,12 +1,12 @@
 # Technical Specification
 
-**最終更新**: 2026-05-28
+**最終更新**: 2026-06-05
 
 ---
 
 ## アーキテクチャ概要
 
-RoastPlusは、**PWA（Progressive Web App）** として設計されたモバイルファーストのコーヒー焙煎・抽出業務支援アプリです。フロントエンドはNext.js 16（App Router）で構築し、バックエンドはFirebase（BaaS）を使用。AI機能はFirebase Cloud Functions v2経由でOpenAI APIを呼び出します。
+RoastPlusは、**PWA（Progressive Web App）** として設計されたiPad中心のドリップパックコーヒー製造業務支援アプリです。フロントエンドはNext.js 16（App Router）で構築し、バックエンドはFirebase（BaaS）を使用。AI機能はFirebase Cloud Functions v2経由でOpenAI APIを呼び出します。
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -144,6 +144,11 @@ CSS変数の使い分け（`bg-surface` vs `bg-overlay` 等）は `docs/steering
 - **オフライン対応**: ローカルキャッシュ（IndexedDB）
 - **トランザクション**: `runTransaction` で整合性保証
 
+**オフライン永続化**:
+- `lib/firebase.ts` でブラウザ環境のみ `initializeFirestore` + `persistentLocalCache` を使う。
+- Firebase Emulator利用時は永続化を無効化し、テスト間のキャッシュ汚染を避ける。
+- IndexedDBが使えない環境では `getFirestore(app)` にフォールバックし、アプリ起動を止めない。
+
 **データモデル構造**:
 
 ```
@@ -165,6 +170,10 @@ Firestore
 │   │   ├── assignmentSettings/{settingId}  # 担当設定
 │   │   ├── managers/{managerId}            # 管理者
 │   │   ├── pairExclusions/{exclusionId}    # ペア除外設定
+│   │   ├── productionRecords/{YYYY-MM}     # 生産記録の月doc
+│   │   │   ├── handpickEntries/{entryId}   # ハンドピック実績
+│   │   │   ├── roastEntries/{entryId}      # 焙煎実績
+│   │   │   └── packageEntries/{entryId}    # パッケージ実績
 │   │   └── _meta/{document}                # 分割データ移行メタ情報
 │
 ├── defectBeans/{beanId}                    # 欠点豆データ
@@ -198,6 +207,8 @@ Firestore
 
 **重要**: AI処理はすべてCloud Functions経由。クライアントからOpenAI APIを直接呼び出さない。`OPENAI_API_KEY` は Firebase Secret Manager で管理し、値はドキュメントやログに出さない。
 
+**利用制限**: `functions/src/rate-limit.ts` でユーザー・関数・日付単位の利用回数をFirestore上の `_functionUsage` に記録し、上限超過時はCloud Function側で処理を止める。
+
 ---
 
 ## PWA（Progressive Web App）
@@ -211,6 +222,11 @@ Firestore
 ### オフライン対応
 - Firestoreローカルキャッシュ（IndexedDB）
 - Service Workerによる静的ファイルキャッシュ
+- `components/OfflineBanner.tsx` と `hooks/useOnlineStatus.ts` による通信断の表示
+
+### 復旧UI
+- `app/error.tsx`: ルート単位の描画例外で、再読み込みとホームへ戻る導線を表示する。
+- `app/global-error.tsx`: ルートレイアウト外の例外に対する最終防壁。UIコンポーネントやglobals.cssに依存しない最小構成にする。
 
 ### マニフェスト
 - **ファイル**: `public/site.webmanifest`
@@ -229,6 +245,7 @@ AI機能はFirebase Cloud Functions v2経由でOpenAI APIを呼び出す。
 - **APIキー管理**: Firebase Secret Manager（`OPENAI_API_KEY`）
 - **クライアント側**: Cloud Functionsの `httpsCallable` で呼び出し
 - **パッケージ**: `functions/package.json` の `openai` を正とする（Cloud Functions内のみ）
+- **利用制限**: `assertDailyUsageLimit` で日次上限を確認する。制限値は各Function側の実装を正とする。
 
 ### OCR（スケジュール画像解析）
 
@@ -287,12 +304,11 @@ npm run test:coverage
 
 | カテゴリ | ディレクトリ | 内容 |
 |---------|------------|------|
-| ページ統合 | `e2e/pages/` | home, schedule, tasting |
-| ユーザーフロー | `e2e/flows/` | data-management-flow |
-| レスポンシブ | `e2e/responsive/` | 各ビューポートでの表示確認 |
+| 基本導線 | `e2e/essential.spec.ts` | 主要画面の最小導線 |
+| 生産記録 | `e2e/production-record.spec.ts` | 生産記録の代表フロー |
 | アクセシビリティ | `e2e/accessibility/` | axe-coreによる自動検査 |
-| パフォーマンス | `e2e/performance/` | ページロード速度等 |
-| フィクスチャ | `e2e/fixtures/` | mockFirebase, テストデータ |
+| 認証セットアップ | `e2e/auth.setup.ts` | E2E用認証状態作成 |
+| 環境設定 | `e2e/e2e.env` | E2E用環境変数 |
 
 ---
 

@@ -1,6 +1,6 @@
 # Repository Structure
 
-**最終更新**: 2026-05-29
+**最終更新**: 2026-06-05
 
 ---
 
@@ -19,7 +19,6 @@ roastplus/
 ├── docs/                   # ドキュメント（Steering / Superpowers specs/plans）
 ├── eslint-rules/           # ESLintカスタムルール（no-raw-button等）
 ├── e2e/                    # Playwright E2Eテスト
-├── .claude/                # Claude Code設定
 ├── .github/                # GitHub設定
 │   ├── workflows/          # GitHub Actionsワークフロー
 │   └── scripts/            # Actions内で実行するスクリプト（.mjs）
@@ -53,7 +52,8 @@ roastplus/
 | `drip-guide/` | ドリップガイド | レシピ計算、ステップ実行 |
 | `assignment/` | 担当表 | チーム管理、シャッフル |
 | `defect-beans/` | 欠点豆 | 欠点豆の記録・管理 |
-| `brewing/` | 抽出管理 | 抽出記録 |
+| `production-record/` | 生産記録 | 月生産単位の実績記録、CSV出力 |
+| `clock/` | 時計 | 業務用時計・作業チャイム |
 
 ### サブ機能
 
@@ -61,19 +61,13 @@ roastplus/
 |------------|------|------|
 | `settings/` | 設定 | ユーザー設定、テーマ切替 |
 | `notifications/` | 通知 | 通知一覧 |
-| `clock/` | 時計 | 業務用時計表示 |
 | `contact/` | お問い合わせ | EmailJS連携 |
 | `login/` | ログイン | Firebase Auth |
 | `consent/` | 同意 | 利用規約同意 |
 | `terms/` | 利用規約 | 法的文書 |
 | `privacy-policy/` | プライバシーポリシー | 法的文書 |
-| `ui-test/` | UIテストページ | 開発環境専用。`page.dev.tsx` で `/dev/design-lab` へリダイレクト |
-
-### 開発者向け
-
-| ディレクトリ | 機能 | 備考 |
-|------------|------|------|
-| `dev/design-lab/` | デザインラボ | 開発環境専用。production build では Route 生成対象外 |
+| `error.tsx` | ルート単位エラー画面 | 白画面防止・再読み込み導線 |
+| `global-error.tsx` | グローバルエラー画面 | ルートレイアウト外の例外に対する最終防壁 |
 
 ---
 
@@ -96,7 +90,6 @@ roastplus/
 
 **重要ファイル**:
 - `index.ts` - 全コンポーネントのバレルエクスポート
-- `registry.tsx` - UIカタログ登録（開発環境の `/dev/design-lab` ページで自動表示）
 
 ### 機能別コンポーネント
 
@@ -116,6 +109,7 @@ roastplus/
 | `notifications/` | 通知 | 通知リスト |
 | `clock/` | 時計 | 時計表示 |
 | `contact/` | お問い合わせ | 問い合わせフォーム |
+| `production-record/` | 生産記録 | 月設定、ハンドピック、焙煎、パッケージ入力モーダル |
 
 ---
 
@@ -127,7 +121,7 @@ roastplus/
 
 | ディレクトリ | 内容 | 主なファイル |
 |------------|------|------------|
-| `firestore/` | Firestore CRUD操作 | `common.ts`, `defectBeans.ts`, `index.ts`, `userData/` |
+| `firestore/` | Firestore CRUD操作 | `common.ts`, `defectBeans.ts`, `productionRecords.ts`, `index.ts`, `userData/` |
 | `drip-guide/` | ドリップレシピ計算 | `recipe46.ts`, `recipeCalculator.ts`, `formatTime.ts`, `useRecipes.ts` |
 
 ### 単体ファイル
@@ -140,11 +134,11 @@ roastplus/
 | `tastingAnalysis.ts` | テイスティングAI分析（Cloud Functions呼び出し） |
 | `scheduleOCR.ts` | スケジュールOCR（Cloud Functions呼び出し） |
 | `emailjs.ts` | EmailJS設定（お問い合わせ） |
-| `sounds.ts` | サウンド再生ユーティリティ |
-| `soundFiles.ts` | サウンドファイル定義 |
+| `contactForm.ts` | 問い合わせフォームの入力制限・送信間隔管理 |
 | `imageCompression.ts` | Canvas APIベースの画像圧縮（リサイズ・JPEG品質調整） |
 | `storage.ts` | Firebase Storage操作 |
 | `notifications.ts` | 通知管理 |
+| `productionRecords.ts` | 生産記録の計算・検証・CSV出力 |
 | `utils.ts` | 汎用ユーティリティ（`cn()` 等） |
 | `constants.ts` | 定数定義 |
 | `dateUtils.ts` | 日付操作ヘルパー |
@@ -154,7 +148,7 @@ roastplus/
 | `clockSettings.ts` | 時計設定 |
 | `consent.ts` | 同意管理 |
 | `roastScheduleColors.ts` | 焙煎スケジュールの色設定 |
-| `timeSync.ts` | 時刻同期 |
+| `workChime.ts` / `workChimeAudio.ts` | 作業チャイム時刻計算・音声生成 |
 | `version.ts` | バージョン管理 |
 
 ---
@@ -192,6 +186,8 @@ roastplus/
 | `useTastingFilters.ts` | テイスティングフィルター |
 | `useToast.ts` | トースト通知 |
 | `useTodayScheduleSync.ts` | 本日のスケジュール同期 |
+| `useProductionRecord.ts` | 生産記録の月docと3サブコレクション同期 |
+| `useOnlineStatus.ts` | オンライン/オフライン状態の検知 |
 
 ---
 
@@ -205,12 +201,13 @@ roastplus/
 | `common.ts` | 共通型定義 |
 | `schedule.ts` | スケジュール型 |
 | `tasting.ts` | テイスティング型 |
-| `timer.ts` | タイマー型 |
 | `team.ts` | チーム・担当表型 |
 | `settings.ts` | 設定型 |
 | `notification.ts` | 通知型 |
 | `defect-beans.ts` | 欠点豆型 |
+| `production-record.ts` | 生産記録型 |
 | `global.d.ts` | グローバル型宣言 |
+| `vitest.d.ts` | Vitest用型宣言 |
 
 ---
 
@@ -224,6 +221,8 @@ functions/
 │   ├── index.ts              # エントリポイント（関数エクスポート）
 │   ├── ocr-schedule.ts       # ocrScheduleFromImage（GPT-4o Vision OCR）
 │   ├── tasting-analysis.ts   # analyzeTastingSession（GPT-4o テキスト分析）
+│   ├── rate-limit.ts         # AI機能の日次利用制限
+│   ├── rate-limit-helpers.ts # 利用制限の日時キー生成
 │   ├── helpers.ts            # 共通ヘルパー関数
 │   └── types.ts              # Cloud Functions用型定義
 ├── package.json              # Cloud Functions用依存関係（openai等）
@@ -267,8 +266,7 @@ docs/superpowers/
 
 | ファイル | 内容 |
 |---------|------|
-| `testing-strategy.md` | テスト戦略・ガイドライン |
-| `screenshots/` | スクリーンショット |
+| `roastplus_work_manual_hq_review_v0.3.md` | 本社確認用の業務マニュアル |
 
 ---
 
@@ -276,35 +274,13 @@ docs/superpowers/
 
 ```
 e2e/
-├── fixtures/              # テストフィクスチャ
-│   ├── test-base.ts       # mockFirebase（Firebase モック）
-│   └── test-data.ts       # ビューポート、閾値等のテストデータ
-├── pages/                 # ページ単位のテスト
-│   ├── home.spec.ts
-│   ├── schedule.spec.ts
-│   └── tasting.spec.ts
-├── flows/                 # ユーザーフロー統合テスト
-│   └── data-management-flow.spec.ts
-├── responsive/            # レスポンシブテスト
-│   └── responsive.spec.ts
+├── auth.setup.ts          # E2E用認証状態作成
+├── e2e.env                # E2E用環境変数
+├── essential.spec.ts      # 主要画面の最小導線
+├── production-record.spec.ts # 生産記録の代表フロー
 ├── accessibility/         # アクセシビリティテスト（axe-core）
 │   └── a11y.spec.ts
-└── performance/           # パフォーマンステスト
-    └── performance.spec.ts
 ```
-
----
-
-## `/.claude` - Claude Code設定
-
-Claude Code 側の起動・設定ファイルのみを置く。
-
-| ファイル | 内容 |
-|--------|------|
-| `launch.json` | Claude Code 起動設定 |
-| `settings.json` | Claude Code ローカル設定 |
-
-リポジトリ専用の旧スキル群は使用しない。Codex作業ルールは `AGENTS.md`、永続仕様は `docs/steering/`、実装前仕様・計画は `docs/superpowers/` を参照する。
 
 ---
 
@@ -314,7 +290,7 @@ Claude Code 側の起動・設定ファイルのみを置く。
 |---------------------|------|
 | `sw.js` | カスタムService Worker（手書き、next-pwa不使用） |
 | `site.webmanifest` | PWAマニフェスト |
-| `sounds/` | 音声ファイル（タイマー音等） |
+| `sounds/` | 音声ファイル |
 | `animations/` | アニメーションファイル |
 | `images/` | 画像ファイル |
 | `avatars/` | アバター画像 |
@@ -329,10 +305,12 @@ Claude Code 側の起動・設定ファイルのみを置く。
 
 | スクリプト | 内容 |
 |-----------|------|
-| `update-version.ts` | バージョン番号更新 |
-| `generate-sound-list.ts` | サウンドファイルリスト自動生成 |
+| `run-e2e.ts` | E2E用Next.js開発サーバー起動とPlaywright実行 |
+| `run-rules-tests.ts` | Firestore / Storage Rulesテスト実行 |
+| `validate-ui-skill.ts` | UIスキル関連の整合性チェック |
 | `setup-worktrees.sh` | Git worktreeセットアップ |
 | `cleanup-worktrees.sh` | Git worktreeクリーンアップ |
+| `start-brainstorm-companion.ps1` | ブレインストーミング補助プロセス起動 |
 
 ---
 
@@ -348,11 +326,11 @@ Claude Code 側の起動・設定ファイルのみを置く。
 
 | 種類 | 規則 | 例 |
 |-----|------|-----|
-| コンポーネント | PascalCase | `QuizCard.tsx`, `RoastLevelBadge.tsx` |
-| ユーティリティ | camelCase | `gamification.ts`, `dateUtils.ts` |
-| フック | camelCase（`use`プレフィックス） | `useAppTheme.ts`, `useRecipeGuide.ts` |
-| 型定義 | camelCase（ケバブケースも可） | `common.ts`, `work-progress.ts` |
-| テスト | 対象ファイル名 + `.test` | `gamification.test.ts` |
+| コンポーネント | PascalCase | `ProductionRecordSummary.tsx`, `RoastLevelBadge.tsx` |
+| ユーティリティ | camelCase | `productionRecords.ts`, `dateUtils.ts` |
+| フック | camelCase（`use`プレフィックス） | `useAppTheme.ts`, `useProductionRecord.ts` |
+| 型定義 | camelCase（ケバブケースも可） | `common.ts`, `production-record.ts` |
+| テスト | 対象ファイル名 + `.test` | `productionRecords.test.ts` |
 | ページ | `page.tsx`, `layout.tsx` | App Router標準 |
 | 開発専用ページ | `page.dev.tsx` | production build から除外 |
 | 定数 | UPPER_SNAKE_CASE（ファイル内） | `MAX_RETRY_COUNT` |

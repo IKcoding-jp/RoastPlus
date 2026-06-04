@@ -1,6 +1,6 @@
 # Ubiquitous Language
 
-**最終更新**: 2026-05-29
+**最終更新**: 2026-06-05
 
 コーヒー焙煎業務ドメインにおける共通用語定義。コード・UI・コミュニケーションで統一して使用する。
 
@@ -47,7 +47,7 @@
 | **ボディ** | Body | コーヒーの口当たり、厚み（1〜5） | `body` |
 | **余韻** | Aftertaste | コーヒーの後味（1〜5） | `aftertaste` |
 | **苦味** | Bitterness | コーヒーの苦味評価（1〜5） | `bitterness` |
-| **AI分析** | AIAnalysis | OpenAI GPT-4oによるテイスティング評価の自動分析 | `aiAnalysis` |
+| **AI分析** | AIAnalysis | OpenAI gpt-4o-miniによるテイスティング評価の自動分析 | `aiAnalysis` |
 
 ### 作業管理関連
 
@@ -60,6 +60,20 @@
 | **担当履歴** | AssignmentHistory | 過去の作業担当記録 | `assignmentHistory` |
 | **欠点豆** | DefectBean | 品質基準を満たさないコーヒー豆 | `defectBeans` コレクション |
 | **時間ラベル** | TimeLabel | スケジュール画像から抽出された時間情報 | `TimeLabel` 型 |
+
+### 生産記録関連
+
+| 用語 | 英語 | 定義 | コードでの使用例 |
+|-----|------|------|----------------|
+| **生産記録** | ProductionRecord | 月生産単位のハンドピック・焙煎・パッケージ実績 | `ProductionRecordMonth` |
+| **月生産単位** | ProductionMonth | 実際の作業日ではなく、何月分として製造しているかを表す単位 | `month: '2026-08'` |
+| **月生産設定** | ProductionMonthSettings | 生豆総量、配合、1袋あたり粉量など月単位で固定する設定 | `ProductionRecordMonthInput` |
+| **配合** | Blend | 複数豆の比率 | `blendItems` |
+| **焙煎歩留まり** | RoastYield | 焙煎前重量に対する焙煎後重量の割合 | `calculateRoastYield` |
+| **焙煎ロス率** | RoastLossRate | 焙煎で減った重量割合 | `roastLossRate` |
+| **良品数** | GoodCount | パッケージ後に良品として数える個数 | `goodTotal` |
+| **不良品数** | DefectiveCount | パッケージ後に不良として数える個数 | `defectiveTotal` |
+| **不良率** | PackageLossRate | 生産個数に対する不良品数の割合 | `packageLossRate` |
 
 ---
 
@@ -74,7 +88,6 @@
 | **セマンティックトークン** | SemanticToken | テーマ対応のCSS変数（`bg-page`, `text-ink`等） | `bg-surface`, `text-ink-sub`, `border-edge` |
 | **クリスマステーマ** | ChristmasTheme | 7テーマの1つ（ID: `christmas`）。配色はCSS変数で自動適用。テーマ固有の装飾要素（snowfall等）のみ条件レンダリング | `useAppTheme().isChristmasTheme` |
 | **共通UIコンポーネント** | SharedUIComponent | `@/components/ui` の再利用可能コンポーネント | `Button`, `Card`, `Modal` |
-| **UIカタログ** | UICatalog | Developer Design Labで閲覧可能な全コンポーネント一覧 | `registry.tsx` |
 | **モーダル** | Modal | ポップアップダイアログ（不透明背景: `bg-overlay`） | `Modal`, `Dialog` |
 | **トースト** | Toast | 一時的な通知表示 | `toast()` |
 | **バックリンク** | BackLink | ページ上部の戻るナビゲーション | `BackLink` コンポーネント |
@@ -84,13 +97,14 @@
 | 用語 | 英語 | 定義 | コードでの使用例 |
 |-----|------|------|----------------|
 | **ユーザー** | User | Firebase Authで認証されたユーザー | `User` type |
-| **セッション** | Session | 作業や評価の1単位 | `TastingSession`, `QuizSession` |
-| **履歴** | History | 過去の作業記録 | `assignmentHistory`, `quizHistory` |
+| **セッション** | Session | 作業や評価の1単位 | `TastingSession` |
+| **履歴** | History | 過去の作業記録 | `assignmentHistory`, `shuffleHistory` |
 | **プロファイル** | Profile | ユーザープロフィール | `UserProfile` |
 | **コレクション** | Collection | Firestoreのトップレベルコレクション | `users`, `defectBeans`, `_meta` |
 | **ドキュメント** | Document | Firestoreのドキュメント | `doc(db, 'users', userId)` |
 | **サブコレクション** | Subcollection | ドキュメント配下のコレクション | `users/{userId}/assignments` |
 | **ユーザードキュメント** | UserDocument | `users/{userId}` にフィールドとして格納されるユーザーデータ | テイスティング記録、レシピ等 |
+| **月doc** | MonthDocument | `users/{userId}/productionRecords/{YYYY-MM}` の月単位ドキュメント | `getProductionRecordMonthDocRef` |
 
 ### 状態管理用語
 
@@ -111,8 +125,10 @@
 | **analyzeTastingSession** | analyzeTastingSession | テイスティングセッションをAI分析するCloud Function | `httpsCallable(functions, 'analyzeTastingSession')` |
 | **httpsCallable** | httpsCallable | Firebase SDKのCloud Functions呼び出しメソッド | `httpsCallable<InputType, OutputType>(functions, 'functionName')` |
 | **Firebase Secret Manager** | FirebaseSecretManager | Cloud FunctionsのAPIキー（OPENAI_API_KEY等）を安全に管理するサービス | `defineSecret('OPENAI_API_KEY')` |
-| **GPT-4o** | GPT4o | OpenAIの大規模言語モデル。テイスティング分析・OCR処理に使用 | Cloud Functions内部で使用 |
-| **GPT-4o Vision** | GPT4oVision | GPT-4oの画像入力機能。スケジュール画像・温度ラベルのOCRに使用 | Cloud Functions内部で使用 |
+| **GPT-4o** | GPT4o | OpenAIの大規模言語モデル。スケジュール画像OCRに使用 | Cloud Functions内部で使用 |
+| **gpt-4o-mini** | GPT4oMini | OpenAIの小型モデル。テイスティング分析に使用 | Cloud Functions内部で使用 |
+| **GPT-4o Vision** | GPT4oVision | GPT-4oの画像入力機能。スケジュール画像OCRに使用 | Cloud Functions内部で使用 |
+| **日次利用制限** | DailyUsageLimit | AI機能の使いすぎを防ぐCloud Functions側の上限確認 | `assertDailyUsageLimit` |
 
 ### テーマシステム用語
 
@@ -147,8 +163,8 @@
 
 | 種類 | 規則 | 例 |
 |-----|------|-----|
-| インターフェース | PascalCase（`interface`優先） | `QuizQuestion`, `DripRecipe`, `ThemePreset` |
-| 型エイリアス | PascalCase（ユニオン型のみ`type`） | `QuizCategory`, `QuizDifficulty`, `RoastLevel` |
+| インターフェース | PascalCase（`interface`優先） | `ProductionRecordMonth`, `DripRecipe`, `ThemePreset` |
+| 型エイリアス | PascalCase（ユニオン型のみ`type`） | `RoastLevel`, `ClockTheme` |
 | ユニオン型 | PascalCase + リテラル型 | `'light' \| 'medium' \| 'dark'` |
 | ジェネリクス型パラメータ | 単一大文字または説明的PascalCase | `T`, `InputType`, `OutputType` |
 
@@ -156,18 +172,18 @@
 
 | 種類 | 規則 | 例 |
 |-----|------|-----|
-| 関数 | camelCase（動詞始まり） | `calculateXP`, `updateStreak`, `extractScheduleFromImage` |
+| 関数 | camelCase（動詞始まり） | `buildMonthlySummary`, `calculateRoastYield`, `extractScheduleFromImage` |
 | 変数 | camelCase | `isLoading`, `userData`, `currentTheme` |
 | ブール値 | `is`, `has`, `should` 始まり | `isLoading`, `hasError`, `isDarkTheme` |
-| 定数 | UPPER_SNAKE_CASE | `XP_CONFIG`, `CATEGORY_LABELS`, `THEME_PRESETS` |
+| 定数 | UPPER_SNAKE_CASE | `MAX_BLEND_ITEMS`, `DEFAULT_POWDER_PER_PACK_GRAM`, `THEME_PRESETS` |
 | Firebase Function名 | camelCase（動詞+名詞） | `ocrScheduleFromImage`, `analyzeTastingSession` |
 
 ### コンポーネント
 
 | 種類 | 規則 | 例 |
 |-----|------|-----|
-| Reactコンポーネント | PascalCase | `QuizCard`, `DripTimer`, `ThemeSelector` |
-| カスタムフック | `use` 始まり（camelCase） | `useAppTheme`, `useRecipeGuide` |
+| Reactコンポーネント | PascalCase | `PackageEntryModal`, `DripTimer`, `ThemeSelector` |
+| カスタムフック | `use` 始まり（camelCase） | `useAppTheme`, `useProductionRecord` |
 | イベントハンドラ | `handle` 始まり（camelCase） | `handleSubmit`, `handleClick`, `handleThemeChange` |
 | コンテキスト | PascalCase + `Context` | `AuthContext`, `ThemeContext` |
 
@@ -179,7 +195,7 @@
 |-----|---------|------|
 | **PWA** | Progressive Web App | アプリの種類 |
 | **OCR** | Optical Character Recognition | 画像からテキスト抽出 |
-| **AI** | Artificial Intelligence | OpenAI GPT-4o使用（Cloud Functions経由） |
+| **AI** | Artificial Intelligence | OpenAIモデル使用（Cloud Functions経由） |
 | **UI** | User Interface | ユーザーインターフェース |
 | **UX** | User Experience | ユーザー体験 |
 | **API** | Application Programming Interface | 外部サービス連携 |
@@ -261,7 +277,7 @@
 | UI表示（ユーザー向け） | 日本語 | 「保存しました」「担当表」 |
 | コードコメント | 日本語可（英語推奨） | `// 焙煎温度を記録` |
 | コミットメッセージ | 日本語（Conventional Commits形式） | `feat(#123): ドリップガイドに音声案内機能を追加` |
-| テスト記述（describe/it） | 日本語可 | `it('正しいXPを計算する')` |
+| テスト記述（describe/it） | 日本語可 | `it('月合計を正しく計算する')` |
 
 ---
 

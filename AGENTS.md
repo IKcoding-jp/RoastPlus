@@ -3,6 +3,14 @@
 このファイルは、AIエージェントが RoastPlus リポジトリで作業するときのプロジェクト固有ルールです。
 グローバルな作業方針より、ここに書かれた RoastPlus 固有の制約を優先してください。
 
+## Claude Code との役割分担
+
+Claude Code では、リポジトリ直下の `CLAUDE.md` を主入口として扱います。
+この `AGENTS.md` は、Codex 向けの主入口であり、Claude Code からは共通詳細ルール・補助参照として使います。
+
+Claude Code で `CLAUDE.md` と `AGENTS.md` が矛盾する場合は、`CLAUDE.md` を優先してください。
+Codex で作業する場合は、従来どおりこの `AGENTS.md` を優先してください。
+
 ## 最重要方針
 
 RoastPlus は、ドリップパックコーヒー製造業務を支援する現場向けPWAです。
