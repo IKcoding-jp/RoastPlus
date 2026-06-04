@@ -269,7 +269,10 @@ export function analyzeDocsConsistency(options: AnalyzeOptions = {}) {
 
   return files.flatMap((file) => {
     const content = readFileSync(file, 'utf8');
-    return [...scanStaleTerms(rootDir, file, content, staleTerms), ...scanMissingPathReferences(rootDir, file, content)];
+    return [
+      ...scanStaleTerms(rootDir, file, content, staleTerms),
+      ...scanMissingPathReferences(rootDir, file, content),
+    ];
   });
 }
 

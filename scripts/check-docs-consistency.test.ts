@@ -5,12 +5,7 @@ import path from 'node:path';
 
 import { describe, expect, test } from 'vitest';
 
-import {
-  DEFAULT_STALE_TERMS,
-  analyzeDocsConsistency,
-  discoverDocFiles,
-  formatIssues,
-} from './check-docs-consistency';
+import { DEFAULT_STALE_TERMS, analyzeDocsConsistency, discoverDocFiles, formatIssues } from './check-docs-consistency';
 
 async function createTempRepo() {
   const root = await mkdtemp(path.join(tmpdir(), 'roastplus-docs-check-'));
@@ -81,11 +76,7 @@ describe('analyzeDocsConsistency', () => {
     const root = await createTempRepo();
     writeFileSync(
       path.join(root, 'docs', 'steering', 'PRODUCT.md'),
-      [
-        '詳細は `docs/steering/FEATURES.md` を参照。',
-        '仕様判断は `docs/steering/` を優先。',
-        '',
-      ].join('\n'),
+      ['詳細は `docs/steering/FEATURES.md` を参照。', '仕様判断は `docs/steering/` を優先。', ''].join('\n'),
       'utf8'
     );
 
