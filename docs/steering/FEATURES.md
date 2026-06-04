@@ -1,6 +1,6 @@
 # Features
 
-**最終更新**: 2026-05-29
+**最終更新**: 2026-06-05
 
 ---
 
@@ -11,7 +11,8 @@
 3. [試飲感想記録（Tasting）](#3-試飲感想記録tasting)
 4. [コーヒー豆図鑑（Defect Beans）](#4-コーヒー豆図鑑defect-beans)
 5. [ドリップガイド（Drip Guide）](#5-ドリップガイドdrip-guide)
-6. [その他](#6-その他)
+6. [生産記録（Production Record）](#6-生産記録production-record)
+7. [その他](#7-その他)
 
 ---
 
@@ -41,7 +42,7 @@
 | 要素 | 内容 |
 |-----|------|
 | **ページ** | `app/assignment/page.tsx` |
-| **コンポーネント** | `components/assignment-table/DesktopTableView.tsx` (CCN: 125 - リファクタリング対象)<br>`components/assignment-table/TableModals.tsx` (CCN: 117 - リファクタリング対象) |
+| **コンポーネント** | `app/assignment/components/assignment-table/DesktopTableView.tsx`<br>`app/assignment/components/assignment-table/TableModals.tsx` |
 | **Firestore** | `users/{userId}` ドキュメント内のフィールド + 担当データはサブコレクション |
 | **状態管理** | React useState のみ |
 
@@ -156,7 +157,7 @@ interface Assignment {
 
 ### 主要ユースケース
 1. テイスティングセッション作成
-2. フレーバーホイール評価（5軸: aroma, acidity, sweetness, body, aftertaste）
+2. 評価スコア入力（6軸: bitterness, acidity, body, sweetness, aroma, overallRating）
 3. AI分析（Firebase Cloud Functions経由でgpt-4o-mini）自動実行
 4. 他ユーザーの感想閲覧
 
@@ -164,7 +165,7 @@ interface Assignment {
 
 #### 共通コンポーネント使用
 - ✅ **必須**: `Button`, `Card`, `Textarea` を使用
-- ❌ **禁止**: 独自のフレーバーホイールコンポーネント作成（既存の`FlavorWheel`を使用）
+- ❌ **禁止**: 評価スコア入力を生のinputで再実装（既存の`TastingRecordFormScores`を使用）
 
 #### テーマ対応
 - CSS変数による自動テーマ適用
@@ -174,21 +175,21 @@ interface Assignment {
 | 要素 | 内容 |
 |-----|------|
 | **ページ** | `app/tasting/page.tsx` |
-| **コンポーネント** | `components/tasting/FlavorWheel.tsx`<br>`components/tasting/TastingCard.tsx` |
+| **コンポーネント** | `components/TastingSessionList.tsx`<br>`components/TastingSessionCarousel.tsx`<br>`components/TastingSessionCardDesktop.tsx`<br>`components/TastingSessionCardMobile.tsx`<br>`components/TastingRecordForm.tsx`<br>`components/TastingRecordFormScores.tsx` |
 | **AI** | Firebase Cloud Functions v2 `analyzeTastingSession`（gpt-4o-mini）<br>クライアント: `httpsCallable(functions, 'analyzeTastingSession')` |
 | **Firestore** | `users/{userId}` ドキュメント内のフィールド |
 
 ### 設計方針
 
-#### フレーバーホイール評価
-- **5軸評価**: aroma（香り）, acidity（酸味）, sweetness（甘み）, body（ボディ）, aftertaste（余韻）
+#### 評価スコア
+- **6軸評価**: bitterness（苦味）, acidity（酸味）, body（ボディ）, sweetness（甘み）, aroma（香り）, overallRating（総合）
 - **スコア**: 1〜5の5段階評価
 
 #### AI分析
-- **自動実行**: フレーバーホイール評価後、自動的にAI分析を実行
+- **自動実行**: セッション内の評価記録を元に、自動的にAI分析を実行
 - **実装**: Firebase Cloud Functions v2で`analyzeTastingSession`関数を呼び出し
 - **モデル**: OpenAI gpt-4o-mini（テキスト生成）
-- **プロンプト**: 5軸スコアを元に、コーヒーの特徴を解析
+- **プロンプト**: 評価スコアを元に、コーヒーの特徴を解析
 
 #### データモデル
 ```typescript
@@ -196,20 +197,14 @@ interface TastingSession {
   id: string;
   userId: string;
   coffeeName: string;
-  flavorWheel: {
-    aroma: number;
-    acidity: number;
-    sweetness: number;
-    body: number;
-    aftertaste: number;
-  };
+  roastLevel?: string;
   aiAnalysis?: string;
   createdAt: Timestamp;
 }
 ```
 
 ### 禁止事項
-1. ❌ フレーバーホイールの軸変更（互換性維持）
+1. ❌ 評価スコア軸の互換性を壊す変更
 2. ❌ AI分析の手動実行化（自動実行を維持）
 
 ### 関連ADR
@@ -240,7 +235,7 @@ interface TastingSession {
 
 | 要素 | 内容 |
 |-----|------|
-| **ページ** | `app/defect-beans/page.tsx`（一覧）<br>`app/defect-beans/[id]/page.tsx`（詳細） |
+| **ページ** | `app/defect-beans/page.tsx`（一覧・詳細表示を同一画面で扱う） |
 | **コンポーネント** | `components/defect-beans/FilterMenu.tsx`（検索・絞り込み・ソートを統合したモーダル）<br>`components/defect-beans/EmptyState.tsx`<br>`components/DefectBeanCard.tsx`（フェードインアニメーション・優先度制御対応） |
 | **フック** | `hooks/useDefectBeans.ts`（アップロード前の画像圧縮を統合）<br>`hooks/useDefectBeanSettings.ts` |
 | **ユーティリティ** | `lib/imageCompression.ts`（Canvas APIベースのクライアントサイド画像圧縮） |
@@ -279,7 +274,7 @@ interface TastingSession {
 
 #### 共通コンポーネント使用
 - ✅ **必須**: `Button`, `Card`, `Input`, `Modal` を使用
-- ❌ **禁止**: 独自のレシピカードコンポーネント作成（既存の`RecipeCard`を使用）
+- ❌ **禁止**: レシピ一覧・実行画面を生のTailwindだけで再実装（既存の`RecipeList`、`DripGuideRunner`を使用）
 
 #### テーマ対応
 - CSS変数による自動テーマ適用
@@ -289,9 +284,9 @@ interface TastingSession {
 | 要素 | 内容 |
 |-----|------|
 | **ページ** | `app/drip-guide/page.tsx`（レシピ一覧）<br>`app/drip-guide/run/page.tsx`（ガイド実行） |
-| **コンポーネント** | `components/drip-guide/RecipeCard.tsx`<br>`components/drip-guide/MethodDialog.tsx`<br>`components/drip-guide/runner/TimerDisplay.tsx`（タイマー表示: 5.5rem）<br>`components/drip-guide/runner/StepInfo.tsx`（注水量・ステップ情報: 3rem） |
-| **ロジック** | `lib/drip-guide/recipe.ts`（レシピ計算）<br>`lib/drip-guide/46method.ts`（4:6メソッド計算） |
-| **フック** | `hooks/drip-guide/useRecipeGuide.ts` |
+| **コンポーネント** | `components/drip-guide/RecipeList.tsx`<br>`components/drip-guide/RecipeForm.tsx`<br>`components/drip-guide/DripGuideRunner.tsx`<br>`components/drip-guide/runner/FocusGuideDisplay.tsx`<br>`components/drip-guide/runner/FooterControls.tsx` |
+| **ロジック** | `lib/drip-guide/recipeCalculator.ts`（レシピ計算）<br>`lib/drip-guide/recipe46.ts` / `recipe46Content.ts`（4:6メソッド）<br>`lib/drip-guide/countdownAudio.ts`（カウントダウン音） |
+| **フック** | `lib/drip-guide/useRecipes.ts`、`hooks/drip-guide/useRunnerTimer.ts`、`hooks/drip-guide/useDialogKeyboard.ts` |
 | **Firestore** | `users/{userId}` ドキュメント内のフィールド |
 
 ### 設計方針
@@ -302,7 +297,7 @@ interface TastingSession {
 - `isManualMode: true` のレシピは `StartHintDialog` に「手順はタップで進みます」の説明が表示される
 
 #### レシピ計算
-- **4:6メソッド**: `lib/drip-guide/46method.ts` で計算ロジック実装
+- **4:6メソッド**: `lib/drip-guide/recipe46.ts` で計算ロジック実装
 - **スケーリング**: 人前（servings）に応じて豆量・湯量を調整
 
 #### 音声案内
@@ -318,7 +313,75 @@ interface TastingSession {
 
 ---
 
-## 6. その他
+## 6. 生産記録（Production Record）
+
+### 目的
+月生産単位で、ハンドピック・焙煎・パッケージの実績を一画面にまとめ、本社向けの月合計CSVを出力する。
+
+### 主要ユースケース
+1. 月生産単位を選択する。
+2. 月生産設定（生豆総量、豆の種類、配合比率、1袋あたり粉量）を保存する。
+3. 生豆ハンドピック記録を入力する。
+4. 焙煎前重量・焙煎後重量を入力し、歩留まりを確認する。
+5. A班/B班の良品数・不良品数を入力し、月合計を確認する。
+6. 本社向けの月合計CSVを出力する。
+
+### UI実装ルール
+
+#### 共通コンポーネント使用
+- ✅ **必須**: `Button`, `Card`, `Modal`, `Input`, `NumberInput`, `Select` を使用
+- ❌ **禁止**: 削除機能、原価入力、原価計算、詳細CSVを v1 に追加しない
+
+#### レイアウト
+- iPad横向きでの現場利用を優先し、3列構成（生豆ハンドピック / 焙煎 / パッケージ）を基本にする。
+- 月設定・各記録の入力はモーダルで行う。
+- 保存後はモーダルを閉じ、3列画面に戻る。
+- 最新2件を編集対象として扱う。
+
+### 技術要素
+
+| 要素 | 内容 |
+|-----|------|
+| **ページ** | `app/production-record/page.tsx` |
+| **コンポーネント** | `components/production-record/MonthSettingsModal.tsx`<br>`components/production-record/HandpickEntryModal.tsx`<br>`components/production-record/RoastEntryModal.tsx`<br>`components/production-record/PackageEntryModal.tsx` |
+| **ロジック** | `lib/productionRecords.ts`（検証、集計、CSV生成、ファイル名生成） |
+| **Firestore** | `users/{userId}/productionRecords/{month}` と配下サブコレクション |
+| **フック** | `hooks/useProductionRecord.ts` |
+| **型** | `types/production-record.ts` |
+| **E2E** | `e2e/production-record.spec.ts` |
+
+### データモデル
+
+```text
+users/{userId}/productionRecords/{YYYY-MM}
+  handpickEntries/{entryId}
+  roastEntries/{entryId}
+  packageEntries/{entryId}
+```
+
+| 種別 | 役割 |
+|------|------|
+| 月doc | 月生産設定、生豆総量、配合、1袋あたり粉量 |
+| `handpickEntries` | 豆ごとのハンドピック実績、欠点豆重量 |
+| `roastEntries` | 焙煎前重量、焙煎後重量、焙煎歩留まり |
+| `packageEntries` | A班/B班の良品数・不良品数 |
+
+### 集計・CSV
+- 月合計は `lib/productionRecords.ts` の `buildMonthlySummary` を正とする。
+- CSVはBOM付きで生成し、Excel取り込みを前提にする。
+- CSVファイル名は `production-record-{YYYY-MM}.csv`。
+
+### v1でやらないこと
+1. ❌ 原価入力・原価計算
+2. ❌ アフターピック記録
+3. ❌ 削除機能
+4. ❌ 明細CSV
+5. ❌ ロット管理
+6. ❌ 自動繰越し
+
+---
+
+## 7. その他
 
 ### スプラッシュ画面（Splash Screen）
 
@@ -396,8 +459,7 @@ PWA起動時のブランドアニメーション表示、OSネイティブスプ
 |-----|------|
 | **ディレクトリ** | `components/ui/` |
 | **エクスポート数** | 固定値を書かず、`components/ui/index.ts` を参照 |
-| **レジストリ** | `components/ui/registry.tsx`（UIカタログ） |
-| **テストページ** | `/dev/design-lab`（Developer Design Lab、開発者モードで表示） |
+| **確認方法** | `components/ui/index.ts` と各コンポーネントの `.test.tsx` を正とする |
 
 #### UI実装ルール（重要：全機能共通）
 
@@ -427,31 +489,13 @@ const { isChristmasTheme } = useAppTheme();
 **3. 配色参照**
 - ✅ **参照**: `DESIGN.md`、`docs/steering/FEATURES.md` のテーマシステム、`AGENTS.md` のUI実装ルール
 
-**4. 新規コンポーネント追加時のレジストリ登録**
+**4. 新規コンポーネント追加時の登録**
 新しい共通UIコンポーネントを作成した場合、**必ず以下の手順で登録すること**：
 
 1. `components/ui/NewComponent.tsx` を作成
 2. `components/ui/index.ts` にエクスポートを追加
-3. `components/ui/registry.tsx` に以下を追加：
-   - デモコンポーネント（`NewComponentDemo`関数）
-   - `componentRegistry`配列にエントリを追加（name, description, category, Demo）
-
-```typescript
-// registry.tsx への追加例
-function NewComponentDemo() {
-  return <NewComponent />;
-}
-
-// componentRegistry配列に追加
-{
-  name: 'NewComponent',
-  description: 'コンポーネントの説明',
-  category: 'button' | 'form' | 'container' | 'display' | 'feedback',
-  Demo: NewComponentDemo,
-}
-```
-
-→ Developer Design Lab（`/dev/design-lab`）に自動表示される
+3. 既存パターンに合わせた `.test.tsx` を追加する
+4. 必要に応じて `FEATURES.md` / `REPOSITORY.md` の共通UI一覧を更新する
 
 #### テーマシステム
 
@@ -534,14 +578,6 @@ ESLintカスタムルール（`no-raw-button`, `no-raw-checkbox`, `no-raw-select
 - **技術**: localStorage（テーマ、開発者モード）
 - **テーマ設定UI**: パターンBデザイン（デスクトップ4列/モバイル2列）で7テーマプリセットから選択。各カードはwhite背景+border、テーマカラーの48px丸カラードット（`previewGradient`グラデーション）、テーマ名（15px bold）、説明文（12.5px）、選択時は右上に黄金チェックマーク（20px丸）。アニメーションなし・LIGHT/DARKバッジなし・色スウォッチなし
 
-### Developer Design Lab
-- **目的**: 開発者向けデザインモック検証ツール
-- **パス**: `/dev/design-lab`（開発環境のみ。`page.dev.tsx` と `next.config.ts` の `pageExtensions` により production build から除外）
-- **注意**: 開発者モードの固定パスワードは開発中の表示切替であり、本番のアクセス制御として扱わない
-- **セクション**: コンポーネントギャラリー、アニメーション、ページモック、カラーパレット、タイポグラフィ、バリエーション、パターン比較、レスポンシブプレビュー
-- **技術**: タブ切替式サイドナビ、既存registry.tsx/splashPatterns連携
-- **統合元**: `/ui-test`（リダイレクト）、`/dev/splash-preview`（リダイレクト）
-
 ### お問い合わせ（Contact）
 - **目的**: ユーザーからの質問・不具合報告・要望受付
 - **パス**: `/contact`
@@ -553,6 +589,12 @@ ESLintカスタムルール（`no-raw-button`, `no-raw-checkbox`, `no-raw-select
 - **パス**: `/clock`
 - **技術**: localStorage（表示設定・作業/休憩時間帯設定）、Web Audio API（作業チャイム音）
 - **作業チャイム**: 設定した作業・休憩の時間帯から現在状態と次の区切りを表示し、休憩開始・作業開始の時刻にA案のやわらかい現場チャイム音と中央通知パネルで知らせる。音声アナウンスは初期値OFF
+
+### データ安全・復旧UI
+- **オフラインバナー**: `components/OfflineBanner.tsx` と `hooks/useOnlineStatus.ts` で通信断を表示する。
+- **Firestoreオフライン永続化**: `lib/firebase.ts` でブラウザ環境のみIndexedDB永続化を有効化し、エミュレータ時は無効化する。
+- **白画面防止**: `app/error.tsx` と `app/global-error.tsx` で再読み込み導線を表示する。
+- **保存失敗の扱い**: 保存失敗は呼び出し元へ伝え、成功トーストだけで隠さない。
 
 ### 関連ADR
 - [ADR-008] ロゴを画像からテキストベースに変更（`docs/steering/TECH_SPEC.md` 参照）
@@ -571,6 +613,7 @@ ESLintカスタムルール（`no-raw-button`, `no-raw-checkbox`, `no-raw-select
 | テイスティング | `users/{userId}` のフィールド | |
 | スケジュール | `users/{userId}` のフィールド | |
 | 担当表 | `users/{userId}` 配下のサブコレクション | Assignment固有のデータ構造 |
+| 生産記録 | `users/{userId}/productionRecords/{YYYY-MM}` と配下サブコレクション | 月生産設定、ハンドピック、焙煎、パッケージ |
 | 欠点豆 | `defectBeans` コレクション | 共有データ（全ユーザー共通） |
 | メタデータ | `_meta` コレクション | システム管理用 |
 
@@ -588,6 +631,7 @@ ESLintカスタムルール（`no-raw-button`, `no-raw-checkbox`, `no-raw-select
 **呼び出し方法**: クライアント側で `httpsCallable(functions, 'functionName')` を使用
 **シークレット管理**: OPENAI_API_KEY は Firebase Secret Manager で管理
 **Cloud Functions配置**: `functions/src/` ディレクトリ
+**利用制限**: `functions/src/rate-limit.ts` でユーザー・関数・日付単位の日次上限を確認する
 
 ---
 
@@ -631,7 +675,7 @@ ESLintカスタムルール（`no-raw-button`, `no-raw-checkbox`, `no-raw-select
 - [ ] `docs/steering/FEATURES.md` に機能を追記（本ファイル）
 - [ ] Firestore Security Rules を更新（必要な場合）
 - [ ] テストを作成（Vitest）
-- [ ] Developer Design Lab（`/dev/design-lab`）で表示確認
+- [ ] 必要に応じてE2Eまたは手動確認を追加
 
 ---
 

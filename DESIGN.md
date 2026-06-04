@@ -44,7 +44,7 @@ RoastPlus の主軸は「現場オペレーション重視」です。明るく�
 |------|------|------|
 | 1 | 現場で迷わない | 画面を開いた瞬間に、今の状態と次の操作が分かる。 |
 | 2 | ページごとの型を揃える | 同じ目的の画面は、ヘッダー、余白、最大幅、主要アクション位置、空状態を揃える。 |
-| 3 | モバイルで押しやすい | スマートフォン、タブレット、PWA利用を前提にし、44px以上のタッチ領域を確保する。 |
+| 3 | iPadで押しやすい | 現場iPad、タブレット、補助端末でのPWA利用を前提にし、44px以上のタッチ領域を確保する。 |
 | 4 | 情報が一目で読める | 時間、担当、状態、次アクションは本文より強く見せる。 |
 | 5 | コーヒーらしさは控えめに効かせる | コーヒーらしい色や演出は、業務理解を邪魔しない範囲で使う。 |
 | 6 | 毎日使って疲れない | 強いアニメーション、過度なグラデーション、重い装飾は限定する。 |
@@ -58,9 +58,9 @@ RoastPlus のページは、見た目ではなく「ユーザーが何をする�
 | タイプ | 主な用途 | 対象ページ例 | 推奨レイアウト | ヘッダー | 最大幅 | 主要アクション位置 | 使う共通UI | 避けること |
 |--------|----------|--------------|----------------|----------|--------|--------------------|------------|------------|
 | ホーム / ハブ | 機能選択 | ホーム | 2列中心の機能カード | ブランドヘッダー | `max-w-6xl` | カード全体を入口にする | `Card`, `ActionCard` | カード内説明を増やしすぎる |
-| 一覧 / 管理 | 探す、追加、編集 | 担当表、スケジュール、欠点豆、作業進捗、試飲一覧 | モバイルはカード、広い画面はテーブルやグリッド | `FloatingNav` + タイトル | `max-w-4xl` から `max-w-7xl` | 上部右側、または下部固定 | `Card`, `Button`, `Tabs`, `EmptyState` | 検索、絞り込み、追加を離れた場所に置く |
+| 一覧 / 管理 | 探す、追加、編集 | 担当表、スケジュール、欠点豆、生産記録、試飲一覧 | iPadではカード、広い画面はテーブルやグリッド | `FloatingNav` + タイトル | `max-w-4xl` から `max-w-7xl` | 上部右側、または下部固定 | `Card`, `Button`, `Tabs`, `EmptyState` | 検索、絞り込み、追加を離れた場所に置く |
 | フォーム / 編集 | 入力して保存 | レシピ作成、試飲作成、設定入力、お問い合わせ | 縦積みフォーム | `FloatingNav` + タイトル | `max-w-2xl` または `max-w-lg` | 下部、右下、固定フッターのいずれか | `Input`, `Textarea`, `Select`, `Button`, `Card` | 危険操作を保存ボタンの近くに置く |
-| 集中操作 / 実行 | 作業中に状態と次操作を見る | ローストタイマー、ドリップガイド、クイズ、時計 | 固定または準固定画面 | 最小ナビ、固定ヘッダー | 画面全体 | 下部操作、中央に主要状態 | `Button`, `IconButton`, `ProgressBar` | 説明文やカードを増やしすぎる |
+| 集中操作 / 実行 | 作業中に状態と次操作を見る | ドリップガイド、時計 | 固定または準固定画面 | 最小ナビ、固定ヘッダー | 画面全体 | 下部操作、中央に主要状態 | `Button`, `IconButton`, `ProgressBar` | 説明文やカードを増やしすぎる |
 | 詳細 / 参照 | 読む、判断材料を見る | 欠点豆詳細、開発秘話、規約、履歴詳細 | 読み物レイアウト | `FloatingNav` + タイトル | `max-w-3xl` 前後 | 必要な場合のみ本文末尾 | `Card`, `Badge`, `Accordion` | 操作ボタンを主役にする |
 | モーダル / 確認 | 短い判断、設定、確認 | 削除確認、フィルター、OCR確認、詳細設定 | 中央ダイアログ、またはモバイル下寄せ | モーダル内タイトル | `max-w-sm` から `max-w-md` | 下部にキャンセル、実行 | `Modal`, `Dialog`, `Button` | 長い内容や複雑な設定を詰め込む |
 
@@ -71,7 +71,7 @@ RoastPlus のページは、見た目ではなく「ユーザーが何をする�
 ### 4.1 ヘッダー
 
 - 通常ページは `FloatingNav` とページタイトルを基本にする。
-- クイズやタイマーなど集中画面は、固定ヘッダーや最小ナビでもよい。
+- ドリップガイドや時計などの集中画面は、固定ヘッダーや最小ナビでもよい。
 - ホームだけはブランドヘッダーを使う。
 - タイトル文言は短くする。
 - 説明文をヘッダー内に増やしすぎない。
@@ -334,7 +334,7 @@ RoastPlus では、色を直接指定せず、意味を持つセマンティッ�
 
 - 共通UIは `@/components/ui` から import する。
 - shadcn/ui、Radix UI、styled-components、emotion は使わない。
-- 新しい共通UIを追加した場合は `components/ui/index.ts` と `components/ui/registry.tsx` に登録する。
+- 新しい共通UIを追加した場合は `components/ui/index.ts` にエクスポートし、必要に応じてテストを追加する。
 - 44px以上のタッチ領域を保つ。
 
 ### 8.2 使い分け
@@ -347,6 +347,7 @@ RoastPlus では、色を直接指定せず、意味を持つセマンティッ�
 | `Card` | 情報のまとまり | カードの入れ子は禁止 |
 | `Input`, `Textarea`, `Select` | フォーム入力 | ラベルと補足文を近くに置く |
 | `Checkbox`, `Switch` | ON/OFFや複数選択 | 生のinputを直接使わない |
+| セグメントコントロール | 3択以内の状態切替（「十分・残少・欠品」など） | `Tabs` との違い：ページコンテンツの切替ではなく値の状態変更に使う。`StatusToggle` パターン参照 |
 | `Modal` | 任意コンテンツのモーダル | `bg-overlay` 必須 |
 | `Dialog` | 確認ダイアログ | 削除は `danger` |
 | `Tabs` | 同階層の表示切替 | ページ遷移の代替にしすぎない |
@@ -466,7 +467,7 @@ import {
 
 ### 9.2 フル画面固定ページ
 
-ローストタイマー、ドリップガイド、時計など、作業中に状態を見続ける画面で使う。
+ドリップガイド、時計など、作業中に状態を見続ける画面で使う。
 
 ```tsx
 <div className="h-dvh flex flex-col bg-surface overflow-hidden">
@@ -531,6 +532,33 @@ import {
   </div>
 </header>
 
+{/* 眉毛ラベル（eyebrow）付きタイトル — 機能名をアイコン+大文字英語で上段に添える */}
+<header>
+  <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-bold tracking-[0.14em] text-ink-muted">
+    <PageIcon className="h-[15px] w-[15px]" />
+    PAGE LABEL
+  </div>
+  <div className="flex items-start justify-between gap-4">
+    <div>
+      <h1 className="text-[22px] font-bold tracking-[0.01em] text-ink sm:text-[26px]">ページタイトル</h1>
+      <p className="mt-1 text-[13.5px] text-ink-sub">一行説明</p>
+    </div>
+    <Button variant="primary" className="shrink-0">主要アクション</Button>
+  </div>
+</header>
+
+{/* セクション見出し + カウントバッジ — 件数を色変化（0件=グレー / 1件以上=赤）で示す */}
+<div className="flex items-center gap-2">
+  <h2 className="text-[15px] font-bold text-ink">セクション名</h2>
+  <span
+    className={`inline-grid h-5 min-w-5 place-items-center rounded-full px-1.5 text-xs font-bold ${
+      count > 0 ? 'bg-danger-subtle text-danger' : 'bg-ground text-ink-muted'
+    }`}
+  >
+    {count}
+  </span>
+</div>
+
 {/* ホーム */}
 <header className="relative z-50 shadow-lg bg-header-bg">
   <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
@@ -541,7 +569,85 @@ import {
 </header>
 ```
 
-### 9.6 レスポンシブブレークポイント
+### 9.6 テーブルリスト
+
+一覧データを行で表示する際の基本形。モバイルで横スクロールが発生するHTMLテーブルの代わりに使う。`Card variant="table"` で外枠を作り、`divide-y divide-edge-subtle` で行を区切る。
+
+```tsx
+{/* 通常リスト */}
+<Card variant="table">
+  <div className="divide-y divide-edge-subtle">
+    {items.map((item) => (
+      <div key={item.id} className="flex flex-wrap items-center gap-3.5 px-4 py-3">
+        {/* 左: テキスト情報（flex-1 min-w-0 で折り返し許可） */}
+        <div className="min-w-0 flex-1">
+          <span className="text-sm font-bold text-ink">{item.name}</span>
+          <div className="mt-0.5 text-[11.5px] text-ink-muted">補足情報</div>
+        </div>
+        {/* 右: 操作系（shrink-0 で縮まない） */}
+        <div className="flex shrink-0 items-center gap-0.5">
+          {/* IconButton など */}
+        </div>
+      </div>
+    ))}
+  </div>
+</Card>
+
+{/* ローディング中 */}
+<Card variant="table">
+  <div className="p-4 text-sm text-ink-sub">読み込み中...</div>
+</Card>
+
+{/* 空状態（簡易メッセージ） */}
+<Card variant="table">
+  <div className="flex items-center gap-2.5 p-4 text-sm text-ink-sub">
+    <FiCheckCircle className="h-[18px] w-[18px] shrink-0 text-success" aria-hidden="true" />
+    対象がありません。
+  </div>
+</Card>
+```
+
+行内に `order-3 w-full sm:order-none sm:w-auto` を使うと、モバイルでは最下段に折り返し、タブレット以上では通常位置に戻るレスポンシブ配置ができる。
+
+---
+
+### 9.7 セグメントコントロール
+
+3択以内の状態を切り替えるUI。`Tabs` がページ内コンテンツの切替に使うのに対し、こちらは「値の状態変更」に使う（例: 在庫の「十分 / 残少 / 欠品」）。
+
+```tsx
+{/* セグメントコントロール外枠 */}
+<div
+  className="inline-flex gap-0.5 rounded-[10px] border border-edge bg-ground p-0.5"
+  role="group"
+  aria-label="状態"
+>
+  {options.map((opt) => {
+    const selected = opt.value === value;
+    return (
+      // eslint-disable-next-line local/no-raw-button -- セグメントコントロール専用の小ボタン。共通Buttonはサイズが合わない
+      <button
+        key={opt.value}
+        type="button"
+        aria-pressed={selected}
+        onClick={() => onChange(opt.value)}
+        className={`inline-flex h-[34px] items-center justify-center gap-1.5 rounded-[7px] px-3 text-[13px] font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-spot/40 ${
+          selected ? `${opt.activeClass} shadow-sm` : 'bg-transparent text-ink-muted hover:text-ink-sub'
+        }`}
+      >
+        <span className={`h-[7px] w-[7px] shrink-0 rounded-full bg-current ${selected ? 'opacity-100' : 'opacity-50'}`} aria-hidden="true" />
+        {opt.label}
+      </button>
+    );
+  })}
+</div>
+```
+
+選択中ボタンの `activeClass` はセマンティック色（`bg-success-subtle text-success`、`bg-danger-subtle text-danger` など）を使い、未選択はすべてグレーに統一する。
+
+---
+
+### 9.8 レスポンシブブレークポイント
 
 ```text
 default : 0px     モバイル
@@ -692,6 +798,5 @@ UIを作る、または直す前に確認します。
 | `docs/steering/REPOSITORY.md` | ディレクトリ構成、依存方向 |
 | `docs/steering/GUIDELINES.md` | 実装、テスト、Git運用 |
 | `app/globals.css` | CSS変数、テーマ定義、カスタムアニメーション |
-| `components/ui/registry.tsx` | 共通UIコンポーネントのデモ |
 | `/dev/design-lab` | 開発者向けデザイン確認ページ |
 
