@@ -17,7 +17,7 @@ import { getUserData } from '@/lib/firestore';
 import { needsConsent } from '@/lib/consent';
 import type { HomeFeatureKey } from '@/lib/homeFeatures';
 import dynamic from 'next/dynamic';
-import { SPLASH_DISPLAY_TIME } from '@/components/SplashScreen';
+import { SPLASH_DISPLAY_TIME } from '@/lib/constants';
 
 const Snowfall = dynamic(() => import('@/components/Snowfall').then((mod) => ({ default: mod.Snowfall })), {
   ssr: false,
