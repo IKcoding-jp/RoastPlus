@@ -149,18 +149,19 @@ export function TastingSessionFilterModal({
 
       {/* ソート */}
       <FilterSection label="ソート">
-        <div className="flex flex-col gap-1">
+        <div className="grid grid-cols-3 gap-1.5">
           {sortOptions.map((opt) => (
-            <FilterSortOption
+            <FilterOptionButton
               key={opt.id}
               selected={tempSortOption === opt.id}
-              icon={opt.icon}
               type="button"
               aria-pressed={tempSortOption === opt.id}
               onClick={() => setTempSortOption(opt.id)}
+              className="!min-h-[40px] !px-1 !text-[12px] whitespace-nowrap gap-1"
             >
+              {opt.icon}
               {opt.label}
-            </FilterSortOption>
+            </FilterOptionButton>
           ))}
         </div>
       </FilterSection>
@@ -168,18 +169,24 @@ export function TastingSessionFilterModal({
       {/* 日付範囲 */}
       <FilterSection label="日付範囲">
         <div className="grid grid-cols-2 gap-2">
-          <Input
-            type="date"
-            value={tempDateFrom}
-            onChange={(e) => setTempDateFrom(e.target.value)}
-            className={inputControlClassName}
-          />
-          <Input
-            type="date"
-            value={tempDateTo}
-            onChange={(e) => setTempDateTo(e.target.value)}
-            className={inputControlClassName}
-          />
+          <div className="flex flex-col gap-1">
+            <span className="text-[11px] text-ink-muted">開始日</span>
+            <Input
+              type="date"
+              value={tempDateFrom}
+              onChange={(e) => setTempDateFrom(e.target.value)}
+              className={inputControlClassName}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[11px] text-ink-muted">終了日</span>
+            <Input
+              type="date"
+              value={tempDateTo}
+              onChange={(e) => setTempDateTo(e.target.value)}
+              className={inputControlClassName}
+            />
+          </div>
         </div>
       </FilterSection>
 
