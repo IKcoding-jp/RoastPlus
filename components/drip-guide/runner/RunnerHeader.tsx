@@ -14,6 +14,7 @@ export const RunnerHeader: React.FC<RunnerHeaderProps> = ({ currentStepIndex, to
     <div className="flex-none flex items-center justify-between px-5 pt-4 pb-1">
       <Link
         href="/drip-guide"
+        aria-label="ドリップガイドに戻る"
         className="p-1.5 rounded-full text-ink-muted hover:text-ink-sub transition-colors active:bg-ground"
       >
         <ArrowLeft size={18} weight="bold" />
