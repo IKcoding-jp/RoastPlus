@@ -5,7 +5,7 @@ import { DripRecipe } from '@/lib/drip-guide/types';
 import { playDripCountdownAudio } from '@/lib/drip-guide/countdownAudio';
 import { useRunnerTimer } from '@/hooks/drip-guide/useRunnerTimer';
 import { CompletionScreen } from './runner/CompletionScreen';
-import { RunnerHeader } from './runner/RunnerHeader';
+import { FloatingNav } from '@/components/ui';
 import { FooterControls } from './runner/FooterControls';
 import { FocusGuideDisplay } from './runner/FocusGuideDisplay';
 
@@ -99,10 +99,16 @@ export const DripGuideRunner: React.FC<DripGuideRunnerProps> = ({ recipe }) => {
 
   return (
     <div className="flex flex-col h-[100dvh] bg-ground relative overflow-hidden">
-      <RunnerHeader currentStepIndex={currentStepIndex} totalSteps={steps.length} />
+      <FloatingNav backHref="/drip-guide" />
 
       <div className="flex-1 flex items-center px-5 sm:px-6 lg:px-12 pb-4 lg:pb-6 overflow-y-auto">
-        <FocusGuideDisplay currentTime={currentTime} recipeName={recipe.name} currentStep={currentStep} />
+        <FocusGuideDisplay
+          currentTime={currentTime}
+          recipeName={recipe.name}
+          currentStep={currentStep}
+          currentStepIndex={currentStepIndex}
+          totalSteps={steps.length}
+        />
       </div>
 
       <FooterControls

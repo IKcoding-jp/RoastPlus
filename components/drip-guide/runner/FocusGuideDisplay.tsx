@@ -8,6 +8,8 @@ interface FocusGuideDisplayProps {
   currentTime: number;
   recipeName: string;
   currentStep: DripStep | null;
+  currentStepIndex: number;
+  totalSteps: number;
 }
 
 function splitStepTitle(title: string): { mainTitle: string; detail?: string } {
@@ -41,7 +43,13 @@ function WaterTarget({ targetTotalWater }: { targetTotalWater?: number }) {
   );
 }
 
-export const FocusGuideDisplay: React.FC<FocusGuideDisplayProps> = ({ currentTime, recipeName, currentStep }) => {
+export const FocusGuideDisplay: React.FC<FocusGuideDisplayProps> = ({
+  currentTime,
+  recipeName,
+  currentStep,
+  currentStepIndex,
+  totalSteps,
+}) => {
   if (!currentStep) {
     return (
       <div
@@ -66,7 +74,12 @@ export const FocusGuideDisplay: React.FC<FocusGuideDisplayProps> = ({ currentTim
       <div className="w-full space-y-7 lg:hidden">
         <section className="rounded-lg bg-surface border border-edge px-4 py-3 shadow-card flex items-center justify-between gap-4">
           <div className="min-w-0">
-            <p className="text-xs font-bold text-ink-muted truncate">{recipeName}</p>
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-bold text-ink-muted truncate">{recipeName}</p>
+              <p className="text-xs font-bold text-ink-muted">
+                {currentStepIndex + 1} / {totalSteps}
+              </p>
+            </div>
             <h2 className="text-[1.7rem] font-extrabold leading-tight text-ink mt-0.5">{mainTitle}</h2>
             {detail && <p className="mt-0.5 text-sm font-bold leading-tight text-ink-muted">{detail}</p>}
           </div>
