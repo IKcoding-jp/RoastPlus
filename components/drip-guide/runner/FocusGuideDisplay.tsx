@@ -43,7 +43,13 @@ function WaterTarget({ targetTotalWater }: { targetTotalWater?: number }) {
   );
 }
 
-export const FocusGuideDisplay: React.FC<FocusGuideDisplayProps> = ({ currentTime, recipeName, currentStep, currentStepIndex, totalSteps}) => {
+export const FocusGuideDisplay: React.FC<FocusGuideDisplayProps> = ({
+  currentTime,
+  recipeName,
+  currentStep,
+  currentStepIndex,
+  totalSteps,
+}) => {
   if (!currentStep) {
     return (
       <div
@@ -70,7 +76,9 @@ export const FocusGuideDisplay: React.FC<FocusGuideDisplayProps> = ({ currentTim
           <div className="min-w-0">
             <div className="flex items-center justify-between">
               <p className="text-xs font-bold text-ink-muted truncate">{recipeName}</p>
-              <p className="text-xs font-bold text-ink-muted">{currentStepIndex + 1} / {totalSteps}</p>
+              <p className="text-xs font-bold text-ink-muted">
+                {currentStepIndex + 1} / {totalSteps}
+              </p>
             </div>
             <h2 className="text-[1.7rem] font-extrabold leading-tight text-ink mt-0.5">{mainTitle}</h2>
             {detail && <p className="mt-0.5 text-sm font-bold leading-tight text-ink-muted">{detail}</p>}

@@ -5,7 +5,7 @@ import { DripRecipe } from '@/lib/drip-guide/types';
 import { playDripCountdownAudio } from '@/lib/drip-guide/countdownAudio';
 import { useRunnerTimer } from '@/hooks/drip-guide/useRunnerTimer';
 import { CompletionScreen } from './runner/CompletionScreen';
-import { FloatingNav } from '@/components/ui'
+import { FloatingNav } from '@/components/ui';
 import { FooterControls } from './runner/FooterControls';
 import { FocusGuideDisplay } from './runner/FocusGuideDisplay';
 
