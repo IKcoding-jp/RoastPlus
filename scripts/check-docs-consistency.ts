@@ -81,7 +81,7 @@ export const DEFAULT_STALE_TERMS: StaleTerm[] = [
   },
 ];
 
-const ROOT_DOCS = ['CLAUDE.md', 'AGENTS.md', 'README.md', 'DESIGN.md'];
+const ROOT_DOCS = ['CLAUDE.md', 'README.md', 'DESIGN.md'];
 const DOC_DIRS = ['docs/steering'];
 const REPOSITORY_PATH_PREFIXES = [
   '.claude/',
@@ -101,7 +101,6 @@ const REPOSITORY_PATH_PREFIXES = [
   'types/',
 ];
 const ROOT_REPOSITORY_FILES = new Set([
-  'AGENTS.md',
   'CLAUDE.md',
   'DESIGN.md',
   'README.md',

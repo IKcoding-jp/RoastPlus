@@ -13,7 +13,6 @@ public/animations/*.json
 .firebase
 .history
 .claude
-.codex
 .agent
 .agents
 .cursor

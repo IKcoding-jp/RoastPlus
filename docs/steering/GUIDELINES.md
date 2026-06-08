@@ -110,7 +110,7 @@ TDDで実装（Red → Green → Refactor）
 ```
 
 - `docs/superpowers/specs/` の受け入れ条件がTDDのテスト設計インプットになる
-- `/clear` 後も仕様と計画がGit上に残り、次のCodexが同じ前提で再開できる
+- `/clear` 後も仕様と計画がGit上に残り、次のセッションが同じ前提で再開できる
 
 ---
 
@@ -809,4 +809,4 @@ gh pr create --base main --title "[Issue #123] タイトル" --body-file .tmp-pr
 - **ユビキタス言語**: `docs/steering/UBIQUITOUS_LANGUAGE.md`
 - **機能一覧**: `docs/steering/FEATURES.md`
 - **ADR**: `docs/steering/TECH_SPEC.md`（ADRセクション）
-- **テスト実装の学び**: 現在のCodex/エージェント用メモリと、対象テストの近接ファイルを参照
+- **テスト実装の学び**: 現在のエージェント用メモリと、対象テストの近接ファイルを参照

@@ -31,8 +31,7 @@ roastplus/
 ├── tsconfig.json           # TypeScript設定（strict, @/ alias）
 ├── firebase.json           # Firebase設定
 ├── firestore.rules         # Firestoreセキュリティルール
-├── package.json            # 依存関係・スクリプト
-└── AGENTS.md               # Codexプロジェクトルール
+└── package.json            # 依存関係・スクリプト
 ```
 
 ---
