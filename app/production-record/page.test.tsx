@@ -244,6 +244,8 @@ function setupWithData() {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  // 月リストキャッシュ(localStorage)がテスト間で残ると空状態テストを汚染するためクリア
+  localStorage.clear();
   mocks.months = [];
   mocks.hookState.monthDoc = null;
   mocks.hookState.handpickEntries = [];
@@ -352,6 +354,8 @@ describe('ProductionRecordPage データ表示と集計', () => {
 
   it('月合計サマリーとCSVプレビューを表示する', () => {
     render(<ProductionRecordPage />);
+    // 月合計は普段隠れており、下部バーのタップでモーダルとして開く
+    fireEvent.click(screen.getByRole('button', { name: /月合計・CSV出力/ }));
 
     expect(screen.getByRole('heading', { name: '月合計サマリー' })).toBeInTheDocument();
     // 配合ラベル
@@ -365,7 +369,9 @@ describe('ProductionRecordPage データ表示と集計', () => {
 
   it('「設定を編集」で月設定モーダルを既存値入り（initial=monthDoc）で開く', () => {
     render(<ProductionRecordPage />);
-    fireEvent.click(screen.getByRole('button', { name: '設定を編集' }));
+    // 設定編集は「月の設定」メニュー内に集約された
+    fireEvent.click(screen.getByRole('button', { name: '月の設定' }));
+    fireEvent.click(screen.getByRole('button', { name: /設定を編集/ }));
 
     expect(screen.getByTestId('month-modal')).toBeInTheDocument();
     // 編集モードでは選択中の月とその設定が初期値として渡る
@@ -375,9 +381,12 @@ describe('ProductionRecordPage データ表示と集計', () => {
 
   it('新規作成時は月設定モーダルが空（initial=null）で開く', async () => {
     render(<ProductionRecordPage />);
+    // 新規作成は「月の設定」メニュー内の「新しい月を作る」に移動した
+    fireEvent.click(screen.getByRole('button', { name: '月の設定' }));
+    const createSection = screen.getByText('新しい月を作る').parentElement as HTMLElement;
     // 既存月(2026-05)と重複しない月を指定する（重複月は作成がブロックされるため、当月の日付に依存させない）
-    fireEvent.change(screen.getByLabelText('新規作成'), { target: { value: '2026-07' } });
-    fireEvent.click(screen.getByRole('button', { name: '対象月を作成' }));
+    fireEvent.change(within(createSection).getByLabelText('対象月'), { target: { value: '2026-07' } });
+    fireEvent.click(within(createSection).getByRole('button', { name: '作成' }));
 
     expect(await screen.findByTestId('month-modal')).toBeInTheDocument();
     expect(mocks.monthProps?.initial).toBeNull();
@@ -475,6 +484,8 @@ describe('ProductionRecordPage CSV出力', () => {
     window.URL.revokeObjectURL = revokeObjectURL;
 
     render(<ProductionRecordPage />);
+    // CSV出力ボタンは月合計モーダル内にあるため、先に下部バーから開く
+    fireEvent.click(screen.getByRole('button', { name: /月合計・CSV出力/ }));
 
     // 生成された <a> を捕捉する（最後の1つが CSV ダウンロード用）
     const realCreateElement = document.createElement.bind(document);
@@ -506,8 +517,11 @@ describe('ProductionRecordPage 月切替ローディング中のガード', () =
     setupWithData();
   });
 
-  it('読み込み中は入力3ボタンを無効化する（前月設定での誤入力を防ぐ）', () => {
-    mocks.hookState.isLoading = true;
+  // 入力可否は「設定済みの月があるか」(monthDoc) で判定する。
+  // 月切替時は useProductionRecord が monthDoc を新しい月のキャッシュ(無ければnull)へ
+  // 描画中に差し替えるため、前月設定での誤入力は monthDoc 判定だけで防げる。
+  it('対象月の設定が無い（monthDoc=null）ときは入力3ボタンを無効化する', () => {
+    mocks.hookState.monthDoc = null;
     render(<ProductionRecordPage />);
 
     expect(screen.getByRole('button', { name: '欠点豆を入力' })).toBeDisabled();
@@ -515,8 +529,8 @@ describe('ProductionRecordPage 月切替ローディング中のガード', () =
     expect(screen.getByRole('button', { name: 'パッケージを入力' })).toBeDisabled();
   });
 
-  it('読み込み完了後は入力3ボタンを有効化する', () => {
-    mocks.hookState.isLoading = false;
+  it('対象月の設定があれば、読み込み中でも入力3ボタンを有効化する（キャッシュ即表示でちらつかせない）', () => {
+    mocks.hookState.isLoading = true;
     render(<ProductionRecordPage />);
 
     expect(screen.getByRole('button', { name: '欠点豆を入力' })).toBeEnabled();
@@ -540,9 +554,11 @@ describe('ProductionRecordPage 重複月の作成防止', () => {
 
   it('既存月を指定して「対象月を作成」を押すと、作成せず既存である旨を通知する', () => {
     render(<ProductionRecordPage />);
-    // 新規作成欄に既存月(2026-05)を指定する
-    fireEvent.change(screen.getByLabelText('新規作成'), { target: { value: '2026-05' } });
-    fireEvent.click(screen.getByRole('button', { name: '対象月を作成' }));
+    // 新規作成は「月の設定」メニュー内へ。既存月(2026-05)を指定する
+    fireEvent.click(screen.getByRole('button', { name: '月の設定' }));
+    const createSection = screen.getByText('新しい月を作る').parentElement as HTMLElement;
+    fireEvent.change(within(createSection).getByLabelText('対象月'), { target: { value: '2026-05' } });
+    fireEvent.click(within(createSection).getByRole('button', { name: '作成' }));
 
     // 月設定モーダルは開かず（無警告の上書きを防ぐ）、既存月である旨を通知する
     expect(screen.queryByTestId('month-modal')).not.toBeInTheDocument();
@@ -553,8 +569,11 @@ describe('ProductionRecordPage 重複月の作成防止', () => {
     // months には 2026-05 のみ。2026-01 はセレクタ外だが Firestore には存在する想定
     mocks.productionRecordMonthExists.mockResolvedValue(true);
     render(<ProductionRecordPage />);
-    fireEvent.change(screen.getByLabelText('新規作成'), { target: { value: '2026-01' } });
-    fireEvent.click(screen.getByRole('button', { name: '対象月を作成' }));
+    // 新規作成は「月の設定」メニュー内へ。recentMonths窓外の2026-01を指定する
+    fireEvent.click(screen.getByRole('button', { name: '月の設定' }));
+    const createSection = screen.getByText('新しい月を作る').parentElement as HTMLElement;
+    fireEvent.change(within(createSection).getByLabelText('対象月'), { target: { value: '2026-01' } });
+    fireEvent.click(within(createSection).getByRole('button', { name: '作成' }));
 
     await waitFor(() => {
       expect(mocks.showToast).toHaveBeenCalledWith(expect.stringContaining('既に存在'), 'error');

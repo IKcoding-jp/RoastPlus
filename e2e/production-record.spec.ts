@@ -10,9 +10,17 @@ function column(page: Page, heading: string): Locator {
   return page.locator('div.rounded-2xl').filter({ has: page.getByRole('heading', { name: heading }) });
 }
 
-// 月設定モーダルで対象月を作成する（配合は1件・100%）
-async function createMonth(page: Page, { greenKg, beanName }: { greenKg: string; beanName: string }) {
-  await page.getByRole('button', { name: '対象月を作成' }).first().click();
+// 「月の設定」メニューから対象月を指定して作成し、月設定モーダルで配合まで保存する（配合は1件・100%）
+async function createMonth(
+  page: Page,
+  { month, greenKg, beanName }: { month: string; greenKg: string; beanName: string }
+) {
+  // 月の作成は「月の設定」メニューに集約されている（Layout A）
+  await page.getByRole('button', { name: '月の設定' }).click();
+  await page.getByLabel('対象月').fill(month);
+  // 空状態の「対象月を作成」と部分一致するため exact でメニューの「作成」に限定
+  await page.getByRole('button', { name: '作成', exact: true }).click();
+
   const modal = page.getByRole('heading', { name: /月設定/ });
   await expect(modal).toBeVisible();
 
@@ -39,8 +47,7 @@ test.describe('生産記録 E2E（実Firestoreエミュレータ）', () => {
     await expect(page.getByText('生産記録がまだありません')).toBeVisible({ timeout: 15_000 });
 
     // 月設定（生豆30kg / 配合モカ100%）
-    await page.getByLabel('新規作成').fill('2026-08');
-    await createMonth(page, { greenKg: '30', beanName: 'モカ' });
+    await createMonth(page, { month: '2026-08', greenKg: '30', beanName: 'モカ' });
 
     // 3列表示に切り替わる
     await expect(page.getByRole('heading', { name: '生豆ハンドピック' })).toBeVisible({ timeout: 15_000 });
@@ -82,24 +89,24 @@ test.describe('生産記録 E2E（実Firestoreエミュレータ）', () => {
     await expect(packageCard.getByText('190')).toBeVisible({ timeout: 15_000 });
     await expect(packageCard.getByText('205')).toBeVisible();
 
-    // 月合計サマリーとCSVプレビュー
+    // 月合計サマリーは下部バーから開く（Layout A）
+    await page.getByRole('button', { name: /月合計・CSV出力/ }).click();
     await expect(page.getByRole('heading', { name: '月合計サマリー' })).toBeVisible();
     const pre = page.locator('pre');
     await expect(pre).toContainText('2026年8月分');
     await expect(pre).toContainText('モカ 100%');
 
-    // CSV出力でダウンロードが発火する
+    // CSV出力でダウンロードが発火する（「月合計・CSV出力」と部分一致するため exact）
     const [download] = await Promise.all([
       page.waitForEvent('download'),
-      page.getByRole('button', { name: 'CSV出力' }).click(),
+      page.getByRole('button', { name: 'CSV出力', exact: true }).click(),
     ]);
     expect(download.suggestedFilename()).toBe('production-record-2026-08.csv');
   });
 
   test('同じ日付・区分・豆名のハンドピックは重複せず上書き（upsert）される', async ({ page }) => {
     await page.goto('/production-record');
-    await page.getByLabel('新規作成').fill('2026-09');
-    await createMonth(page, { greenKg: '30', beanName: 'モカ' });
+    await createMonth(page, { month: '2026-09', greenKg: '30', beanName: 'モカ' });
     await expect(page.getByRole('heading', { name: '生豆ハンドピック' })).toBeVisible({ timeout: 15_000 });
 
     const handpickCard = column(page, '生豆ハンドピック');
