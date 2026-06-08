@@ -52,7 +52,8 @@ export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
     const hasInsideSuffix = Boolean(suffix && suffixInside);
 
     const alignStyles = align === 'left' ? 'text-left' : align === 'right' ? 'text-right' : 'text-center';
-    const baseStyles = `rounded-lg border-2 px-4 py-2 text-lg transition-all duration-200 min-h-[44px] ${alignStyles}`;
+    // 入力部品の統一寸法（Input / Select と揃える）。py-3・影なしのフラット。
+    const baseStyles = `rounded-lg border-2 px-4 py-3 text-lg transition-all duration-200 min-h-[44px] ${alignStyles}`;
 
     const themeStyles =
       'bg-field border-edge text-ink placeholder:text-ink-muted hover:border-edge-strong focus:border-spot focus:bg-field focus:outline-none focus:ring-2 focus:ring-spot-subtle';
