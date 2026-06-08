@@ -627,26 +627,43 @@ export default function ProductionRecordPage() {
           onClose={() => setIsMonthMenuOpen(false)}
           contentClassName="rounded-2xl max-w-sm w-full bg-overlay border border-edge shadow-xl"
         >
-          <div className="space-y-4 p-5">
+          {/* ヘッダー：他モーダルと揃えてタイトル＋閉じる(×) */}
+          <div className="flex items-center justify-between border-b border-edge p-5">
             <h2 className="text-lg font-bold text-ink">月の設定</h2>
+            <IconButton onClick={() => setIsMonthMenuOpen(false)} rounded aria-label="閉じる">
+              <HiX className="h-5 w-5" />
+            </IconButton>
+          </div>
 
-            {/* 現在選択中の月の設定（配合・粉量）を編集。月が選ばれていないときは出さない。 */}
+          <div className="space-y-5 p-5">
+            {/* 現在選択中の月の設定（配合・粉量）を編集。月が選ばれていないときは出さない。
+                濃色ブロックではなく、アイコン＋2行ラベル＋右矢印の軽いメニュー行にする。 */}
             {selectedMonth && monthDoc && (
-              <Button
+              // eslint-disable-next-line local/no-raw-button -- アイコン＋2行ラベル＋右シェブロンのメニュー行のため Button では表現できない
+              <button
                 type="button"
-                variant="secondary"
-                className="w-full justify-start"
                 onClick={() => {
                   setIsMonthMenuOpen(false);
                   handleEditMonth();
                 }}
+                className="flex w-full items-center gap-3 rounded-xl border border-edge bg-surface px-4 py-3 text-left transition-colors hover:bg-ground"
               >
-                この月（{formatProductionMonthLabel(selectedMonth)}）の設定を編集
-              </Button>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-field text-ink-sub">
+                  <MdSettings className="h-5 w-5" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm font-semibold text-ink">この月の設定を編集</span>
+                  <span className="block truncate text-xs text-ink-muted">
+                    {formatProductionMonthLabel(selectedMonth)}・配合や1袋粉量
+                  </span>
+                </span>
+                <HiChevronRight className="h-5 w-5 shrink-0 text-ink-muted" />
+              </button>
             )}
 
-            {/* 新しい月生産単位を作る。何月分かは作業日とは別に選ぶ（spec第5章）。 */}
-            <div className="space-y-2 border-t border-edge pt-4">
+            {/* 新しい月生産単位を作る。何月分かは作業日とは別に選ぶ（spec第5章）。
+                編集行があるときだけ上に区切り線を引いて、別操作だと分かるようにする。 */}
+            <div className={selectedMonth && monthDoc ? 'space-y-2 border-t border-edge pt-5' : 'space-y-2'}>
               <p className="text-sm font-semibold text-ink">新しい月を作る</p>
               <p className="text-xs text-ink-muted">「何月分」として作るかを選びます（作業日とは別です）。</p>
               <div className="flex items-end gap-2">
