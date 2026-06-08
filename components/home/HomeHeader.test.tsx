@@ -56,6 +56,9 @@ describe('HomeHeader', () => {
 
   it('デジタル時計ボタンを表示する', () => {
     render(<HomeHeader />);
-    expect(screen.getByRole('button', { name: 'デジタル時計を表示' })).toBeInTheDocument();
+    const button = screen.getByRole('button', { name: 'デジタル時計を表示' });
+    expect(button).toBeInTheDocument();
+    // 可視ラベル「時計」が表示される（アイコンは aria-hidden のためテキストは「時計」のみ）
+    expect(button).toHaveTextContent('時計');
   });
 });
