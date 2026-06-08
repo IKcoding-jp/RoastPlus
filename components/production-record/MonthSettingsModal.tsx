@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
-import { HiX } from 'react-icons/hi';
+import { HiPlus, HiX } from 'react-icons/hi';
 
-import { Modal, IconButton, Button, NumberInput, Input } from '@/components/ui';
+import { Modal, IconButton, Button, NumberInput } from '@/components/ui';
 import { DEFAULT_POWDER_PER_PACK_GRAM, MAX_BLEND_ITEMS, formatKg, validateBlendItems } from '@/lib/productionRecords';
 import type { BlendItem, ProductionRecordMonth, ProductionRecordMonthInput } from '@/types';
 
@@ -148,34 +148,30 @@ export function MonthSettingsModal({
       </div>
 
       <div className="p-5 space-y-5">
-        {/* 月の基本設定：短い数値なので幅を絞って横並び（フル幅に伸ばさない） */}
-        <div className="flex flex-wrap gap-4">
-          <div className="w-40">
-            <NumberInput
-              label="生豆総量"
-              suffix="kg"
-              suffixInside
-              align="left"
-              min={0}
-              step="0.01"
-              placeholder="0"
-              value={greenBeanTotal}
-              onChange={(e) => setGreenBeanTotal(e.target.value)}
-            />
-          </div>
-          <div className="w-40">
-            <NumberInput
-              label="1袋粉量"
-              suffix="g"
-              suffixInside
-              align="left"
-              min={0}
-              step="0.1"
-              placeholder="0"
-              value={powderPerPack}
-              onChange={(e) => setPowderPerPack(e.target.value)}
-            />
-          </div>
+        {/* 月の基本設定：2カラムで均等に並べ、下の配合表と左右端を揃える */}
+        <div className="grid grid-cols-2 gap-4">
+          <NumberInput
+            label="生豆総量"
+            suffix="kg"
+            suffixInside
+            align="left"
+            min={0}
+            step="0.01"
+            placeholder="0"
+            value={greenBeanTotal}
+            onChange={(e) => setGreenBeanTotal(e.target.value)}
+          />
+          <NumberInput
+            label="1袋粉量"
+            suffix="g"
+            suffixInside
+            align="left"
+            min={0}
+            step="0.1"
+            placeholder="0"
+            value={powderPerPack}
+            onChange={(e) => setPowderPerPack(e.target.value)}
+          />
         </div>
 
         <div className="space-y-3">
@@ -183,53 +179,71 @@ export function MonthSettingsModal({
             <p className="text-sm font-semibold text-ink">配合</p>
             <p className="text-xs text-ink-muted">最大{MAX_BLEND_ITEMS}件・合計100%</p>
           </div>
-          {/* 配合は1行1件のコンパクトな表（列見出し＋区切り線・塗り無し）でスクロールを避ける */}
+          {/* 配合：セル一体のスプレッドシート型。入力欄をセルいっぱいに広げ、
+              ヘッダーと中身を同じセル余白(px-3)で揃える。枠は標準入力ではなくセル側で描く。 */}
           <div className="overflow-hidden rounded-xl border border-edge">
-            <div className="grid grid-cols-[1fr_100px_92px_auto] items-center gap-2 border-b border-edge px-3 py-2 text-[11px] font-medium text-ink-muted">
-              <span>豆名</span>
-              <span>比率</span>
-              <span>必要量</span>
-              <span className="sr-only">削除</span>
+            {/* ヘッダー行：4列をそのままデータ行と共有して位置を一致させる */}
+            <div className="grid grid-cols-[1fr_92px_104px_44px] divide-x divide-edge border-b border-edge bg-surface text-[11px] font-medium text-ink-muted">
+              <div className="px-3 py-2">豆名</div>
+              <div className="px-3 py-2">比率</div>
+              <div className="px-3 py-2">必要量</div>
+              <div className="px-3 py-2 sr-only">削除</div>
             </div>
             <div className="divide-y divide-edge">
               {blendDrafts.map((item, index) => {
                 const ratio = parseFloat(item.ratioPercent) || 0;
                 const requiredKg = (greenBeanTotalGram * (ratio / 100)) / 1000;
+                // セルいっぱいの枠なし入力。フォーカスは枠ではなく塗り＋内側リングで示す。
+                const cellInput =
+                  'min-h-[44px] w-full bg-transparent px-3 py-2 text-base text-ink placeholder:text-ink-muted focus:bg-field focus:outline-none focus:ring-2 focus:ring-inset focus:ring-spot-subtle';
                 return (
-                  <div key={item.id} className="grid grid-cols-[1fr_100px_92px_auto] items-center gap-2 px-3 py-2">
-                    <Input
+                  <div key={item.id} className="grid grid-cols-[1fr_92px_104px_44px] divide-x divide-edge">
+                    {/* 豆名 */}
+                    <input
                       aria-label={`豆 ${index + 1}`}
                       placeholder="豆名"
-                      className="!py-2 !shadow-none"
+                      className={cellInput}
                       value={item.beanName}
                       onChange={(e) => handleBlendChange(index, 'beanName', e.target.value)}
                     />
-                    <NumberInput
-                      aria-label="比率"
-                      suffix="%"
-                      suffixInside
-                      align="left"
-                      min={0}
-                      placeholder="0"
-                      value={item.ratioPercent}
-                      onChange={(e) => handleBlendChange(index, 'ratioPercent', e.target.value)}
-                    />
-                    <div className="text-sm font-bold tabular-nums text-ink">
+                    {/* 比率：% はセル内右端に固定 */}
+                    <div className="relative">
+                      <input
+                        aria-label="比率"
+                        type="number"
+                        min={0}
+                        placeholder="0"
+                        className={`${cellInput} pr-7`}
+                        value={item.ratioPercent}
+                        onChange={(e) => handleBlendChange(index, 'ratioPercent', e.target.value)}
+                      />
+                      <span className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-xs font-medium text-ink-sub">
+                        %
+                      </span>
+                    </div>
+                    {/* 必要量：派生表示（読み取り専用）。0のときは薄色で静かに */}
+                    <div
+                      className={`flex min-h-[44px] items-center px-3 py-2 text-sm font-bold tabular-nums ${
+                        requiredKg > 0 ? 'text-ink' : 'text-ink-muted'
+                      }`}
+                    >
                       {requiredKg.toFixed(2)}
                       <span className="ml-0.5 text-xs font-medium text-ink-sub">kg</span>
                     </div>
-                    {blendDrafts.length > 1 ? (
-                      <IconButton
-                        type="button"
-                        rounded
-                        aria-label={`豆 ${index + 1} を削除`}
-                        onClick={() => handleRemoveBlend(index)}
-                      >
-                        <HiX className="h-5 w-5" />
-                      </IconButton>
-                    ) : (
-                      <span className="w-11" />
-                    )}
+                    {/* 削除：1行だけのときは消せないよう空セル */}
+                    <div className="flex items-center justify-center">
+                      {blendDrafts.length > 1 && (
+                        // eslint-disable-next-line local/no-raw-button -- セル内に収める小型の削除ボタンのため Button では表現できない
+                        <button
+                          type="button"
+                          aria-label={`豆 ${index + 1} を削除`}
+                          onClick={() => handleRemoveBlend(index)}
+                          className="flex h-8 w-8 items-center justify-center rounded-md text-ink-muted transition-colors hover:bg-ground hover:text-ink"
+                        >
+                          <HiX className="h-4 w-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
                 );
               })}
@@ -243,6 +257,7 @@ export function MonthSettingsModal({
               onClick={handleAddBlend}
               disabled={blendDrafts.length >= MAX_BLEND_ITEMS}
             >
+              <HiPlus className="h-4 w-4" />
               豆を追加
             </Button>
             <span
