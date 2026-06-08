@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useCallback, useEffect, useSyncExternalStore } from 'react';
-import { HiCog6Tooth } from 'react-icons/hi2';
-import { MdSchedule, MdVolumeUp } from 'react-icons/md';
-import { BackLink, Button, IconButton } from '@/components/ui';
+import { MdVolumeUp } from 'react-icons/md';
+import { Button } from '@/components/ui';
+import { ClockHeaderNav } from '@/components/clock/ClockHeaderNav';
 import { useClockSettings } from '@/hooks/useClockSettings';
 import { ClockSettingsModal } from '@/components/clock/ClockSettingsModal';
 import { NextChimeStrip } from '@/components/clock/NextChimeStrip';
@@ -153,27 +153,12 @@ export default function ClockPage() {
       className="flex flex-col items-center justify-center h-dvh select-none relative"
       style={{ backgroundColor: colors.bg }}
     >
-      {/* ヘッダー：戻るボタン＋設定ボタン */}
-      <div className="absolute top-4 left-4 sm:top-6 sm:left-6">
-        <BackLink href="/" variant="icon-only" aria-label="ホームに戻る" />
-      </div>
-
-      <div className="absolute top-4 right-20 sm:top-6 sm:right-24">
-        <IconButton
-          variant="ghost"
-          rounded
-          onClick={() => setShowWorkChimeSchedule(true)}
-          aria-label="チャイム時刻設定"
-        >
-          <MdSchedule className="h-6 w-6" style={{ color: colors.uiText }} />
-        </IconButton>
-      </div>
-
-      <div className="absolute top-4 right-4 sm:top-6 sm:right-6">
-        <IconButton variant="ghost" rounded onClick={() => setShowSettings(true)} aria-label="時計の設定">
-          <HiCog6Tooth className="h-6 w-6" style={{ color: colors.uiText }} />
-        </IconButton>
-      </div>
+      {/* ヘッダー：戻る（FloatingNav）＋設定2ボタン */}
+      <ClockHeaderNav
+        colors={colors}
+        onOpenChimeSchedule={() => setShowWorkChimeSchedule(true)}
+        onOpenSettings={() => setShowSettings(true)}
+      />
 
       {/* 時計表示エリア */}
       <div className="text-center">
