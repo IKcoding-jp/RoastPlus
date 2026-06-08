@@ -17,7 +17,35 @@ export const MOCK_RECIPES: DripRecipe[] = [
     updatedAt: '2023-10-27T10:00:00Z',
     isDefault: true,
     isManualMode: true,
+    beanAmountByServings: [10, 20, 25, 35, 40, 45, 50, 55],
     steps: [
+      {
+        id: 'prep-1',
+        startTimeSec: -40,
+        title: 'お湯を92度に準備',
+        description: '温度調節ケトルでお湯を92度に設定します。',
+      },
+      {
+        id: 'prep-2',
+        startTimeSec: -30,
+        title: 'ペーパーをセット',
+        description: '円錐ペーパーの側面の圧着部（縫い目）を折り、ドリッパーにぴったり沿わせます。',
+      },
+      {
+        id: 'prep-3',
+        startTimeSec: -20,
+        title: 'ドリッパーを温める',
+        description:
+          'お湯を回しかけてドリッパーとサーバーを温め、ペーパーのにおいを流します。温めると抽出温度が安定します。お湯は捨てます。',
+        note: '温めたお湯は必ず捨てる',
+      },
+      {
+        id: 'prep-4',
+        startTimeSec: -10,
+        title: '粉をセット',
+        description: '人数分の粉を入れ、ドリッパーの下部を持って軽く左右に揺らし、表面を平らにならします。',
+        note: '表面が平らだとお湯が均一に通る',
+      },
       {
         id: 'step-1',
         startTimeSec: 0,
