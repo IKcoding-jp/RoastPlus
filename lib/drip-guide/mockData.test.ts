@@ -39,3 +39,42 @@ describe('MOCK_RECIPES アイスコーヒー（急冷式）', () => {
     expect(last?.description).toContain('氷');
   });
 });
+
+describe('MOCK_RECIPES BYSN Standard Drip', () => {
+  const bysn = MOCK_RECIPES.find((r) => r.id === 'recipe-001');
+
+  it('レシピが存在し、手動モードのデフォルトレシピ', () => {
+    expect(bysn).toBeDefined();
+    expect(bysn?.isManualMode).toBe(true);
+    expect(bysn?.isDefault).toBe(true);
+  });
+
+  it('公式早見表の粉量(1〜8人前)を持つ', () => {
+    expect(bysn?.beanAmountByServings).toEqual([10, 20, 25, 35, 40, 45, 50, 55]);
+  });
+
+  it('準備4手順＋抽出5手順の計9ステップ', () => {
+    expect(bysn?.steps).toHaveLength(9);
+  });
+
+  it('先頭4つは準備手順で、湯量を持たない', () => {
+    const prep = bysn?.steps.slice(0, 4) ?? [];
+    expect(prep.map((s) => s.title)).toEqual([
+      'お湯を92度に準備',
+      'ペーパーをセット',
+      'ドリッパーを温める',
+      '粉をセット',
+    ]);
+    expect(prep.every((s) => s.targetTotalWater === undefined)).toBe(true);
+  });
+
+  it('準備手順は蒸らし(0秒)より前にソートされる開始時刻を持つ', () => {
+    const prep = bysn?.steps.slice(0, 4) ?? [];
+    expect(prep.map((s) => s.startTimeSec)).toEqual([-40, -30, -20, -10]);
+  });
+
+  it('抽出ステップの累計湯量は 10/100/140/160（公式どおり）', () => {
+    const brewing = bysn?.steps.slice(4) ?? [];
+    expect(brewing.map((s) => s.targetTotalWater)).toEqual([10, 100, 140, 160, undefined]);
+  });
+});

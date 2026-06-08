@@ -298,7 +298,8 @@ interface TastingSession {
 
 #### レシピ計算
 - **4:6メソッド**: `lib/drip-guide/recipe46.ts` で計算ロジック実装
-- **スケーリング**: 人前（servings）に応じて豆量・湯量を調整
+- **スケーリング**: 人前（servings）に応じて豆量・湯量を調整（`lib/drip-guide/recipeCalculator.ts`）
+- **BYSN Standard Drip の非線形スケーリング**: 公式早見表どおりの粉量を `beanAmountByServings`（1〜8人前）で持ち、線形倍率ではなくテーブル参照でスケールする。注湯量は線形（公式と一致）、蒸らし湯は粉量に連動。`beanAmountByServings` 未指定のレシピ（4:6・井崎流・アイス）は従来の線形倍率のまま。
 
 #### 音声案内
 - **Web Audio API**: タイマー完了時に音声再生

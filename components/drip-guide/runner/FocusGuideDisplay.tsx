@@ -101,7 +101,7 @@ export const FocusGuideDisplay: React.FC<FocusGuideDisplayProps> = ({
       <section className="hidden lg:grid w-full min-h-[390px] grid-cols-[0.82fr_1.18fr] gap-10 rounded-xl border border-edge bg-surface px-10 py-9 shadow-card">
         <div className="flex flex-col justify-center border-r border-edge pr-10">
           <div className="mx-auto w-full max-w-[330px]">
-            <h2 className="text-[2.5rem] font-extrabold leading-tight text-ink">{mainTitle}</h2>
+            <h2 className="text-[2rem] font-extrabold leading-tight text-ink">{mainTitle}</h2>
             {detail && <p className="mt-2 text-xl font-bold leading-tight text-ink-muted">{detail}</p>}
             <div className="mt-8 text-[6.75rem] font-extrabold leading-none text-ink tabular-nums font-nunito">
               {formatTime(currentTime)}
