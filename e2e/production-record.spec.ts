@@ -18,7 +18,8 @@ async function createMonth(
   // 月の作成は「月の設定」メニューに集約されている（Layout A）
   await page.getByRole('button', { name: '月の設定' }).click();
   await page.getByLabel('対象月').fill(month);
-  await page.getByRole('button', { name: '作成' }).click();
+  // 空状態の「対象月を作成」と部分一致するため exact でメニューの「作成」に限定
+  await page.getByRole('button', { name: '作成', exact: true }).click();
 
   const modal = page.getByRole('heading', { name: /月設定/ });
   await expect(modal).toBeVisible();
