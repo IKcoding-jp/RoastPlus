@@ -1,7 +1,6 @@
 # RoastPlus - Claude Code メインガイド
 
-このファイルは、Claude Code が RoastPlus で作業するときの主入口です。
-Claude Code では本ファイルを最優先し、`AGENTS.md` は Codex との共通詳細ルール・補助参照として扱います。
+このファイルは、Claude Code が RoastPlus で作業するときの主入口です。毎回このファイルを最優先で守ります。
 
 ## 基本方針
 
@@ -12,48 +11,20 @@ Claude Code では本ファイルを最優先し、`AGENTS.md` は Codex との�
 - コミット、push、PR作成、本番操作、デプロイは、ユーザーの明示依頼がある場合のみ行います。
 - 秘密鍵、APIキー、トークン、`.env`、認証情報を表示、コピー、コミットしません。
 
-## AGENTS.md の扱い
-
-`AGENTS.md` は、Claude Code ではサブ参照です。常に全文を読み込む前提にはせず、詳細確認が必要なときに参照します。
-
-- コーディング規約、Firebase / セキュリティ、Git運用、完了報告の詳細が必要なときに読む。
-- Codex で作業する場合は、従来どおり `AGENTS.md` を主入口として扱う。
-- `CLAUDE.md` と `AGENTS.md` が矛盾する場合、Claude Code では `CLAUDE.md` を優先する。
-
 ## CLAUDE.md 運用ルール
 
 - このファイルには、毎回 Claude Code に守ってほしい恒久ルールだけを書く。
 - 詳細な仕様、長い手順、個別機能の説明は `docs/steering/` や仕様書に置き、ここには参照ルールだけを書く。
-- 新しいルールを追加するときは、既存の `AGENTS.md` / `docs/steering/` と重複・矛盾しないか確認する。
+- 新しいルールを追加するときは、既存の `docs/steering/` と重複・矛盾しないか確認する。
 - 一時的なメモや個人環境だけの内容は、リポジトリ共有の `CLAUDE.md` には書かない。
 
-## Steering Documents 参照ルール
+## 開発ワークフロー
 
-非自明な作業では、実装前に関連する `docs/steering/` を確認します。
-
-| 場面                   | 参照するドキュメント                   |
-| ---------------------- | -------------------------------------- |
-| 目的・スコープ確認     | `docs/steering/PRODUCT.md`             |
-| 機能仕様・禁止事項     | `docs/steering/FEATURES.md`            |
-| 技術制約・ADR          | `docs/steering/TECH_SPEC.md`           |
-| ファイル配置・依存方向 | `docs/steering/REPOSITORY.md`          |
-| 実装・テスト・Git運用  | `docs/steering/GUIDELINES.md`          |
-| 命名・用語             | `docs/steering/UBIQUITOUS_LANGUAGE.md` |
-
-機能追加・削除、データ構造変更、認証・認可・Rules・Functions変更では、実装後に `docs/steering/` の更新要否も確認します。
-
-## 作業開始チェック
-
-非自明な作業では、必要に応じて以下を確認します。
-
-1. `git status --short --branch` で未コミット変更を確認する。
-2. 関連する `docs/steering/` と対象ファイルを読む。
-3. 影響する画面、データ、認証・認可、Firestore Rules / Storage Rules、Cloud Functions を確認する。
-4. 既存テスト、手動確認手順、実行すべき検証コマンドを決める。
+コード実装時の Steering 参照ルールと作業開始チェックは `.claude/rules/development-workflow.md` に定義し、関連ファイル（`app/`、`lib/`、`functions/`、Rules など）の編集時に自動適用します。
 
 ## ドキュメント整合性チェック
 
-`docs/steering/`、`CLAUDE.md`、`AGENTS.md`、`README.md`、`DESIGN.md` を更新したとき、または機能追加・削除・名称変更を行ったときは、完了前に以下を実行します。
+`docs/steering/`、`CLAUDE.md`、`README.md`、`DESIGN.md` を更新したとき、または機能追加・削除・名称変更を行ったときは、完了前に以下を実行します。
 
 ```powershell
 npm run docs:check
@@ -74,7 +45,7 @@ npm run docs:check
 
 ## Superpowers スキルの使い方
 
-`AGENTS.md` の「Skill活用方針」は Codex 向けの説明を多く含むため、Claude Code では必要な場面だけ以下を使います。
+作業内容に応じて、以下のスキルを必要な場面だけ使います。
 
 | 場面           | 使うスキル                                                |
 | -------------- | --------------------------------------------------------- |
@@ -100,3 +71,13 @@ npm run docs:check
 
 - **Serena MCP**：コードファイルの読み書きは Serena MCP を優先する（グローバル設定準拠）
 - **メモリシステム**：`C:\Users\kensa\.claude\projects\D--Dev-roastplus\memory\`
+
+### MCP / ツールの使い分け
+
+- **firebase MCP**：Firestore の構造・Rules・Functions ログの**調査**に積極活用する。`firestore_*_document`（書込・削除）系は不可逆なため、ユーザーの明示依頼があるときだけ実行し、本番データの変更は原則行わない。
+- **chrome-devtools MCP**：実装画面のライブ確認・パフォーマンス計測・アクセシビリティ確認に使う。**UI に変化がある実装をしたら、毎回その画面を開いてスクリーンショットを撮り、目視確認まで自動で行う**（ロジック／テスト／ドキュメントのみの変更は対象外）。現場 iPad 中心のため `emulate` で iPad 幅を再現し、必要に応じ `lighthouse_audit` で PWA 品質を確認する。E2E は playwright と役割を分ける。
+- **playwright MCP**：E2E が失敗したときにブラウザを実際に操作して原因を特定する。新規 E2E を書く前に、セレクタ・操作手順を MCP で試してからコードに落とす。
+- **context7**：Next.js / Firebase / Tailwind など更新の速いライブラリの API・設定・移行を扱うときは、自分の記憶で書く前に最新ドキュメントを確認する（特に Tailwind v4 と Next.js App Router）。
+- **/code-review**：まとまった実装（機能追加・ロジック変更）を終えたら、コミット／PR 前に**毎回自動で実行**する（typo・ドキュメント・軽微なテスト修正のみは対象外）。要件充足の確認は `superpowers:requesting-code-review` と役割を分け、指摘は機械的に直さず**なぜその指摘かをユーザーと確認してから反映**する。
+- **frontend-design**：新しい UI のモック・実装に使う。ただし業務 PWA の方針（白背景・クリーン・iPad で操作しやすい・装飾過多を避ける）に合わせて創造性を抑制する。
+- **skills**：critique（UI 批評）、micro-interactions（細かい操作フィードバック設計）、web-quality-audit（品質総点検）、spec-driven-development（曖昧な要望を要件→設計→タスクに整理）、find-skills（新しい能力探し）を、それぞれの場面で呼ぶ。

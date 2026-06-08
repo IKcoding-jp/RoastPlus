@@ -487,7 +487,7 @@ const { isChristmasTheme } = useAppTheme();
 ```
 
 **3. 配色参照**
-- ✅ **参照**: `DESIGN.md`、`docs/steering/FEATURES.md` のテーマシステム、`AGENTS.md` のUI実装ルール
+- ✅ **参照**: `DESIGN.md`、`docs/steering/FEATURES.md` のテーマシステム
 
 **4. 新規コンポーネント追加時の登録**
 新しい共通UIコンポーネントを作成した場合、**必ず以下の手順で登録すること**：

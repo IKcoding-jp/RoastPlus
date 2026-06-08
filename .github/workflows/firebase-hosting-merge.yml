@@ -25,7 +25,6 @@ on:
     paths-ignore:
       - '**/*.md'
       - 'docs/**'
-      - 'AGENTS.md'
       - 'CLAUDE.md'
       - 'DESIGN.md'
       - '.github/**'

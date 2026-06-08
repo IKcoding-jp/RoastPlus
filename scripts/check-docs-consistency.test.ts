@@ -13,7 +13,6 @@ async function createTempRepo() {
   mkdirSync(path.join(root, 'docs', 'superpowers', 'specs'), { recursive: true });
   writeFileSync(path.join(root, 'README.md'), '# README\n', 'utf8');
   writeFileSync(path.join(root, 'CLAUDE.md'), '# CLAUDE\n', 'utf8');
-  writeFileSync(path.join(root, 'AGENTS.md'), '# AGENTS\n', 'utf8');
   writeFileSync(path.join(root, 'docs', 'steering', 'FEATURES.md'), '# FEATURES\n', 'utf8');
   writeFileSync(path.join(root, 'docs', 'steering', 'PRODUCT.md'), '# PRODUCT\n', 'utf8');
   return root;
@@ -27,7 +26,6 @@ describe('discoverDocFiles', () => {
     const files = discoverDocFiles(root).map((file) => path.relative(root, file).replace(/\\/g, '/'));
 
     expect(files).toContain('CLAUDE.md');
-    expect(files).toContain('AGENTS.md');
     expect(files).toContain('docs/steering/FEATURES.md');
     expect(files).not.toContain('docs/superpowers/specs/old.md');
   });
