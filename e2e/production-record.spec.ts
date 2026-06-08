@@ -89,16 +89,17 @@ test.describe('生産記録 E2E（実Firestoreエミュレータ）', () => {
     await expect(packageCard.getByText('190')).toBeVisible({ timeout: 15_000 });
     await expect(packageCard.getByText('205')).toBeVisible();
 
-    // 月合計サマリーとCSVプレビュー
+    // 月合計サマリーは下部バーから開く（Layout A）
+    await page.getByRole('button', { name: /月合計・CSV出力/ }).click();
     await expect(page.getByRole('heading', { name: '月合計サマリー' })).toBeVisible();
     const pre = page.locator('pre');
     await expect(pre).toContainText('2026年8月分');
     await expect(pre).toContainText('モカ 100%');
 
-    // CSV出力でダウンロードが発火する
+    // CSV出力でダウンロードが発火する（「月合計・CSV出力」と部分一致するため exact）
     const [download] = await Promise.all([
       page.waitForEvent('download'),
-      page.getByRole('button', { name: 'CSV出力' }).click(),
+      page.getByRole('button', { name: 'CSV出力', exact: true }).click(),
     ]);
     expect(download.suggestedFilename()).toBe('production-record-2026-08.csv');
   });
