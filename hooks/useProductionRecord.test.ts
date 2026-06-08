@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useProductionRecord } from './useProductionRecord';
+import { readProductionRecordCache, writeProductionRecordCache } from '@/lib/productionRecordCache';
 import type { ProductionRecordMonth, HandpickEntry, RoastEntry, PackageEntry } from '@/types';
 
 // Firestore層の購読関数をモックする（firebase/firestoreは直接モックしない）
@@ -97,6 +98,7 @@ describe('useProductionRecord', () => {
   afterEach(() => {
     vi.useRealTimers();
     vi.clearAllMocks();
+    localStorage.clear();
   });
 
   it('userId が undefined のときは購読せず空の初期値を返す', async () => {
@@ -278,5 +280,51 @@ describe('useProductionRecord', () => {
       expect.any(Function)
     );
     expect(second.unsubMonth).not.toHaveBeenCalled();
+  });
+
+  it('購読データを受け取るとキャッシュへ保存する', async () => {
+    setupSubscriptions({
+      monthDoc: MONTH_DOC,
+      handpickEntries: [HANDPICK_ENTRY],
+      roastEntries: [ROAST_ENTRY],
+      packageEntries: [PACKAGE_ENTRY],
+    });
+
+    renderHook(() => useProductionRecord(USER_ID, MONTH));
+
+    await act(async () => {
+      await vi.runAllTimersAsync();
+    });
+
+    expect(readProductionRecordCache(USER_ID, MONTH)).toEqual({
+      monthDoc: MONTH_DOC,
+      handpickEntries: [HANDPICK_ENTRY],
+      roastEntries: [ROAST_ENTRY],
+      packageEntries: [PACKAGE_ENTRY],
+    });
+  });
+
+  it('Firestore応答前でもキャッシュ値を即返す（0/空のちらつき防止）', async () => {
+    // 事前にキャッシュを仕込む
+    writeProductionRecordCache(USER_ID, MONTH, {
+      monthDoc: MONTH_DOC,
+      handpickEntries: [HANDPICK_ENTRY],
+      roastEntries: [ROAST_ENTRY],
+      packageEntries: [PACKAGE_ENTRY],
+    });
+
+    // 購読は張るが callback はまだ返さない（=Firestore応答前の状態を再現）
+    mockSubscribeProductionRecordMonth.mockImplementation(() => vi.fn());
+    mockSubscribeHandpickEntries.mockImplementation(() => vi.fn());
+    mockSubscribeRoastEntries.mockImplementation(() => vi.fn());
+    mockSubscribePackageEntries.mockImplementation(() => vi.fn());
+
+    const { result } = renderHook(() => useProductionRecord(USER_ID, MONTH));
+
+    // タイマーを進めず（=応答前）に、キャッシュ由来の値が出ていること
+    expect(result.current.monthDoc).toEqual(MONTH_DOC);
+    expect(result.current.handpickEntries).toEqual([HANDPICK_ENTRY]);
+    expect(result.current.roastEntries).toEqual([ROAST_ENTRY]);
+    expect(result.current.packageEntries).toEqual([PACKAGE_ENTRY]);
   });
 });
