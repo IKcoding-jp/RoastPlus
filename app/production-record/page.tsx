@@ -696,19 +696,21 @@ export default function ProductionRecordPage() {
         <Modal
           show={true}
           onClose={() => setIsSummaryOpen(false)}
-          contentClassName="rounded-2xl max-w-3xl w-full overflow-hidden bg-overlay border border-edge shadow-xl"
+          contentClassName="rounded-2xl max-w-3xl w-full max-h-full flex flex-col overflow-hidden bg-overlay border border-edge shadow-xl"
         >
-          <div className="sticky top-0 z-20 flex items-center justify-between border-b border-edge bg-surface p-5">
+          {/* ヘッダーはスクロール領域の外に置き、常に見える固定部にする */}
+          <div className="flex shrink-0 items-center justify-between border-b border-edge bg-surface p-4 sm:p-5">
             <div>
-              <h2 className="text-xl font-semibold text-ink">月合計サマリー</h2>
-              <p className="mt-0.5 text-sm text-ink-muted">本社提出用の月合計です。</p>
+              <h2 className="text-lg font-semibold text-ink sm:text-xl">月合計サマリー</h2>
+              <p className="mt-0.5 text-xs text-ink-muted sm:text-sm">本社提出用の月合計です。</p>
             </div>
             <IconButton onClick={() => setIsSummaryOpen(false)} rounded aria-label="閉じる">
               <HiX className="h-6 w-6" />
             </IconButton>
           </div>
 
-          <div className="space-y-4 p-5">
+          {/* 本文のみ内部スクロール。画面の低い端末でもモーダル全体は画面内に収まる */}
+          <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-4 sm:space-y-4 sm:p-5">
             {!summary ? (
               <div className="flex min-h-[120px] items-center justify-center text-sm text-ink-muted">
                 {isLoading ? '読み込み中...' : '対象月の設定がありません。'}
@@ -716,11 +718,11 @@ export default function ProductionRecordPage() {
             ) : (
               <>
                 {/* 配合は数値ではないため独立した行にし、数値タイルの大きさを揃える */}
-                <div className="rounded-xl border border-edge bg-surface p-4">
+                <div className="rounded-xl border border-edge bg-surface p-3 sm:p-4">
                   <div className="text-xs font-semibold text-ink-muted">配合</div>
-                  <p className="mt-1 text-lg font-bold text-ink">{summary.blendLabel}</p>
+                  <p className="mt-1 text-base font-bold text-ink sm:text-lg">{summary.blendLabel}</p>
                 </div>
-                <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4">
                   <SummaryTile label="生豆重量" value={formatKg(summary.greenBeanTotalGram)} unit="kg" />
                   <SummaryTile label="欠点豆重量" value={summary.defectBeanTotalGram} unit="g" />
                   <SummaryTile label="欠点率" value={formatPercent(summary.defectRate)} />
@@ -807,9 +809,12 @@ interface SummaryTileProps {
 
 function SummaryTile({ label, value, unit, valueClassName }: SummaryTileProps) {
   return (
-    <div className="flex min-h-[88px] flex-col rounded-xl border border-edge bg-surface p-3">
+    // スマホは画面が低いためタイルを一段小さくし、sm以上で従来サイズに戻す
+    <div className="flex min-h-[64px] flex-col rounded-xl border border-edge bg-surface p-2.5 sm:min-h-[88px] sm:p-3">
       <div className="text-xs font-semibold text-ink-muted">{label}</div>
-      <p className={`mt-auto pt-2 text-2xl font-bold tabular-nums text-ink ${valueClassName ?? ''}`}>
+      <p
+        className={`mt-auto pt-1.5 text-xl font-bold tabular-nums text-ink sm:pt-2 sm:text-2xl ${valueClassName ?? ''}`}
+      >
         {value}
         {unit && <span className="ml-1 text-sm font-medium text-ink-sub">{unit}</span>}
       </p>
