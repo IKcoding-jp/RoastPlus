@@ -31,6 +31,8 @@ function createAudioContextMock(options: Partial<Pick<AudioContext, 'state' | 'r
     return oscillator;
   });
 
+  const compressorConnections: unknown[] = [];
+
   const createGain = vi.fn(
     () =>
       ({
@@ -42,11 +44,25 @@ function createAudioContextMock(options: Partial<Pick<AudioContext, 'state' | 'r
       }) as unknown as GainNode
   );
 
+  const createDynamicsCompressor = vi.fn(() => {
+    const compressor = {
+      threshold: { setValueAtTime: vi.fn() },
+      knee: { setValueAtTime: vi.fn() },
+      ratio: { setValueAtTime: vi.fn() },
+      attack: { setValueAtTime: vi.fn() },
+      release: { setValueAtTime: vi.fn() },
+      connect: vi.fn((target: unknown) => compressorConnections.push(target)),
+    } as unknown as DynamicsCompressorNode;
+
+    return compressor;
+  });
+
   const ctx: AudioContextMock = {
     currentTime: 10,
     destination,
     createOscillator,
     createGain,
+    createDynamicsCompressor,
     ...options,
   };
 
@@ -54,6 +70,8 @@ function createAudioContextMock(options: Partial<Pick<AudioContext, 'state' | 'r
     ctx,
     events,
     gainValues,
+    destination,
+    compressorConnections,
   };
 }
 
@@ -88,6 +106,26 @@ describe('workChimeAudio', () => {
 
     expect(low.gainValues).toContain(0);
     expect(high.gainValues.some((value) => value > 1)).toBe(false);
+  });
+
+  it('出力リミッターを最終段に挟んでdestinationへ接続する', async () => {
+    const mock = createAudioContextMock();
+
+    await playWorkChime('break', { volume: 0.8, audioContext: mock.ctx });
+
+    expect(mock.ctx.createDynamicsCompressor).toHaveBeenCalledTimes(1);
+    // リミッターが destination に接続される（master → limiter → destination の最終段）。
+    expect(mock.compressorConnections).toContain(mock.destination);
+  });
+
+  it('createDynamicsCompressor非対応環境でもチャイムをスケジュールする', async () => {
+    const mock = createAudioContextMock();
+    // 旧環境を想定し compressor 非対応にする。
+    (mock.ctx as { createDynamicsCompressor?: unknown }).createDynamicsCompressor = undefined;
+
+    await playWorkChime('break', { volume: 0.8, audioContext: mock.ctx });
+
+    expect(mock.ctx.createOscillator).toHaveBeenCalledTimes(6);
   });
 
   it('停止中のAudioContextを再開してからチャイムをスケジュールする', async () => {
