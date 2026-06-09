@@ -7,7 +7,21 @@ declare global {
 }
 
 type AudioContextLike = Pick<AudioContext, 'currentTime' | 'destination' | 'createOscillator' | 'createGain'> &
-  Partial<Pick<AudioContext, 'state' | 'resume'>>;
+  Partial<Pick<AudioContext, 'state' | 'resume' | 'createDynamicsCompressor'>>;
+
+// iPad のスピーカーは中低域が弱く、純音ベースのチャイムは知覚的に小さい。詳細設定の音量(master)を
+// 100% にしても合成音側の gain が控えめでヘッドルームが余っているため、合成音側だけを底上げする
+// ブースト係数。master(=ユーザー音量) には掛けず、最終段のリミッターで音割れを防ぐ。
+// 物足りない/歪む場合はこの値とリミッター閾値(LIMITER_THRESHOLD_DB)を実機で詰める。
+const CHIME_GAIN_SCALE = 1.6;
+
+// 最終段リミッター（DynamicsCompressor）設定。合成音をどれだけ大きくしても出力ピークを抑え、
+// 原理的に音割れ（クリップ）を防ぐ安全網。
+const LIMITER_THRESHOLD_DB = -3;
+const LIMITER_KNEE_DB = 0;
+const LIMITER_RATIO = 20;
+const LIMITER_ATTACK_SEC = 0.003;
+const LIMITER_RELEASE_SEC = 0.25;
 
 interface PlayWorkChimeOptions {
   volume: number;
@@ -140,19 +154,33 @@ async function scheduleWorkChime(ctx: AudioContextLike, kind: WorkChimeKind, vol
 
   const master = ctx.createGain();
   master.gain.setValueAtTime(volume, ctx.currentTime);
-  master.connect(ctx.destination);
+
+  // 最終段に出力リミッターを挟む。合成音側を増幅してもピークが threshold で抑えられるため、
+  // 音量を上げても音割れしない。createDynamicsCompressor 非対応環境では従来どおり直結する。
+  const limiter = ctx.createDynamicsCompressor?.();
+  if (limiter) {
+    limiter.threshold.setValueAtTime(LIMITER_THRESHOLD_DB, ctx.currentTime);
+    limiter.knee.setValueAtTime(LIMITER_KNEE_DB, ctx.currentTime);
+    limiter.ratio.setValueAtTime(LIMITER_RATIO, ctx.currentTime);
+    limiter.attack.setValueAtTime(LIMITER_ATTACK_SEC, ctx.currentTime);
+    limiter.release.setValueAtTime(LIMITER_RELEASE_SEC, ctx.currentTime);
+    master.connect(limiter);
+    limiter.connect(ctx.destination);
+  } else {
+    master.connect(ctx.destination);
+  }
 
   const now = ctx.currentTime + 0.05;
 
   if (kind === 'break') {
-    bell(ctx, master, now, 784, 0.18, 0.34);
-    bell(ctx, master, now + 0.26, 659, 0.28, 0.3);
+    bell(ctx, master, now, 784, 0.18, 0.34 * CHIME_GAIN_SCALE);
+    bell(ctx, master, now + 0.26, 659, 0.28, 0.3 * CHIME_GAIN_SCALE);
     return true;
   }
 
-  bell(ctx, master, now, 659, 0.14, 0.3);
-  bell(ctx, master, now + 0.21, 784, 0.14, 0.32);
-  bell(ctx, master, now + 0.42, 988, 0.22, 0.28);
+  bell(ctx, master, now, 659, 0.14, 0.3 * CHIME_GAIN_SCALE);
+  bell(ctx, master, now + 0.21, 784, 0.14, 0.32 * CHIME_GAIN_SCALE);
+  bell(ctx, master, now + 0.42, 988, 0.22, 0.28 * CHIME_GAIN_SCALE);
   return true;
 }
 
