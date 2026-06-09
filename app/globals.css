@@ -752,3 +752,18 @@ input[type='datetime-local']::-webkit-calendar-picker-indicator {
   height: 1.1rem;
   cursor: pointer;
 }
+
+/* iOS/iPadのネイティブ日付・時刻入力(date/month/time/datetime-local)は、共通Inputの
+   w-full(width:100%)を受けると、短い値に対して親フォーム幅いっぱいまで横に伸び、
+   iPadの広い画面で不自然に間延びして見える。最大幅で頭打ちにして、値に見合った
+   コンパクトな幅に収める。
+   - 単独配置(w-fullのみ)のフィールド: 上限で止まり左寄せの落ち着いた幅になる。
+   - grid/flexのセル内(日付範囲・時刻レンジ等): セル幅が上限より狭いため従来どおり
+     セルいっぱいに追従し、整列は崩れない。
+   属性セレクタ(0,1,1)はTailwindの .w-full(0,1,0) より詳細度が高く確実に上書きできる。 */
+input[type='date'],
+input[type='month'],
+input[type='time'],
+input[type='datetime-local'] {
+  max-width: 16rem;
+}
