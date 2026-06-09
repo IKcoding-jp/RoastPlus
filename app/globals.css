@@ -752,3 +752,35 @@ input[type='datetime-local']::-webkit-calendar-picker-indicator {
   height: 1.1rem;
   cursor: pointer;
 }
+
+/* ネイティブ日付・時刻入力(date/month/time/datetime-local)は、共通Inputのw-full
+   (width:100%)を受けると短い値に対して親フォーム幅いっぱいまで広がり、iPadの広い
+   画面で不自然に間延びして見える。最大幅で頭打ちにして、値に見合ったコンパクトな幅に
+   収める。grid/flexのセル内はセル幅が上限より狭いため従来どおりセルに追従する。
+   属性セレクタ(0,1,1)はTailwindの .w-full(0,1,0) より詳細度が高く確実に上書きできる。 */
+input[type='date'],
+input[type='month'],
+input[type='time'],
+input[type='datetime-local'] {
+  max-width: 16rem;
+}
+
+/* iOS/iPadのSafari限定の不具合対策。
+   これらの入力はネイティブ既定スタイルにより「値テキスト分の固有最小幅」を持ち、
+   max-widthやw-fullで枠を狭めても中身が枠を無視して右へはみ出す。その結果、
+   画面外への突き抜けや、隣接ボタン(対象月の「作成」など)との重なりが起きていた。
+   -webkit-appearance:none で固有スタイルを外し、普通のテキスト枠として枠内に収める
+   (タップでネイティブピッカーが開く挙動は維持)。min-width:0 で flex 内での縮小も許可。
+   デスクトップのカレンダーアイコンを保つため、適用はiOS Safariに限定する
+   (-webkit-touch-callout はiOS SafariでのみサポートされるためUA判定に使える)。 */
+@supports (-webkit-touch-callout: none) {
+  input[type='date'],
+  input[type='month'],
+  input[type='time'],
+  input[type='datetime-local'] {
+    -webkit-appearance: none;
+    appearance: none;
+    min-width: 0;
+    overflow: hidden;
+  }
+}
