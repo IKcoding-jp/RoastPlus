@@ -148,8 +148,18 @@ export const calculateAssignment = (
   crossTeamShuffle?: boolean,
   priority?: 'pair' | 'row'
 ): Assignment[] => {
-  // 1. 対象メンバーの抽出（アクティブなメンバーのみ）
-  const eligibleMembers = members.filter((m) => m.active !== false);
+  // 1. 対象メンバーの抽出
+  //   現在スロットに配置されているメンバーだけをシャッフル対象にする。
+  //   （未割り当て＝どのスロットにも入っていないメンバーは再配置しない）
+  //   配置情報が無い場合（初期状態の空テーブル等）は従来通り全アクティブメンバーを
+  //   対象にする（空テーブルからの自動配置を維持。なお「全員を未割り当てにしてから
+  //   シャッフル」すると、この分岐で全員が再配置されるが、これは意図的な挙動）。
+  const placedMemberIds = new Set(
+    (currentAssignments ?? []).filter((asg) => asg.memberId !== null).map((asg) => asg.memberId as string)
+  );
+  const activeMembers = members.filter((m) => m.active !== false);
+  const eligibleMembers =
+    placedMemberIds.size > 0 ? activeMembers.filter((m) => placedMemberIds.has(m.id)) : activeMembers;
 
   // 2. 固定枠（memberId === null）の特定
   const lockedSlots = new Map<string, boolean>();

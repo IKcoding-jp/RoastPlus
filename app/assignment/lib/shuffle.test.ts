@@ -510,3 +510,44 @@ describe('calculateAssignment - メンバー完全配置保証（#330）', () =>
     });
   });
 });
+
+describe('calculateAssignment - 未割り当てメンバーの除外', () => {
+  it('未割り当て（どのスロットにも配置されていない）メンバーは、シャッフルしても再配置されない', () => {
+    // 3班×2タスク=6スロット、メンバーm1..m6（全員active）
+    const { teams, taskLabels, members } = createThreeTeamData();
+
+    // m6 を「未割り当て」にした状態を表す currentAssignments。
+    // 5スロットに m1..m5 を配置し、1スロット(task1-teamC)を未割り当て(null)にする。
+    // m6 はどのスロットにも入っていない（＝担当表に表示されていない）。
+    const currentAssignments: Assignment[] = [
+      { teamId: 'teamA', taskLabelId: 'task1', memberId: 'm1', assignedDate: '2026-03-12' },
+      { teamId: 'teamB', taskLabelId: 'task1', memberId: 'm2', assignedDate: '2026-03-12' },
+      { teamId: 'teamC', taskLabelId: 'task1', memberId: null, assignedDate: '2026-03-12' },
+      { teamId: 'teamA', taskLabelId: 'task2', memberId: 'm3', assignedDate: '2026-03-12' },
+      { teamId: 'teamB', taskLabelId: 'task2', memberId: 'm4', assignedDate: '2026-03-12' },
+      { teamId: 'teamC', taskLabelId: 'task2', memberId: 'm5', assignedDate: '2026-03-12' },
+    ];
+
+    // このバグは確率的（eligibleがスロットより多いとランダムに選ばれる）なので複数回試す。
+    // 一度でも未割り当ての m6 が配置されたら失敗。
+    for (let i = 0; i < 30; i++) {
+      const result = calculateAssignment(
+        teams,
+        taskLabels,
+        members,
+        [],
+        '2026-03-12',
+        currentAssignments,
+        undefined,
+        true // crossTeamShuffle: 班制約を外し、空きスロットに誰でも入り得る状況にする
+      );
+      const placedIds = result.filter((a) => a.memberId !== null).map((a) => a.memberId);
+      // 未割り当ての m6 は再配置されない
+      expect(placedIds).not.toContain('m6');
+      // 配置されるのは、元々配置済みだった m1..m5 のみ
+      for (const id of placedIds) {
+        expect(['m1', 'm2', 'm3', 'm4', 'm5']).toContain(id);
+      }
+    }
+  });
+});
