@@ -7,7 +7,7 @@ const DEVELOPER_MODE_PASSWORD = '4869';
 const STORAGE_KEY = 'roastplus_developer_mode';
 
 function isDeveloperModeAvailable(): boolean {
-  return process.env.NODE_ENV !== 'production';
+  return true;
 }
 
 export function useDeveloperMode() {

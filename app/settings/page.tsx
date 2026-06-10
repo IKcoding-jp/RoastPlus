@@ -154,24 +154,6 @@ export default function SettingsPage() {
             </Card>
           )}
 
-          {/* Developer Design Lab（開発者モード有効時のみ表示） */}
-          {isDeveloperModeAvailable && isEnabled && (
-            <Link href="/dev/design-lab" className="block">
-              <Card variant="hoverable" className="p-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <h2 className="text-xl font-semibold text-ink mb-2 flex items-center gap-2">
-                      <HiColorSwatch className="h-5 w-5 text-spot" />
-                      Developer Design Lab
-                    </h2>
-                    <p className="text-sm text-ink-sub">UIカタログ、アニメーション、カラーパレット</p>
-                  </div>
-                  <span className="text-ink-muted text-xl">&gt;</span>
-                </div>
-              </Card>
-            </Link>
-          )}
-
           {/* アプリバージョンセクション */}
           <Card variant="default" className="p-6">
             <h2 className="text-xl font-semibold text-ink mb-4">アプリバージョン</h2>
