@@ -674,6 +674,79 @@ describe('calculateAssignment - 大域最適化（違反最小の妥協解）', 
   });
 });
 
+describe('calculateAssignment - ペアの長期公平性', () => {
+  // 4人・2行・班またぎ。ペアの組み合わせ（マッチング）は3通りしかない:
+  //   A = {m1-m2, m3-m4} ／ B = {m1-m3, m2-m4} ／ C = {m1-m4, m2-m3}
+  // 履歴: 現在=A、1回前=A、2回前=A、3回前=B、C は一度も発生していない。
+  // 直近2回の回避だけだと B と C は同点（ランダム選択）になるが、
+  // 長期公平性により「3回前に組んだばかりのB」より「一度も組んでいないC」が選ばれるべき。
+  it('直近の回避では同点でも、久しく組んでいないペアが優先される', () => {
+    const teams: Team[] = [
+      { id: 'tA', name: 'A' },
+      { id: 'tB', name: 'B' },
+    ];
+    const taskLabels: TaskLabel[] = [
+      { id: 'r1', leftLabel: 'R1' },
+      { id: 'r2', leftLabel: 'R2' },
+    ];
+    const members: Member[] = [
+      { id: 'm1', name: 'M1', teamId: 'tA', excludedTaskLabelIds: [], active: true },
+      { id: 'm2', name: 'M2', teamId: 'tA', excludedTaskLabelIds: [], active: true },
+      { id: 'm3', name: 'M3', teamId: 'tB', excludedTaskLabelIds: [], active: true },
+      { id: 'm4', name: 'M4', teamId: 'tB', excludedTaskLabelIds: [], active: true },
+    ];
+
+    // マッチングAの配置（r1=[m1,m2], r2=[m3,m4]）
+    const matchingA = (date: string): Assignment[] => [
+      { teamId: 'tA', taskLabelId: 'r1', memberId: 'm1', assignedDate: date },
+      { teamId: 'tB', taskLabelId: 'r1', memberId: 'm2', assignedDate: date },
+      { teamId: 'tA', taskLabelId: 'r2', memberId: 'm3', assignedDate: date },
+      { teamId: 'tB', taskLabelId: 'r2', memberId: 'm4', assignedDate: date },
+    ];
+    // マッチングBの配置（r1=[m1,m3], r2=[m2,m4]）
+    const matchingB = (date: string): Assignment[] => [
+      { teamId: 'tA', taskLabelId: 'r1', memberId: 'm1', assignedDate: date },
+      { teamId: 'tB', taskLabelId: 'r1', memberId: 'm3', assignedDate: date },
+      { teamId: 'tA', taskLabelId: 'r2', memberId: 'm2', assignedDate: date },
+      { teamId: 'tB', taskLabelId: 'r2', memberId: 'm4', assignedDate: date },
+    ];
+
+    const currentAssignments = matchingA('2026-06-09');
+    const history: Assignment[][] = [
+      matchingA('2026-06-08'), // 1回前
+      matchingA('2026-06-07'), // 2回前
+      matchingB('2026-06-06'), // 3回前（直近2回の回避ウィンドウの外）
+    ];
+
+    for (let i = 0; i < 20; i++) {
+      const result = calculateAssignment(
+        teams,
+        taskLabels,
+        members,
+        history,
+        '2026-06-10',
+        currentAssignments,
+        undefined,
+        true
+      );
+
+      // 結果のペア集合を取得
+      const rowGroups = getRowGroups(result);
+      const pairs = new Set<string>();
+      for (const [, ids] of rowGroups) {
+        for (let x = 0; x < ids.length; x++) {
+          for (let y = x + 1; y < ids.length; y++) {
+            pairs.add([ids[x], ids[y]].sort().join('__'));
+          }
+        }
+      }
+
+      // 一度も組んでいないマッチングC（m1-m4, m2-m3）が毎回選ばれる
+      expect(pairs).toEqual(new Set(['m1__m4', 'm2__m3']));
+    }
+  });
+});
+
 describe('calculateAssignment - 未割り当てメンバーの除外', () => {
   it('未割り当て（どのスロットにも配置されていない）メンバーは、シャッフルしても再配置されない', () => {
     // 3班×2タスク=6スロット、メンバーm1..m6（全員active）

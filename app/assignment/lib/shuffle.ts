@@ -118,6 +118,17 @@ const COMBO_LIMIT = 20_000;
 const UNPLACED_PENALTY = 1_000_000;
 
 /**
+ * ペアの長期公平性: 何回前のシャッフルまで「最後に組んだ時期」を遡って見るか。
+ * 直近2回の回避（pairCur/pair1/pair2）とは別に、このウィンドウ内で最近組んだペアほど
+ * 小さな追加ペナルティを与え、久しく組んでいないペアが自然に選ばれるようにする。
+ * これがないと、回転サイクルから漏れたペアが何週間も発生しない「ペア飢餓」が起こる。
+ */
+const PAIR_FAIRNESS_HORIZON = 20;
+/** 経過1回ぶんあたりの公平性ペナルティ。最近(経過0)=300、未発生=0。
+ *  直近回避の重み（現在1000/1回前400/2回前120）を覆さない大きさに抑える。 */
+const PAIR_FAIRNESS_PER_AGE = 15;
+
+/**
  * 大域最適化型シャッフルアルゴリズム
  *
  * 旧実装は「制約をすべて満たす解」をバックトラッキングで探し、見つからなければ
@@ -207,6 +218,16 @@ export const calculateAssignment = (
   const twoRowH = buildRowHistory(history[1]);
   const twoPairH = buildPairHistory(history[1]);
 
+  // ペアごとの「最後に組んでからの経過」（現在=0, 1回前=1, …）。新しい記録を優先。
+  const pairLastSeenAge = new Map<string, number>();
+  const recordPairAges = (assignments: Assignment[] | undefined, age: number): void => {
+    buildPairHistory(assignments).forEach((key) => {
+      if (!pairLastSeenAge.has(key)) pairLastSeenAge.set(key, age);
+    });
+  };
+  recordPairAges(currentAssignments, 0);
+  history.slice(0, PAIR_FAIRNESS_HORIZON).forEach((h, i) => recordPairAges(h, i + 1));
+
   // 5. 重み（priority 側の違反を PRIORITY_MULTIPLIER 倍重くする）
   const w: Weights =
     priority === 'row'
@@ -244,6 +265,11 @@ export const calculateAssignment = (
         if (curPairH.has(key)) s += w.pairCur;
         if (onePairH.has(key)) s += w.pair1;
         if (twoPairH.has(key)) s += w.pair2;
+        // 長期公平性: ウィンドウ内で最近組んだペアほど重く（未発生・ウィンドウ外=0）
+        const age = pairLastSeenAge.get(key);
+        if (age !== undefined) {
+          s += PAIR_FAIRNESS_PER_AGE * Math.max(0, PAIR_FAIRNESS_HORIZON - age);
+        }
       }
     }
     return s;
