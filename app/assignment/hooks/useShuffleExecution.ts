@@ -54,8 +54,9 @@ export function useShuffleExecution({
       const targetDate = activeDate && activeDate === serverToday ? activeDate : serverToday;
       setActiveDate(targetDate);
 
-      // 1. Load recent shuffle history (latest 2)
-      const shuffleHistoryList = await fetchRecentShuffleHistory(userId, 2);
+      // 1. Load recent shuffle history
+      //    [0],[1] は直近回避（担当・ペア）に、全体はペアの長期公平性の算出に使う
+      const shuffleHistoryList = await fetchRecentShuffleHistory(userId, 20);
       const history: Assignment[][] = shuffleHistoryList.map((h) => h.assignments);
 
       // 2. Run calculation
