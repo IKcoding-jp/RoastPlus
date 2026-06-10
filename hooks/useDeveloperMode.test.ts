@@ -37,5 +37,4 @@ describe('useDeveloperMode', () => {
     expect(result.current.isEnabled).toBe(false);
     expect(localStorage.getItem('roastplus_developer_mode')).toBeNull();
   });
-
 });
