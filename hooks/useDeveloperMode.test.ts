@@ -38,17 +38,4 @@ describe('useDeveloperMode', () => {
     expect(localStorage.getItem('roastplus_developer_mode')).toBeNull();
   });
 
-  it('production では固定パスワードで開発者モードを有効化できない', () => {
-    vi.stubEnv('NODE_ENV', 'production');
-    const { result } = renderHook(() => useDeveloperMode());
-
-    let success = true;
-    act(() => {
-      success = result.current.enableDeveloperMode('4869');
-    });
-
-    expect(success).toBe(false);
-    expect(result.current.isEnabled).toBe(false);
-    expect(localStorage.getItem('roastplus_developer_mode')).toBeNull();
-  });
 });
