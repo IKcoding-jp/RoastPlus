@@ -511,14 +511,14 @@ describe('calculateAssignment - メンバー完全配置保証（#330）', () =>
   });
 });
 
-// テスト用ヘルパー: 「担当の連続回避」と「ペアの再発回避」が
-// 未割当枠（穴）を固定したままでは両立できない構成。
-// 班X: p1, p2 ／ 班Y: p3, p4, p5。3行×2班=6スロットに5人（1枠が未割当）。
+// テスト用ヘルパー: 「担当の連続回避」と「ペアの再発回避」が両立できない構成。
+// 班X: p1, p2 ／ 班Y: p3, p4, p5。3行×2班=6スロットに5人（rowA-tX が未割当＝固定枠）。
 // 現在: rowA=[空, p5], rowB=[p1, p3], rowC=[p2, p4]
 // 1回前: rowA=空, rowB=[p1, p3], rowC=[p2, p4]
 // 2回前: rowA=空, rowB=[p1, p4], rowC=[p2, p3]
-// 穴が rowA-tX に固定されたままだと、行回避とペア回避は数学的に両立不可。
-// 穴を動かせれば「行連続0・ペア再発0」の解が存在する（例: rowA=[p1,p4], rowB=[p2,p5], rowC=[p3]）。
+// 未割当枠は行ごとの人数配置を表す業務上の意味を持つため固定したまま動かさない。
+// この場合「行連続0・ペア再発0」の完全解は存在せず、最適解は
+// 「直近ペアの再発0＋担当の連続ちょうど1人」の妥協解になる（重み合計が最小）。
 const createDeadlockData = () => {
   const teams: Team[] = [
     { id: 'tX', name: '班X' },
@@ -570,8 +570,8 @@ const createDeadlockData = () => {
   return { teams, taskLabels, members, currentAssignments, history };
 };
 
-describe('calculateAssignment - 大域最適化（未割当枠の移動）', () => {
-  it('穴の移動により「担当の連続0」と「ペアの再発0」を同時に達成できる', () => {
+describe('calculateAssignment - 大域最適化（違反最小の妥協解）', () => {
+  it('両立不可の構成では、直近ペアの再発0・担当の連続1人の最適妥協解を返す（ペア優先）', () => {
     const { teams, taskLabels, members, currentAssignments, history } = createDeadlockData();
 
     // 現在の行とペアの履歴（検証用）
@@ -597,14 +597,7 @@ describe('calculateAssignment - 大域最適化（未割当枠の移動）', () 
       // 全員配置される
       expectAllMembersAssigned(result, members);
 
-      // 担当の連続が1人もいない
-      for (const a of result) {
-        if (a.memberId) {
-          expect(currentRows.get(a.memberId)).not.toBe(a.taskLabelId);
-        }
-      }
-
-      // 直近のペアが1組も再発しない
+      // 直近のペアが1組も再発しない（ペア優先なので必ず守られる）
       const rowGroups = getRowGroups(result);
       for (const [, ids] of rowGroups) {
         for (let x = 0; x < ids.length; x++) {
@@ -614,28 +607,41 @@ describe('calculateAssignment - 大域最適化（未割当枠の移動）', () 
           }
         }
       }
+
+      // 担当の連続はちょうど1人（この構成の理論最小値。全面犠牲にはならない）
+      let rowRepeats = 0;
+      for (const a of result) {
+        if (a.memberId && currentRows.get(a.memberId) === a.taskLabelId) rowRepeats++;
+      }
+      expect(rowRepeats).toBe(1);
     }
   });
 
-  it('未割当だったスロットも配置対象になる（穴が固定されない）', () => {
+  it('未割当スロット（穴）はシャッフルで移動しない', () => {
     const { teams, taskLabels, members, currentAssignments, history } = createDeadlockData();
 
-    // このシナリオの最適解では rowA の tX スロットが必ず埋まる
-    const result = calculateAssignment(
-      teams,
-      taskLabels,
-      members,
-      history,
-      '2026-06-10',
-      currentAssignments,
-      undefined,
-      false,
-      'pair'
-    );
+    for (let i = 0; i < 15; i++) {
+      const result = calculateAssignment(
+        teams,
+        taskLabels,
+        members,
+        history,
+        '2026-06-10',
+        currentAssignments,
+        undefined,
+        false,
+        'pair'
+      );
 
-    const rowAtX = result.find((a) => a.taskLabelId === 'rowA' && a.teamId === 'tX');
-    expect(rowAtX).toBeDefined();
-    expect(rowAtX!.memberId).not.toBeNull();
+      // 固定枠 rowA-tX は未割当のまま
+      const rowAtX = result.find((a) => a.taskLabelId === 'rowA' && a.teamId === 'tX');
+      expect(rowAtX).toBeDefined();
+      expect(rowAtX!.memberId).toBeNull();
+
+      // 未割当はその1枠だけ（行ごとの人数配置が変わらない）
+      const nullSlots = result.filter((a) => a.memberId === null);
+      expect(nullSlots).toHaveLength(1);
+    }
   });
 
   it('中規模構成（12人・4行・3班・班またぎ）でも実用時間内に完了する', () => {

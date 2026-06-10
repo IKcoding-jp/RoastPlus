@@ -121,22 +121,21 @@ const UNPLACED_PENALTY = 1_000_000;
  * 大域最適化型シャッフルアルゴリズム
  *
  * 旧実装は「制約をすべて満たす解」をバックトラッキングで探し、見つからなければ
- * 制約レベルを段階的に緩和していた（制約充足型）。この方式には2つの弱点があった。
+ * 制約レベルを段階的に緩和していた（制約充足型）。最初に見つかった解で打ち切るため、
+ * 両立不可能な構成では妥協が特定メンバーや特定制約に偏ることがあった。
  *
- * 1. 未割当スロット（穴）の位置を固定していたため、解空間が狭く、
- *    「同じ担当の連続回避」と「同じペアの再発回避」が両立不可能になりやすい。
- * 2. 最初に見つかった解で打ち切るため、妥協が特定メンバーに偏ることがあった。
+ * 新実装では、すべての違反（担当の連続・ペアの再発）に履歴の新しさで重み付けし、
+ * 合計ペナルティが最小の解を分枝限定法（B&B）で大域的に探索する。
+ * 完全解が存在しない構成でも「違反の合計が最小のバランス解」が必ず選ばれる。
+ * priority 設定（'pair' | 'row'）は対応する違反の重みを引き上げることで反映する。
  *
- * 新実装は両方を解決する。
+ * 未割当スロット（穴）は固定のまま動かさない。穴の位置は「その担当を何人で
+ * やるか」という業務上の人数配置を表しており（例: ペア必須の担当・1人で良い担当）、
+ * シャッフルが穴を動かすと現場の人数構成が崩れるため、探索対象にしない。
  *
- * - 穴を固定せず、どのスロットを空けるかも探索対象にする（穴の移動）。
- *   これにより、例えば2行構成でも「片方の行に1人で入る」配置でペアを解消できる。
- * - すべての違反（担当の連続・ペアの再発）に履歴の新しさで重み付けし、
- *   合計ペナルティが最小の解を分枝限定法（B&B）で大域的に探索する。
- *   priority 設定（'pair' | 'row'）は対応する違反の重みを引き上げることで反映する。
- *
- * ハード制約（必ず守る）: ペア除外設定・タスク除外設定・班内モードの班一致・
- * 配置可能なメンバーの完全配置（不可能な場合のみ緩和フェーズで最大配置に切替）。
+ * ハード制約（必ず守る）: 未割当スロットの位置・ペア除外設定・タスク除外設定・
+ * 班内モードの班一致・配置可能なメンバーの完全配置（不可能な場合のみ緩和フェーズで
+ * 最大配置に切替）。
  */
 export const calculateAssignment = (
   teams: Team[],
@@ -171,6 +170,24 @@ export const calculateAssignment = (
     .filter((a) => a.memberId === null && !validSlotKeys.has(`${a.teamId}__${a.taskLabelId}`))
     .map((a) => ({ teamId: a.teamId, taskLabelId: a.taskLabelId, memberId: null, assignedDate: targetDate }));
 
+  // 3. 固定枠（未割当スロット）の特定
+  //   memberId === null のスロットは「その担当の人数配置」を表す業務上の意味を持つため、
+  //   位置を固定したまま探索対象から外す（穴は動かさない）。
+  const lockedSlots = new Set<string>();
+  (currentAssignments ?? []).forEach((a) => {
+    if (a.memberId === null && validSlotKeys.has(`${a.teamId}__${a.taskLabelId}`)) {
+      lockedSlots.add(`${a.teamId}__${a.taskLabelId}`);
+    }
+  });
+  const isLocked = (teamId: string, taskId: string): boolean => lockedSlots.has(`${teamId}__${taskId}`);
+
+  // 行ごとの解放（＝固定されていない）班スロット一覧と、その後続行の累計解放数
+  const unlockedTeamIdsByRow: string[][] = taskIds.map((taskId) => teamIds.filter((tid) => !isLocked(tid, taskId)));
+  const unlockedSlotSuffix: number[] = new Array(taskIds.length + 1).fill(0);
+  for (let i = taskIds.length - 1; i >= 0; i--) {
+    unlockedSlotSuffix[i] = unlockedSlotSuffix[i + 1] + unlockedTeamIdsByRow[i].length;
+  }
+
   // エッジケース: 行・班・対象メンバーがない場合は全スロット未割当で返す
   if (taskIds.length === 0 || teamIds.length === 0 || eligibleMembers.length === 0) {
     const empties: Assignment[] = [];
@@ -182,7 +199,7 @@ export const calculateAssignment = (
     return [...empties, ...ghostNullAssignments];
   }
 
-  // 3. 履歴データの構築
+  // 4. 履歴データの構築
   const curRowH = buildRowHistory(currentAssignments);
   const curPairH = buildPairHistory(currentAssignments);
   const oneRowH = buildRowHistory(history[0]);
@@ -190,7 +207,7 @@ export const calculateAssignment = (
   const twoRowH = buildRowHistory(history[1]);
   const twoPairH = buildPairHistory(history[1]);
 
-  // 4. 重み（priority 側の違反を PRIORITY_MULTIPLIER 倍重くする）
+  // 5. 重み（priority 側の違反を PRIORITY_MULTIPLIER 倍重くする）
   const w: Weights =
     priority === 'row'
       ? {
@@ -210,7 +227,7 @@ export const calculateAssignment = (
           pair2: 120 * PRIORITY_MULTIPLIER,
         };
 
-  // 5. スコア計算（低いほど良い）
+  // 6. スコア計算（低いほど良い）
   const rowScoreOf = (memberId: string, taskId: string): number => {
     let s = 0;
     if (curRowH.get(taskId)?.has(memberId)) s += w.rowCur;
@@ -249,7 +266,7 @@ export const calculateAssignment = (
     return false;
   };
 
-  // 6. 分枝限定法（B&B）による大域探索
+  // 7. 分枝限定法（B&B）による大域探索
   //   relaxed=false: 配置可能な全メンバーの完全配置をハード制約とする
   //   relaxed=true : 未配置に巨大ペナルティを課して「できる限り配置」に緩和する
   let best = Infinity;
@@ -263,10 +280,19 @@ export const calculateAssignment = (
     eligibleMembers.forEach((m) => {
       remainingByTeam.get(m.teamId)?.push(m.id);
     });
-    // 配置可能数 = 班ごとに min(メンバー数, 行数) の合計（現存しない班のメンバーは配置不可）
+    // 班ごとの「この行以降に残っている解放スロット数」（固定枠を除く）
+    const unlockedSuffixByTeam = new Map<string, number[]>();
+    teamIds.forEach((tid) => {
+      const suffix = new Array(taskIds.length + 1).fill(0);
+      for (let i = taskIds.length - 1; i >= 0; i--) {
+        suffix[i] = suffix[i + 1] + (isLocked(tid, taskIds[i]) ? 0 : 1);
+      }
+      unlockedSuffixByTeam.set(tid, suffix);
+    });
+    // 配置可能数 = 班ごとに min(メンバー数, 解放スロット数) の合計（現存しない班のメンバーは配置不可）
     let placeableTarget = 0;
-    remainingByTeam.forEach((ids) => {
-      placeableTarget += Math.min(ids.length, taskIds.length);
+    remainingByTeam.forEach((ids, tid) => {
+      placeableTarget += Math.min(ids.length, unlockedSuffixByTeam.get(tid)![0]);
     });
 
     const currentSol: (string | null)[][] = [];
@@ -287,14 +313,15 @@ export const calculateAssignment = (
       }
 
       const taskId = taskIds[rowIdx];
-      const rowsAfter = taskIds.length - rowIdx - 1;
 
       // 班ごとの選択肢（null = この班の枠を空ける）
       const optionsPerTeam: (string | null)[][] = teamIds.map((tid) => {
+        // 固定枠（未割当スロット）は必ず空けたまま
+        if (isLocked(tid, taskId)) return [null];
         const rem = remainingByTeam.get(tid)!;
         const candidates = shuffleArray(rem.filter((id) => !memberById.get(id)!.excludedTaskLabelIds.includes(taskId)));
-        // 残りメンバー数が残り行数を超えるなら、この行を空けると配置しきれない
-        const canSkip = relaxed || rem.length <= rowsAfter;
+        // 残りメンバー数がこの行以降の解放スロット数を超えるなら、この行を空けると配置しきれない
+        const canSkip = relaxed || rem.length <= unlockedSuffixByTeam.get(tid)![rowIdx + 1];
         return canSkip ? [null, ...candidates] : candidates;
       });
 
@@ -337,11 +364,9 @@ export const calculateAssignment = (
     dfs(0, 0, 0);
   };
 
-  /** 班またぎモード: 各行に入るメンバーの組み合わせを選び、班スロットへはランダム配置 */
+  /** 班またぎモード: 各行に入るメンバーの組み合わせを選び、解放スロットへはランダム配置 */
   const solveCrossMode = (relaxed: boolean): void => {
-    const slotsPerRow = teamIds.length;
-    const totalSlots = taskIds.length * slotsPerRow;
-    const placeableTarget = Math.min(eligibleMembers.length, totalSlots);
+    const placeableTarget = Math.min(eligibleMembers.length, unlockedSlotSuffix[0]);
     const remaining = eligibleMembers.map((m) => m.id);
     const currentSol: string[][] = [];
 
@@ -362,13 +387,13 @@ export const calculateAssignment = (
       }
 
       const taskId = taskIds[rowIdx];
-      const slotsAfter = (taskIds.length - rowIdx - 1) * slotsPerRow;
       const available = shuffleArray(
         remaining.filter((id) => !memberById.get(id)!.excludedTaskLabelIds.includes(taskId))
       );
-      const hi = Math.min(slotsPerRow, available.length);
-      // 残りスロットで配置しきれなくなる選び方を禁止する下限
-      const lo = relaxed ? 0 : Math.max(0, remaining.length - slotsAfter);
+      // この行の解放スロット数まで（固定枠には配置しない）
+      const hi = Math.min(unlockedTeamIdsByRow[rowIdx].length, available.length);
+      // 残りの解放スロットで配置しきれなくなる選び方を禁止する下限
+      const lo = relaxed ? 0 : Math.max(0, remaining.length - unlockedSlotSuffix[rowIdx + 1]);
       if (lo > hi) return;
 
       const combos: { group: string[]; score: number }[] = [];
@@ -404,7 +429,7 @@ export const calculateAssignment = (
     solve(true);
   }
 
-  // 7. 解をAssignment[]に変換
+  // 8. 解をAssignment[]に変換
   const finalAssignments: Assignment[] = [];
 
   if (bestSol !== null) {
@@ -421,22 +446,24 @@ export const calculateAssignment = (
           });
         });
       } else {
-        // 班またぎモード: 行内のどの班スロットに入るかをランダムに割り付け
+        // 班またぎモード: 行内のどの解放スロットに入るかをランダムに割り付け（固定枠は空のまま）
+        const unlockedTeams = unlockedTeamIdsByRow[rowIdx];
         const padded: (string | null)[] = [...sol[rowIdx]];
-        while (padded.length < teamIds.length) padded.push(null);
+        while (padded.length < unlockedTeams.length) padded.push(null);
         const shuffled = shuffleArray(padded);
-        teamIds.forEach((teamId, teamIdx) => {
+        let slotIdx = 0;
+        teamIds.forEach((teamId) => {
           finalAssignments.push({
             teamId,
             taskLabelId: taskId,
-            memberId: shuffled[teamIdx] ?? null,
+            memberId: isLocked(teamId, taskId) ? null : (shuffled[slotIdx++] ?? null),
             assignedDate: targetDate,
           });
         });
       }
     });
   } else {
-    // フォールバック: 制約なしランダム割り当て（理論上ここには到達しない想定）
+    // フォールバック: 制約なしランダム割り当て（理論上ここには到達しない想定。固定枠は守る）
     const shuffledIds = shuffleArray(eligibleMembers.map((m) => m.id));
     let idx = 0;
     taskIds.forEach((taskId) => {
@@ -444,10 +471,9 @@ export const calculateAssignment = (
         finalAssignments.push({
           teamId,
           taskLabelId: taskId,
-          memberId: shuffledIds[idx] ?? null,
+          memberId: isLocked(teamId, taskId) ? null : (shuffledIds[idx++] ?? null),
           assignedDate: targetDate,
         });
-        idx++;
       });
     });
   }
