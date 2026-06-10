@@ -511,6 +511,163 @@ describe('calculateAssignment - メンバー完全配置保証（#330）', () =>
   });
 });
 
+// テスト用ヘルパー: 「担当の連続回避」と「ペアの再発回避」が
+// 未割当枠（穴）を固定したままでは両立できない構成。
+// 班X: p1, p2 ／ 班Y: p3, p4, p5。3行×2班=6スロットに5人（1枠が未割当）。
+// 現在: rowA=[空, p5], rowB=[p1, p3], rowC=[p2, p4]
+// 1回前: rowA=空, rowB=[p1, p3], rowC=[p2, p4]
+// 2回前: rowA=空, rowB=[p1, p4], rowC=[p2, p3]
+// 穴が rowA-tX に固定されたままだと、行回避とペア回避は数学的に両立不可。
+// 穴を動かせれば「行連続0・ペア再発0」の解が存在する（例: rowA=[p1,p4], rowB=[p2,p5], rowC=[p3]）。
+const createDeadlockData = () => {
+  const teams: Team[] = [
+    { id: 'tX', name: '班X' },
+    { id: 'tY', name: '班Y' },
+  ];
+
+  const taskLabels: TaskLabel[] = [
+    { id: 'rowA', leftLabel: '行A' },
+    { id: 'rowB', leftLabel: '行B' },
+    { id: 'rowC', leftLabel: '行C' },
+  ];
+
+  const members: Member[] = [
+    { id: 'p1', name: 'P1', teamId: 'tX', excludedTaskLabelIds: [], active: true },
+    { id: 'p2', name: 'P2', teamId: 'tX', excludedTaskLabelIds: [], active: true },
+    { id: 'p3', name: 'P3', teamId: 'tY', excludedTaskLabelIds: [], active: true },
+    { id: 'p4', name: 'P4', teamId: 'tY', excludedTaskLabelIds: [], active: true },
+    { id: 'p5', name: 'P5', teamId: 'tY', excludedTaskLabelIds: [], active: true },
+  ];
+
+  const currentAssignments: Assignment[] = [
+    { teamId: 'tX', taskLabelId: 'rowA', memberId: null, assignedDate: '2026-06-09' },
+    { teamId: 'tY', taskLabelId: 'rowA', memberId: 'p5', assignedDate: '2026-06-09' },
+    { teamId: 'tX', taskLabelId: 'rowB', memberId: 'p1', assignedDate: '2026-06-09' },
+    { teamId: 'tY', taskLabelId: 'rowB', memberId: 'p3', assignedDate: '2026-06-09' },
+    { teamId: 'tX', taskLabelId: 'rowC', memberId: 'p2', assignedDate: '2026-06-09' },
+    { teamId: 'tY', taskLabelId: 'rowC', memberId: 'p4', assignedDate: '2026-06-09' },
+  ];
+
+  const history: Assignment[][] = [
+    // 1回前
+    [
+      { teamId: 'tX', taskLabelId: 'rowA', memberId: null, assignedDate: '2026-06-09' },
+      { teamId: 'tY', taskLabelId: 'rowA', memberId: null, assignedDate: '2026-06-09' },
+      { teamId: 'tX', taskLabelId: 'rowB', memberId: 'p1', assignedDate: '2026-06-09' },
+      { teamId: 'tY', taskLabelId: 'rowB', memberId: 'p3', assignedDate: '2026-06-09' },
+      { teamId: 'tX', taskLabelId: 'rowC', memberId: 'p2', assignedDate: '2026-06-09' },
+      { teamId: 'tY', taskLabelId: 'rowC', memberId: 'p4', assignedDate: '2026-06-09' },
+    ],
+    // 2回前
+    [
+      { teamId: 'tX', taskLabelId: 'rowB', memberId: 'p1', assignedDate: '2026-06-09' },
+      { teamId: 'tY', taskLabelId: 'rowB', memberId: 'p4', assignedDate: '2026-06-09' },
+      { teamId: 'tX', taskLabelId: 'rowC', memberId: 'p2', assignedDate: '2026-06-09' },
+      { teamId: 'tY', taskLabelId: 'rowC', memberId: 'p3', assignedDate: '2026-06-09' },
+    ],
+  ];
+
+  return { teams, taskLabels, members, currentAssignments, history };
+};
+
+describe('calculateAssignment - 大域最適化（未割当枠の移動）', () => {
+  it('穴の移動により「担当の連続0」と「ペアの再発0」を同時に達成できる', () => {
+    const { teams, taskLabels, members, currentAssignments, history } = createDeadlockData();
+
+    // 現在の行とペアの履歴（検証用）
+    const currentRows = new Map<string, string>(); // memberId -> taskLabelId
+    currentAssignments.forEach((a) => {
+      if (a.memberId) currentRows.set(a.memberId, a.taskLabelId);
+    });
+    const forbiddenPairs = new Set(['p1__p3', 'p2__p4']); // 現在＋1回前のペア
+
+    for (let i = 0; i < 15; i++) {
+      const result = calculateAssignment(
+        teams,
+        taskLabels,
+        members,
+        history,
+        '2026-06-10',
+        currentAssignments,
+        undefined,
+        false,
+        'pair'
+      );
+
+      // 全員配置される
+      expectAllMembersAssigned(result, members);
+
+      // 担当の連続が1人もいない
+      for (const a of result) {
+        if (a.memberId) {
+          expect(currentRows.get(a.memberId)).not.toBe(a.taskLabelId);
+        }
+      }
+
+      // 直近のペアが1組も再発しない
+      const rowGroups = getRowGroups(result);
+      for (const [, ids] of rowGroups) {
+        for (let x = 0; x < ids.length; x++) {
+          for (let y = x + 1; y < ids.length; y++) {
+            const key = [ids[x], ids[y]].sort().join('__');
+            expect(forbiddenPairs.has(key)).toBe(false);
+          }
+        }
+      }
+    }
+  });
+
+  it('未割当だったスロットも配置対象になる（穴が固定されない）', () => {
+    const { teams, taskLabels, members, currentAssignments, history } = createDeadlockData();
+
+    // このシナリオの最適解では rowA の tX スロットが必ず埋まる
+    const result = calculateAssignment(
+      teams,
+      taskLabels,
+      members,
+      history,
+      '2026-06-10',
+      currentAssignments,
+      undefined,
+      false,
+      'pair'
+    );
+
+    const rowAtX = result.find((a) => a.taskLabelId === 'rowA' && a.teamId === 'tX');
+    expect(rowAtX).toBeDefined();
+    expect(rowAtX!.memberId).not.toBeNull();
+  });
+
+  it('中規模構成（12人・4行・3班・班またぎ）でも実用時間内に完了する', () => {
+    const teams: Team[] = [
+      { id: 'tA', name: 'A' },
+      { id: 'tB', name: 'B' },
+      { id: 'tC', name: 'C' },
+    ];
+    const taskLabels: TaskLabel[] = [
+      { id: 'r1', leftLabel: 'R1' },
+      { id: 'r2', leftLabel: 'R2' },
+      { id: 'r3', leftLabel: 'R3' },
+      { id: 'r4', leftLabel: 'R4' },
+    ];
+    const members: Member[] = Array.from({ length: 12 }, (_, i) => ({
+      id: `m${i + 1}`,
+      name: `M${i + 1}`,
+      teamId: ['tA', 'tB', 'tC'][i % 3],
+      excludedTaskLabelIds: [],
+      active: true,
+    }));
+
+    const start = Date.now();
+    for (let i = 0; i < 3; i++) {
+      const result = calculateAssignment(teams, taskLabels, members, [], '2026-06-10', undefined, undefined, true);
+      expectAllMembersAssigned(result, members);
+    }
+    const elapsed = Date.now() - start;
+    expect(elapsed).toBeLessThan(5000);
+  });
+});
+
 describe('calculateAssignment - 未割り当てメンバーの除外', () => {
   it('未割り当て（どのスロットにも配置されていない）メンバーは、シャッフルしても再配置されない', () => {
     // 3班×2タスク=6スロット、メンバーm1..m6（全員active）
