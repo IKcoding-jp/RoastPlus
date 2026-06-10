@@ -34,7 +34,7 @@ const outfit = localFont({
   variable: '--font-outfit',
   weight: '100 900',
   display: 'swap',
-  fallback: ['Inter', 'sans-serif'],
+  fallback: ['sans-serif'],
 });
 
 export const metadata: Metadata = {
@@ -68,11 +68,7 @@ export default function RootLayout({
   const e2eMode = process.env.NEXT_PUBLIC_E2E_MODE === 'true';
 
   return (
-    <html
-      lang="ja"
-      className={`${inter.variable} ${playfair.variable} ${outfit.variable}`}
-      suppressHydrationWarning
-    >
+    <html lang="ja" className={`${inter.variable} ${playfair.variable} ${outfit.variable}`} suppressHydrationWarning>
       <body
         className="antialiased font-serif bg-page"
         data-roastplus-e2e-mode={e2eMode ? 'true' : 'false'}
