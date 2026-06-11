@@ -241,7 +241,9 @@ interface ProbeWorkChimeAudioOptions {
 }
 
 // resume → 無音キック → 待機 → currentTime の進行確認、で実際に音が出せる状態かを実測する。
-export async function probeWorkChimeAudioHealth(options: ProbeWorkChimeAudioOptions = {}): Promise<WorkChimeAudioHealth> {
+export async function probeWorkChimeAudioHealth(
+  options: ProbeWorkChimeAudioOptions = {}
+): Promise<WorkChimeAudioHealth> {
   const ctx = options.audioContext ?? workChimeAudioContext;
   if (!ctx) return 'unavailable';
 

@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { classifyWorkChimeAudioHealth, playWorkChime, probeWorkChimeAudioHealth, unlockWorkChimeAudio } from './workChimeAudio';
+import {
+  classifyWorkChimeAudioHealth,
+  playWorkChime,
+  probeWorkChimeAudioHealth,
+  unlockWorkChimeAudio,
+} from './workChimeAudio';
 
 type AudioContextMock = NonNullable<Parameters<typeof playWorkChime>[1]['audioContext']>;
 
@@ -181,27 +186,27 @@ describe('workChimeAudio', () => {
 
 describe('classifyWorkChimeAudioHealth', () => {
   it('runningでcurrentTimeが進んでいればaliveと判定する', () => {
-    expect(
-      classifyWorkChimeAudioHealth({ state: 'running', resumed: true, timeBefore: 10, timeAfter: 10.25 })
-    ).toBe('alive');
+    expect(classifyWorkChimeAudioHealth({ state: 'running', resumed: true, timeBefore: 10, timeAfter: 10.25 })).toBe(
+      'alive'
+    );
   });
 
   it('runningなのにcurrentTimeが止まっていればzombieと判定する', () => {
-    expect(
-      classifyWorkChimeAudioHealth({ state: 'running', resumed: true, timeBefore: 10, timeAfter: 10 })
-    ).toBe('zombie');
+    expect(classifyWorkChimeAudioHealth({ state: 'running', resumed: true, timeBefore: 10, timeAfter: 10 })).toBe(
+      'zombie'
+    );
   });
 
   it('resumeに失敗した場合はneeds-gestureと判定する', () => {
-    expect(
-      classifyWorkChimeAudioHealth({ state: 'running', resumed: false, timeBefore: 10, timeAfter: 10.25 })
-    ).toBe('needs-gesture');
+    expect(classifyWorkChimeAudioHealth({ state: 'running', resumed: false, timeBefore: 10, timeAfter: 10.25 })).toBe(
+      'needs-gesture'
+    );
   });
 
   it('resume後もsuspended/interruptedのままならneeds-gestureと判定する', () => {
-    expect(
-      classifyWorkChimeAudioHealth({ state: 'suspended', resumed: true, timeBefore: 10, timeAfter: 10 })
-    ).toBe('needs-gesture');
+    expect(classifyWorkChimeAudioHealth({ state: 'suspended', resumed: true, timeBefore: 10, timeAfter: 10 })).toBe(
+      'needs-gesture'
+    );
     expect(
       classifyWorkChimeAudioHealth({
         state: 'interrupted' as AudioContextState,
@@ -213,15 +218,15 @@ describe('classifyWorkChimeAudioHealth', () => {
   });
 
   it('closedはunavailableと判定する', () => {
-    expect(
-      classifyWorkChimeAudioHealth({ state: 'closed', resumed: false, timeBefore: 10, timeAfter: 10 })
-    ).toBe('unavailable');
+    expect(classifyWorkChimeAudioHealth({ state: 'closed', resumed: false, timeBefore: 10, timeAfter: 10 })).toBe(
+      'unavailable'
+    );
   });
 
   it('state非対応環境では検証できないためaliveとして扱う', () => {
-    expect(
-      classifyWorkChimeAudioHealth({ state: undefined, resumed: true, timeBefore: 10, timeAfter: 10 })
-    ).toBe('alive');
+    expect(classifyWorkChimeAudioHealth({ state: undefined, resumed: true, timeBefore: 10, timeAfter: 10 })).toBe(
+      'alive'
+    );
   });
 });
 
