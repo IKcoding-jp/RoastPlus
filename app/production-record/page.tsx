@@ -1,16 +1,22 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { HiChevronRight, HiDownload, HiOutlineDocumentText, HiX } from 'react-icons/hi';
-import { MdFactory, MdSettings, MdSummarize } from 'react-icons/md';
+import { MdFactory } from 'react-icons/md';
 import LoginPage from '@/app/login/page';
 import { Loading } from '@/components/Loading';
 import { useToastContext } from '@/components/Toast';
+import { HandpickColumn } from '@/components/production-record/HandpickColumn';
 import { HandpickEntryModal } from '@/components/production-record/HandpickEntryModal';
+import { MonthlySummaryBar } from '@/components/production-record/MonthlySummaryBar';
+import { MonthlySummaryModal } from '@/components/production-record/MonthlySummaryModal';
+import { MonthMenuModal } from '@/components/production-record/MonthMenuModal';
 import { MonthSettingsModal } from '@/components/production-record/MonthSettingsModal';
+import { PackageColumn } from '@/components/production-record/PackageColumn';
 import { PackageEntryModal } from '@/components/production-record/PackageEntryModal';
+import { ProductionRecordHeader } from '@/components/production-record/ProductionRecordHeader';
+import { RoastColumn } from '@/components/production-record/RoastColumn';
 import { RoastEntryModal } from '@/components/production-record/RoastEntryModal';
-import { Badge, Button, Card, EmptyState, FloatingNav, IconButton, Input, Modal, Select } from '@/components/ui';
+import { Button, Card, EmptyState, FloatingNav } from '@/components/ui';
 import { useProductionRecord } from '@/hooks/useProductionRecord';
 import { useAuth } from '@/lib/auth';
 import { readMonthListCache, writeMonthListCache } from '@/lib/productionRecordCache';
@@ -30,8 +36,6 @@ import {
   calculatePremixBags,
   calculateRoastYield,
   calculateUsableGreenGram,
-  formatKg,
-  formatPercent,
   formatProductionMonthLabel,
   getCurrentProductionMonth,
   getProductionRecordCsvFileName,
@@ -181,7 +185,7 @@ export default function ProductionRecordPage() {
   // CSVプレビュー文字列（BOM/CRLFを含む）
   const csvPreview = useMemo(() => (summary ? buildProductionRecordCsv(summary) : ''), [summary]);
 
-  // 各列の最新2件（createdAt降順は購読側で保証済み）
+  // 各列の最新3件（createdAt降順は購読側で保証済み）
   const recentHandpick = handpickEntries.slice(0, 3);
   const recentRoast = roastEntries.slice(0, 3);
   const recentPackage = packageEntries.slice(0, 3);
@@ -280,50 +284,20 @@ export default function ProductionRecordPage() {
     return <LoginPage />;
   }
 
+  const inputDisabled = !selectedMonth || !monthDoc;
+
   return (
     <div className="min-h-screen bg-page pt-20 pb-4 px-4 sm:px-6 lg:px-8 transition-colors duration-1000">
       <FloatingNav backHref="/" />
 
       <div className="mx-auto flex min-h-[calc(100vh-7.5rem)] w-full max-w-7xl flex-col gap-4">
-        <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <div className="mb-2 inline-flex items-center gap-2 text-sm font-semibold text-ink-muted">
-              <MdFactory className="h-5 w-5" />
-              <span>月次生産</span>
-            </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-ink">生産記録</h1>
-            {selectedMonth ? (
-              <p className="mt-1 text-sm text-ink-sub">
-                {formatProductionMonthLabel(selectedMonth)}
-                {blendLabel ? `　配合: ${blendLabel}` : ''}
-              </p>
-            ) : (
-              <p className="mt-1 text-sm text-ink-sub">対象月を作成して記録を始めます。</p>
-            )}
-          </div>
-          {/* 毎日触る「対象月の切替」は表に。月1回の管理操作（作成・設定編集）は「月の設定」へ集約する。 */}
-          <div className="flex items-end gap-2">
-            {monthOptions.length > 0 && (
-              <Select
-                label="対象月"
-                options={monthOptions}
-                value={selectedMonth}
-                onChange={(event) => setSelectedMonth(event.target.value)}
-                className="sm:w-[160px] !min-h-[42px] !py-2 !text-base"
-              />
-            )}
-            <Button
-              type="button"
-              size="sm"
-              variant="secondary"
-              onClick={() => setIsMonthMenuOpen(true)}
-              className="!min-h-[42px] whitespace-nowrap !py-2 !text-base"
-            >
-              <MdSettings className="h-5 w-5" />
-              月の設定
-            </Button>
-          </div>
-        </header>
+        <ProductionRecordHeader
+          selectedMonth={selectedMonth}
+          blendLabel={blendLabel}
+          monthOptions={monthOptions}
+          onSelectMonth={setSelectedMonth}
+          onOpenMonthMenu={() => setIsMonthMenuOpen(true)}
+        />
 
         {/* 月生産単位が0件のときの初期表示。残りの画面高さいっぱいに広げて中央に寄せる */}
         {monthOptions.length === 0 && !selectedMonth ? (
@@ -344,180 +318,52 @@ export default function ProductionRecordPage() {
             {/* 本体3列：iPad横向き相当（md以上）で3列表示。スマホでは隠す。
                 flex-1 + lg:grid-rows-1 で残りの高さいっぱいにカードを縦に伸ばす。 */}
             <main className="hidden min-h-0 flex-1 gap-4 md:grid lg:grid-cols-3 lg:grid-rows-1">
-              {/* 1列目：生豆ハンドピック */}
-              <Card className="flex flex-col gap-4 p-4 sm:p-5">
-                <div className="flex items-center justify-between gap-3">
-                  <h2 className="text-lg font-semibold text-ink">生豆ハンドピック</h2>
-                  <Badge variant="secondary" size="md">
-                    {handpickEntries.length}件
-                  </Badge>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <ColumnStat label="ハンドピック済み" value={formatKg(handpickTotals.handpickedTotalGram)} unit="kg" />
-                  <ColumnStat label="欠点率" value={formatPercent(handpickDefectRate)} />
-                </div>
-
-                {/* 無効条件に isLoading を入れない：monthDoc はキャッシュから即入るので、
-                    読み込み中のグレー→有効のちらつきを避ける。入力可否は「設定済みの月があるか」(monthDoc) で判定する。 */}
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="primary"
-                  disabled={!selectedMonth || !monthDoc}
-                  onClick={() => {
-                    setEditingHandpick(null);
-                    setIsHandpickOpen(true);
-                  }}
-                >
-                  欠点豆を入力
-                </Button>
-
-                <div className="space-y-2">
-                  {recentHandpick.length === 0 ? (
-                    <RecentEmptyHint />
-                  ) : (
-                    recentHandpick.map((entry) => (
-                      // eslint-disable-next-line local/no-raw-button -- 複数行のカード型タップ行のため Button では表現できない
-                      <button
-                        key={entry.id}
-                        type="button"
-                        onClick={() => {
-                          setEditingHandpick(entry);
-                          setIsHandpickOpen(true);
-                        }}
-                        className="w-full rounded-lg border border-edge bg-surface p-3 text-left transition-colors hover:bg-ground"
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-sm font-bold text-ink">{entry.beanName}</span>
-                          <span className="text-xs text-ink-muted">{entry.segment === 'first' ? '前半' : '後半'}</span>
-                        </div>
-                        <p className="mt-1 text-xs text-ink-sub">
-                          {entry.workDate}　生豆 {formatKg(entry.greenBeanWeightGram)} kg / 欠点{' '}
-                          {entry.defectBeanWeightGram} g
-                        </p>
-                      </button>
-                    ))
-                  )}
-                </div>
-              </Card>
-
-              {/* 2列目：焙煎 */}
-              <Card className="flex flex-col gap-4 p-4 sm:p-5">
-                <div className="flex items-center justify-between gap-3">
-                  <h2 className="text-lg font-semibold text-ink">焙煎</h2>
-                  <Badge variant="secondary" size="md">
-                    {roastEntries.length}件
-                  </Badge>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <ColumnStat label="プレミックス袋数" value={premix.bags} unit="袋" />
-                  <ColumnStat label="焙煎歩留まり" value={formatPercent(roastYield)} />
-                </div>
-
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="primary"
-                  disabled={!selectedMonth || !monthDoc}
-                  onClick={() => {
-                    setEditingRoast(null);
-                    setIsRoastOpen(true);
-                  }}
-                >
-                  焙煎を入力
-                </Button>
-
-                <div className="space-y-2">
-                  {recentRoast.length === 0 ? (
-                    <RecentEmptyHint />
-                  ) : (
-                    recentRoast.map((entry) => (
-                      // eslint-disable-next-line local/no-raw-button -- 複数行のカード型タップ行のため Button では表現できない
-                      <button
-                        key={entry.id}
-                        type="button"
-                        onClick={() => {
-                          setEditingRoast(entry);
-                          setIsRoastOpen(true);
-                        }}
-                        className="w-full rounded-lg border border-edge bg-surface p-3 text-left transition-colors hover:bg-ground"
-                      >
-                        <div className="text-sm font-bold text-ink">{entry.workDate}</div>
-                        <p className="mt-1 text-xs text-ink-sub">
-                          焙煎前 {formatKg(entry.beforeRoastWeightGram)} kg → 焙煎後{' '}
-                          {formatKg(entry.afterRoastWeightGram)} kg
-                        </p>
-                      </button>
-                    ))
-                  )}
-                </div>
-              </Card>
-
-              {/* 3列目：パッケージ */}
-              <Card className="flex flex-col gap-4 p-4 sm:p-5">
-                <div className="flex items-center justify-between gap-3">
-                  <h2 className="text-lg font-semibold text-ink">パッケージ</h2>
-                  <Badge variant="secondary" size="md">
-                    {packageEntries.length}件
-                  </Badge>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2">
-                  <ColumnStat
-                    label="良品数"
-                    value={packageTotals.goodTotal}
-                    labelClassName="text-info"
-                    valueClassName="text-info"
-                  />
-                  <ColumnStat
-                    label="不良品数"
-                    value={packageTotals.defectiveTotal}
-                    labelClassName="text-danger"
-                    valueClassName="text-danger"
-                  />
-                  <ColumnStat label="生産個数" value={packageTotals.producedTotal} />
-                </div>
-
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="primary"
-                  disabled={!selectedMonth || !monthDoc}
-                  onClick={() => {
-                    setEditingPackage(null);
-                    setIsPackageOpen(true);
-                  }}
-                >
-                  パッケージを入力
-                </Button>
-
-                <div className="space-y-2">
-                  {recentPackage.length === 0 ? (
-                    <RecentEmptyHint />
-                  ) : (
-                    recentPackage.map((entry) => (
-                      // eslint-disable-next-line local/no-raw-button -- 複数行のカード型タップ行のため Button では表現できない
-                      <button
-                        key={entry.id}
-                        type="button"
-                        onClick={() => {
-                          setEditingPackage(entry);
-                          setIsPackageOpen(true);
-                        }}
-                        className="w-full rounded-lg border border-edge bg-surface p-3 text-left transition-colors hover:bg-ground"
-                      >
-                        <div className="text-sm font-bold text-ink">{entry.workDate}</div>
-                        <p className="mt-1 text-xs text-ink-sub">
-                          A班 良 {entry.teamA.goodCount} / 不 {entry.teamA.defectiveCount}　B班 良{' '}
-                          {entry.teamB.goodCount} / 不 {entry.teamB.defectiveCount}
-                        </p>
-                      </button>
-                    ))
-                  )}
-                </div>
-              </Card>
+              <HandpickColumn
+                count={handpickEntries.length}
+                handpickedTotalGram={handpickTotals.handpickedTotalGram}
+                defectRate={handpickDefectRate}
+                recent={recentHandpick}
+                disabled={inputDisabled}
+                onAdd={() => {
+                  setEditingHandpick(null);
+                  setIsHandpickOpen(true);
+                }}
+                onEdit={(entry) => {
+                  setEditingHandpick(entry);
+                  setIsHandpickOpen(true);
+                }}
+              />
+              <RoastColumn
+                count={roastEntries.length}
+                premixBags={premix.bags}
+                roastYield={roastYield}
+                recent={recentRoast}
+                disabled={inputDisabled}
+                onAdd={() => {
+                  setEditingRoast(null);
+                  setIsRoastOpen(true);
+                }}
+                onEdit={(entry) => {
+                  setEditingRoast(entry);
+                  setIsRoastOpen(true);
+                }}
+              />
+              <PackageColumn
+                count={packageEntries.length}
+                goodTotal={packageTotals.goodTotal}
+                defectiveTotal={packageTotals.defectiveTotal}
+                producedTotal={packageTotals.producedTotal}
+                recent={recentPackage}
+                disabled={inputDisabled}
+                onAdd={() => {
+                  setEditingPackage(null);
+                  setIsPackageOpen(true);
+                }}
+                onEdit={(entry) => {
+                  setEditingPackage(entry);
+                  setIsPackageOpen(true);
+                }}
+              />
             </main>
 
             {/* スマホ向け案内（3列はmd以上） */}
@@ -531,27 +377,7 @@ export default function ProductionRecordPage() {
             </Card>
 
             {/* 下部：月合計バー（本社提出用・毎日は使わないため普段は隠し、タップでモーダル表示） */}
-            <Card className="p-1.5 sm:p-2">
-              {/* eslint-disable-next-line local/no-raw-button -- バー全体をタップしてモーダルを開く行のため Button では表現できない */}
-              <button
-                type="button"
-                onClick={() => setIsSummaryOpen(true)}
-                className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left transition-colors hover:bg-ground"
-              >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-field text-ink-sub">
-                  <MdSummarize className="h-5 w-5" />
-                </span>
-                <span className="flex flex-wrap items-baseline gap-x-2">
-                  <span className="text-base font-semibold text-ink">月合計・CSV出力</span>
-                  <span className="text-xs font-normal text-ink-muted">本社提出用の月合計（月末にまとめて）</span>
-                </span>
-                {/* 「押すと開ける」ことを示す視覚的な手がかり */}
-                <span className="ml-auto flex shrink-0 items-center gap-0.5 text-sm font-medium text-ink-muted">
-                  開く
-                  <HiChevronRight className="h-5 w-5" />
-                </span>
-              </button>
-            </Card>
+            <MonthlySummaryBar onOpen={() => setIsSummaryOpen(true)} />
           </>
         )}
       </div>
@@ -607,202 +433,27 @@ export default function ProductionRecordPage() {
 
       {/* 月の設定メニュー：月1回の管理操作（設定編集・新規作成）をまとめた小さなメニュー */}
       {isMonthMenuOpen && (
-        <Modal
-          show={true}
+        <MonthMenuModal
+          selectedMonth={selectedMonth}
+          canEditMonth={Boolean(selectedMonth && monthDoc)}
+          newMonthInput={newMonthInput}
           onClose={() => setIsMonthMenuOpen(false)}
-          contentClassName="rounded-2xl max-w-sm w-full bg-overlay border border-edge shadow-xl"
-        >
-          {/* ヘッダー：他モーダルと揃えてタイトル＋閉じる(×) */}
-          <div className="flex items-center justify-between border-b border-edge p-5">
-            <h2 className="text-lg font-bold text-ink">月の設定</h2>
-            <IconButton onClick={() => setIsMonthMenuOpen(false)} rounded aria-label="閉じる">
-              <HiX className="h-5 w-5" />
-            </IconButton>
-          </div>
-
-          <div className="space-y-5 p-5">
-            {/* 現在選択中の月の設定（配合・粉量）を編集。月が選ばれていないときは出さない。
-                濃色ブロックではなく、アイコン＋2行ラベル＋右矢印の軽いメニュー行にする。 */}
-            {selectedMonth && monthDoc && (
-              // eslint-disable-next-line local/no-raw-button -- アイコン＋2行ラベル＋右シェブロンのメニュー行のため Button では表現できない
-              <button
-                type="button"
-                onClick={() => {
-                  setIsMonthMenuOpen(false);
-                  handleEditMonth();
-                }}
-                className="flex w-full items-center gap-3 rounded-xl border border-edge bg-surface px-4 py-3 text-left transition-colors hover:bg-ground"
-              >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-field text-ink-sub">
-                  <MdSettings className="h-5 w-5" />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-semibold text-ink">この月の設定を編集</span>
-                  <span className="block truncate text-xs text-ink-muted">
-                    {formatProductionMonthLabel(selectedMonth)}・配合や1袋粉量
-                  </span>
-                </span>
-                <HiChevronRight className="h-5 w-5 shrink-0 text-ink-muted" />
-              </button>
-            )}
-
-            {/* 新しい月生産単位を作る。何月分かは作業日とは別に選ぶ（spec第5章）。
-                編集行があるときだけ上に区切り線を引いて、別操作だと分かるようにする。 */}
-            <div className={selectedMonth && monthDoc ? 'space-y-2 border-t border-edge pt-5' : 'space-y-2'}>
-              <p className="text-sm font-semibold text-ink">新しい月を作る</p>
-              <p className="text-xs text-ink-muted">「何月分」として作るかを選びます（作業日とは別です）。</p>
-              <div className="flex items-end gap-2">
-                <Input
-                  type="month"
-                  label="対象月"
-                  value={newMonthInput}
-                  onChange={(event) => setNewMonthInput(event.target.value || getCurrentProductionMonth())}
-                  className="flex-1 !min-h-[42px] !py-2 !text-base"
-                />
-                <Button
-                  type="button"
-                  variant="primary"
-                  className="!min-h-[42px] whitespace-nowrap"
-                  onClick={() => {
-                    setIsMonthMenuOpen(false);
-                    handleCreateMonth();
-                  }}
-                >
-                  作成
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Modal>
+          onEditMonth={handleEditMonth}
+          onChangeNewMonth={setNewMonthInput}
+          onCreateMonth={handleCreateMonth}
+        />
       )}
 
       {/* 月合計サマリー（本社提出用）モーダル：普段は隠し、バーのタップで開く */}
       {isSummaryOpen && (
-        <Modal
-          show={true}
+        <MonthlySummaryModal
+          summary={summary}
+          csvPreview={csvPreview}
+          isLoading={isLoading}
           onClose={() => setIsSummaryOpen(false)}
-          contentClassName="rounded-2xl max-w-3xl w-full max-h-full flex flex-col overflow-hidden bg-overlay border border-edge shadow-xl"
-        >
-          {/* ヘッダーはスクロール領域の外に置き、常に見える固定部にする */}
-          <div className="flex shrink-0 items-center justify-between border-b border-edge bg-surface p-4 sm:p-5">
-            <div>
-              <h2 className="text-lg font-semibold text-ink sm:text-xl">月合計サマリー</h2>
-              <p className="mt-0.5 text-xs text-ink-muted sm:text-sm">本社提出用の月合計です。</p>
-            </div>
-            <IconButton onClick={() => setIsSummaryOpen(false)} rounded aria-label="閉じる">
-              <HiX className="h-6 w-6" />
-            </IconButton>
-          </div>
-
-          {/* 本文のみ内部スクロール。画面の低い端末でもモーダル全体は画面内に収まる */}
-          <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain p-4 sm:space-y-4 sm:p-5">
-            {!summary ? (
-              <div className="flex min-h-[120px] items-center justify-center text-sm text-ink-muted">
-                {isLoading ? '読み込み中...' : '対象月の設定がありません。'}
-              </div>
-            ) : (
-              <>
-                {/* 配合は数値ではないため独立した行にし、数値タイルの大きさを揃える */}
-                <div className="rounded-xl border border-edge bg-surface p-3 sm:p-4">
-                  <div className="text-xs font-semibold text-ink-muted">配合</div>
-                  <p className="mt-1 text-base font-bold text-ink sm:text-lg">{summary.blendLabel}</p>
-                </div>
-                <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4">
-                  <SummaryTile label="生豆重量" value={formatKg(summary.greenBeanTotalGram)} unit="kg" />
-                  <SummaryTile label="欠点豆重量" value={summary.defectBeanTotalGram} unit="g" />
-                  <SummaryTile label="欠点率" value={formatPercent(summary.defectRate)} />
-                  <SummaryTile label="焙煎後重量" value={formatKg(summary.roastAfterTotalGram)} unit="kg" />
-                  <SummaryTile label="焙煎ロス率" value={formatPercent(summary.moistureLossRate)} />
-                  <SummaryTile label="30kg理論袋数" value={summary.thirtyKgTheoryPacks} unit="袋" />
-                  <SummaryTile label="月良品数" value={summary.monthlyGoodCount} unit="個" valueClassName="text-info" />
-                  <SummaryTile
-                    label="月不良品数"
-                    value={summary.monthlyDefectiveCount}
-                    unit="個"
-                    valueClassName="text-danger"
-                  />
-                  <SummaryTile label="月生産個数" value={summary.monthlyProducedCount} unit="個" />
-                  <SummaryTile label="不良率" value={formatPercent(summary.packageLossRate)} />
-                </div>
-
-                <div>
-                  <h3 className="mb-2 text-sm font-semibold text-ink-muted">CSVプレビュー</h3>
-                  <pre className="overflow-x-auto rounded-lg border border-edge bg-field p-3 text-xs text-ink-sub">
-                    {csvPreview}
-                  </pre>
-                </div>
-
-                {/* このモーダルの主目的＝CSV出力。最下部に主要アクションとして右寄せ配置 */}
-                <div className="flex justify-end border-t border-edge pt-4">
-                  <Button type="button" onClick={handleExportCsv} disabled={isLoading}>
-                    <HiDownload className="h-5 w-5" />
-                    CSV出力
-                  </Button>
-                </div>
-              </>
-            )}
-          </div>
-        </Modal>
+          onExportCsv={handleExportCsv}
+        />
       )}
-    </div>
-  );
-}
-
-/**
- * 直近の記録プレビュー欄が空のときの控えめなヒント。
- * すぐ上に入力ボタンがあるため、ボタンより目立たないよう全体を ink-muted（薄色）で統一する。
- */
-function RecentEmptyHint() {
-  return (
-    <div className="flex flex-col items-center gap-1.5 py-6 text-center text-ink-muted">
-      <HiOutlineDocumentText className="h-6 w-6" aria-hidden />
-      <p className="max-w-[180px] text-xs leading-relaxed">入力すると、最近の記録がここに表示されます</p>
-    </div>
-  );
-}
-
-interface ColumnStatProps {
-  label: string;
-  value: React.ReactNode;
-  /** 数値の単位（小さく添える） */
-  unit?: string;
-  /** ラベルの色分け（良品=青/不良品=赤）。漢字が苦手でも色で判別できるようにする */
-  labelClassName?: string;
-  valueClassName?: string;
-}
-
-/** 3列カード上部の統計タイル。全列で同じ構成・高さにし、入力ボタンの位置を一致させる */
-function ColumnStat({ label, value, unit, labelClassName, valueClassName }: ColumnStatProps) {
-  return (
-    <div className="rounded-lg border border-edge bg-field p-3">
-      <div className={`text-xs font-semibold ${labelClassName ?? 'text-ink-muted'}`}>{label}</div>
-      <p className={`mt-1 text-xl font-bold tabular-nums text-ink ${valueClassName ?? ''}`}>
-        {value}
-        {unit && <span className="ml-1 text-sm font-medium text-ink-muted">{unit}</span>}
-      </p>
-    </div>
-  );
-}
-
-interface SummaryTileProps {
-  label: string;
-  value: React.ReactNode;
-  /** 数値の単位（小さく添える）。比率など単位がない項目は省略する */
-  unit?: string;
-  valueClassName?: string;
-}
-
-function SummaryTile({ label, value, unit, valueClassName }: SummaryTileProps) {
-  return (
-    // スマホは画面が低いためタイルを一段小さくし、sm以上で従来サイズに戻す
-    <div className="flex min-h-[64px] flex-col rounded-xl border border-edge bg-surface p-2.5 sm:min-h-[88px] sm:p-3">
-      <div className="text-xs font-semibold text-ink-muted">{label}</div>
-      <p
-        className={`mt-auto pt-1.5 text-xl font-bold tabular-nums text-ink sm:pt-2 sm:text-2xl ${valueClassName ?? ''}`}
-      >
-        {value}
-        {unit && <span className="ml-1 text-sm font-medium text-ink-sub">{unit}</span>}
-      </p>
     </div>
   );
 }
