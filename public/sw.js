@@ -126,11 +126,14 @@ self.addEventListener('activate', (event) => {
 });
 
 // メッセージリスナー（SKIP_WAITINGメッセージを処理）
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-});
+// 注: install イベント内で既に self.skipWaiting() を無条件に呼んでいるため、
+// このリスナーは実装受け取りがない冗長なコード。
+// 将来「更新通知UI」を実装する場合はここで SKIP_WAITING メッセージを処理する。
+// self.addEventListener('message', (event) => {
+//   if (event.data && event.data.type === 'SKIP_WAITING') {
+//     self.skipWaiting();
+//   }
+// });
 
 // フェッチ時の処理（Network First戦略）
 self.addEventListener('fetch', (event) => {

@@ -67,8 +67,6 @@ export { Tabs, TabsList, TabsTrigger, TabsContent } from './Tabs';
 
 export { EmptyState } from './EmptyState';
 
-export { BackLink } from './BackLink';
-
 export { FloatingNav } from './FloatingNav';
 
 export { RoastLevelBadge } from './RoastLevelBadge';

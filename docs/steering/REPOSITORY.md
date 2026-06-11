@@ -22,6 +22,13 @@ roastplus/
 ├── .github/                # GitHub設定
 │   ├── workflows/          # GitHub Actionsワークフロー
 │   └── scripts/            # Actions内で実行するスクリプト（.mjs）
+├── .claude/                # Claude Code設定ファイル
+│   ├── CLAUDE.md           # プロジェクトごとの Claude Code ガイドライン
+│   ├── rules/              # 自動適用される development workflow ルール
+│   │   └── development-workflow.md # Steering 参照ルール・作業開始チェック
+│   ├── settings.json       # Claude Code ハーネス設定（権限・hooks等）
+│   ├── settings.local.json # ローカル環境固有設定（.gitignoreで除外）
+│   └── memories/           # セッション間で引き継ぐ個人メモリ（.gitignoreで除外）
 ├── public/                 # 静的ファイル（SW, マニフェスト, 画像, 音声）
 ├── scripts/                # 自動化スクリプト
 ├── vitest.config.ts        # Vitestテスト設定
