@@ -4,6 +4,7 @@ import localFont from 'next/font/local';
 import { OfflineBanner } from '@/components/OfflineBanner';
 import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
 import { SplashScreenWrapper } from '@/components/SplashScreenWrapper';
+import { SyncErrorBanner } from '@/components/SyncErrorBanner';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { ToastProvider } from '@/components/Toast';
 
@@ -69,6 +70,7 @@ export default function RootLayout({
         <ThemeProvider>
           <ToastProvider>
             <OfflineBanner />
+            <SyncErrorBanner />
             {children}
           </ToastProvider>
         </ThemeProvider>

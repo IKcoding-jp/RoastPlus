@@ -3,6 +3,7 @@
 import { setDoc, getDoc, onSnapshot } from 'firebase/firestore';
 import { getUserDocRef, removeUndefinedFields, normalizeAppData, defaultData } from '../common';
 import { isE2EMode, loadE2EAppData, saveE2EAppData } from '@/lib/e2eMode';
+import { reportSyncError, clearSyncError, type SyncErrorType } from '@/lib/syncStatus';
 import type { AppData } from '@/types';
 import { writeQueues, SAVE_USER_DATA_DEBOUNCE_MS, executeWrite, type SaveUserDataOptions } from './write-queue';
 
@@ -111,6 +112,20 @@ function mergeSaveUserDataOptions(
   };
 }
 
+// onSnapshot はエラーで購読が恒久停止するため、指数バックオフで再購読する
+const RESUBSCRIBE_BASE_DELAY_MS = 1000;
+const RESUBSCRIBE_MAX_DELAY_MS = 30_000;
+
+function toSyncErrorType(error: { code?: string }): SyncErrorType {
+  if (error.code === 'permission-denied') {
+    return 'permission-denied';
+  }
+  if (error.code === 'unavailable') {
+    return 'unavailable';
+  }
+  return 'unknown';
+}
+
 export function subscribeUserData(userId: string, callback: (data: AppData) => void): () => void {
   if (isE2EMode()) {
     queueMicrotask(() => callback(loadE2EAppData(defaultData)));
@@ -119,18 +134,55 @@ export function subscribeUserData(userId: string, callback: (data: AppData) => v
 
   const userDocRef = getUserDocRef(userId);
 
-  return onSnapshot(
-    userDocRef,
-    (snapshot) => {
-      if (snapshot.exists()) {
-        callback(normalizeAppData(snapshot.data()));
-      } else {
-        callback(defaultData);
+  let stopped = false;
+  let retryCount = 0;
+  let retryTimeoutId: ReturnType<typeof setTimeout> | null = null;
+  let unsubscribeSnapshot: () => void = () => {};
+
+  const start = () => {
+    unsubscribeSnapshot = onSnapshot(
+      userDocRef,
+      (snapshot) => {
+        retryCount = 0;
+        clearSyncError();
+        if (snapshot.exists()) {
+          callback(normalizeAppData(snapshot.data()));
+        } else {
+          callback(defaultData);
+        }
+      },
+      (error) => {
+        console.error('Error in Firestore subscription:', error);
+        // エラー時はcallbackを呼ばない（既存データを保持する）
+        // ただし「同期できていない」ことをUIへ通知する（issue #496）
+        reportSyncError(toSyncErrorType(error));
+
+        // 同一世代でエラーが連続した場合は前のタイマーを破棄し、二重再購読を防ぐ
+        if (retryTimeoutId) {
+          clearTimeout(retryTimeoutId);
+        }
+        const delay = Math.min(RESUBSCRIBE_MAX_DELAY_MS, RESUBSCRIBE_BASE_DELAY_MS * 2 ** retryCount);
+        retryCount += 1;
+        retryTimeoutId = setTimeout(() => {
+          retryTimeoutId = null;
+          if (!stopped) {
+            start();
+          }
+        }, delay);
       }
-    },
-    (error) => {
-      console.error('Error in Firestore subscription:', error);
-      // エラー時はcallbackを呼ばない（既存データを保持する）
+    );
+  };
+
+  start();
+
+  return () => {
+    stopped = true;
+    if (retryTimeoutId) {
+      clearTimeout(retryTimeoutId);
+      retryTimeoutId = null;
     }
-  );
+    unsubscribeSnapshot();
+    // 購読が無くなった後にバナーが残り続けないようにする（ログアウト時など）
+    clearSyncError();
+  };
 }
