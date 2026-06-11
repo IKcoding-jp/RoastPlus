@@ -53,7 +53,8 @@ const eslintConfig = defineConfig([
           patterns: [
             {
               group: ['@/components/*', '../components/*', '../../components/*'],
-              message: 'lib/ から components/ への import は禁止です（依存方向ルール: lib → types のみ）。ロジックを hooks/ または app/ に移動してください。',
+              message:
+                'lib/ から components/ への import は禁止です（依存方向ルール: lib → types のみ）。ロジックを hooks/ または app/ に移動してください。',
             },
           ],
         },
