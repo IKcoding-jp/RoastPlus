@@ -13,7 +13,13 @@ interface MonthlySummaryModalProps {
 }
 
 /** 月合計サマリー（本社提出用）モーダル。数値タイル＋CSVプレビュー＋CSV出力。 */
-export function MonthlySummaryModal({ summary, csvPreview, isLoading, onClose, onExportCsv }: MonthlySummaryModalProps) {
+export function MonthlySummaryModal({
+  summary,
+  csvPreview,
+  isLoading,
+  onClose,
+  onExportCsv,
+}: MonthlySummaryModalProps) {
   return (
     <Modal
       show={true}
