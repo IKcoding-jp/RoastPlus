@@ -172,6 +172,305 @@ describe('Firestore rules', () => {
       await assertFails(firestoreFor(OTHER_UID).doc(packagePath).set(packageEntry));
     });
   });
+
+  describe('users/{uid}/productionRecords field validation', () => {
+    const monthPath = `users/${OWN_UID}/productionRecords/2026-08`;
+    const validMonthDoc = {
+      month: '2026-08',
+      greenBeanTotalGram: 30000,
+      powderPerPackGram: 8.5,
+      blendItems: [
+        { beanName: 'ブラジル', ratioPercent: 80 },
+        { beanName: 'グアテマラ', ratioPercent: 20 },
+      ],
+    };
+
+    function ownDoc(path: string) {
+      return firestoreFor(OWN_UID).doc(path);
+    }
+
+    describe('month document', () => {
+      it('accepts a valid month document including timestamps', async () => {
+        await assertSucceeds(ownDoc(monthPath).set({ ...validMonthDoc, createdAt: new Date(), updatedAt: new Date() }));
+      });
+
+      it('rejects unknown fields', async () => {
+        await assertFails(ownDoc(monthPath).set({ ...validMonthDoc, extraField: 'unexpected' }));
+      });
+
+      it('rejects missing required fields', async () => {
+        await assertFails(
+          ownDoc(monthPath).set({
+            month: validMonthDoc.month,
+            greenBeanTotalGram: validMonthDoc.greenBeanTotalGram,
+            powderPerPackGram: validMonthDoc.powderPerPackGram,
+          })
+        );
+      });
+
+      it('rejects a month field that does not match the document ID', async () => {
+        await assertFails(ownDoc(monthPath).set({ ...validMonthDoc, month: '2026-09' }));
+      });
+
+      it('rejects an invalid month format', async () => {
+        const path = `users/${OWN_UID}/productionRecords/2026-13`;
+        await assertFails(ownDoc(path).set({ ...validMonthDoc, month: '2026-13' }));
+      });
+
+      it('rejects zero or negative greenBeanTotalGram', async () => {
+        await assertFails(ownDoc(monthPath).set({ ...validMonthDoc, greenBeanTotalGram: 0 }));
+        await assertFails(ownDoc(monthPath).set({ ...validMonthDoc, greenBeanTotalGram: -100 }));
+      });
+
+      it('accepts the upper bound weight and rejects above it', async () => {
+        await assertSucceeds(ownDoc(monthPath).set({ ...validMonthDoc, greenBeanTotalGram: 10_000_000 }));
+        await assertFails(ownDoc(monthPath).set({ ...validMonthDoc, greenBeanTotalGram: 10_000_001 }));
+      });
+
+      it('rejects non-numeric greenBeanTotalGram', async () => {
+        await assertFails(ownDoc(monthPath).set({ ...validMonthDoc, greenBeanTotalGram: '30000' }));
+      });
+
+      it('rejects out-of-range powderPerPackGram', async () => {
+        await assertFails(ownDoc(monthPath).set({ ...validMonthDoc, powderPerPackGram: 0 }));
+        await assertFails(ownDoc(monthPath).set({ ...validMonthDoc, powderPerPackGram: -8.5 }));
+        await assertFails(ownDoc(monthPath).set({ ...validMonthDoc, powderPerPackGram: 1001 }));
+      });
+
+      it('rejects empty or too many blendItems', async () => {
+        await assertFails(ownDoc(monthPath).set({ ...validMonthDoc, blendItems: [] }));
+        const fiveItems = Array.from({ length: 5 }, (_, i) => ({ beanName: `bean${i}`, ratioPercent: 20 }));
+        await assertFails(ownDoc(monthPath).set({ ...validMonthDoc, blendItems: fiveItems }));
+      });
+
+      it('rejects blend items with invalid values', async () => {
+        await assertFails(
+          ownDoc(monthPath).set({ ...validMonthDoc, blendItems: [{ beanName: 'ブラジル', ratioPercent: -10 }] })
+        );
+        await assertFails(
+          ownDoc(monthPath).set({ ...validMonthDoc, blendItems: [{ beanName: 'ブラジル', ratioPercent: 101 }] })
+        );
+        await assertFails(
+          ownDoc(monthPath).set({
+            ...validMonthDoc,
+            blendItems: [{ beanName: 'ブラジル', ratioPercent: 100, extra: true }],
+          })
+        );
+        await assertFails(
+          ownDoc(monthPath).set({ ...validMonthDoc, blendItems: [{ beanName: 'a'.repeat(201), ratioPercent: 100 }] })
+        );
+      });
+
+      it('rejects blend ratios that do not total 100 percent', async () => {
+        await assertFails(
+          ownDoc(monthPath).set({
+            ...validMonthDoc,
+            blendItems: [
+              { beanName: 'A', ratioPercent: 100 },
+              { beanName: 'B', ratioPercent: 100 },
+              { beanName: 'C', ratioPercent: 100 },
+            ],
+          })
+        );
+        await assertFails(
+          ownDoc(monthPath).set({
+            ...validMonthDoc,
+            blendItems: [
+              { beanName: 'A', ratioPercent: 30 },
+              { beanName: 'B', ratioPercent: 30 },
+            ],
+          })
+        );
+      });
+
+      // 既存クライアントは removeUndefinedFields が serverTimestamp() センチネルを
+      // map({_methodName:'serverTimestamp'}) に変換したまま書き込んでおり、本番データも同形。
+      // ルールで型を縛ると全保存が拒否されるため、createdAt/updatedAt はキーの許可のみ行う
+      it('accepts legacy serverTimestamp-sentinel maps in createdAt/updatedAt', async () => {
+        await assertSucceeds(
+          ownDoc(monthPath).set({
+            ...validMonthDoc,
+            createdAt: { _methodName: 'serverTimestamp' },
+            updatedAt: { _methodName: 'serverTimestamp' },
+          })
+        );
+      });
+    });
+
+    describe('handpickEntries', () => {
+      const entryPath = `${monthPath}/handpickEntries/entry_1`;
+      const validEntry = {
+        workDate: '2026-08-01',
+        beanName: 'ブラジル',
+        segment: 'first',
+        greenBeanWeightGram: 10000,
+        defectBeanWeightGram: 300,
+      };
+
+      it('accepts a valid entry with zero defect weight and timestamps', async () => {
+        await assertSucceeds(
+          ownDoc(entryPath).set({
+            ...validEntry,
+            defectBeanWeightGram: 0,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+        );
+      });
+
+      it('rejects zero or negative greenBeanWeightGram', async () => {
+        await assertFails(ownDoc(entryPath).set({ ...validEntry, greenBeanWeightGram: 0 }));
+        await assertFails(ownDoc(entryPath).set({ ...validEntry, greenBeanWeightGram: -1 }));
+      });
+
+      it('rejects negative defectBeanWeightGram', async () => {
+        await assertFails(ownDoc(entryPath).set({ ...validEntry, defectBeanWeightGram: -1 }));
+      });
+
+      it('rejects weights above the upper bound', async () => {
+        await assertFails(ownDoc(entryPath).set({ ...validEntry, greenBeanWeightGram: 10_000_001 }));
+      });
+
+      it('accepts legacy serverTimestamp-sentinel maps in createdAt/updatedAt', async () => {
+        await assertSucceeds(
+          ownDoc(entryPath).set({
+            ...validEntry,
+            createdAt: { _methodName: 'serverTimestamp' },
+            updatedAt: { _methodName: 'serverTimestamp' },
+          })
+        );
+      });
+
+      it('rejects an unknown segment', async () => {
+        await assertFails(ownDoc(entryPath).set({ ...validEntry, segment: 'third' }));
+      });
+
+      it('rejects an invalid workDate format', async () => {
+        await assertFails(ownDoc(entryPath).set({ ...validEntry, workDate: '2026/08/01' }));
+        await assertFails(ownDoc(entryPath).set({ ...validEntry, workDate: '2026-08-32' }));
+      });
+
+      it('rejects a too long beanName', async () => {
+        await assertFails(ownDoc(entryPath).set({ ...validEntry, beanName: 'a'.repeat(201) }));
+      });
+
+      it('rejects unknown fields', async () => {
+        await assertFails(ownDoc(entryPath).set({ ...validEntry, memo: 'unexpected' }));
+      });
+    });
+
+    describe('roastEntries', () => {
+      const entryPath = `${monthPath}/roastEntries/2026-08-01`;
+      const validEntry = {
+        workDate: '2026-08-01',
+        beforeRoastWeightGram: 10000,
+        afterRoastWeightGram: 8500,
+      };
+
+      it('accepts a valid entry with timestamps', async () => {
+        await assertSucceeds(ownDoc(entryPath).set({ ...validEntry, createdAt: new Date(), updatedAt: new Date() }));
+      });
+
+      it('rejects zero or negative weights', async () => {
+        await assertFails(ownDoc(entryPath).set({ ...validEntry, beforeRoastWeightGram: 0 }));
+        await assertFails(ownDoc(entryPath).set({ ...validEntry, afterRoastWeightGram: -1 }));
+      });
+
+      it('rejects afterRoastWeightGram greater than beforeRoastWeightGram', async () => {
+        await assertFails(
+          ownDoc(entryPath).set({ ...validEntry, beforeRoastWeightGram: 8000, afterRoastWeightGram: 8500 })
+        );
+      });
+
+      it('rejects unknown fields', async () => {
+        await assertFails(ownDoc(entryPath).set({ ...validEntry, memo: 'unexpected' }));
+      });
+    });
+
+    describe('packageEntries', () => {
+      const entryPath = `${monthPath}/packageEntries/2026-08-01`;
+      const validEntry = {
+        workDate: '2026-08-01',
+        teamA: { goodCount: 100, defectiveCount: 2 },
+        teamB: { goodCount: 120, defectiveCount: 3 },
+      };
+
+      it('accepts a valid entry with timestamps', async () => {
+        await assertSucceeds(ownDoc(entryPath).set({ ...validEntry, createdAt: new Date(), updatedAt: new Date() }));
+      });
+
+      it('rejects negative counts', async () => {
+        await assertFails(ownDoc(entryPath).set({ ...validEntry, teamA: { goodCount: -1, defectiveCount: 0 } }));
+        await assertFails(ownDoc(entryPath).set({ ...validEntry, teamB: { goodCount: 0, defectiveCount: -1 } }));
+      });
+
+      it('rejects non-integer counts', async () => {
+        await assertFails(ownDoc(entryPath).set({ ...validEntry, teamA: { goodCount: 1.5, defectiveCount: 0 } }));
+      });
+
+      it('rejects unknown keys inside team counts', async () => {
+        await assertFails(
+          ownDoc(entryPath).set({ ...validEntry, teamA: { goodCount: 1, defectiveCount: 0, extra: 1 } })
+        );
+      });
+
+      it('rejects unknown fields', async () => {
+        await assertFails(ownDoc(entryPath).set({ ...validEntry, memo: 'unexpected' }));
+      });
+    });
+
+    describe('structure restriction', () => {
+      it('denies writes to unknown subcollections under a month document', async () => {
+        await assertFails(ownDoc(`${monthPath}/unknownEntries/entry_1`).set({ anything: true }));
+      });
+
+      it('denies reads and writes deeper than entry documents', async () => {
+        const path = `${monthPath}/handpickEntries/entry_1/nested/doc_1`;
+        await assertFails(ownDoc(path).set({ anything: true }));
+        await assertFails(ownDoc(path).get());
+      });
+    });
+
+    describe('entry deletion', () => {
+      it('allows only the owner to delete an entry', async () => {
+        const entryPath = `${monthPath}/handpickEntries/entry_del`;
+        const validEntry = {
+          workDate: '2026-08-01',
+          beanName: 'ブラジル',
+          segment: 'first',
+          greenBeanWeightGram: 10000,
+          defectBeanWeightGram: 300,
+        };
+        await assertSucceeds(ownDoc(entryPath).set(validEntry));
+        await assertFails(firestoreFor(OTHER_UID).doc(entryPath).delete());
+        await assertSucceeds(ownDoc(entryPath).delete());
+      });
+    });
+  });
+
+  describe('users/{uid}/assignmentSettings/{settingId}', () => {
+    it('allows owner access to single-level documents and denies nested paths', async () => {
+      const path = `users/${OWN_UID}/assignmentSettings/shuffle`;
+      await assertSucceeds(firestoreFor(OWN_UID).doc(path).set({ crossTeamShuffle: false }));
+      await assertFails(firestoreFor(OTHER_UID).doc(path).get());
+
+      const nestedPath = `users/${OWN_UID}/assignmentSettings/shuffle/nested/doc_1`;
+      await assertFails(firestoreFor(OWN_UID).doc(nestedPath).set({ anything: true }));
+      await assertFails(firestoreFor(OWN_UID).doc(nestedPath).get());
+    });
+  });
+
+  describe('users/{uid}/_meta/{docId}', () => {
+    it('allows owner access to single-level documents and denies nested paths', async () => {
+      const path = `users/${OWN_UID}/_meta/serverTime`;
+      await assertSucceeds(firestoreFor(OWN_UID).doc(path).set({ requestedAt: new Date() }));
+      await assertFails(firestoreFor(OTHER_UID).doc(path).get());
+
+      const nestedPath = `users/${OWN_UID}/_meta/serverTime/nested/doc_1`;
+      await assertFails(firestoreFor(OWN_UID).doc(nestedPath).set({ anything: true }));
+      await assertFails(firestoreFor(OWN_UID).doc(nestedPath).get());
+    });
+  });
 });
 
 describe('Storage rules', () => {

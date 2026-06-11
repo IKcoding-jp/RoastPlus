@@ -1,10 +1,137 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // ===== 生産記録のフィールド検証 =====
+    // クライアント側の検証（lib/productionRecords.ts）に加え、改ざんクライアント対策として
+    // 負値・巨大値・想定外フィールドの書き込みを実行時に拒否する。
+    // 上限値はクライアントには無いRules独自の安全弁（正常業務で絶対に到達しない値）。
+    //
+    // 注意: createdAt / updatedAt の型は検証しない。既存クライアントは removeUndefinedFields が
+    // serverTimestamp() センチネルを map に変換したまま書き込んでおり（本番データも同形）、
+    // timestamp 型を強制すると全保存が拒否されるため。キーのホワイトリストのみ行う。
+
+    // 対象月: 'YYYY-MM'（月は01〜12）
+    function isYearMonthText(value) {
+      return value is string && value.matches('[0-9]{4}-(0[1-9]|1[0-2])');
+    }
+
+    // 作業日: 'YYYY-MM-DD'（形式チェックのみ。実在日はクライアントで検証済み。
+    // 親の月docと別の月の日付も許容する＝クライアント仕様）
+    function isWorkDateText(value) {
+      return value is string && value.matches('[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])');
+    }
+
+    // 重量(g): 0以上・1000万g(10t)以下。NaN/Infinity/負値を拒否する
+    function isWeightGram(value) {
+      return value is number && value >= 0 && value <= 10000000;
+    }
+
+    function isPositiveWeightGram(value) {
+      return value is number && value > 0 && value <= 10000000;
+    }
+
+    // 個数: 0以上の整数・100万以下
+    function isCount(value) {
+      return value is int && value >= 0 && value <= 1000000;
+    }
+
+    // 短いテキスト（豆名など）: 200文字以下
+    function isShortText(value) {
+      return value is string && value.size() <= 200;
+    }
+
+    // 配合1件: { beanName, ratioPercent } のみ・比率は0〜100
+    function isValidBlendItem(item) {
+      return item is map
+        && item.keys().hasOnly(['beanName', 'ratioPercent'])
+        && item.keys().hasAll(['beanName', 'ratioPercent'])
+        && isShortText(item.beanName)
+        && item.ratioPercent is number
+        && item.ratioPercent >= 0
+        && item.ratioPercent <= 100;
+    }
+
+    // 配合比率の合計（呼び出し時点で各 ratioPercent は number 確定済み）
+    function blendRatioTotal(items) {
+      return items[0].ratioPercent
+        + (items.size() > 1 ? items[1].ratioPercent : 0)
+        + (items.size() > 2 ? items[2].ratioPercent : 0)
+        + (items.size() > 3 ? items[3].ratioPercent : 0);
+    }
+
+    // 配合リスト: 1〜4件（MAX_BLEND_ITEMS=4）。Rulesはループ不可のため最大件数ぶん展開して検証する。
+    // 合計はクライアントの厳密一致(===100)と違い、浮動小数点誤差を許容した範囲チェックにする
+    function isValidBlendItems(items) {
+      return items is list && items.size() >= 1 && items.size() <= 4
+        && isValidBlendItem(items[0])
+        && (items.size() < 2 || isValidBlendItem(items[1]))
+        && (items.size() < 3 || isValidBlendItem(items[2]))
+        && (items.size() < 4 || isValidBlendItem(items[3]))
+        && blendRatioTotal(items) >= 99.99
+        && blendRatioTotal(items) <= 100.01;
+    }
+
+    // 月ドキュメント: doc ID と month フィールドの一致も強制する
+    function isValidProductionMonthDoc(month) {
+      let data = request.resource.data;
+      return data.keys().hasOnly(['month', 'greenBeanTotalGram', 'powderPerPackGram', 'blendItems', 'createdAt', 'updatedAt'])
+        && data.keys().hasAll(['month', 'greenBeanTotalGram', 'powderPerPackGram', 'blendItems'])
+        && data.month == month
+        && isYearMonthText(data.month)
+        && isPositiveWeightGram(data.greenBeanTotalGram)
+        && data.powderPerPackGram is number
+        && data.powderPerPackGram > 0
+        && data.powderPerPackGram <= 1000
+        && isValidBlendItems(data.blendItems);
+    }
+
+    function isValidHandpickEntry() {
+      let data = request.resource.data;
+      return data.keys().hasOnly(['workDate', 'beanName', 'segment', 'greenBeanWeightGram', 'defectBeanWeightGram', 'createdAt', 'updatedAt'])
+        && data.keys().hasAll(['workDate', 'beanName', 'segment', 'greenBeanWeightGram', 'defectBeanWeightGram'])
+        && isWorkDateText(data.workDate)
+        && isShortText(data.beanName)
+        && data.segment in ['first', 'second']
+        && isPositiveWeightGram(data.greenBeanWeightGram)
+        && isWeightGram(data.defectBeanWeightGram);
+    }
+
+    function isValidRoastEntry() {
+      let data = request.resource.data;
+      return data.keys().hasOnly(['workDate', 'beforeRoastWeightGram', 'afterRoastWeightGram', 'createdAt', 'updatedAt'])
+        && data.keys().hasAll(['workDate', 'beforeRoastWeightGram', 'afterRoastWeightGram'])
+        && isWorkDateText(data.workDate)
+        && isPositiveWeightGram(data.beforeRoastWeightGram)
+        && isPositiveWeightGram(data.afterRoastWeightGram)
+        // 焙煎で重量が増えることはない（クライアントと同じ制約）
+        && data.afterRoastWeightGram <= data.beforeRoastWeightGram;
+    }
+
+    function isValidTeamCounts(team) {
+      return team is map
+        && team.keys().hasOnly(['goodCount', 'defectiveCount'])
+        && team.keys().hasAll(['goodCount', 'defectiveCount'])
+        && isCount(team.goodCount)
+        && isCount(team.defectiveCount);
+    }
+
+    function isValidPackageEntry() {
+      let data = request.resource.data;
+      return data.keys().hasOnly(['workDate', 'teamA', 'teamB', 'createdAt', 'updatedAt'])
+        && data.keys().hasAll(['workDate', 'teamA', 'teamB'])
+        && isWorkDateText(data.workDate)
+        && isValidTeamCounts(data.teamA)
+        && isValidTeamCounts(data.teamB);
+    }
+
     // ユーザーデータへのアクセス
     match /users/{userId} {
       // 認証済みユーザーが自分のデータにのみアクセス可能
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
     }
     
     // 欠点豆マスターデータ（全ユーザー共通）
@@ -43,37 +170,57 @@ service cloud.firestore {
 
     // 担当表機能（ユーザー配下）
     match /users/{userId}/teams/{teamId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
     }
     match /users/{userId}/members/{memberId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
     }
     match /users/{userId}/managers/{managerId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
     }
     match /users/{userId}/taskLabels/{taskLabelId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
     }
     match /users/{userId}/assignmentDays/{date} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
     }
     match /users/{userId}/shuffleEvents/{date} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
     }
     match /users/{userId}/shuffleHistory/{historyId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
     }
-    match /users/{userId}/assignmentSettings/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    // 実際の構造は1階層のみのため {document=**} を使わない
+    match /users/{userId}/assignmentSettings/{settingId} {
+      allow read, write: if isOwner(userId);
     }
     match /users/{userId}/pairExclusions/{exclusionId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isOwner(userId);
     }
-    match /users/{userId}/productionRecords/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+    // 生産記録: 実構造（月doc → handpick/roast/package の3サブコレクション）に限定。
+    // 書き込みはフィールド検証付き。検証関数はファイル冒頭に定義
+    match /users/{userId}/productionRecords/{month} {
+      allow read, delete: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidProductionMonthDoc(month);
+
+      match /handpickEntries/{entryId} {
+        allow read, delete: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidHandpickEntry();
+      }
+      match /roastEntries/{entryId} {
+        allow read, delete: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidRoastEntry();
+      }
+      match /packageEntries/{entryId} {
+        allow read, delete: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidPackageEntry();
+      }
     }
-    match /users/{userId}/_meta/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+    // メタ情報も実際は1階層のみ（serverTime など）
+    match /users/{userId}/_meta/{docId} {
+      allow read, write: if isOwner(userId);
     }
 
     // メタ情報（サーバー時刻取得など）
