@@ -3,6 +3,7 @@
 
 import { deleteField, writeBatch, type FieldValue, type WriteBatch } from 'firebase/firestore';
 import { getDb, getUserDocRef, removeUndefinedFields } from '../common';
+import { reportSaveError, clearSaveError, toSyncErrorType } from '@/lib/syncStatus';
 import type { AppData } from '@/types';
 
 // デバウンス待機時間（ミリ秒）
@@ -256,6 +257,8 @@ export async function executeWrite(
       await performWrite(userId, data, options);
       queue.isWriting = false;
       queue.retryCount = 0;
+      // 保存が成功したので「保存できていない」バナーを解除する（issue #497）
+      clearSaveError();
 
       if (currentPromise) {
         currentPromise.resolve();
@@ -300,6 +303,9 @@ export async function executeWrite(
 
       queue.isWriting = false;
       console.error('Failed to save data to Firestore:', error);
+      // 全書き込みが必ず通るここで通知することで、呼び出し側の catch 漏れでも
+      // ユーザーへの通知が漏れないようにする（issue #497）
+      reportSaveError(toSyncErrorType(errorInfo));
 
       if (currentPromise) {
         currentPromise.reject(error);

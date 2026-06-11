@@ -3,7 +3,7 @@
 import { setDoc, getDoc, onSnapshot } from 'firebase/firestore';
 import { getUserDocRef, removeUndefinedFields, normalizeAppData, defaultData } from '../common';
 import { isE2EMode, loadE2EAppData, saveE2EAppData } from '@/lib/e2eMode';
-import { reportSyncError, clearSyncError, type SyncErrorType } from '@/lib/syncStatus';
+import { reportSyncError, clearSyncError, toSyncErrorType } from '@/lib/syncStatus';
 import type { AppData } from '@/types';
 import { writeQueues, SAVE_USER_DATA_DEBOUNCE_MS, executeWrite, type SaveUserDataOptions } from './write-queue';
 
@@ -83,7 +83,13 @@ export async function saveUserData(userId: string, data: AppData, options: SaveU
       queue.pendingData = null;
       queue.pendingOptions = null;
       queue.timeoutId = null;
-      await executeWrite(userId, dataToWrite, optionsToWrite);
+      try {
+        await executeWrite(userId, dataToWrite, optionsToWrite);
+      } catch {
+        // 失敗は saveUserData が返す promise の reject と、write-queue 内の
+        // reportSaveError によるユーザー通知（issue #497）で伝達済み。
+        // ここで catch しないと未処理 Promise rejection になる
+      }
     }
   }, SAVE_USER_DATA_DEBOUNCE_MS);
 
@@ -115,16 +121,6 @@ function mergeSaveUserDataOptions(
 // onSnapshot はエラーで購読が恒久停止するため、指数バックオフで再購読する
 const RESUBSCRIBE_BASE_DELAY_MS = 1000;
 const RESUBSCRIBE_MAX_DELAY_MS = 30_000;
-
-function toSyncErrorType(error: { code?: string }): SyncErrorType {
-  if (error.code === 'permission-denied') {
-    return 'permission-denied';
-  }
-  if (error.code === 'unavailable') {
-    return 'unavailable';
-  }
-  return 'unknown';
-}
 
 export function subscribeUserData(userId: string, callback: (data: AppData) => void): () => void {
   if (isE2EMode()) {
