@@ -17,6 +17,17 @@ export function getUserDocRef(userId: string) {
   return doc(getDb(), 'users', userId);
 }
 
+// プレーンなオブジェクトリテラル相当かを判定する。
+// serverTimestamp()のFieldValueセンチネル・Timestamp・Date等のクラスインスタンスを
+// Object.entriesで再構築するとFirestore SDKが認識できない値になるため、再帰処理から除外する（issue #519）
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  if (value === null || typeof value !== 'object') {
+    return false;
+  }
+  const proto = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
+}
+
 // undefinedのフィールドを削除する関数。Firestoreはundefinedを保存できないため。
 export function removeUndefinedFields<T>(obj: T): T {
   if (obj === null || obj === undefined) {
@@ -27,13 +38,13 @@ export function removeUndefinedFields<T>(obj: T): T {
     return obj.map((item) => removeUndefinedFields(item)) as unknown as T;
   }
 
-  if (typeof obj === 'object') {
+  if (isPlainObject(obj)) {
     const cleaned: Record<string, unknown> = {};
-    for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
+    for (const [key, value] of Object.entries(obj)) {
       if (value !== undefined) {
         const cleanedValue = removeUndefinedFields(value);
-        // 空のオブジェクトを削除
-        if (cleanedValue !== null && typeof cleanedValue === 'object' && !Array.isArray(cleanedValue)) {
+        // 空のプレーンオブジェクトを削除（クラスインスタンスは対象外）
+        if (isPlainObject(cleanedValue)) {
           if (Object.keys(cleanedValue).length > 0) {
             cleaned[key] = cleanedValue;
           }
