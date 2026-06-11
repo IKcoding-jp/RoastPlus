@@ -33,7 +33,9 @@ import {
   formatKg,
   formatPercent,
   formatProductionMonthLabel,
+  getCurrentProductionMonth,
   getProductionRecordCsvFileName,
+  getTodayWorkDate,
   sumHandpick,
   sumRoast,
 } from '@/lib/productionRecords';
@@ -48,30 +50,13 @@ import type {
   RoastEntryInput,
 } from '@/types';
 
-// 当月を yyyy-MM で返す（ローカル時刻基準）
-function getCurrentMonth(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  return `${year}-${month}`;
-}
-
-// 今日を yyyy-MM-dd で返す（モーダルの作業日初期値に使う）
-function getTodayDate(): string {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, '0');
-  const day = String(now.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
 export default function ProductionRecordPage() {
   const { user, loading: authLoading } = useAuth();
   const { showToast } = useToastContext();
 
   const [recentMonths, setRecentMonths] = useState<ProductionRecordMonth[]>([]);
   const [selectedMonth, setSelectedMonth] = useState('');
-  const [newMonthInput, setNewMonthInput] = useState(getCurrentMonth);
+  const [newMonthInput, setNewMonthInput] = useState(getCurrentProductionMonth);
 
   // モーダル開閉（モーダルは show prop を持たず、親が条件レンダリングで開閉する）
   const [isMonthSettingsOpen, setIsMonthSettingsOpen] = useState(false);
@@ -144,7 +129,7 @@ export default function ProductionRecordPage() {
   // 月設定から得られる派生値（モーダルへ渡す）
   const beanNames = useMemo(() => (monthDoc ? monthDoc.blendItems.map((item) => item.beanName) : []), [monthDoc]);
   const powderPerPackGram = monthDoc?.powderPerPackGram ?? 0;
-  const defaultWorkDate = getTodayDate();
+  const defaultWorkDate = getTodayWorkDate();
 
   // 配合ラベル（上部概要）
   const blendLabel = monthDoc ? buildBlendLabel(monthDoc.blendItems) : '';
@@ -671,7 +656,7 @@ export default function ProductionRecordPage() {
                   type="month"
                   label="対象月"
                   value={newMonthInput}
-                  onChange={(event) => setNewMonthInput(event.target.value || getCurrentMonth())}
+                  onChange={(event) => setNewMonthInput(event.target.value || getCurrentProductionMonth())}
                   className="flex-1 !min-h-[42px] !py-2 !text-base"
                 />
                 <Button

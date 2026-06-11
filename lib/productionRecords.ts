@@ -52,6 +52,22 @@ export function isValidWorkDate(date: string): boolean {
   return parsed.getUTCFullYear() === year && parsed.getUTCMonth() === month - 1 && parsed.getUTCDate() === day;
 }
 
+// 当月を yyyy-MM で返す（ローカル時刻=現場のJST基準）。新規作成フォームの初期値に使う。
+// 日付キーは toISOString() を使わず getMonth()+1 で組む（UTCずれで月がまたがるのを防ぐ）。
+export function getCurrentProductionMonth(now: Date = new Date()): string {
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  return `${year}-${month}`;
+}
+
+// 今日を yyyy-MM-dd で返す（ローカル時刻=現場のJST基準）。入力モーダルの作業日初期値に使う。
+export function getTodayWorkDate(now: Date = new Date()): string {
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export function calculateDefectRate(defectTotalGram: number, handpickedTotalGram: number): number {
   if (handpickedTotalGram <= 0) {
     return 0;
