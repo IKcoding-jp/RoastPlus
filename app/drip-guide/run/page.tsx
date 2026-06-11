@@ -8,7 +8,7 @@ const DripGuideRunner = dynamic(
   () => import('@/components/drip-guide/DripGuideRunner').then((mod) => ({ default: mod.DripGuideRunner })),
   { ssr: false }
 );
-import { useRecipes } from '@/lib/drip-guide/useRecipes';
+import { useRecipes } from '@/hooks/drip-guide/useRecipes';
 import { calculateRecipeForServings } from '@/lib/drip-guide/recipeCalculator';
 import { generateRecipe46, type Taste46, type Strength46 } from '@/lib/drip-guide/recipe46';
 import Link from 'next/link';

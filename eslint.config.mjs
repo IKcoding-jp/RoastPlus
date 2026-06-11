@@ -43,6 +43,24 @@ const eslintConfig = defineConfig([
       'local/no-raw-select': 'off',
     },
   },
+  // 依存方向ガードレール: lib/ は components/ に依存できない
+  {
+    files: ['lib/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@/components/*', '../components/*', '../../components/*'],
+              message:
+                'lib/ から components/ への import は禁止です（依存方向ルール: lib → types のみ）。ロジックを hooks/ または app/ に移動してください。',
+            },
+          ],
+        },
+      ],
+    },
+  },
 ]);
 
 export default eslintConfig;

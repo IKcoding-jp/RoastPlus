@@ -3,7 +3,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { RecipeForm } from '@/components/drip-guide/RecipeForm';
-import { useRecipes } from '@/lib/drip-guide/useRecipes';
+import { useRecipes } from '@/hooks/drip-guide/useRecipes';
 import { DripRecipe } from '@/lib/drip-guide/types';
 import { FloatingNav } from '@/components/ui';
 

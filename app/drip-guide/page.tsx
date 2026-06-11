@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { RecipeList } from '@/components/drip-guide/RecipeList';
-import { useRecipes } from '@/lib/drip-guide/useRecipes';
+import { useRecipes } from '@/hooks/drip-guide/useRecipes';
 import { HiPlus } from 'react-icons/hi';
 import { FloatingNav } from '@/components/ui';
 
