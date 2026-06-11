@@ -2,36 +2,78 @@
 
 このファイルは、Claude Code が RoastPlus で作業するときの主入口です。毎回このファイルを最優先で守ります。
 
+## プロジェクト概要
+
+RoastPlus は、ドリップパックコーヒー製造現場（約8名・iPad中心）向けの業務PWAです。派手さより、壊れにくさ・分かりやすさ・データ保護を優先します。
+
+- 技術スタック: Next.js (App Router) / React / TypeScript / Tailwind CSS v4 / Firebase (Auth, Firestore, Storage, Functions) / OpenAI（Functions経由のみ）
+- 詳細は `docs/steering/PRODUCT.md`（目的・スコープ）と `docs/steering/TECH_SPEC.md`（技術制約）を参照
+
 ## 基本方針
 
 - 回答、説明、作業報告は日本語で行います。
-- RoastPlus は現場 iPad 中心の業務PWAです。派手さより、壊れにくさ、分かりやすさ、データ保護を優先します。
 - 非自明な作業では、目的、前提、影響範囲、成功条件、検証方法を短く整理してから進めます。
 - 自分が作っていない変更を勝手に戻しません。
 - コミット、push、PR作成、本番操作、デプロイは、ユーザーの明示依頼がある場合のみ行います。
 - 秘密鍵、APIキー、トークン、`.env`、認証情報を表示、コピー、コミットしません。
+- 既存機能を壊さないことを最優先にし、大きな変更は小さなPRに分割します。
 
-## CLAUDE.md 運用ルール
+## 検証コマンド
 
-- このファイルには、毎回 Claude Code に守ってほしい恒久ルールだけを書く。
-- 詳細な仕様、長い手順、個別機能の説明は `docs/steering/` や仕様書に置き、ここには参照ルールだけを書く。
-- 新しいルールを追加するときは、既存の `docs/steering/` と重複・矛盾しないか確認する。
-- 一時的なメモや個人環境だけの内容は、リポジトリ共有の `CLAUDE.md` には書かない。
+| コマンド | 用途 | 実行タイミング |
+| --- | --- | --- |
+| `npm run typecheck` | TypeScript 型チェック | コード変更後は毎回 |
+| `npm run lint` | ESLint（カスタムルール含む） | コード変更後は毎回 |
+| `npm run test:run` | 単体テスト一括実行（Vitest） | コード変更後は毎回 |
+| `npm run test:rules` | Firestore/Storage Rules テスト（Java 21+ 必須） | Rules 変更時は必須 |
+| `npm run docs:check` | ドキュメント整合性チェック | `docs/steering/`・`CLAUDE.md`・`README.md`・`DESIGN.md` 更新時、機能追加・削除・名称変更時 |
+| `npm run deadcode` | 未使用コード検出（knip） | リファクタ・機能削除後 |
+| `npm run test:e2e` | Playwright E2E | 画面フロー変更時 |
+
+コードを変更したら、最低限 `typecheck`・`lint`・`test:run` の3つを通してから完了報告します。テストが失敗したまま「完了」と報告しません。
+`docs/superpowers/` は過去の仕様・計画の履歴置き場であり、`docs:check` の対象外です。現行仕様の根拠にしないでください。
+
+## データ保護ガードレール（最重要）
+
+現場の業務データを預かるアプリのため、以下を必ず守ります。
+
+- **保存・購読の失敗を黙って握りつぶさない。** Firestore の保存・購読・トランザクションのエラー処理を新しく書くときは、必ずユーザーへの通知（トースト・バナー等）につなげる。`console.error` だけのエラー処理を新規に書かない。
+- **エラー処理の線引き**: localStorage キャッシュ・音声再生・ブラウザ通知APIの失敗は黙認してよい（graceful degradation）。業務データの読み書きの失敗は黙認しない。
+- **ユーザーデータの書き込みは既存のデータ層を経由する。** `lib/firestore/` 配下の関数（write-queue・トランザクションヘルパー）を使い、ページやコンポーネントから Firestore SDK を直接呼ばない。
+- **`firestore.rules` / `storage.rules` の変更はテスト駆動で行う。** 先に `tests/rules/` へテストを書き、`npm run test:rules` で検証する。権限を緩める方向の変更は、必ずユーザーに確認してから行う。
+- **本番データの変更・削除は、ユーザーの明示依頼なしに絶対に行わない。**
+
+## 設計ガードレール
+
+- **依存方向は一方向のみ**: `types/ → lib/ → hooks/ → components/ → app/`。特に `lib/` から `@/components/*` を import しない。循環依存禁止（詳細は `docs/steering/REPOSITORY.md`）。
+- **業務ロジックは `lib/` の純粋関数に置く**: 計算・集計・フィルタ・ソート・日付処理は `lib/`（または `app/<機能>/lib/`）に置き、単体テストを付ける。`page.tsx` やコンポーネントに直書きしない。
+- **ファイル肥大を防ぐ**: `page.tsx` は表示とイベント結線に徹する。1ファイルが約300行を超えそうなら、先にフック・コンポーネント・`lib/` への分割を検討する。
+- **日付・時刻は日本時間のローカルタイム前提**: `getMonth()` は0始まりなので、文字列化するときは必ず `+1` する。日付キーの生成に `toISOString()` を使わない（UTCにずれて日付がまたがる）。新しいフォーマッタを書く前に、既存ユーティリティを探して再利用する。
+- **集計・CSV は `lib/productionRecords.ts` に一元化されている**: 数式・CSVフォーマットを変更するときは、`lib/productionRecords.test.ts` を同じPRで更新する。
+- **Service Worker（`public/sw.js`）を変更したらキャッシュバージョンを上げる**: `CACHE_NAME` / `RUNTIME_CACHE` の上げ忘れは古い画面が配信され続ける事故につながる。プリキャッシュ対象を変える場合は、オフライン要件の設計判断を `docs/steering/` に残す。
+- **共通UIは `components/ui/` を使う**: 生の `<button>`・`<select>`・checkbox はESLintカスタムルールで禁止。デザインルールは `DESIGN.md`、実装規約は `docs/steering/GUIDELINES.md` に従う。
+
+## 変更種別ごとの必須チェック
+
+| 変更内容 | 必須作業 |
+| --- | --- |
+| `app/` 配下のページ追加・削除 | 下記「法的ドキュメント更新」を実施し、マイナーバージョン（x.**Y**.0）を上げる |
+| Firestore のデータ構造・Rules 変更 | `tests/rules/` 更新 + `npm run test:rules`、`docs/steering/` の更新要否を確認 |
+| 集計・CSV の変更 | `lib/productionRecords.test.ts` を同時更新 |
+| ドキュメント更新・機能の追加・削除・名称変更 | `npm run docs:check` を実行し、不整合を解消 |
+| UI に変化がある実装 | chrome-devtools MCP で iPad 幅のスクリーンショットを撮り目視確認（ロジック／テスト／ドキュメントのみの変更は対象外） |
+
+### ページ追加・削除時の法的ドキュメント更新
+
+`app/` 配下のページ（`page.tsx`）を追加・削除したときは、必ず以下の3ファイルも合わせて更新する：
+
+1. `data/legal/privacy-policy.ts` — 収集する業務データの一覧を更新し、`PRIVACY_POLICY_LAST_UPDATED` の日付と `lib/consent.ts` の `PRIVACY_POLICY_VERSION` をインクリメント
+2. `data/legal/terms.ts` — 第2条のサービス機能一覧を更新し、`TERMS_LAST_UPDATED` の日付と `lib/consent.ts` の `TERMS_VERSION` をインクリメント
+3. `lib/consent.test.ts` — バージョン定数のテスト期待値を更新
 
 ## 開発ワークフロー
 
 コード実装時の Steering 参照ルールと作業開始チェックは `.claude/rules/development-workflow.md` に定義し、関連ファイル（`app/`、`lib/`、`functions/`、Rules など）の編集時に自動適用します。
-
-## ドキュメント整合性チェック
-
-`docs/steering/`、`CLAUDE.md`、`README.md`、`DESIGN.md` を更新したとき、または機能追加・削除・名称変更を行ったときは、完了前に以下を実行します。
-
-```powershell
-npm run docs:check
-```
-
-失敗した場合は、出力された不整合候補を見て、現行仕様に合わせてドキュメントを更新します。
-過去の仕様・計画を残す `docs/superpowers/` は履歴扱いのため、この自動チェックの対象外です。
 
 ## PR作成後のCI監視
 
@@ -57,27 +99,20 @@ npm run docs:check
 
 関係ないスキルを同時に使いすぎず、作業内容に必要なものだけ選びます。
 
-## 機能追加・削除時のルール
+## MCP / ツールの使い分け
 
-`app/` 配下のページ（`page.tsx`）を追加・削除したときは、必ず以下の3ファイルも合わせて更新する：
-
-1. `data/legal/privacy-policy.ts` — 収集する業務データの一覧を更新し、`PRIVACY_POLICY_LAST_UPDATED` の日付と `lib/consent.ts` の `PRIVACY_POLICY_VERSION` をインクリメント
-2. `data/legal/terms.ts` — 第2条のサービス機能一覧を更新し、`TERMS_LAST_UPDATED` の日付と `lib/consent.ts` の `TERMS_VERSION` をインクリメント
-3. `lib/consent.test.ts` — バージョン定数のテスト期待値を更新
-
-バージョンのインクリメントルール：機能の追加・削除はマイナーバージョン（x.**Y**.0）を上げる。
-
-## Claude 固有ツール
-
-- **Serena MCP**：コードファイルの読み書きは Serena MCP を優先する（グローバル設定準拠）
-- **メモリシステム**：`C:\Users\kensa\.claude\projects\D--Dev-roastplus\memory\`
-
-### MCP / ツールの使い分け
-
+- **Serena MCP**：コードファイルの読み書きは Serena MCP を優先する（グローバル設定準拠）。
 - **firebase MCP**：Firestore の構造・Rules・Functions ログの**調査**に積極活用する。`firestore_*_document`（書込・削除）系は不可逆なため、ユーザーの明示依頼があるときだけ実行し、本番データの変更は原則行わない。
-- **chrome-devtools MCP**：実装画面のライブ確認・パフォーマンス計測・アクセシビリティ確認に使う。**UI に変化がある実装をしたら、毎回その画面を開いてスクリーンショットを撮り、目視確認まで自動で行う**（ロジック／テスト／ドキュメントのみの変更は対象外）。現場 iPad 中心のため `emulate` で iPad 幅を再現し、必要に応じ `lighthouse_audit` で PWA 品質を確認する。E2E は playwright と役割を分ける。
+- **chrome-devtools MCP**：実装画面のライブ確認・パフォーマンス計測・アクセシビリティ確認に使う。現場 iPad 中心のため `emulate` で iPad 幅を再現し、必要に応じ `lighthouse_audit` で PWA 品質を確認する。E2E は playwright と役割を分ける。
 - **playwright MCP**：E2E が失敗したときにブラウザを実際に操作して原因を特定する。新規 E2E を書く前に、セレクタ・操作手順を MCP で試してからコードに落とす。
 - **context7**：Next.js / Firebase / Tailwind など更新の速いライブラリの API・設定・移行を扱うときは、自分の記憶で書く前に最新ドキュメントを確認する（特に Tailwind v4 と Next.js App Router）。
 - **/code-review**：まとまった実装（機能追加・ロジック変更）を終えたら、コミット／PR 前に**毎回自動で実行**する（typo・ドキュメント・軽微なテスト修正のみは対象外）。要件充足の確認は `superpowers:requesting-code-review` と役割を分け、指摘は機械的に直さず**なぜその指摘かをユーザーと確認してから反映**する。
 - **frontend-design**：新しい UI のモック・実装に使う。ただし業務 PWA の方針（白背景・クリーン・iPad で操作しやすい・装飾過多を避ける）に合わせて創造性を抑制する。
 - **skills**：critique（UI 批評）、micro-interactions（細かい操作フィードバック設計）、web-quality-audit（品質総点検）、spec-driven-development（曖昧な要望を要件→設計→タスクに整理）、find-skills（新しい能力探し）を、それぞれの場面で呼ぶ。
+
+## CLAUDE.md 運用ルール
+
+- このファイルには、毎回 Claude Code に守ってほしい恒久ルールだけを書く。
+- 詳細な仕様、長い手順、個別機能の説明は `docs/steering/` や仕様書に置き、ここには参照ルールだけを書く。
+- 新しいルールを追加するときは、既存の `docs/steering/` と重複・矛盾しないか確認する。
+- 一時的なメモ、個人環境だけの内容（ローカルパス等）、クローズされうるIssue番号は、リポジトリ共有の `CLAUDE.md` には書かない。
