@@ -144,6 +144,9 @@ service cloud.firestore {
     }
 
     // 担当表機能（ルート直下は無効化）
+    // 設計当初からデータは /users/{userId}/ 配下に置く構造のため、
+    // ルート直下コレクションへの誤アクセスを明示的に拒否する。
+    // 実際のアクセス許可は下記「担当表機能（ユーザー配下）」を参照。
     match /teams/{teamId} {
       allow read, write: if false;
     }
@@ -224,7 +227,8 @@ service cloud.firestore {
       allow read, write: if isOwner(userId);
     }
 
-    // メタ情報（サーバー時刻取得など）
+    // グローバル _meta（ルート直下）は使用していない。
+    // サーバー時刻取得などのメタ情報は /users/{userId}/_meta/{docId} を使用する（上記参照）。
     match /_meta/{document=**} {
       allow read, write: if false;
     }
