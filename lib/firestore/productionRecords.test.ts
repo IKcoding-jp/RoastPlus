@@ -8,6 +8,14 @@ interface FirestoreTransactionMock {
 }
 
 const firestoreMocks = vi.hoisted(() => {
+  // 実SDKの Timestamp の代役。レガシーcreatedAt修復の instanceof 判定（issue #519）に使う
+  class Timestamp {
+    constructor(
+      public seconds: number,
+      public nanoseconds: number
+    ) {}
+  }
+
   const transaction: FirestoreTransactionMock = {
     get: vi.fn(),
     set: vi.fn(),
@@ -17,6 +25,7 @@ const firestoreMocks = vi.hoisted(() => {
 
   return {
     transaction,
+    Timestamp,
     getFirestore: vi.fn(() => ({ app: 'mock-firestore' })),
     collection: vi.fn((first: { path?: string } | unknown, ...segments: string[]) => {
       const basePath =
@@ -68,6 +77,7 @@ vi.mock('firebase/firestore', () => ({
   query: firestoreMocks.query,
   runTransaction: firestoreMocks.runTransaction,
   serverTimestamp: firestoreMocks.serverTimestamp,
+  Timestamp: firestoreMocks.Timestamp,
   where: firestoreMocks.where,
 }));
 
@@ -261,9 +271,10 @@ describe('saveProductionRecordMonth', () => {
   });
 
   it('preserves createdAt when updating an existing month document', async () => {
+    const existingCreatedAt = new firestoreMocks.Timestamp(100, 0);
     firestoreMocks.transaction.get.mockResolvedValue({
       exists: () => true,
-      data: () => ({ createdAt: 'existing-created-at' }),
+      data: () => ({ createdAt: existingCreatedAt }),
     });
     const { saveProductionRecordMonth } = await import('./productionRecords');
 
@@ -277,10 +288,53 @@ describe('saveProductionRecordMonth', () => {
     expect(firestoreMocks.transaction.set).toHaveBeenCalledWith(
       expect.objectContaining({ path: 'users/user-1/productionRecords/2026-08' }),
       expect.objectContaining({
-        createdAt: 'existing-created-at',
+        createdAt: existingCreatedAt,
         updatedAt: 'server-timestamp',
       })
     );
+  });
+
+  // issue #519: 旧removeUndefinedFieldsのバグでmapとして保存されたcreatedAtは
+  // Timestampとして読み戻せないため、編集時にserverTimestamp()で振り直して自然修復する
+  it('replaces a legacy map-shaped createdAt with serverTimestamp (issue #519)', async () => {
+    firestoreMocks.transaction.get.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ createdAt: { _methodName: 'serverTimestamp' } }),
+    });
+    const { saveProductionRecordMonth } = await import('./productionRecords');
+
+    await saveProductionRecordMonth('user-1', {
+      month: '2026-08',
+      greenBeanTotalGram: 30000,
+      powderPerPackGram: 8.5,
+      blendItems: [{ beanName: 'ブラジル', ratioPercent: 100 }],
+    });
+
+    expect(firestoreMocks.transaction.set).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ createdAt: 'server-timestamp', updatedAt: 'server-timestamp' })
+    );
+  });
+
+  // 旧クライアント（古いSWキャッシュ）がTimestampを{seconds,nanoseconds}のmapに
+  // 破壊した場合は、真の作成時刻を持つためTimestampとして復元する
+  it('rebuilds a flattened {seconds, nanoseconds} createdAt as a Timestamp (issue #519)', async () => {
+    firestoreMocks.transaction.get.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ createdAt: { seconds: 1748500000, nanoseconds: 5 } }),
+    });
+    const { saveProductionRecordMonth } = await import('./productionRecords');
+
+    await saveProductionRecordMonth('user-1', {
+      month: '2026-08',
+      greenBeanTotalGram: 30000,
+      powderPerPackGram: 8.5,
+      blendItems: [{ beanName: 'ブラジル', ratioPercent: 100 }],
+    });
+
+    const savedData = firestoreMocks.transaction.set.mock.calls[0][1] as { createdAt: unknown };
+    expect(savedData.createdAt).toBeInstanceOf(firestoreMocks.Timestamp);
+    expect(savedData.createdAt).toMatchObject({ seconds: 1748500000, nanoseconds: 5 });
   });
 });
 
@@ -443,9 +497,10 @@ describe('saveHandpickEntry', () => {
   });
 
   it('preserves createdAt when overwriting an existing record (same key)', async () => {
+    const existingCreatedAt = new firestoreMocks.Timestamp(100, 0);
     firestoreMocks.transaction.get.mockResolvedValue({
       exists: () => true,
-      data: () => ({ createdAt: 'existing-created-at' }),
+      data: () => ({ createdAt: existingCreatedAt }),
     });
     const { saveHandpickEntry } = await import('./productionRecords');
 
@@ -459,8 +514,49 @@ describe('saveHandpickEntry', () => {
 
     expect(firestoreMocks.transaction.set).toHaveBeenCalledWith(
       expect.anything(),
-      expect.objectContaining({ createdAt: 'existing-created-at', updatedAt: 'server-timestamp' })
+      expect.objectContaining({ createdAt: existingCreatedAt, updatedAt: 'server-timestamp' })
     );
+  });
+
+  it('replaces a legacy map-shaped createdAt with serverTimestamp (issue #519)', async () => {
+    firestoreMocks.transaction.get.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ createdAt: { _methodName: 'serverTimestamp' } }),
+    });
+    const { saveHandpickEntry } = await import('./productionRecords');
+
+    await saveHandpickEntry('user-1', '2026-08', {
+      workDate: '2026-08-10',
+      beanName: 'ブラジル',
+      segment: 'first',
+      greenBeanWeightGram: 10000,
+      defectBeanWeightGram: 300,
+    });
+
+    expect(firestoreMocks.transaction.set).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ createdAt: 'server-timestamp', updatedAt: 'server-timestamp' })
+    );
+  });
+
+  it('rebuilds a flattened {seconds, nanoseconds} createdAt as a Timestamp (issue #519)', async () => {
+    firestoreMocks.transaction.get.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ createdAt: { seconds: 1748500000, nanoseconds: 5 } }),
+    });
+    const { saveHandpickEntry } = await import('./productionRecords');
+
+    await saveHandpickEntry('user-1', '2026-08', {
+      workDate: '2026-08-10',
+      beanName: 'ブラジル',
+      segment: 'first',
+      greenBeanWeightGram: 10000,
+      defectBeanWeightGram: 300,
+    });
+
+    const savedData = firestoreMocks.transaction.set.mock.calls[0][1] as { createdAt: unknown };
+    expect(savedData.createdAt).toBeInstanceOf(firestoreMocks.Timestamp);
+    expect(savedData.createdAt).toMatchObject({ seconds: 1748500000, nanoseconds: 5 });
   });
 
   it('deletes the previous doc when editing changes the key (rekey)', async () => {
@@ -583,6 +679,25 @@ describe('saveRoastEntry', () => {
     expect(firestoreMocks.transaction.delete).not.toHaveBeenCalled();
   });
 
+  it('replaces a legacy map-shaped createdAt with serverTimestamp (issue #519)', async () => {
+    firestoreMocks.transaction.get.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ createdAt: { _methodName: 'serverTimestamp' } }),
+    });
+    const { saveRoastEntry } = await import('./productionRecords');
+
+    await saveRoastEntry('user-1', '2026-08', {
+      workDate: '2026-08-10',
+      beforeRoastWeightGram: 10000,
+      afterRoastWeightGram: 8200,
+    });
+
+    expect(firestoreMocks.transaction.set).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ createdAt: 'server-timestamp', updatedAt: 'server-timestamp' })
+    );
+  });
+
   it('deletes the previous doc when the work date changes (rekey)', async () => {
     const { saveRoastEntry } = await import('./productionRecords');
 
@@ -692,6 +807,25 @@ describe('savePackageEntry', () => {
       }
     );
     expect(firestoreMocks.transaction.delete).not.toHaveBeenCalled();
+  });
+
+  it('replaces a legacy map-shaped createdAt with serverTimestamp (issue #519)', async () => {
+    firestoreMocks.transaction.get.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ createdAt: { _methodName: 'serverTimestamp' } }),
+    });
+    const { savePackageEntry } = await import('./productionRecords');
+
+    await savePackageEntry('user-1', '2026-08', {
+      workDate: '2026-08-10',
+      teamA: { goodCount: 120, defectiveCount: 4 },
+      teamB: { goodCount: 90, defectiveCount: 2 },
+    });
+
+    expect(firestoreMocks.transaction.set).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ createdAt: 'server-timestamp', updatedAt: 'server-timestamp' })
+    );
   });
 
   it('deletes the previous doc when the work date changes (rekey)', async () => {

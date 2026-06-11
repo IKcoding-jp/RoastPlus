@@ -10,9 +10,10 @@ service cloud.firestore {
     // 負値・巨大値・想定外フィールドの書き込みを実行時に拒否する。
     // 上限値はクライアントには無いRules独自の安全弁（正常業務で絶対に到達しない値）。
     //
-    // 注意: createdAt / updatedAt の型は検証しない。既存クライアントは removeUndefinedFields が
-    // serverTimestamp() センチネルを map に変換したまま書き込んでおり（本番データも同形）、
-    // timestamp 型を強制すると全保存が拒否されるため。キーのホワイトリストのみ行う。
+    // 注意: createdAt / updatedAt の型は検証しない（issue #519）。修正前クライアントが
+    // serverTimestamp() センチネルを map に変換したまま書き込んだレガシーdocが本番に残っており、
+    // 古いSWキャッシュの未更新クライアントも当面 map を書き続けるため、timestamp 型を強制すると
+    // 保存が拒否される。全クライアント更新＋レガシーdoc修復の完了後に `is timestamp` を解禁できる。
 
     // 対象月: 'YYYY-MM'（月は01〜12）
     function isYearMonthText(value) {

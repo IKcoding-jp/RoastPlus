@@ -8,6 +8,7 @@ import {
   query,
   runTransaction,
   serverTimestamp,
+  Timestamp,
   type DocumentData,
   type Unsubscribe,
 } from 'firebase/firestore';
@@ -39,6 +40,25 @@ function assertValidMonth(month: string): void {
   if (!isValidProductionMonth(month)) {
     throw new Error('対象月が正しくありません');
   }
+}
+
+/**
+ * 既存docのcreatedAtを保持しつつ、レガシーデータを修復する（issue #519）。
+ * 旧removeUndefinedFieldsのバグで保存されたcreatedAtには2形ある:
+ * - {_methodName:'serverTimestamp'}: 時刻情報なし → serverTimestamp()で振り直す
+ * - {seconds, nanoseconds}: Timestampが破壊された形。真の作成時刻を持つ → Timestampに復元する
+ */
+function restoreCreatedAt(value: unknown) {
+  if (value instanceof Timestamp) {
+    return value;
+  }
+  if (value && typeof value === 'object') {
+    const { seconds, nanoseconds } = value as { seconds?: unknown; nanoseconds?: unknown };
+    if (typeof seconds === 'number' && typeof nanoseconds === 'number') {
+      return new Timestamp(seconds, nanoseconds);
+    }
+  }
+  return serverTimestamp();
 }
 
 export function getProductionRecordsCollectionRef(userId: string) {
@@ -129,7 +149,7 @@ export async function saveProductionRecordMonth(userId: string, input: Productio
       docRef,
       removeUndefinedFields({
         ...record,
-        createdAt: existingData?.createdAt ?? serverTimestamp(),
+        createdAt: restoreCreatedAt(existingData?.createdAt),
         updatedAt: serverTimestamp(),
       })
     );
@@ -241,7 +261,7 @@ export async function saveHandpickEntry(
     if (previousId && previousId !== id && snapshot.exists()) {
       throw new Error('同じ日付・区分・豆名の記録が既にあります。先にそちらを確認してください');
     }
-    const createdAt = snapshot.exists() ? (snapshot.data()?.createdAt ?? serverTimestamp()) : serverTimestamp();
+    const createdAt = restoreCreatedAt(snapshot.data()?.createdAt);
     if (previousId && previousId !== id) {
       transaction.delete(doc(colRef, previousId));
     }
@@ -315,7 +335,7 @@ export async function saveRoastEntry(
     if (previousId && previousId !== id && snapshot.exists()) {
       throw new Error('同じ日付の焙煎記録が既にあります。先にそちらを確認してください');
     }
-    const createdAt = snapshot.exists() ? (snapshot.data()?.createdAt ?? serverTimestamp()) : serverTimestamp();
+    const createdAt = restoreCreatedAt(snapshot.data()?.createdAt);
     if (previousId && previousId !== id) {
       transaction.delete(doc(colRef, previousId));
     }
@@ -398,7 +418,7 @@ export async function savePackageEntry(
     if (previousId && previousId !== id && snapshot.exists()) {
       throw new Error('同じ日付のパッケージ記録が既にあります。先にそちらを確認してください');
     }
-    const createdAt = snapshot.exists() ? (snapshot.data()?.createdAt ?? serverTimestamp()) : serverTimestamp();
+    const createdAt = restoreCreatedAt(snapshot.data()?.createdAt);
     if (previousId && previousId !== id) {
       transaction.delete(doc(colRef, previousId));
     }

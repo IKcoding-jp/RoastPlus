@@ -54,6 +54,44 @@ describe('removeUndefinedFields', () => {
     const result = removeUndefinedFields(input);
     expect(result).toEqual({}); // { a: {} } → aは空オブジェクトなので削除
   });
+
+  // issue #519: クラスインスタンス（FieldValueセンチネル・Timestamp・Date等）を
+  // プレーンオブジェクトに再構築すると、Firestore SDK がセンチネルとして認識できなくなる
+  class FieldValueLike {
+    _methodName = 'serverTimestamp';
+  }
+
+  it('serverTimestamp()センチネル相当のクラスインスタンスを同一参照のまま素通しする', () => {
+    const sentinel = new FieldValueLike();
+    const result = removeUndefinedFields({ createdAt: sentinel, a: 1 });
+    expect(result.createdAt).toBe(sentinel);
+    expect(result.a).toBe(1);
+  });
+
+  it('Timestamp相当のクラスインスタンスを同一参照のまま素通しする', () => {
+    class TimestampLike {
+      constructor(
+        public seconds: number,
+        public nanoseconds: number
+      ) {}
+    }
+    const timestamp = new TimestampLike(100, 0);
+    const result = removeUndefinedFields({ updatedAt: timestamp });
+    expect(result.updatedAt).toBe(timestamp);
+  });
+
+  it('Dateインスタンスを削除せず素通しする', () => {
+    const date = new Date('2026-06-11T00:00:00Z');
+    const result = removeUndefinedFields({ at: date });
+    expect(result.at).toBe(date);
+  });
+
+  it('ネストしたプレーンオブジェクト内のクラスインスタンスも素通しする', () => {
+    const sentinel = new FieldValueLike();
+    const result = removeUndefinedFields({ nested: { createdAt: sentinel, junk: undefined } });
+    expect(result.nested.createdAt).toBe(sentinel);
+    expect('junk' in result.nested).toBe(false);
+  });
 });
 
 describe('normalizeAppData', () => {
