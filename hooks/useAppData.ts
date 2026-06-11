@@ -277,6 +277,8 @@ export function useAppData() {
           updatedFields: mutatedKeys,
         });
       } catch (error) {
+        // ユーザーへの通知は write-queue の reportSaveError が行うため（issue #497）、
+        // ここでは「失敗した変更を破棄してサーバーの状態へ巻き戻す」ことに専念する
         saveError = error;
         console.error('Failed to save data:', error);
         lockedKeysRef.current.clear();

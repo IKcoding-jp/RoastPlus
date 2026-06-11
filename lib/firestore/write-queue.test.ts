@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { getSaveError, clearSaveError } from '@/lib/syncStatus';
 import type { AppData } from '@/types';
 
 const firestoreMocks = vi.hoisted(() => {
@@ -114,5 +115,93 @@ describe('saveUserData root write behavior', () => {
 
     expect(rootWritePayloads()).toHaveLength(1);
     expect(rootWritePayloads()[0]).toEqual({ encouragementCount: 9 });
+  });
+});
+
+describe('保存失敗時のユーザー通知（issue #497）', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-06-11T00:00:00.000Z'));
+    vi.clearAllMocks();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    clearSaveError();
+    firestoreMocks.setDoc.mockResolvedValue(undefined);
+    firestoreMocks.batch.commit.mockResolvedValue(undefined);
+  });
+
+  afterEach(async () => {
+    const { clearWriteQueueStateForTests } = await import('./userData/write-queue');
+    clearWriteQueueStateForTests();
+    clearSaveError();
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
+
+  function firestoreError(code: string): Error {
+    return Object.assign(new Error(`mock firestore error: ${code}`), { code });
+  }
+
+  it('保存が最終的に失敗したら saveError を報告し promise を reject する', async () => {
+    const { saveUserData, SAVE_USER_DATA_DEBOUNCE_MS } = await import('./userData');
+
+    firestoreMocks.batch.commit.mockRejectedValue(firestoreError('permission-denied'));
+
+    const savePromise = saveUserData('user-1', appData());
+    const rejection = expect(savePromise).rejects.toMatchObject({ code: 'permission-denied' });
+
+    await flushSaveTimers(SAVE_USER_DATA_DEBOUNCE_MS);
+    await rejection;
+
+    expect(getSaveError()).toBe('permission-denied');
+  });
+
+  it('呼び出し側が await も catch もしない経路でも saveError が報告される', async () => {
+    const { saveUserData, SAVE_USER_DATA_DEBOUNCE_MS } = await import('./userData');
+
+    firestoreMocks.batch.commit.mockRejectedValue(firestoreError('unavailable'));
+
+    // 戻り値を完全に無視する（catch 漏れの再現）。
+    // テストランナーの未処理 rejection 検出を避けるため catch だけ握る
+    void saveUserData('user-1', appData()).catch(() => {});
+
+    await flushSaveTimers(SAVE_USER_DATA_DEBOUNCE_MS);
+
+    expect(getSaveError()).toBe('unavailable');
+  });
+
+  it('リトライ対象エラー（resource-exhausted）も全リトライ失敗後に saveError を報告する', async () => {
+    const { saveUserData, SAVE_USER_DATA_DEBOUNCE_MS } = await import('./userData');
+
+    firestoreMocks.batch.commit.mockRejectedValue(firestoreError('resource-exhausted'));
+
+    const savePromise = saveUserData('user-1', appData());
+    const rejection = expect(savePromise).rejects.toMatchObject({ code: 'resource-exhausted' });
+
+    // デバウンス + 指数バックオフ（1s+2s+4s）を全て消化する
+    await flushSaveTimers(SAVE_USER_DATA_DEBOUNCE_MS);
+    await rejection;
+
+    expect(getSaveError()).toBe('unknown');
+  });
+
+  it('次の保存が成功したら saveError をクリアする', async () => {
+    const { saveUserData, SAVE_USER_DATA_DEBOUNCE_MS } = await import('./userData');
+
+    // 1回目: 失敗
+    firestoreMocks.batch.commit.mockRejectedValue(firestoreError('permission-denied'));
+    const failedSave = saveUserData('user-1', appData());
+    const rejection = expect(failedSave).rejects.toMatchObject({ code: 'permission-denied' });
+    await flushSaveTimers(SAVE_USER_DATA_DEBOUNCE_MS);
+    await rejection;
+    expect(getSaveError()).toBe('permission-denied');
+
+    // 2回目: 成功 → 「保存できていない」状態は解除される
+    firestoreMocks.batch.commit.mockResolvedValue(undefined);
+    const successSave = saveUserData('user-1', appData());
+    await flushSaveTimers(SAVE_USER_DATA_DEBOUNCE_MS);
+    await successSave;
+
+    expect(getSaveError()).toBeNull();
   });
 });
