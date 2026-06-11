@@ -39,12 +39,7 @@ export function PackageColumn({
 
       <div className="grid grid-cols-3 gap-2">
         <ColumnStat label="良品数" value={goodTotal} labelClassName="text-info" valueClassName="text-info" />
-        <ColumnStat
-          label="不良品数"
-          value={defectiveTotal}
-          labelClassName="text-danger"
-          valueClassName="text-danger"
-        />
+        <ColumnStat label="不良品数" value={defectiveTotal} labelClassName="text-danger" valueClassName="text-danger" />
         <ColumnStat label="生産個数" value={producedTotal} />
       </div>
 
