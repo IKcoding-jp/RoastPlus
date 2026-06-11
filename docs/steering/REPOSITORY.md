@@ -366,6 +366,8 @@ types/ → lib/ → hooks/ → components/ → app/
 | `components/` | `types/`, `lib/`, `hooks/` |
 | `app/` | すべてに依存可能 |
 
+**ESLintで強制**: `lib/**` から `@/components/*` への import は `no-restricted-imports` ルールでエラーになります（`eslint.config.mjs` 参照）。
+
 ---
 
 ## 禁止事項
