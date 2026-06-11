@@ -7,7 +7,12 @@ declare global {
 }
 
 type AudioContextLike = Pick<AudioContext, 'currentTime' | 'destination' | 'createOscillator' | 'createGain'> &
-  Partial<Pick<AudioContext, 'state' | 'resume' | 'createDynamicsCompressor'>>;
+  Partial<
+    Pick<
+      AudioContext,
+      'state' | 'resume' | 'close' | 'createDynamicsCompressor' | 'createBuffer' | 'createBufferSource' | 'sampleRate'
+    >
+  >;
 
 // iPad のスピーカーは中低域が弱く、純音ベースのチャイムは知覚的に小さい。詳細設定の音量(master)を
 // 100% にしても合成音側の gain が控えめでヘッドルームが余っているため、合成音側だけを底上げする
@@ -56,6 +61,11 @@ function needsResume(state: AudioContextStateLike): boolean {
 }
 
 let workChimeAudioContext: AudioContextLike | null = null;
+
+// iPadOS WebKit はバックグラウンド復帰後、AudioContext が state='running' を報告するのに
+// 実際には音が出ない「ゾンビ状態」になることがある。state を信頼できない間（復帰直後〜
+// プローブ完了まで）はこのフラグで ready 判定を fail-closed に倒す。
+let audioHealthSuspect = false;
 
 function createAudioContext(): AudioContextLike | null {
   if (typeof window === 'undefined') return null;
@@ -184,15 +194,135 @@ async function scheduleWorkChime(ctx: AudioContextLike, kind: WorkChimeKind, vol
   return true;
 }
 
-export function isWorkChimeAudioReady(): boolean {
-  if (!workChimeAudioContext) return false;
-  const state = getContextState(workChimeAudioContext);
-  return state !== 'suspended' && state !== 'closed' && state !== 'interrupted';
+// 1サンプルの無音バッファを再生して context を駆動する。iOS の定番アンロック手法であり、
+// currentTime プローブの前提条件（ノードを最低1つスケジュールして時計を進める）でもある。
+// createBuffer / createBufferSource 非対応環境では何もしない。
+function kickAudioContext(ctx: AudioContextLike): void {
+  if (!ctx.createBuffer || !ctx.createBufferSource) return;
+
+  try {
+    const buffer = ctx.createBuffer(1, 1, ctx.sampleRate ?? 44100);
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    source.connect(ctx.destination);
+    source.start(0);
+  } catch (error) {
+    console.warn('Failed to kick work chime audio context:', error);
+  }
 }
 
-export async function resumeWorkChimeAudio(): Promise<boolean> {
+type WorkChimeAudioHealth = 'alive' | 'needs-gesture' | 'zombie' | 'unavailable';
+
+// resume 試行と currentTime プローブの結果から AudioContext の生死を判定する純粋関数。
+// 'running' を自己申告していても時計が進んでいなければゾンビ（iPadOS WebKit の既知バグ）。
+export function classifyWorkChimeAudioHealth(input: {
+  state: AudioContextStateLike;
+  resumed: boolean;
+  timeBefore: number;
+  timeAfter: number;
+}): WorkChimeAudioHealth {
+  if (input.state === 'closed') return 'unavailable';
+  if (!input.resumed || needsResume(input.state)) return 'needs-gesture';
+  // state 非対応環境では検証できないため申告どおり扱う。
+  if (input.state !== 'running') return 'alive';
+  return input.timeAfter > input.timeBefore ? 'alive' : 'zombie';
+}
+
+const DEFAULT_PROBE_DELAY_MS = 250;
+
+function defaultWait(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+interface ProbeWorkChimeAudioOptions {
+  probeDelayMs?: number;
+  wait?: (ms: number) => Promise<void>;
+  audioContext?: AudioContextLike;
+}
+
+// resume → 無音キック → 待機 → currentTime の進行確認、で実際に音が出せる状態かを実測する。
+export async function probeWorkChimeAudioHealth(options: ProbeWorkChimeAudioOptions = {}): Promise<WorkChimeAudioHealth> {
+  const ctx = options.audioContext ?? workChimeAudioContext;
+  if (!ctx) return 'unavailable';
+
+  const resumed = await resumeAudioContext(ctx);
+  kickAudioContext(ctx);
+  const timeBefore = ctx.currentTime;
+  await (options.wait ?? defaultWait)(options.probeDelayMs ?? DEFAULT_PROBE_DELAY_MS);
+  const timeAfter = ctx.currentTime;
+
+  return classifyWorkChimeAudioHealth({ state: getContextState(ctx), resumed, timeBefore, timeAfter });
+}
+
+// ゾンビ化した context を破棄して作り直す。iOS では新 context は suspended で始まるため
+// 戻り値は false になりやすいが、その場合は ready 判定が false になることで既存の
+// ジェスチャーリスナー・有効化バナー経由の再アンロックに自然につながる。
+async function recoverWorkChimeAudio(): Promise<boolean> {
+  const oldCtx = workChimeAudioContext;
+  workChimeAudioContext = null;
+  if (oldCtx?.close) {
+    // ゾンビ context の close() はハング・reject しうるため待たずに投げ捨てる。
+    try {
+      void Promise.resolve(oldCtx.close()).catch(() => {});
+    } catch {
+      // 破棄済み context のため無視する。
+    }
+  }
+
+  const ctx = getAudioContext();
+  if (!ctx) return false;
+
+  const resumed = await resumeAudioContext(ctx);
+  if (!resumed) return false;
+  kickAudioContext(ctx);
+  return !needsResume(getContextState(ctx));
+}
+
+// フォアグラウンド復帰時など、state を信頼できなくなったタイミングで呼ぶ。
+// 次の reviveWorkChimeAudio / unlockWorkChimeAudio が完了するまで ready 判定が false になる。
+export function markWorkChimeAudioSuspect(): void {
+  audioHealthSuspect = true;
+}
+
+let revivePromise: Promise<boolean> | null = null;
+
+// バックグラウンド復帰時の復旧 API。state の自己申告を信頼せず実測プローブで生存確認し、
+// ゾンビなら context を作り直す。focus / pageshow / visibilitychange の同時発火に備えて
+// 実行中の Promise を共有する。
+export async function reviveWorkChimeAudio(options: ProbeWorkChimeAudioOptions = {}): Promise<boolean> {
+  // 実行中なら合流する。recover 中は context が一時的に null になるため、null 判定より先に見る。
+  if (revivePromise) return revivePromise;
+  // 未アンロック（context 未生成）なら復旧対象がない。ready 判定は元々 false。
   if (!workChimeAudioContext) return false;
-  return resumeAudioContext(workChimeAudioContext);
+
+  revivePromise = (async () => {
+    try {
+      const health = await probeWorkChimeAudioHealth(options);
+      // プローブ完了後は判定結果（または作り直した新 context の state）を信頼できる。
+      audioHealthSuspect = false;
+
+      if (health === 'alive') return true;
+      if (health === 'zombie') {
+        console.warn('Work chime audio context is zombie (state=running but clock stalled); recreating.');
+        return recoverWorkChimeAudio();
+      }
+      // 'needs-gesture': state が正しく suspended/interrupted を報告しており、
+      // 既存のジェスチャーリスナー・バナー経由で復帰できる。'unavailable' は復帰不能。
+      return false;
+    } finally {
+      revivePromise = null;
+    }
+  })();
+
+  return revivePromise;
+}
+
+export function isWorkChimeAudioReady(): boolean {
+  if (!workChimeAudioContext) return false;
+  // 復帰直後〜プローブ完了までは state が嘘をついている可能性があるため鳴らせる扱いにしない。
+  if (audioHealthSuspect) return false;
+  const state = getContextState(workChimeAudioContext);
+  return state !== 'suspended' && state !== 'closed' && state !== 'interrupted';
 }
 
 export async function unlockWorkChimeAudio(): Promise<boolean> {
@@ -200,7 +330,21 @@ export async function unlockWorkChimeAudio(): Promise<boolean> {
   if (!ctx) return false;
 
   try {
-    return await scheduleWorkChime(ctx, 'work-start', 0);
+    const unlocked = await scheduleWorkChime(ctx, 'work-start', 0);
+    if (unlocked) {
+      // ユーザージェスチャー起点の確実なアンロックなので、無音バッファでも context を蹴り、
+      // ゾンビ疑いを解除する（設定モーダルの「テスト再生」と同等の復旧力を持たせる）。
+      kickAudioContext(ctx);
+      const wasSuspect = audioHealthSuspect;
+      audioHealthSuspect = false;
+      if (wasSuspect) {
+        // ゾンビは resume / スケジュールの成功すら偽申告するため、疑い中のアンロックは
+        // 事後に実測プローブで検証し、死んでいたら作り直す（結果は ready 判定経由で
+        // 次のチャイム発火・ユーザー操作に反映される）。
+        void reviveWorkChimeAudio();
+      }
+    }
+    return unlocked;
   } catch (error) {
     console.warn('Failed to unlock work chime audio:', error);
     return false;

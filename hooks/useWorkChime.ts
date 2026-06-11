@@ -2,7 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { isWorkChimeAudioReady, playWorkChime, resumeWorkChimeAudio, unlockWorkChimeAudio } from '@/lib/workChimeAudio';
+import {
+  isWorkChimeAudioReady,
+  markWorkChimeAudioSuspect,
+  playWorkChime,
+  reviveWorkChimeAudio,
+  unlockWorkChimeAudio,
+} from '@/lib/workChimeAudio';
 import {
   getCurrentWorkChimePeriod,
   getDueWorkChimeSince,
@@ -131,6 +137,15 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
       // 鳴らせない状態なので有効フラグを下げ、「有効化」ボタンを出して
       // 次のユーザー操作で復帰できるようにする。
       setIsAudioEnabled(false);
+      if (settings.soundEnabled) {
+        // 復帰直後の生存確認中にチャイム時刻をまたいだ場合に備え、復旧できたら遅れて鳴らす。
+        void reviveWorkChimeAudio().then((revived) => {
+          setIsAudioEnabled(revived);
+          if (revived) {
+            void playWorkChime(due.kind, { volume: settings.volume });
+          }
+        });
+      }
     }
 
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -140,16 +155,17 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
     }, 5000);
   }, [now, settings]);
 
-  // フォアグラウンド復帰時、suspended でも即 disable せず resume を試みて自動復旧する。
+  // フォアグラウンド復帰時の自動復旧。iPadOS WebKit はバックグラウンド復帰後に
+  // state='running' を報告したまま実際は音が出ない「ゾンビ状態」になることがあるため、
+  // state（isWorkChimeAudioReady）を信頼せず、必ず実測プローブ（revive）で生存確認する。
   useEffect(() => {
     if (typeof window === 'undefined' || typeof document === 'undefined') return;
 
     const refreshAudioState = () => {
-      if (isWorkChimeAudioReady()) {
-        setIsAudioEnabled(true);
-        return;
-      }
-      void resumeWorkChimeAudio().then(setIsAudioEnabled);
+      // 非表示への遷移時は判定できないため何もしない（復帰側のイベントだけ処理する）。
+      if (document.visibilityState === 'hidden') return;
+      markWorkChimeAudioSuspect();
+      void reviveWorkChimeAudio().then(setIsAudioEnabled);
     };
 
     window.addEventListener('focus', refreshAudioState);
@@ -165,6 +181,8 @@ export function useWorkChime(now: Date | null): UseWorkChimeReturn {
 
   // 画面上の任意のユーザー操作でオーディオを自動的に有効化する。
   // ボタンを押し直さなくても、タップ／クリック／キー操作だけで suspended から復帰できる。
+  // ゾンビ疑い中や作り直し直後の context は ready が false になるため、必要な場面では
+  // 必ず unlockWorkChimeAudio() が走る（正常時の毎タップの無駄なノード生成は避ける）。
   useEffect(() => {
     if (typeof document === 'undefined') return;
 
