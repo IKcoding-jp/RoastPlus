@@ -19,7 +19,9 @@ import {
   formatKg,
   formatPercent,
   formatProductionMonthLabel,
+  getCurrentProductionMonth,
   getProductionRecordCsvFileName,
+  getTodayWorkDate,
   isValidProductionMonth,
   isValidWorkDate,
   normalizeCountInput,
@@ -65,6 +67,23 @@ describe('isValidWorkDate', () => {
     expect(isValidWorkDate('2026-08-32')).toBe(false);
     expect(isValidWorkDate('2026-8-15')).toBe(false);
     expect(isValidWorkDate('2026-08')).toBe(false);
+  });
+});
+
+describe('getCurrentProductionMonth', () => {
+  it('formats local time as yyyy-MM with zero-padded month', () => {
+    // 1月→01 / 9月→09 の0埋めと、年の連結を確認（ローカル時刻基準で組む）
+    expect(getCurrentProductionMonth(new Date(2026, 0, 15))).toBe('2026-01');
+    expect(getCurrentProductionMonth(new Date(2026, 8, 1))).toBe('2026-09');
+    expect(getCurrentProductionMonth(new Date(2026, 11, 31))).toBe('2026-12');
+  });
+});
+
+describe('getTodayWorkDate', () => {
+  it('formats local time as yyyy-MM-dd with zero-padded month and day', () => {
+    // 月・日とも0埋め（1月5日→01-05）。toISOString()不使用のため深夜でも日付がまたがらない
+    expect(getTodayWorkDate(new Date(2026, 0, 5))).toBe('2026-01-05');
+    expect(getTodayWorkDate(new Date(2026, 11, 31, 23, 59))).toBe('2026-12-31');
   });
 });
 
