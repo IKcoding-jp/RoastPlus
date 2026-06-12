@@ -1,9 +1,18 @@
 // Service Worker for PWA
-const CACHE_NAME = 'roast-plus-v6';
-const RUNTIME_CACHE = 'roast-plus-runtime-v7';
+//
+// キャッシュバージョン運用ルール（docs/steering/TECH_SPEC.md「PWA」参照）:
+// - このファイルを変更したら SW_VERSION を必ず +1 する（上げ忘れると古い画面が配信され続ける）
+// - CACHE_NAME / RUNTIME_CACHE は SW_VERSION から導出し、番号は常に一致させる（lib/pwa/sw.test.ts で検証）
+// - バージョンを上げると activate 時に旧キャッシュが全削除される（実行時キャッシュもリセット）
+const SW_VERSION = 8;
+const CACHE_NAME = `roast-plus-v${SW_VERSION}`;
+const RUNTIME_CACHE = `roast-plus-runtime-v${SW_VERSION}`;
 const MAX_RUNTIME_CACHE_ENTRIES = 80;
 
-// キャッシュするリソース
+// プリキャッシュ対象（最小アプリシェルのみ）
+// 方針: 現場iPadは常時WiFi接続でオフライン利用はほぼ発生しないため、
+// 未訪問ページのオフライン表示は保証しない（docs/steering/TECH_SPEC.md「プリキャッシュ方針」参照）。
+// 一度訪問したページは実行時キャッシュ（Network First）でオフラインでも表示できる。
 const PRECACHE_URLS = [
   '/',
   '/index.html',

@@ -13,6 +13,9 @@ interface ServiceWorkerContext {
   }) => Promise<void>;
   __getNavigationFallback: () => Promise<Response>;
   __MAX_RUNTIME_CACHE_ENTRIES?: number;
+  __SW_VERSION?: number;
+  __CACHE_NAME?: string;
+  __RUNTIME_CACHE?: string;
   __PRECACHE_URLS: string[];
   caches: {
     open?: () => Promise<{ put: (request: Request, response: Response) => Promise<void> }>;
@@ -57,6 +60,9 @@ globalThis.__putInRuntimeCache = putInRuntimeCache;
 globalThis.__trimRuntimeCache = typeof trimRuntimeCache === 'undefined' ? undefined : trimRuntimeCache;
 globalThis.__getNavigationFallback = getNavigationFallback;
 globalThis.__MAX_RUNTIME_CACHE_ENTRIES = typeof MAX_RUNTIME_CACHE_ENTRIES === 'undefined' ? undefined : MAX_RUNTIME_CACHE_ENTRIES;
+globalThis.__SW_VERSION = typeof SW_VERSION === 'undefined' ? undefined : SW_VERSION;
+globalThis.__CACHE_NAME = typeof CACHE_NAME === 'undefined' ? undefined : CACHE_NAME;
+globalThis.__RUNTIME_CACHE = typeof RUNTIME_CACHE === 'undefined' ? undefined : RUNTIME_CACHE;
 globalThis.__PRECACHE_URLS = PRECACHE_URLS;`,
     context
   );
@@ -116,6 +122,34 @@ describe('PWA Service Worker navigation paths', () => {
       .filter(({ filePath }) => !existsSync(filePath));
 
     expect(missingIcons).toEqual([]);
+  });
+});
+
+describe('PWA Service Worker cache version', () => {
+  it('CACHE_NAME と RUNTIME_CACHE は単一の SW_VERSION から導出する', () => {
+    const { __SW_VERSION, __CACHE_NAME, __RUNTIME_CACHE } = loadServiceWorkerContext();
+
+    expect(__SW_VERSION).toBeTypeOf('number');
+    expect(__CACHE_NAME).toBe(`roast-plus-v${__SW_VERSION}`);
+    expect(__RUNTIME_CACHE).toBe(`roast-plus-runtime-v${__SW_VERSION}`);
+  });
+});
+
+describe('PWA Service Worker precache policy', () => {
+  it('プリキャッシュ一覧は最小アプリシェル方針と一致する（docs/steering/TECH_SPEC.md「PWA」参照）', () => {
+    const { __PRECACHE_URLS } = loadServiceWorkerContext();
+
+    // 方針: 未訪問ページのオフライン表示は保証しない（現場iPadは常時WiFi接続）。
+    // この一覧を変更する場合は TECH_SPEC.md の「プリキャッシュ方針」も同時に更新すること。
+    expect(__PRECACHE_URLS).toEqual([
+      '/',
+      '/index.html',
+      '/assignment/index.html',
+      '/settings/index.html',
+      '/login/index.html',
+      '/notifications/index.html',
+      '/android-chrome-192x192.png',
+    ]);
   });
 });
 
