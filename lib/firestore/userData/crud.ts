@@ -1,11 +1,51 @@
 // ユーザーデータのCRUD操作
 
-import { setDoc, getDoc, onSnapshot } from 'firebase/firestore';
+import { setDoc, getDoc, getDocFromCache, onSnapshot, type DocumentSnapshot } from 'firebase/firestore';
 import { getUserDocRef, removeUndefinedFields, normalizeAppData, defaultData } from '../common';
 import { isE2EMode, loadE2EAppData, saveE2EAppData } from '@/lib/e2eMode';
 import { reportSyncError, clearSyncError, toSyncErrorType } from '@/lib/syncStatus';
 import type { AppData } from '@/types';
 import { writeQueues, SAVE_USER_DATA_DEBOUNCE_MS, executeWrite, type SaveUserDataOptions } from './write-queue';
+
+// iOS PWAのバックグラウンド復帰後、SDKが切断に気付かない「ゾンビ接続」状態だと
+// getDoc（サーバー優先）はエラーにもならず永遠に未解決になる。
+// タイムアウトしたら端末内キャッシュ（IndexedDB永続化）へフォールバックして、
+// 無限「読み込み中」を防ぐ。
+export const GET_USER_DATA_TIMEOUT_MS = 8000;
+
+const SERVER_TIMEOUT = Symbol('server-timeout');
+
+async function getDocWithCacheFallback(userDocRef: ReturnType<typeof getUserDocRef>): Promise<DocumentSnapshot> {
+  const serverPromise = getDoc(userDocRef);
+
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  const timeoutPromise = new Promise<typeof SERVER_TIMEOUT>((resolve) => {
+    timeoutId = setTimeout(() => resolve(SERVER_TIMEOUT), GET_USER_DATA_TIMEOUT_MS);
+  });
+
+  try {
+    const result = await Promise.race([serverPromise, timeoutPromise]);
+    if (result !== SERVER_TIMEOUT) {
+      return result;
+    }
+  } finally {
+    clearTimeout(timeoutId);
+  }
+
+  // タイムアウト後にサーバー応答が拒否されても未処理Promise rejectionにしない
+  // （握りつぶさずログに残し、ゾンビ接続調査時に本当の失敗原因を追えるようにする）
+  serverPromise.catch((error) => {
+    console.warn('Firestore getDoc rejected after timeout:', error);
+  });
+
+  console.warn(`Firestore getDoc timed out after ${GET_USER_DATA_TIMEOUT_MS}ms, falling back to cache`);
+  try {
+    return await getDocFromCache(userDocRef);
+  } catch {
+    // キャッシュ未保持。元の異常（サーバー無応答）をエラーとして伝える
+    throw new Error(`Firestore getDoc timed out after ${GET_USER_DATA_TIMEOUT_MS}ms and no cached document exists`);
+  }
+}
 
 export async function getUserData(userId: string): Promise<AppData> {
   if (isE2EMode()) {
@@ -14,7 +54,7 @@ export async function getUserData(userId: string): Promise<AppData> {
 
   try {
     const userDocRef = getUserDocRef(userId);
-    const userDoc = await getDoc(userDocRef);
+    const userDoc = await getDocWithCacheFallback(userDocRef);
 
     if (userDoc.exists()) {
       const data = userDoc.data();

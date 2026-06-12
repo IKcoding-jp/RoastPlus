@@ -74,6 +74,16 @@ Firestoreは **last-write-wins** モデル。サーバータイムスタンプ�
 
 **オフライン時はログアウトを拒否する**（理由: 未送信の変更が消えることへの安全弁。共有端末でキャッシュを安全に消せないため）。
 
+### PWA復帰時の接続再確立（iOSゾンビ接続対策）
+
+iOS（WebKit）はPWAをバックグラウンドで凍結し、ネットワーク接続を切断する。復帰後もFirestore SDKが切断に気付かないと、`getDoc` 等のPromiseが**エラーにもならず永遠に未解決**になり、無限「読み込み中」が発生する（タスクキルでしか復帰できない）。これに対し三層で防御している。
+
+| 層 | 実装 | 内容 |
+|----|------|------|
+| 根本対処 | `hooks/useReconnectOnResume.ts`（`app/layout.tsx` に常駐） | 30秒以上バックグラウンドにいた後の復帰、またはbfcache復元（`pageshow` の `persisted`）で `disableNetwork` → `enableNetwork`（`lib/firestore/reconnect.ts`）を実行し接続を作り直す。短いタブ切替で健全な接続を壊さないようしきい値を設ける |
+| 保険 | `lib/firestore/userData/crud.ts` の `getUserData` | サーバー応答が8秒（`GET_USER_DATA_TIMEOUT_MS`）でタイムアウトしたら `getDocFromCache` にフォールバック。キャッシュも無ければエラーを throw し呼び出し側のエラー処理へ |
+| 最後の砦 | `components/Loading.tsx` | 読み込みが10秒（`RELOAD_PROMPT_DELAY_MS`）を超えたら「再読み込み」ボタンを表示。原因を問わず、タスクキルなしで復帰できる |
+
 ---
 
 ## 3. 生産記録のドキュメントID戦略

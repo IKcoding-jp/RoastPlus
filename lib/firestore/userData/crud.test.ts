@@ -1,16 +1,20 @@
 // subscribeUserData の購読エラー通知・自動再購読のテスト（issue #496）
+// getUserData のタイムアウト＋キャッシュフォールバックのテスト（iOS PWA無限ローディング対策）
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { subscribeUserData } from './crud';
+import { getUserData, subscribeUserData, GET_USER_DATA_TIMEOUT_MS } from './crud';
 import { getSyncError, clearSyncError } from '@/lib/syncStatus';
 
 const firestoreMocks = vi.hoisted(() => ({
   onSnapshot: vi.fn(),
+  getDoc: vi.fn(),
+  getDocFromCache: vi.fn(),
 }));
 
 vi.mock('firebase/firestore', () => ({
   setDoc: vi.fn(),
-  getDoc: vi.fn(),
+  getDoc: firestoreMocks.getDoc,
+  getDocFromCache: firestoreMocks.getDocFromCache,
   onSnapshot: firestoreMocks.onSnapshot,
 }));
 
@@ -52,6 +56,65 @@ function captureHandlers() {
   });
   return captured;
 }
+
+describe('getUserData のタイムアウト＋キャッシュフォールバック', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    firestoreMocks.getDoc.mockReset();
+    firestoreMocks.getDocFromCache.mockReset();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it('サーバーが時間内に応答すれば通常どおりサーバーのデータを返す', async () => {
+    firestoreMocks.getDoc.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ todaySchedules: [{ id: 'server' }] }),
+    });
+
+    const result = await getUserData('test-user');
+
+    expect(result).toEqual({ todaySchedules: [{ id: 'server' }] });
+    expect(firestoreMocks.getDocFromCache).not.toHaveBeenCalled();
+  });
+
+  it('サーバー応答がタイムアウトしたらキャッシュのデータを返す（ゾンビ接続対策）', async () => {
+    // 永遠に解決しないPromise = iOS復帰後のゾンビ接続を再現
+    firestoreMocks.getDoc.mockReturnValue(new Promise(() => {}));
+    firestoreMocks.getDocFromCache.mockResolvedValue({
+      exists: () => true,
+      data: () => ({ todaySchedules: [{ id: 'cached' }] }),
+    });
+
+    const resultPromise = getUserData('test-user');
+    await vi.advanceTimersByTimeAsync(GET_USER_DATA_TIMEOUT_MS);
+
+    await expect(resultPromise).resolves.toEqual({ todaySchedules: [{ id: 'cached' }] });
+  });
+
+  it('タイムアウト時にキャッシュも無ければエラーをthrowする（呼び出し側のエラー処理に乗せる）', async () => {
+    firestoreMocks.getDoc.mockReturnValue(new Promise(() => {}));
+    firestoreMocks.getDocFromCache.mockRejectedValue(new Error('no cache'));
+
+    const resultPromise = getUserData('test-user');
+    const assertion = expect(resultPromise).rejects.toThrow();
+    await vi.advanceTimersByTimeAsync(GET_USER_DATA_TIMEOUT_MS);
+
+    await assertion;
+  });
+
+  it('タイムアウト前にサーバーがエラーを返したら、キャッシュへ行かずそのままthrowする', async () => {
+    firestoreMocks.getDoc.mockRejectedValue(new Error('permission denied'));
+
+    await expect(getUserData('test-user')).rejects.toThrow('permission denied');
+    expect(firestoreMocks.getDocFromCache).not.toHaveBeenCalled();
+  });
+});
 
 describe('subscribeUserData の購読エラー処理', () => {
   beforeEach(() => {
