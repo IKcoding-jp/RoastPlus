@@ -290,7 +290,7 @@ interface TastingSession {
 | **ページ** | `app/drip-guide/page.tsx`（レシピ一覧）<br>`app/drip-guide/run/page.tsx`（ガイド実行） |
 | **コンポーネント** | `components/drip-guide/RecipeList.tsx`<br>`components/drip-guide/RecipeForm.tsx`<br>`components/drip-guide/DripGuideRunner.tsx`<br>`components/drip-guide/runner/FocusGuideDisplay.tsx`<br>`components/drip-guide/runner/FooterControls.tsx` |
 | **ロジック** | `lib/drip-guide/recipeCalculator.ts`（レシピ計算）<br>`lib/drip-guide/recipe46.ts` / `recipe46Content.ts`（4:6メソッド）<br>`lib/drip-guide/countdownAudio.ts`（カウントダウン音） |
-| **フック** | `lib/drip-guide/useRecipes.ts`、`hooks/drip-guide/useRunnerTimer.ts`、`hooks/drip-guide/useDialogKeyboard.ts` |
+| **フック** | `hooks/drip-guide/useRecipes.ts`、`hooks/drip-guide/useRunnerTimer.ts`、`hooks/drip-guide/useDialogKeyboard.ts` |
 | **Firestore** | `users/{userId}` ドキュメント内のフィールド |
 
 ### 設計方針
