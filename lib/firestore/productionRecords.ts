@@ -9,7 +9,9 @@ import {
   runTransaction,
   serverTimestamp,
   Timestamp,
+  type CollectionReference,
   type DocumentData,
+  type Query,
   type Unsubscribe,
 } from 'firebase/firestore';
 import { getDb, removeUndefinedFields } from './common';
@@ -143,7 +145,7 @@ export function subscribeProductionRecordMonth(
   userId: string,
   month: string,
   callback: (record: ProductionRecordMonth | null) => void,
-  onError?: (error: Error) => void
+  onError: (error: Error) => void
 ): Unsubscribe {
   const docRef = getProductionRecordMonthDocRef(userId, month);
 
@@ -158,7 +160,7 @@ export function subscribeProductionRecordMonth(
     },
     (error) => {
       console.error('Failed to subscribe production record month:', error);
-      onError?.(error);
+      onError(error);
       callback(null);
     }
   );
@@ -195,7 +197,7 @@ export async function productionRecordMonthExists(userId: string, month: string)
 export function subscribeRecentProductionMonths(
   userId: string,
   callback: (records: ProductionRecordMonth[]) => void,
-  onError?: (error: Error) => void
+  onError: (error: Error) => void
 ): Unsubscribe {
   const monthsQuery = query(
     getProductionRecordsCollectionRef(userId),
@@ -210,10 +212,71 @@ export function subscribeRecentProductionMonths(
     },
     (error) => {
       console.error('Failed to subscribe recent production months:', error);
-      onError?.(error);
+      onError(error);
       callback([]);
     }
   );
+}
+
+function subscribeEntryCollection<TEntry>({
+  entriesQuery,
+  normalize,
+  callback,
+  onError,
+  errorMessage,
+}: {
+  entriesQuery: Query<DocumentData>;
+  normalize: (id: string, data: DocumentData) => TEntry;
+  callback: (entries: TEntry[]) => void;
+  onError: (error: Error) => void;
+  errorMessage: string;
+}): Unsubscribe {
+  return onSnapshot(
+    entriesQuery,
+    (snapshot) => {
+      callback(snapshot.docs.map((entryDoc) => normalize(entryDoc.id, entryDoc.data())));
+    },
+    (error) => {
+      console.error(errorMessage, error);
+      onError(error);
+      callback([]);
+    }
+  );
+}
+
+async function upsertEntry<TEntry extends object>({
+  collectionRef,
+  id,
+  entry,
+  previousId,
+  collisionMessage,
+}: {
+  collectionRef: CollectionReference<DocumentData>;
+  id: string;
+  entry: TEntry;
+  previousId?: string;
+  collisionMessage: string;
+}): Promise<void> {
+  const docRef = doc(collectionRef, id);
+
+  await runTransaction(getDb(), async (transaction) => {
+    const snapshot = await transaction.get(docRef);
+    if (previousId && previousId !== id && snapshot.exists()) {
+      throw new Error(collisionMessage);
+    }
+    const createdAt = restoreCreatedAt(snapshot.data()?.createdAt);
+    if (previousId && previousId !== id) {
+      transaction.delete(doc(collectionRef, previousId));
+    }
+    transaction.set(
+      docRef,
+      removeUndefinedFields({
+        ...entry,
+        createdAt,
+        updatedAt: serverTimestamp(),
+      })
+    );
+  });
 }
 
 function normalizeHandpickSegment(value: unknown): HandpickSegment {
@@ -242,21 +305,17 @@ export function subscribeHandpickEntries(
   userId: string,
   month: string,
   callback: (entries: HandpickEntry[]) => void,
-  onError?: (error: Error) => void
+  onError: (error: Error) => void
 ): Unsubscribe {
   const entriesQuery = query(getHandpickEntriesCollectionRef(userId, month), orderBy('createdAt', 'desc'));
 
-  return onSnapshot(
+  return subscribeEntryCollection({
     entriesQuery,
-    (snapshot) => {
-      callback(snapshot.docs.map((entryDoc) => normalizeHandpickEntry(entryDoc.id, entryDoc.data())));
-    },
-    (error) => {
-      console.error('Failed to subscribe handpick entries:', error);
-      onError?.(error);
-      callback([]);
-    }
-  );
+    normalize: normalizeHandpickEntry,
+    callback,
+    onError,
+    errorMessage: 'Failed to subscribe handpick entries:',
+  });
 }
 
 /**
@@ -281,26 +340,13 @@ export async function saveHandpickEntry(
   const entry = buildHandpickEntry(input);
   const id = buildHandpickEntryId(entry.workDate, entry.segment, entry.beanName);
   const colRef = getHandpickEntriesCollectionRef(userId, month);
-  const docRef = doc(colRef, id);
 
-  await runTransaction(getDb(), async (transaction) => {
-    const snapshot = await transaction.get(docRef);
-    // 編集でキーを変更した先に別レコードが既にある場合、上書きするとそのデータを失うため拒否する
-    if (previousId && previousId !== id && snapshot.exists()) {
-      throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.handpickEntryCollision);
-    }
-    const createdAt = restoreCreatedAt(snapshot.data()?.createdAt);
-    if (previousId && previousId !== id) {
-      transaction.delete(doc(colRef, previousId));
-    }
-    transaction.set(
-      docRef,
-      removeUndefinedFields({
-        ...entry,
-        createdAt,
-        updatedAt: serverTimestamp(),
-      })
-    );
+  await upsertEntry({
+    collectionRef: colRef,
+    id,
+    entry,
+    previousId,
+    collisionMessage: PRODUCTION_RECORD_ERROR_MESSAGES.handpickEntryCollision,
   });
 
   return id;
@@ -327,21 +373,17 @@ export function subscribeRoastEntries(
   userId: string,
   month: string,
   callback: (entries: RoastEntry[]) => void,
-  onError?: (error: Error) => void
+  onError: (error: Error) => void
 ): Unsubscribe {
   const entriesQuery = query(getRoastEntriesCollectionRef(userId, month), orderBy('createdAt', 'desc'));
 
-  return onSnapshot(
+  return subscribeEntryCollection({
     entriesQuery,
-    (snapshot) => {
-      callback(snapshot.docs.map((entryDoc) => normalizeRoastEntry(entryDoc.id, entryDoc.data())));
-    },
-    (error) => {
-      console.error('Failed to subscribe roast entries:', error);
-      onError?.(error);
-      callback([]);
-    }
-  );
+    normalize: normalizeRoastEntry,
+    callback,
+    onError,
+    errorMessage: 'Failed to subscribe roast entries:',
+  });
 }
 
 /**
@@ -357,26 +399,13 @@ export async function saveRoastEntry(
   const entry = buildRoastEntry(input);
   const id = entry.workDate;
   const colRef = getRoastEntriesCollectionRef(userId, month);
-  const docRef = doc(colRef, id);
 
-  await runTransaction(getDb(), async (transaction) => {
-    const snapshot = await transaction.get(docRef);
-    // 編集で日付を変更した先に別の焙煎記録が既にある場合、上書きするとそのデータを失うため拒否する
-    if (previousId && previousId !== id && snapshot.exists()) {
-      throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.roastEntryCollision);
-    }
-    const createdAt = restoreCreatedAt(snapshot.data()?.createdAt);
-    if (previousId && previousId !== id) {
-      transaction.delete(doc(colRef, previousId));
-    }
-    transaction.set(
-      docRef,
-      removeUndefinedFields({
-        ...entry,
-        createdAt,
-        updatedAt: serverTimestamp(),
-      })
-    );
+  await upsertEntry({
+    collectionRef: colRef,
+    id,
+    entry,
+    previousId,
+    collisionMessage: PRODUCTION_RECORD_ERROR_MESSAGES.roastEntryCollision,
   });
 
   return id;
@@ -411,21 +440,17 @@ export function subscribePackageEntries(
   userId: string,
   month: string,
   callback: (entries: PackageEntry[]) => void,
-  onError?: (error: Error) => void
+  onError: (error: Error) => void
 ): Unsubscribe {
   const entriesQuery = query(getPackageEntriesCollectionRef(userId, month), orderBy('createdAt', 'desc'));
 
-  return onSnapshot(
+  return subscribeEntryCollection({
     entriesQuery,
-    (snapshot) => {
-      callback(snapshot.docs.map((entryDoc) => normalizePackageEntry(entryDoc.id, entryDoc.data())));
-    },
-    (error) => {
-      console.error('Failed to subscribe package entries:', error);
-      onError?.(error);
-      callback([]);
-    }
-  );
+    normalize: normalizePackageEntry,
+    callback,
+    onError,
+    errorMessage: 'Failed to subscribe package entries:',
+  });
 }
 
 /**
@@ -441,26 +466,13 @@ export async function savePackageEntry(
   const entry = buildPackageEntry(input);
   const id = entry.workDate;
   const colRef = getPackageEntriesCollectionRef(userId, month);
-  const docRef = doc(colRef, id);
 
-  await runTransaction(getDb(), async (transaction) => {
-    const snapshot = await transaction.get(docRef);
-    // 編集で日付を変更した先に別のパッケージ記録が既にある場合、上書きするとそのデータを失うため拒否する
-    if (previousId && previousId !== id && snapshot.exists()) {
-      throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.packageEntryCollision);
-    }
-    const createdAt = restoreCreatedAt(snapshot.data()?.createdAt);
-    if (previousId && previousId !== id) {
-      transaction.delete(doc(colRef, previousId));
-    }
-    transaction.set(
-      docRef,
-      removeUndefinedFields({
-        ...entry,
-        createdAt,
-        updatedAt: serverTimestamp(),
-      })
-    );
+  await upsertEntry({
+    collectionRef: colRef,
+    id,
+    entry,
+    previousId,
+    collisionMessage: PRODUCTION_RECORD_ERROR_MESSAGES.packageEntryCollision,
   });
 
   return id;

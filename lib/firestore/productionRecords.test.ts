@@ -168,6 +168,15 @@ describe('subscribeProductionRecordMonth', () => {
     vi.clearAllMocks();
   });
 
+  async function assertMonthSubscriptionRequiresOnError() {
+    const { subscribeProductionRecordMonth } = await import('./productionRecords');
+    const callback = vi.fn();
+
+    // @ts-expect-error onError is required to surface stale or unavailable production month data.
+    subscribeProductionRecordMonth('user-1', '2026-08', callback);
+  }
+  void assertMonthSubscriptionRequiresOnError;
+
   it('normalizes the month document and passes it to the callback', async () => {
     firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, onNext: (snap: unknown) => void) => {
       onNext(
@@ -189,7 +198,7 @@ describe('subscribeProductionRecordMonth', () => {
     const { subscribeProductionRecordMonth } = await import('./productionRecords');
     const callback = vi.fn();
 
-    subscribeProductionRecordMonth('user-1', '2026-08', callback);
+    subscribeProductionRecordMonth('user-1', '2026-08', callback, vi.fn());
 
     expect(callback).toHaveBeenCalledWith({
       month: '2026-08',
@@ -213,7 +222,7 @@ describe('subscribeProductionRecordMonth', () => {
     const { subscribeProductionRecordMonth } = await import('./productionRecords');
     const callback = vi.fn();
 
-    subscribeProductionRecordMonth('user-1', '2026-08', callback);
+    subscribeProductionRecordMonth('user-1', '2026-08', callback, vi.fn());
 
     expect(callback).toHaveBeenCalledWith(null);
   });
@@ -344,6 +353,15 @@ describe('subscribeRecentProductionMonths', () => {
     vi.clearAllMocks();
   });
 
+  async function assertRecentMonthsSubscriptionRequiresOnError() {
+    const { subscribeRecentProductionMonths } = await import('./productionRecords');
+    const callback = vi.fn();
+
+    // @ts-expect-error onError is required to surface stale or unavailable production month lists.
+    subscribeRecentProductionMonths('user-1', callback);
+  }
+  void assertRecentMonthsSubscriptionRequiresOnError;
+
   it('queries recent months ordered by month desc with a limit of 24', async () => {
     firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, onNext: (snap: unknown) => void) => {
       onNext(
@@ -365,7 +383,7 @@ describe('subscribeRecentProductionMonths', () => {
     const { subscribeRecentProductionMonths } = await import('./productionRecords');
     const callback = vi.fn();
 
-    subscribeRecentProductionMonths('user-1', callback);
+    subscribeRecentProductionMonths('user-1', callback, vi.fn());
 
     expect(firestoreMocks.orderBy).toHaveBeenCalledWith('month', 'desc');
     expect(firestoreMocks.limit).toHaveBeenCalledWith(24);
@@ -399,6 +417,21 @@ describe('subscribeRecentProductionMonths', () => {
   });
 });
 
+async function assertEntrySubscriptionsRequireOnError() {
+  const { subscribeHandpickEntries, subscribeRoastEntries, subscribePackageEntries } = await import(
+    './productionRecords'
+  );
+  const callback = vi.fn();
+
+  // @ts-expect-error onError is required to avoid silent empty states on subscription failures.
+  subscribeHandpickEntries('user-1', '2026-08', callback);
+  // @ts-expect-error onError is required to avoid silent empty states on subscription failures.
+  subscribeRoastEntries('user-1', '2026-08', callback);
+  // @ts-expect-error onError is required to avoid silent empty states on subscription failures.
+  subscribePackageEntries('user-1', '2026-08', callback);
+}
+void assertEntrySubscriptionsRequireOnError;
+
 describe('subscribeHandpickEntries', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -428,7 +461,7 @@ describe('subscribeHandpickEntries', () => {
     const { subscribeHandpickEntries } = await import('./productionRecords');
     const callback = vi.fn();
 
-    subscribeHandpickEntries('user-1', '2026-08', callback);
+    subscribeHandpickEntries('user-1', '2026-08', callback, vi.fn());
 
     expect(firestoreMocks.orderBy).toHaveBeenCalledWith('createdAt', 'desc');
     expect(callback).toHaveBeenCalledWith([
@@ -635,7 +668,7 @@ describe('subscribeRoastEntries', () => {
     const { subscribeRoastEntries } = await import('./productionRecords');
     const callback = vi.fn();
 
-    subscribeRoastEntries('user-1', '2026-08', callback);
+    subscribeRoastEntries('user-1', '2026-08', callback, vi.fn());
 
     expect(firestoreMocks.orderBy).toHaveBeenCalledWith('createdAt', 'desc');
     expect(callback).toHaveBeenCalledWith([
@@ -765,7 +798,7 @@ describe('subscribePackageEntries', () => {
     const { subscribePackageEntries } = await import('./productionRecords');
     const callback = vi.fn();
 
-    subscribePackageEntries('user-1', '2026-08', callback);
+    subscribePackageEntries('user-1', '2026-08', callback, vi.fn());
 
     expect(firestoreMocks.orderBy).toHaveBeenCalledWith('createdAt', 'desc');
     expect(callback).toHaveBeenCalledWith([
@@ -904,7 +937,7 @@ describe('Zod validation at Firestore read boundary', () => {
 
       const { subscribeProductionRecordMonth } = await import('./productionRecords');
       const callback = vi.fn();
-      subscribeProductionRecordMonth('user-1', '2026-08', callback);
+      subscribeProductionRecordMonth('user-1', '2026-08', callback, vi.fn());
 
       expect(warnSpy).not.toHaveBeenCalled();
       expect(callback).toHaveBeenCalledWith(expect.objectContaining({ month: '2026-08', greenBeanTotalGram: 30000 }));
@@ -925,7 +958,7 @@ describe('Zod validation at Firestore read boundary', () => {
 
       const { subscribeProductionRecordMonth } = await import('./productionRecords');
       const callback = vi.fn();
-      subscribeProductionRecordMonth('user-1', '2026-08', callback);
+      subscribeProductionRecordMonth('user-1', '2026-08', callback, vi.fn());
 
       expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('[zod]'), expect.any(Array));
       expect(callback).toHaveBeenCalledWith(expect.objectContaining({ month: '2026-08' }));
@@ -946,7 +979,7 @@ describe('Zod validation at Firestore read boundary', () => {
 
       const { subscribeProductionRecordMonth } = await import('./productionRecords');
       const callback = vi.fn();
-      subscribeProductionRecordMonth('user-1', '2026-08', callback);
+      subscribeProductionRecordMonth('user-1', '2026-08', callback, vi.fn());
 
       expect(warnSpy).toHaveBeenCalled();
       expect(callback).toHaveBeenCalledWith(expect.objectContaining({ blendItems: [] }));
@@ -975,7 +1008,7 @@ describe('Zod validation at Firestore read boundary', () => {
 
       const { subscribeHandpickEntries } = await import('./productionRecords');
       const callback = vi.fn();
-      subscribeHandpickEntries('user-1', '2026-08', callback);
+      subscribeHandpickEntries('user-1', '2026-08', callback, vi.fn());
 
       expect(warnSpy).not.toHaveBeenCalled();
       expect(callback).toHaveBeenCalledWith([expect.objectContaining({ beanName: 'Brazil', segment: 'first' })]);
@@ -1002,7 +1035,7 @@ describe('Zod validation at Firestore read boundary', () => {
 
       const { subscribeHandpickEntries } = await import('./productionRecords');
       const callback = vi.fn();
-      subscribeHandpickEntries('user-1', '2026-08', callback);
+      subscribeHandpickEntries('user-1', '2026-08', callback, vi.fn());
 
       expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('[zod]'), expect.any(Array));
       expect(callback).toHaveBeenCalledWith([expect.objectContaining({ segment: 'first' })]);
@@ -1029,7 +1062,7 @@ describe('Zod validation at Firestore read boundary', () => {
 
       const { subscribeRoastEntries } = await import('./productionRecords');
       const callback = vi.fn();
-      subscribeRoastEntries('user-1', '2026-08', callback);
+      subscribeRoastEntries('user-1', '2026-08', callback, vi.fn());
 
       expect(warnSpy).not.toHaveBeenCalled();
       expect(callback).toHaveBeenCalledWith([
@@ -1055,7 +1088,7 @@ describe('Zod validation at Firestore read boundary', () => {
 
       const { subscribeRoastEntries } = await import('./productionRecords');
       const callback = vi.fn();
-      subscribeRoastEntries('user-1', '2026-08', callback);
+      subscribeRoastEntries('user-1', '2026-08', callback, vi.fn());
 
       expect(warnSpy).toHaveBeenCalled();
       expect(callback).toHaveBeenCalledWith([expect.objectContaining({ beforeRoastWeightGram: 0 })]);
@@ -1082,7 +1115,7 @@ describe('Zod validation at Firestore read boundary', () => {
 
       const { subscribePackageEntries } = await import('./productionRecords');
       const callback = vi.fn();
-      subscribePackageEntries('user-1', '2026-08', callback);
+      subscribePackageEntries('user-1', '2026-08', callback, vi.fn());
 
       expect(warnSpy).not.toHaveBeenCalled();
       expect(callback).toHaveBeenCalledWith([
@@ -1111,7 +1144,7 @@ describe('Zod validation at Firestore read boundary', () => {
 
       const { subscribePackageEntries } = await import('./productionRecords');
       const callback = vi.fn();
-      subscribePackageEntries('user-1', '2026-08', callback);
+      subscribePackageEntries('user-1', '2026-08', callback, vi.fn());
 
       expect(warnSpy).toHaveBeenCalled();
       expect(callback).toHaveBeenCalledWith([
