@@ -14,6 +14,7 @@ import {
 } from 'firebase/firestore';
 import { getDb, removeUndefinedFields } from './common';
 import {
+  PRODUCTION_RECORD_ERROR_MESSAGES,
   buildHandpickEntry,
   buildPackageEntry,
   buildProductionRecordMonth,
@@ -45,7 +46,7 @@ const RECENT_PRODUCTION_MONTHS_LIMIT = 24;
 
 function assertValidMonth(month: string): void {
   if (!isValidProductionMonth(month)) {
-    throw new Error('対象月が正しくありません');
+    throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.month);
   }
 }
 
@@ -286,7 +287,7 @@ export async function saveHandpickEntry(
     const snapshot = await transaction.get(docRef);
     // 編集でキーを変更した先に別レコードが既にある場合、上書きするとそのデータを失うため拒否する
     if (previousId && previousId !== id && snapshot.exists()) {
-      throw new Error('同じ日付・区分・豆名の記録が既にあります。先にそちらを確認してください');
+      throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.handpickEntryCollision);
     }
     const createdAt = restoreCreatedAt(snapshot.data()?.createdAt);
     if (previousId && previousId !== id) {
@@ -362,7 +363,7 @@ export async function saveRoastEntry(
     const snapshot = await transaction.get(docRef);
     // 編集で日付を変更した先に別の焙煎記録が既にある場合、上書きするとそのデータを失うため拒否する
     if (previousId && previousId !== id && snapshot.exists()) {
-      throw new Error('同じ日付の焙煎記録が既にあります。先にそちらを確認してください');
+      throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.roastEntryCollision);
     }
     const createdAt = restoreCreatedAt(snapshot.data()?.createdAt);
     if (previousId && previousId !== id) {
@@ -446,7 +447,7 @@ export async function savePackageEntry(
     const snapshot = await transaction.get(docRef);
     // 編集で日付を変更した先に別のパッケージ記録が既にある場合、上書きするとそのデータを失うため拒否する
     if (previousId && previousId !== id && snapshot.exists()) {
-      throw new Error('同じ日付のパッケージ記録が既にあります。先にそちらを確認してください');
+      throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.packageEntryCollision);
     }
     const createdAt = restoreCreatedAt(snapshot.data()?.createdAt);
     if (previousId && previousId !== id) {
