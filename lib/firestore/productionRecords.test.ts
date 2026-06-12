@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { PRODUCTION_RECORD_ERROR_MESSAGES } from '@/lib/productionRecords';
 
 interface FirestoreTransactionMock {
   get: ReturnType<typeof vi.fn>;
@@ -131,7 +132,7 @@ describe('getProductionRecordMonthDocRef', () => {
   it('rejects invalid months before building a Firestore document path', async () => {
     const { getProductionRecordMonthDocRef } = await import('./productionRecords');
 
-    expect(() => getProductionRecordMonthDocRef('user-1', '2026-13')).toThrow('対象月が正しくありません');
+    expect(() => getProductionRecordMonthDocRef('user-1', '2026-13')).toThrow(PRODUCTION_RECORD_ERROR_MESSAGES.month);
   });
 });
 
@@ -158,7 +159,7 @@ describe('subcollection refs', () => {
   it('rejects invalid months when building subcollection refs', async () => {
     const { getHandpickEntriesCollectionRef } = await import('./productionRecords');
 
-    expect(() => getHandpickEntriesCollectionRef('user-1', '2026-13')).toThrow('対象月が正しくありません');
+    expect(() => getHandpickEntriesCollectionRef('user-1', '2026-13')).toThrow(PRODUCTION_RECORD_ERROR_MESSAGES.month);
   });
 });
 
@@ -601,7 +602,7 @@ describe('saveHandpickEntry', () => {
         },
         'old-handpick-id'
       )
-    ).rejects.toThrow();
+    ).rejects.toThrow(PRODUCTION_RECORD_ERROR_MESSAGES.handpickEntryCollision);
     expect(firestoreMocks.transaction.set).not.toHaveBeenCalled();
     expect(firestoreMocks.transaction.delete).not.toHaveBeenCalled();
   });
@@ -731,7 +732,7 @@ describe('saveRoastEntry', () => {
         { workDate: '2026-08-11', beforeRoastWeightGram: 12000, afterRoastWeightGram: 9800 },
         '2026-08-10'
       )
-    ).rejects.toThrow();
+    ).rejects.toThrow(PRODUCTION_RECORD_ERROR_MESSAGES.roastEntryCollision);
     expect(firestoreMocks.transaction.set).not.toHaveBeenCalled();
     expect(firestoreMocks.transaction.delete).not.toHaveBeenCalled();
   });
@@ -865,7 +866,7 @@ describe('savePackageEntry', () => {
         },
         '2026-08-10'
       )
-    ).rejects.toThrow();
+    ).rejects.toThrow(PRODUCTION_RECORD_ERROR_MESSAGES.packageEntryCollision);
     expect(firestoreMocks.transaction.set).not.toHaveBeenCalled();
     expect(firestoreMocks.transaction.delete).not.toHaveBeenCalled();
   });

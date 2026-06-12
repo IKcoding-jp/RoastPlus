@@ -20,16 +20,21 @@ const PREMIX_BAG_GRAM = 500;
 const THIRTY_KG_BASE_GRAM = 30000;
 export const MAX_BLEND_ITEMS = 4;
 
-const WEIGHT_INPUT_ERROR = '0以上の数値で入力してください';
-const COUNT_INPUT_ERROR = '0以上の整数で入力してください';
-const BLEND_ITEMS_ERROR = '配合は1〜4件、各比率は0以上、合計100%で入力してください';
-const MONTH_INPUT_ERROR = '対象月が正しくありません';
-const GREEN_BEAN_TOTAL_ERROR = '生豆総量は0より大きい値で入力してください';
-const POWDER_PER_PACK_ERROR = '1袋粉量は0より大きい値で入力してください';
-const WORK_DATE_ERROR = '作業日が正しくありません';
-const HANDPICK_SEGMENT_ERROR = '区分は1回目または2回目を選択してください';
-const HANDPICK_GREEN_ERROR = '今回生豆重量は0より大きい値で入力してください';
-const ROAST_WEIGHT_ERROR = '焙煎前後の重量を正しく入力してください';
+export const PRODUCTION_RECORD_ERROR_MESSAGES = {
+  weightInput: '0以上の数値で入力してください',
+  countInput: '0以上の整数で入力してください',
+  blendItems: '配合は1〜4件、各比率は0以上、合計100%で入力してください',
+  month: '対象月が正しくありません',
+  greenBeanTotal: '生豆総量は0より大きい値で入力してください',
+  powderPerPack: '1袋粉量は0より大きい値で入力してください',
+  workDate: '作業日が正しくありません',
+  handpickSegment: '区分は1回目または2回目を選択してください',
+  handpickGreen: '今回生豆重量は0より大きい値で入力してください',
+  roastWeight: '焙煎前後の重量を正しく入力してください',
+  handpickEntryCollision: '同じ日付・区分・豆名の記録が既にあります。先にそちらを確認してください',
+  roastEntryCollision: '同じ日付の焙煎記録が既にあります。先にそちらを確認してください',
+  packageEntryCollision: '同じ日付のパッケージ記録が既にあります。先にそちらを確認してください',
+} as const;
 
 export function isValidProductionMonth(month: string): boolean {
   if (!WORK_MONTH_PATTERN.test(month)) {
@@ -219,46 +224,46 @@ export function buildMonthlySummary(
 
 export function normalizeWeightInput(value: number): number {
   if (!Number.isFinite(value) || value < 0) {
-    throw new Error(WEIGHT_INPUT_ERROR);
+    throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.weightInput);
   }
   return value;
 }
 
 export function normalizeCountInput(value: number): number {
   if (!Number.isInteger(value) || value < 0) {
-    throw new Error(COUNT_INPUT_ERROR);
+    throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.countInput);
   }
   return value;
 }
 
 export function validateBlendItems(items: BlendItem[]): void {
   if (items.length < 1 || items.length > MAX_BLEND_ITEMS) {
-    throw new Error(BLEND_ITEMS_ERROR);
+    throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.blendItems);
   }
 
   let sum = 0;
   for (const item of items) {
     if (!Number.isFinite(item.ratioPercent) || item.ratioPercent < 0) {
-      throw new Error(BLEND_ITEMS_ERROR);
+      throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.blendItems);
     }
     sum += item.ratioPercent;
   }
 
   if (sum !== 100) {
-    throw new Error(BLEND_ITEMS_ERROR);
+    throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.blendItems);
   }
 }
 
 export function buildProductionRecordMonth(input: ProductionRecordMonthInput): ProductionRecordMonthInput {
   if (!isValidProductionMonth(input.month)) {
-    throw new Error(MONTH_INPUT_ERROR);
+    throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.month);
   }
   validateBlendItems(input.blendItems);
   if (!(input.greenBeanTotalGram > 0)) {
-    throw new Error(GREEN_BEAN_TOTAL_ERROR);
+    throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.greenBeanTotal);
   }
   if (!(input.powderPerPackGram > 0)) {
-    throw new Error(POWDER_PER_PACK_ERROR);
+    throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.powderPerPack);
   }
 
   return {
@@ -271,13 +276,13 @@ export function buildProductionRecordMonth(input: ProductionRecordMonthInput): P
 
 export function buildHandpickEntry(input: HandpickEntryInput): HandpickEntryInput {
   if (!isValidWorkDate(input.workDate)) {
-    throw new Error(WORK_DATE_ERROR);
+    throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.workDate);
   }
   if (input.segment !== 'first' && input.segment !== 'second') {
-    throw new Error(HANDPICK_SEGMENT_ERROR);
+    throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.handpickSegment);
   }
   if (!(input.greenBeanWeightGram > 0)) {
-    throw new Error(HANDPICK_GREEN_ERROR);
+    throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.handpickGreen);
   }
   const defectBeanWeightGram = normalizeWeightInput(input.defectBeanWeightGram);
 
@@ -292,13 +297,13 @@ export function buildHandpickEntry(input: HandpickEntryInput): HandpickEntryInpu
 
 export function buildRoastEntry(input: RoastEntryInput): RoastEntryInput {
   if (!isValidWorkDate(input.workDate)) {
-    throw new Error(WORK_DATE_ERROR);
+    throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.workDate);
   }
   if (!(input.beforeRoastWeightGram > 0) || !(input.afterRoastWeightGram > 0)) {
-    throw new Error(ROAST_WEIGHT_ERROR);
+    throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.roastWeight);
   }
   if (input.afterRoastWeightGram > input.beforeRoastWeightGram) {
-    throw new Error(ROAST_WEIGHT_ERROR);
+    throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.roastWeight);
   }
 
   return {
@@ -310,7 +315,7 @@ export function buildRoastEntry(input: RoastEntryInput): RoastEntryInput {
 
 export function buildPackageEntry(input: PackageEntryInput): PackageEntryInput {
   if (!isValidWorkDate(input.workDate)) {
-    throw new Error(WORK_DATE_ERROR);
+    throw new Error(PRODUCTION_RECORD_ERROR_MESSAGES.workDate);
   }
 
   return {
