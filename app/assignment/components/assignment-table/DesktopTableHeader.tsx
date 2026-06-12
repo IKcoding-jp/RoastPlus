@@ -161,9 +161,7 @@ export const DesktopTableHeader: React.FC<DesktopTableHeaderProps> = ({
             title={isDraftTeam(team.id) || editingTeamId === team.id ? undefined : 'クリックして班を編集'}
           >
             {isDraftTeam(team.id) ? (
-              <div data-draft-team-control>
-                {renderDraftTeamControl()}
-              </div>
+              <div data-draft-team-control>{renderDraftTeamControl()}</div>
             ) : editingTeamId === team.id ? (
               <InlineInput
                 value={editTeamName}

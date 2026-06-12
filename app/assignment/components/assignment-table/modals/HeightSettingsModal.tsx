@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { MdDelete } from 'react-icons/md';
 import { Button, Input, NumberInput } from '@/components/ui';
-import { clampTableDimension, parseTableDimensionInput, validateTableDimensionInput } from '../../../lib/tableModalLogic';
+import {
+  clampTableDimension,
+  parseTableDimensionInput,
+  validateTableDimensionInput,
+} from '../../../lib/tableModalLogic';
 import { ModalShell } from './ModalShell';
 import { DEFAULT_TABLE_SETTINGS } from '../types';
 import type { AssignmentTableModalData, HeightSettingsModalState, TableModalCallbacks } from './types';
@@ -135,13 +139,7 @@ function HeightSettingsModalContent({
           <Button variant="secondary" size="sm" onClick={() => setHeightConfig(null)} className="flex-1">
             キャンセル
           </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={handleSave}
-            disabled={heightError !== null}
-            className="flex-1"
-          >
+          <Button variant="primary" size="sm" onClick={handleSave} disabled={heightError !== null} className="flex-1">
             保存
           </Button>
         </div>

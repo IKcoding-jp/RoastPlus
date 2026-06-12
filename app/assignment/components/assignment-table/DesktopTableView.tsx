@@ -87,7 +87,10 @@ export const DesktopTableView: React.FC<DesktopTableViewProps> = ({
   const headerLabels = tableSettings?.headerLabels ?? DEFAULT_TABLE_SETTINGS.headerLabels;
   const displayTeams: Team[] =
     isAddingTeam && teams.length < MAX_TEAMS
-      ? [...teams, { id: DRAFT_TEAM_ID, name: '', order: (teams.length > 0 ? (teams[teams.length - 1].order ?? 0) : 0) + 1 }]
+      ? [
+          ...teams,
+          { id: DRAFT_TEAM_ID, name: '', order: (teams.length > 0 ? (teams[teams.length - 1].order ?? 0) : 0) + 1 },
+        ]
       : teams;
   const gridTemplateColumns = getDesktopGridTemplateColumns(displayTeams, tableSettings);
 

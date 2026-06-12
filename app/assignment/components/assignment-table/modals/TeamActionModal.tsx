@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { MdDelete } from 'react-icons/md';
 import { Button, Input, NumberInput } from '@/components/ui';
-import { clampTableDimension, parseTableDimensionInput, validateTableDimensionInput } from '../../../lib/tableModalLogic';
+import {
+  clampTableDimension,
+  parseTableDimensionInput,
+  validateTableDimensionInput,
+} from '../../../lib/tableModalLogic';
 import { ModalShell } from './ModalShell';
 import type { AssignmentTableModalData, TableModalCallbacks, TeamActionModalState } from './types';
 import { DEFAULT_TABLE_SETTINGS } from '../types';

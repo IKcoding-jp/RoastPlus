@@ -1,7 +1,11 @@
 import { useState } from 'react';
 
 import { Button, Input, NumberInput } from '@/components/ui';
-import { clampTableDimension, parseTableDimensionInput, validateTableDimensionInput } from '../../../lib/tableModalLogic';
+import {
+  clampTableDimension,
+  parseTableDimensionInput,
+  validateTableDimensionInput,
+} from '../../../lib/tableModalLogic';
 import { ModalShell } from './ModalShell';
 import type { WidthSettingsModalState } from './types';
 
@@ -39,11 +43,7 @@ type WidthSettingsModalContentProps = {
   handleSaveWidth: WidthSettingsModalState['handleSaveWidth'];
 };
 
-function WidthSettingsModalContent({
-  widthConfig,
-  setWidthConfig,
-  handleSaveWidth,
-}: WidthSettingsModalContentProps) {
+function WidthSettingsModalContent({ widthConfig, setWidthConfig, handleSaveWidth }: WidthSettingsModalContentProps) {
   const [draftWidth, setDraftWidth] = useState(() => String(widthConfig.currentWidth));
   const widthError = validateTableDimensionInput(draftWidth, WIDTH_MIN_VALUE, WIDTH_MAX_VALUE);
   const draftWidthValue = clampTableDimension(
