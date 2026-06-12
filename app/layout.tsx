@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 
+import { FirestoreResumeHandler } from '@/components/FirestoreResumeHandler';
 import { OfflineBanner } from '@/components/OfflineBanner';
 import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
 import { SplashScreenWrapper } from '@/components/SplashScreenWrapper';
@@ -67,6 +68,7 @@ export default function RootLayout({
       >
         <SplashScreenWrapper />
         <ServiceWorkerRegistration />
+        <FirestoreResumeHandler />
         <ThemeProvider>
           <ToastProvider>
             <OfflineBanner />
