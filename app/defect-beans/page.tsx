@@ -17,9 +17,8 @@ import { Loading } from '@/components/Loading';
 import { FilterMenu } from '@/components/defect-beans/FilterMenu';
 import { EmptyState } from '@/components/defect-beans/EmptyState';
 import type { DefectBean } from '@/types';
-
-type FilterOption = 'all' | 'shouldRemove' | 'shouldNotRemove';
-type SortOption = 'default' | 'createdAtDesc' | 'createdAtAsc' | 'nameAsc' | 'nameDesc';
+import { filterAndSortDefectBeans } from '@/lib/defectBeans';
+import type { DefectBeanFilterOption as FilterOption, DefectBeanSortOption as SortOption } from '@/lib/defectBeans';
 
 export default function DefectBeansPage() {
   const { user, loading: authLoading } = useAuth();
@@ -36,64 +35,11 @@ export default function DefectBeansPage() {
   const [compareMode, setCompareMode] = useState(false);
   const [sortOption, setSortOption] = useState<SortOption>('default');
 
-  // フィルタリングと検索（Hooksは早期リターンの前に呼び出す必要がある）
-  const filteredDefectBeans = useMemo(() => {
-    let filtered = [...allDefectBeans];
-
-    // 検索フィルタ
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (bean) =>
-          bean.name.toLowerCase().includes(query) ||
-          bean.characteristics.toLowerCase().includes(query) ||
-          bean.tasteImpact.toLowerCase().includes(query) ||
-          bean.removalReason.toLowerCase().includes(query)
-      );
-    }
-
-    // 設定フィルタ
-    if (filterOption === 'shouldRemove') {
-      filtered = filtered.filter((bean) => settings[bean.id]?.shouldRemove === true);
-    } else if (filterOption === 'shouldNotRemove') {
-      filtered = filtered.filter((bean) => settings[bean.id]?.shouldRemove === false);
-    }
-
-    // ソート
-    if (sortOption === 'default') {
-      // デフォルト（マスターを先に、その後ユーザー追加）
-      filtered.sort((a, b) => {
-        if (a.isMaster && !b.isMaster) return -1;
-        if (!a.isMaster && b.isMaster) return 1;
-        if (a.order !== undefined && b.order !== undefined) {
-          return a.order - b.order;
-        }
-        return a.name.localeCompare(b.name, 'ja');
-      });
-    } else if (sortOption === 'createdAtDesc') {
-      // 新しい順（作成日時降順）
-      filtered.sort((a, b) => {
-        const dateA = new Date(a.createdAt).getTime();
-        const dateB = new Date(b.createdAt).getTime();
-        return dateB - dateA;
-      });
-    } else if (sortOption === 'createdAtAsc') {
-      // 古い順（作成日時昇順）
-      filtered.sort((a, b) => {
-        const dateA = new Date(a.createdAt).getTime();
-        const dateB = new Date(b.createdAt).getTime();
-        return dateA - dateB;
-      });
-    } else if (sortOption === 'nameAsc') {
-      // 名前昇順
-      filtered.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
-    } else if (sortOption === 'nameDesc') {
-      // 名前降順
-      filtered.sort((a, b) => b.name.localeCompare(a.name, 'ja'));
-    }
-
-    return filtered;
-  }, [allDefectBeans, searchQuery, filterOption, settings, sortOption]);
+  // フィルタリング・ソート（Hooksは早期リターンの前に呼び出す必要がある）
+  const filteredDefectBeans = useMemo(
+    () => filterAndSortDefectBeans(allDefectBeans, searchQuery, filterOption, settings, sortOption),
+    [allDefectBeans, searchQuery, filterOption, settings, sortOption]
+  );
 
   // 2つ選択されたら自動的に比較を表示
   useEffect(() => {
