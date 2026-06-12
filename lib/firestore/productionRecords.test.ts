@@ -870,3 +870,262 @@ describe('savePackageEntry', () => {
     expect(firestoreMocks.transaction.delete).not.toHaveBeenCalled();
   });
 });
+
+// ──────────────────────────────────────────────────────────────────────
+// Zod 読み取り境界検証 PoC（#504）
+// ──────────────────────────────────────────────────────────────────────
+
+describe('Zod validation at Firestore read boundary', () => {
+  let warnSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+  });
+
+  describe('subscribeProductionRecordMonth — 月ドキュメント検証', () => {
+    it('有効なデータはZodを通過し、console.warnを発しない', async () => {
+      firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, onNext: (snap: unknown) => void) => {
+        onNext(
+          docSnapshot('2026-08', {
+            month: '2026-08',
+            greenBeanTotalGram: 30000,
+            powderPerPackGram: 8.5,
+            blendItems: [{ beanName: 'ブラジル', ratioPercent: 100 }],
+          })
+        );
+        return () => undefined;
+      });
+
+      const { subscribeProductionRecordMonth } = await import('./productionRecords');
+      const callback = vi.fn();
+      subscribeProductionRecordMonth('user-1', '2026-08', callback);
+
+      expect(warnSpy).not.toHaveBeenCalled();
+      expect(callback).toHaveBeenCalledWith(
+        expect.objectContaining({ month: '2026-08', greenBeanTotalGram: 30000 })
+      );
+    });
+
+    it('必須フィールドの型が不正なデータはconsole.warnを発しフォールバック値を返す', async () => {
+      firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, onNext: (snap: unknown) => void) => {
+        onNext(
+          docSnapshot('2026-08', {
+            month: 12345,
+            greenBeanTotalGram: '三万グラム',
+            powderPerPackGram: 8.5,
+            blendItems: [],
+          })
+        );
+        return () => undefined;
+      });
+
+      const { subscribeProductionRecordMonth } = await import('./productionRecords');
+      const callback = vi.fn();
+      subscribeProductionRecordMonth('user-1', '2026-08', callback);
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('[zod]'),
+        expect.any(Array)
+      );
+      expect(callback).toHaveBeenCalledWith(expect.objectContaining({ month: '2026-08' }));
+    });
+
+    it('blendItemsが配列でない場合はconsole.warnを発しフォールバックで空配列になる', async () => {
+      firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, onNext: (snap: unknown) => void) => {
+        onNext(
+          docSnapshot('2026-08', {
+            month: '2026-08',
+            greenBeanTotalGram: 30000,
+            powderPerPackGram: 8.5,
+            blendItems: 'invalid',
+          })
+        );
+        return () => undefined;
+      });
+
+      const { subscribeProductionRecordMonth } = await import('./productionRecords');
+      const callback = vi.fn();
+      subscribeProductionRecordMonth('user-1', '2026-08', callback);
+
+      expect(warnSpy).toHaveBeenCalled();
+      expect(callback).toHaveBeenCalledWith(expect.objectContaining({ blendItems: [] }));
+    });
+  });
+
+  describe('subscribeHandpickEntries — ハンドピックエントリ検証', () => {
+    it('有効なデータはZodを通過し、console.warnを発しない', async () => {
+      firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, onNext: (snap: unknown) => void) => {
+        onNext(
+          collectionSnapshot([
+            {
+              id: '2026-08-01__first__Brazil',
+              data: {
+                workDate: '2026-08-01',
+                beanName: 'Brazil',
+                segment: 'first',
+                greenBeanWeightGram: 1000,
+                defectBeanWeightGram: 50,
+              },
+            },
+          ])
+        );
+        return () => undefined;
+      });
+
+      const { subscribeHandpickEntries } = await import('./productionRecords');
+      const callback = vi.fn();
+      subscribeHandpickEntries('user-1', '2026-08', callback);
+
+      expect(warnSpy).not.toHaveBeenCalled();
+      expect(callback).toHaveBeenCalledWith([expect.objectContaining({ beanName: 'Brazil', segment: 'first' })]);
+    });
+
+    it('segmentが不正な値の場合はconsole.warnを発しフォールバックでfirstになる', async () => {
+      firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, onNext: (snap: unknown) => void) => {
+        onNext(
+          collectionSnapshot([
+            {
+              id: 'entry-1',
+              data: {
+                workDate: '2026-08-01',
+                beanName: 'Brazil',
+                segment: 'third',
+                greenBeanWeightGram: 1000,
+                defectBeanWeightGram: 50,
+              },
+            },
+          ])
+        );
+        return () => undefined;
+      });
+
+      const { subscribeHandpickEntries } = await import('./productionRecords');
+      const callback = vi.fn();
+      subscribeHandpickEntries('user-1', '2026-08', callback);
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('[zod]'),
+        expect.any(Array)
+      );
+      expect(callback).toHaveBeenCalledWith([expect.objectContaining({ segment: 'first' })]);
+    });
+  });
+
+  describe('subscribeRoastEntries — 焙煎エントリ検証', () => {
+    it('有効なデータはZodを通過し、console.warnを発しない', async () => {
+      firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, onNext: (snap: unknown) => void) => {
+        onNext(
+          collectionSnapshot([
+            {
+              id: '2026-08-01',
+              data: {
+                workDate: '2026-08-01',
+                beforeRoastWeightGram: 1000,
+                afterRoastWeightGram: 850,
+              },
+            },
+          ])
+        );
+        return () => undefined;
+      });
+
+      const { subscribeRoastEntries } = await import('./productionRecords');
+      const callback = vi.fn();
+      subscribeRoastEntries('user-1', '2026-08', callback);
+
+      expect(warnSpy).not.toHaveBeenCalled();
+      expect(callback).toHaveBeenCalledWith([
+        expect.objectContaining({ beforeRoastWeightGram: 1000, afterRoastWeightGram: 850 }),
+      ]);
+    });
+
+    it('重量フィールドが欠損している場合はconsole.warnを発しフォールバックで0になる', async () => {
+      firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, onNext: (snap: unknown) => void) => {
+        onNext(
+          collectionSnapshot([
+            {
+              id: '2026-08-01',
+              data: {
+                workDate: '2026-08-01',
+                afterRoastWeightGram: 850,
+              },
+            },
+          ])
+        );
+        return () => undefined;
+      });
+
+      const { subscribeRoastEntries } = await import('./productionRecords');
+      const callback = vi.fn();
+      subscribeRoastEntries('user-1', '2026-08', callback);
+
+      expect(warnSpy).toHaveBeenCalled();
+      expect(callback).toHaveBeenCalledWith([expect.objectContaining({ beforeRoastWeightGram: 0 })]);
+    });
+  });
+
+  describe('subscribePackageEntries — パッケージエントリ検証', () => {
+    it('有効なデータはZodを通過し、console.warnを発しない', async () => {
+      firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, onNext: (snap: unknown) => void) => {
+        onNext(
+          collectionSnapshot([
+            {
+              id: '2026-08-01',
+              data: {
+                workDate: '2026-08-01',
+                teamA: { goodCount: 100, defectiveCount: 2 },
+                teamB: { goodCount: 80, defectiveCount: 1 },
+              },
+            },
+          ])
+        );
+        return () => undefined;
+      });
+
+      const { subscribePackageEntries } = await import('./productionRecords');
+      const callback = vi.fn();
+      subscribePackageEntries('user-1', '2026-08', callback);
+
+      expect(warnSpy).not.toHaveBeenCalled();
+      expect(callback).toHaveBeenCalledWith([
+        expect.objectContaining({
+          teamA: { goodCount: 100, defectiveCount: 2 },
+          teamB: { goodCount: 80, defectiveCount: 1 },
+        }),
+      ]);
+    });
+
+    it('teamAフィールドが欠損している場合はconsole.warnを発しフォールバックで0になる', async () => {
+      firestoreMocks.onSnapshot.mockImplementation((_ref: unknown, onNext: (snap: unknown) => void) => {
+        onNext(
+          collectionSnapshot([
+            {
+              id: '2026-08-01',
+              data: {
+                workDate: '2026-08-01',
+                teamB: { goodCount: 80, defectiveCount: 1 },
+              },
+            },
+          ])
+        );
+        return () => undefined;
+      });
+
+      const { subscribePackageEntries } = await import('./productionRecords');
+      const callback = vi.fn();
+      subscribePackageEntries('user-1', '2026-08', callback);
+
+      expect(warnSpy).toHaveBeenCalled();
+      expect(callback).toHaveBeenCalledWith([
+        expect.objectContaining({
+          teamA: { goodCount: 0, defectiveCount: 0 },
+        }),
+      ]);
+    });
+  });
+});
