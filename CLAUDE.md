@@ -79,7 +79,7 @@ RoastPlus は、ドリップパックコーヒー製造現場（約8名・iPad�
 
 ユーザーがPR作成まで依頼した場合、PR作成で作業完了にしません。
 
-1. PR作成後、`gh pr checks --watch` または GitHubコネクタでCIを監視する。
+1. PR作成後、GitHub MCP でCIステータスを監視する（MCP が使えない場合は `gh pr checks --watch` を使う）。
 2. CIが失敗した場合は、失敗jobとログを確認し、原因を説明する。
 3. 修正できる失敗は修正し、コミット、push、再監視を行う。
 4. すべての必須チェックが通り、マージ可能な状態になるまで繰り返す。
@@ -105,6 +105,7 @@ RoastPlus は、ドリップパックコーヒー製造現場（約8名・iPad�
 - **firebase MCP**：Firestore の構造・Rules・Functions ログの**調査**に積極活用する。`firestore_*_document`（書込・削除）系は不可逆なため、ユーザーの明示依頼があるときだけ実行し、本番データの変更は原則行わない。
 - **chrome-devtools MCP**：実装画面のライブ確認・パフォーマンス計測・アクセシビリティ確認に使う。現場 iPad 中心のため `emulate` で iPad 幅を再現し、必要に応じ `lighthouse_audit` で PWA 品質を確認する。E2E は playwright と役割を分ける。
 - **playwright MCP**：E2E が失敗したときにブラウザを実際に操作して原因を特定する。新規 E2E を書く前に、セレクタ・操作手順を MCP で試してからコードに落とす。
+- **GitHub MCP**：Issue の内容確認・PR の作成・状態確認・CI ステータス取得・PR コメント投稿に使う。ローカルブランチのプッシュ（`git push`）のみ Bash で行い、それ以外の GitHub 操作は MCP を優先する。`gh` CLI との混在を避け、同じ操作を両方で実行しない。
 - **context7**：Next.js / Firebase / Tailwind など更新の速いライブラリの API・設定・移行を扱うときは、自分の記憶で書く前に最新ドキュメントを確認する（特に Tailwind v4 と Next.js App Router）。
 - **/code-review**：まとまった実装（機能追加・ロジック変更）を終えたら、コミット／PR 前に**毎回自動で実行**する（typo・ドキュメント・軽微なテスト修正のみは対象外）。要件充足の確認は `superpowers:requesting-code-review` と役割を分け、指摘は機械的に直さず**なぜその指摘かをユーザーと確認してから反映**する。
 - **frontend-design**：新しい UI のモック・実装に使う。ただし業務 PWA の方針（白背景・クリーン・iPad で操作しやすい・装飾過多を避ける）に合わせて創造性を抑制する。
