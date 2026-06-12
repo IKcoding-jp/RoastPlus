@@ -111,7 +111,7 @@ export function TimeEditDialog({
                         variant="danger"
                         size="sm"
                         onClick={() => onDeleteLabel(label.id)}
-                        className="!min-h-[36px] bg-white text-red-600 border border-red-200 hover:bg-red-50"
+                        className="!min-h-[36px]"
                       >
                         削除
                       </Button>
