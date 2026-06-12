@@ -18,11 +18,7 @@ export function isValidImageBuffer(buf: Buffer): boolean {
   if (PNG_MAGIC.every((b, i) => buf[i] === b)) return true;
 
   // WebP: RIFF....WEBP
-  if (
-    buf.length >= 12 &&
-    WEBP_RIFF.every((b, i) => buf[i] === b) &&
-    WEBP_MARKER.every((b, i) => buf[8 + i] === b)
-  ) {
+  if (buf.length >= 12 && WEBP_RIFF.every((b, i) => buf[i] === b) && WEBP_MARKER.every((b, i) => buf[8 + i] === b)) {
     return true;
   }
 
