@@ -6,8 +6,9 @@ import type { Assignment, Member, TableSettings, TaskLabel, Team } from '@/types
 import { DesktopTableBody } from './DesktopTableBody';
 import { DesktopTableFooter } from './DesktopTableFooter';
 import { DesktopTableHeader } from './DesktopTableHeader';
-import { getDesktopGridTemplateColumns } from './desktopTableViewLayout';
+import { DRAFT_TEAM_ID, getDesktopGridTemplateColumns } from './desktopTableViewLayout';
 import { DEFAULT_TABLE_SETTINGS, type HeightConfig, type WidthConfig } from './types';
+import { MAX_TEAMS } from '../../lib/constants';
 
 type DesktopTableViewProps = {
   teams: Team[];
@@ -84,12 +85,19 @@ export const DesktopTableView: React.FC<DesktopTableViewProps> = ({
   isShuffleDisabled,
 }) => {
   const headerLabels = tableSettings?.headerLabels ?? DEFAULT_TABLE_SETTINGS.headerLabels;
-  const gridTemplateColumns = getDesktopGridTemplateColumns(teams, tableSettings);
+  const displayTeams: Team[] =
+    isAddingTeam && teams.length < MAX_TEAMS
+      ? [
+          ...teams,
+          { id: DRAFT_TEAM_ID, name: '', order: (teams.length > 0 ? (teams[teams.length - 1].order ?? 0) : 0) + 1 },
+        ]
+      : teams;
+  const gridTemplateColumns = getDesktopGridTemplateColumns(displayTeams, tableSettings);
 
   return (
     <Card variant="table" className="hidden md:block w-fit mx-auto max-w-full overflow-x-auto relative">
       <DesktopTableHeader
-        teams={teams}
+        teams={displayTeams}
         tableSettings={tableSettings}
         gridTemplateColumns={gridTemplateColumns}
         headerLabels={headerLabels}
@@ -109,7 +117,7 @@ export const DesktopTableView: React.FC<DesktopTableViewProps> = ({
 
       <div className="divide-y divide-edge bg-surface" style={{ minWidth: 'max-content' }}>
         <DesktopTableBody
-          teams={teams}
+          teams={displayTeams}
           taskLabels={taskLabels}
           assignments={assignments}
           members={members}
@@ -125,7 +133,7 @@ export const DesktopTableView: React.FC<DesktopTableViewProps> = ({
         />
 
         <DesktopTableFooter
-          teamsLength={teams.length}
+          teamsLength={displayTeams.length}
           taskLabelsLength={taskLabels.length}
           gridTemplateColumns={gridTemplateColumns}
           headerLabels={headerLabels}

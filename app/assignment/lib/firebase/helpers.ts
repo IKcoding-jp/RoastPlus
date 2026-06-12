@@ -76,8 +76,8 @@ export const DEFAULT_TABLE_SETTINGS: TableSettings = {
   },
   rowHeights: {},
   headerLabels: {
-    left: '左ラベル',
-    right: '右ラベル',
+    left: '担当',
+    right: 'メモ',
   },
 };
 

@@ -6,7 +6,6 @@ import { useTableEditing } from './useTableEditing';
 import { DesktopTableView } from './DesktopTableView';
 import { MobileListView } from './MobileListView';
 import { TableModals } from './TableModals';
-import { Card } from '@/components/ui';
 
 export const AssignmentTable: React.FC<Props> = (props) => {
   const {
@@ -57,34 +56,33 @@ export const AssignmentTable: React.FC<Props> = (props) => {
     <div className="w-full max-w-full flex flex-col items-center gap-6">
       {/* データがない場合の初期ガイドメッセージ */}
       {teams.length === 0 && taskLabels.length === 0 && (
-        <Card variant="guide" className="w-full max-w-md">
-          <div className="flex justify-center mb-4">
-            <div className="p-3 text-spot">
-              <MdInfoOutline size={32} />
+        <div className="w-full max-w-[560px] rounded-lg border border-edge bg-surface px-6 py-4 text-center shadow-sm">
+          <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-full border border-spot-subtle bg-surface text-spot">
+            <MdInfoOutline size={20} />
+          </div>
+          <div className="mt-2">
+            <h3 className="text-base font-bold text-ink">担当表をはじめましょう</h3>
+            <p className="mx-auto mt-1 max-w-[440px] text-sm leading-relaxed text-ink-sub">
+              まずは「班」と「担当」を追加して、日々の役割分担を管理する表を作成しましょう。
+            </p>
+            <div className="mt-4 grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center text-xs">
+              <div className="rounded-full border border-spot-subtle bg-surface px-3 py-2 text-center shadow-[0_1px_0_rgba(0,0,0,0.04)]">
+                <div className="font-bold text-spot">1</div>
+                <div className="mt-0.5 font-medium text-ink-sub">班を追加</div>
+              </div>
+              <div className="h-px w-5 bg-edge-strong" />
+              <div className="rounded-full border border-edge bg-surface px-3 py-2 text-center">
+                <div className="font-bold text-ink-muted">2</div>
+                <div className="mt-0.5 font-medium text-ink-sub">担当を追加</div>
+              </div>
+              <div className="h-px w-5 bg-edge-strong" />
+              <div className="rounded-full border border-edge bg-surface px-3 py-2 text-center">
+                <div className="font-bold text-ink-muted">3</div>
+                <div className="mt-0.5 font-medium text-ink-sub">割当開始</div>
+              </div>
             </div>
           </div>
-          <h3 className="text-lg font-bold mb-2 text-ink">担当表をはじめましょう</h3>
-          <p className="text-sm mb-6 text-ink-sub">
-            まずは「班」と「作業」を追加して、
-            <br />
-            日々の役割分担を管理する表を作成しましょう。
-          </p>
-
-          <div className="grid grid-cols-3 gap-2 text-xs text-ink-muted">
-            <div className="flex flex-col items-center gap-2 p-2 rounded border bg-surface border-edge">
-              <span className="font-bold text-spot">STEP 1</span>
-              <span>班を追加</span>
-            </div>
-            <div className="flex flex-col items-center gap-2 p-2 rounded bg-ground">
-              <span className="font-bold">STEP 2</span>
-              <span>作業を追加</span>
-            </div>
-            <div className="flex flex-col items-center gap-2 p-2 rounded bg-ground">
-              <span className="font-bold">STEP 3</span>
-              <span>割当開始</span>
-            </div>
-          </div>
-        </Card>
+        </div>
       )}
 
       <DesktopTableView
@@ -142,40 +140,48 @@ export const AssignmentTable: React.FC<Props> = (props) => {
       />
 
       <TableModals
-        teams={teams}
-        taskLabels={taskLabels}
-        assignments={assignments}
-        members={members}
-        tableSettings={tableSettings}
-        contextMenu={cellInteraction.contextMenu}
-        setContextMenu={cellInteraction.setContextMenu}
-        editingMemberName={cellInteraction.editingMemberName}
-        setEditingMemberName={cellInteraction.setEditingMemberName}
-        isExclusionSettingsOpen={cellInteraction.isExclusionSettingsOpen}
-        setIsExclusionSettingsOpen={cellInteraction.setIsExclusionSettingsOpen}
-        showMemberMenu={tableEditing.showMemberMenu}
-        setShowMemberMenu={tableEditing.setShowMemberMenu}
-        newMemberName={tableEditing.newMemberName}
-        setNewMemberName={tableEditing.setNewMemberName}
-        handleAddMember={tableEditing.handleAddMember}
-        activeTeamActionId={tableEditing.activeTeamActionId}
-        setActiveTeamActionId={tableEditing.setActiveTeamActionId}
-        activeTeamName={tableEditing.activeTeamName}
-        setActiveTeamName={tableEditing.setActiveTeamName}
-        handleUpdateTeamFromModal={tableEditing.handleUpdateTeamFromModal}
-        handleDeleteTeamFromModal={tableEditing.handleDeleteTeamFromModal}
-        widthConfig={tableEditing.widthConfig}
-        setWidthConfig={tableEditing.setWidthConfig}
-        handleSaveWidth={tableEditing.handleSaveWidth}
-        heightConfig={tableEditing.heightConfig}
-        setHeightConfig={tableEditing.setHeightConfig}
-        handleSaveRowConfig={tableEditing.handleSaveRowConfig}
-        onUpdateMember={onUpdateMember}
-        onUpdateMemberName={onUpdateMemberName}
-        onUpdateMemberExclusion={onUpdateMemberExclusion}
-        onDeleteMember={onDeleteMember}
-        onDeleteTaskLabel={onDeleteTaskLabel}
-        onUpdateTableSettings={onUpdateTableSettings}
+        data={{ teams, taskLabels, assignments, members, tableSettings }}
+        contextMenu={{
+          current: cellInteraction.contextMenu,
+          setCurrent: cellInteraction.setContextMenu,
+          editingMemberName: cellInteraction.editingMemberName,
+          setEditingMemberName: cellInteraction.setEditingMemberName,
+          isExclusionSettingsOpen: cellInteraction.isExclusionSettingsOpen,
+          setIsExclusionSettingsOpen: cellInteraction.setIsExclusionSettingsOpen,
+        }}
+        memberMenu={{
+          current: tableEditing.showMemberMenu,
+          setCurrent: tableEditing.setShowMemberMenu,
+          newMemberName: tableEditing.newMemberName,
+          setNewMemberName: tableEditing.setNewMemberName,
+          handleAddMember: tableEditing.handleAddMember,
+        }}
+        teamAction={{
+          activeTeamActionId: tableEditing.activeTeamActionId,
+          setActiveTeamActionId: tableEditing.setActiveTeamActionId,
+          activeTeamName: tableEditing.activeTeamName,
+          setActiveTeamName: tableEditing.setActiveTeamName,
+          handleUpdateTeamFromModal: tableEditing.handleUpdateTeamFromModal,
+          handleDeleteTeamFromModal: tableEditing.handleDeleteTeamFromModal,
+        }}
+        widthSettings={{
+          widthConfig: tableEditing.widthConfig,
+          setWidthConfig: tableEditing.setWidthConfig,
+          handleSaveWidth: tableEditing.handleSaveWidth,
+        }}
+        heightSettings={{
+          heightConfig: tableEditing.heightConfig,
+          setHeightConfig: tableEditing.setHeightConfig,
+          handleSaveRowConfig: tableEditing.handleSaveRowConfig,
+        }}
+        callbacks={{
+          onUpdateMember,
+          onUpdateMemberName,
+          onUpdateMemberExclusion,
+          onDeleteMember,
+          onDeleteTaskLabel,
+          onUpdateTableSettings,
+        }}
       />
     </div>
   );

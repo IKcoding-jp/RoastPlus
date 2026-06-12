@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { Team, TaskLabel, Member, TableSettings } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
-import { DEFAULT_TABLE_SETTINGS, WidthConfig, HeightConfig } from './types';
+import { DEFAULT_TABLE_SETTINGS, WidthConfig, HeightConfig, MemberMenuTarget } from './types';
 import { useToastContext } from '@/components/Toast';
 import { MAX_TEAMS, MAX_TASK_LABELS, MAX_MEMBERS } from '../../lib/constants';
 
@@ -62,7 +62,7 @@ export function useTableEditing({
   const [activeTeamName, setActiveTeamName] = useState('');
 
   // メンバー選択メニュー
-  const [showMemberMenu, setShowMemberMenu] = useState<{ taskLabelId: string; teamId: string } | null>(null);
+  const [showMemberMenu, setShowMemberMenu] = useState<MemberMenuTarget | null>(null);
   const [newMemberName, setNewMemberName] = useState('');
 
   // 幅設定モーダル用

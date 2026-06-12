@@ -30,9 +30,22 @@ export const DEFAULT_TABLE_SETTINGS: TableSettings = {
   colWidths: { taskLabel: 160, note: 160, teams: {} },
   rowHeights: {},
   headerLabels: {
-    left: '左ラベル',
-    right: '右ラベル',
+    left: '担当',
+    right: 'メモ',
   },
+};
+
+// モーダル・フックが共有するセル対象の型。
+// フック側のuseStateとモーダル側のpropsで同じ定義を参照し、型のずれを防ぐ。
+export type AssignmentCellTarget = {
+  teamId: string;
+  taskLabelId: string;
+  memberId: string | null;
+};
+
+export type MemberMenuTarget = {
+  taskLabelId: string;
+  teamId: string;
 };
 
 export type WidthConfig = {

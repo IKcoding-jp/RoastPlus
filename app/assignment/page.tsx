@@ -56,7 +56,6 @@ export default function AssignmentPage() {
     setTeams: data.setTeams,
     setTaskLabels: data.setTaskLabels,
   });
-
   if (!authLoading && !user) {
     return <LoginPage />;
   }
