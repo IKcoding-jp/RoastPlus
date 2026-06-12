@@ -418,9 +418,8 @@ describe('subscribeRecentProductionMonths', () => {
 });
 
 async function assertEntrySubscriptionsRequireOnError() {
-  const { subscribeHandpickEntries, subscribeRoastEntries, subscribePackageEntries } = await import(
-    './productionRecords'
-  );
+  const { subscribeHandpickEntries, subscribeRoastEntries, subscribePackageEntries } =
+    await import('./productionRecords');
   const callback = vi.fn();
 
   // @ts-expect-error onError is required to avoid silent empty states on subscription failures.
