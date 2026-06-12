@@ -11,7 +11,7 @@
 
 import { z } from 'zod';
 
-export const BlendItemSchema = z.object({
+const BlendItemSchema = z.object({
   beanName: z.string(),
   ratioPercent: z.number(),
 });
@@ -23,7 +23,7 @@ export const ProductionRecordMonthDocSchema = z.object({
   blendItems: z.array(BlendItemSchema),
 });
 
-export const HandpickSegmentSchema = z.union([z.literal('first'), z.literal('second')]);
+const HandpickSegmentSchema = z.union([z.literal('first'), z.literal('second')]);
 
 export const HandpickEntryDocSchema = z.object({
   workDate: z.string(),
@@ -39,7 +39,7 @@ export const RoastEntryDocSchema = z.object({
   afterRoastWeightGram: z.number(),
 });
 
-export const TeamCountsSchema = z.object({
+const TeamCountsSchema = z.object({
   goodCount: z.number(),
   defectiveCount: z.number(),
 });
@@ -49,8 +49,3 @@ export const PackageEntryDocSchema = z.object({
   teamA: TeamCountsSchema,
   teamB: TeamCountsSchema,
 });
-
-export type ProductionRecordMonthDoc = z.infer<typeof ProductionRecordMonthDocSchema>;
-export type HandpickEntryDoc = z.infer<typeof HandpickEntryDocSchema>;
-export type RoastEntryDoc = z.infer<typeof RoastEntryDocSchema>;
-export type PackageEntryDoc = z.infer<typeof PackageEntryDocSchema>;

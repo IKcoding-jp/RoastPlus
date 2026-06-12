@@ -906,9 +906,7 @@ describe('Zod validation at Firestore read boundary', () => {
       subscribeProductionRecordMonth('user-1', '2026-08', callback);
 
       expect(warnSpy).not.toHaveBeenCalled();
-      expect(callback).toHaveBeenCalledWith(
-        expect.objectContaining({ month: '2026-08', greenBeanTotalGram: 30000 })
-      );
+      expect(callback).toHaveBeenCalledWith(expect.objectContaining({ month: '2026-08', greenBeanTotalGram: 30000 }));
     });
 
     it('必須フィールドの型が不正なデータはconsole.warnを発しフォールバック値を返す', async () => {
@@ -928,10 +926,7 @@ describe('Zod validation at Firestore read boundary', () => {
       const callback = vi.fn();
       subscribeProductionRecordMonth('user-1', '2026-08', callback);
 
-      expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[zod]'),
-        expect.any(Array)
-      );
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('[zod]'), expect.any(Array));
       expect(callback).toHaveBeenCalledWith(expect.objectContaining({ month: '2026-08' }));
     });
 
@@ -1008,10 +1003,7 @@ describe('Zod validation at Firestore read boundary', () => {
       const callback = vi.fn();
       subscribeHandpickEntries('user-1', '2026-08', callback);
 
-      expect(warnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('[zod]'),
-        expect.any(Array)
-      );
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('[zod]'), expect.any(Array));
       expect(callback).toHaveBeenCalledWith([expect.objectContaining({ segment: 'first' })]);
     });
   });
