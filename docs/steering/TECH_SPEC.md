@@ -523,6 +523,12 @@ Storageの一括コピーや削除は本番データに直結するため、実�
 
 ---
 
+## 暗黙設計の詳細
+
+書き込みキュー・オフライン保証・ドキュメントID戦略・localStorageキャッシュ一覧・エラー処理ポリシー等、コードを読まないと分からない設計判断は `docs/steering/IMPLICIT_DESIGN.md` にまとめている。
+
+---
+
 ## ADR（Architecture Decision Records）
 
 技術選定の意思決定記録。各ADRは「背景 → 選択肢 → 決定 → 理由」の形式で記録。
