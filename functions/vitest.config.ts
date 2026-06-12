@@ -5,5 +5,12 @@ export default defineConfig({
     environment: 'node',
     globals: true,
     include: ['src/**/*.test.ts'],
+    env: {
+      FIREBASE_CONFIG: JSON.stringify({
+        projectId: 'roastplus-test',
+        storageBucket: 'roastplus-test.appspot.com',
+      }),
+      GCLOUD_PROJECT: 'roastplus-test',
+    },
   },
 });
