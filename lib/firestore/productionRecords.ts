@@ -33,6 +33,13 @@ import type {
   RoastEntryInput,
   TeamCounts,
 } from '@/types';
+import {
+  HandpickEntryDocSchema,
+  PackageEntryDocSchema,
+  ProductionRecordMonthDocSchema,
+  RoastEntryDocSchema,
+} from './schemas/productionRecords';
+import type { ZodType } from 'zod';
 
 const RECENT_PRODUCTION_MONTHS_LIMIT = 24;
 
@@ -59,6 +66,20 @@ function restoreCreatedAt(value: unknown) {
     }
   }
   return serverTimestamp();
+}
+
+/**
+ * Zod スキーマで DocumentData を検証する共通ヘルパー。
+ * 検証失敗時は構造化されたエラーを警告ログに出力し、false を返す。
+ * タイムスタンプ（createdAt / updatedAt）は検証対象外のため data には含めない。
+ */
+function validateDoc<T>(schema: ZodType<T>, data: DocumentData, context: string): T | null {
+  const result = schema.safeParse(data);
+  if (!result.success) {
+    console.warn(`[zod] ${context} の検証失敗:`, result.error.issues);
+    return null;
+  }
+  return result.data;
 }
 
 export function getProductionRecordsCollectionRef(userId: string) {
@@ -102,6 +123,11 @@ function normalizeBlendItems(value: unknown): ProductionRecordMonth['blendItems'
 }
 
 function normalizeProductionRecordMonth(id: string, data: DocumentData): ProductionRecordMonth {
+  const validated = validateDoc(ProductionRecordMonthDocSchema, data, `productionRecords/${id}`);
+  if (validated) {
+    return { ...validated, createdAt: data.createdAt, updatedAt: data.updatedAt };
+  }
+  // フォールバック: 不正フィールドをデフォルト値で補完
   return {
     month: typeof data.month === 'string' ? data.month : id,
     greenBeanTotalGram: typeof data.greenBeanTotalGram === 'number' ? data.greenBeanTotalGram : 0,
@@ -194,16 +220,17 @@ function normalizeHandpickSegment(value: unknown): HandpickSegment {
 }
 
 function normalizeHandpickEntry(id: string, data: DocumentData): HandpickEntry {
-  const entry = buildHandpickEntry({
+  const validated = validateDoc(HandpickEntryDocSchema, data, `handpickEntries/${id}`);
+  if (validated) {
+    return { ...buildHandpickEntry(validated), id, createdAt: data.createdAt, updatedAt: data.updatedAt };
+  }
+  // フォールバック: Zod検証失敗時は build 関数のバリデーションを経由せず直接構築
+  return {
     workDate: typeof data.workDate === 'string' ? data.workDate : '',
     beanName: typeof data.beanName === 'string' ? data.beanName : '',
     segment: normalizeHandpickSegment(data.segment),
     greenBeanWeightGram: typeof data.greenBeanWeightGram === 'number' ? data.greenBeanWeightGram : 0,
     defectBeanWeightGram: typeof data.defectBeanWeightGram === 'number' ? data.defectBeanWeightGram : 0,
-  });
-
-  return {
-    ...entry,
     id,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
@@ -279,14 +306,16 @@ export async function saveHandpickEntry(
 }
 
 function normalizeRoastEntry(id: string, data: DocumentData): RoastEntry {
-  const entry = buildRoastEntry({
+  const validated = validateDoc(RoastEntryDocSchema, data, `roastEntries/${id}`);
+  if (validated) {
+    return { ...buildRoastEntry(validated), id, createdAt: data.createdAt, updatedAt: data.updatedAt };
+  }
+  // フォールバック: Zod検証失敗時は build 関数のバリデーションを経由せず直接構築
+  // （buildRoastEntry は重量0を拒否するため、欠損フィールドを直接デフォルト補完する）
+  return {
     workDate: typeof data.workDate === 'string' ? data.workDate : '',
     beforeRoastWeightGram: typeof data.beforeRoastWeightGram === 'number' ? data.beforeRoastWeightGram : 0,
     afterRoastWeightGram: typeof data.afterRoastWeightGram === 'number' ? data.afterRoastWeightGram : 0,
-  });
-
-  return {
-    ...entry,
     id,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
@@ -362,14 +391,15 @@ function normalizeTeamCounts(value: unknown): TeamCounts {
 }
 
 function normalizePackageEntry(id: string, data: DocumentData): PackageEntry {
-  const entry = buildPackageEntry({
+  const validated = validateDoc(PackageEntryDocSchema, data, `packageEntries/${id}`);
+  if (validated) {
+    return { ...buildPackageEntry(validated), id, createdAt: data.createdAt, updatedAt: data.updatedAt };
+  }
+  // フォールバック: Zod検証失敗時は build 関数のバリデーションを経由せず直接構築
+  return {
     workDate: typeof data.workDate === 'string' ? data.workDate : '',
     teamA: normalizeTeamCounts(data.teamA),
     teamB: normalizeTeamCounts(data.teamB),
-  });
-
-  return {
-    ...entry,
     id,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
