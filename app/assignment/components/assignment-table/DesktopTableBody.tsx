@@ -4,6 +4,7 @@ import { Button } from '@/components/ui';
 import type { Assignment, Member, TableSettings, TaskLabel, Team } from '@/types';
 
 import type { HeightConfig } from './types';
+import { isDraftTeam } from './desktopTableViewLayout';
 
 type HeaderLabels = {
   left: string;
@@ -46,6 +47,9 @@ export const DesktopTableBody: React.FC<DesktopTableBodyProps> = ({
   handleCellTouchMove,
   handleCellClick,
 }) => {
+  const realTeams = teams.filter((team) => !isDraftTeam(team.id));
+  const hasDraftTeam = teams.some((team) => isDraftTeam(team.id));
+
   return (
     <>
       {taskLabels.map((label) => (
@@ -75,12 +79,23 @@ export const DesktopTableBody: React.FC<DesktopTableBodyProps> = ({
             </div>
           </div>
 
-          {teams.length === 0 ? (
+          {!hasDraftTeam && realTeams.length === 0 ? (
             <div className="p-2 md:p-4 border-r h-full flex items-center justify-center border-edge bg-ground/30">
               <span className="text-xs md:text-sm text-ink-muted">班を作成してください</span>
             </div>
           ) : (
             teams.map((team) => {
+              if (isDraftTeam(team.id)) {
+                return (
+                  <div
+                    key={team.id}
+                    className="p-2 md:p-4 py-2 border-r h-full flex items-center justify-center relative border-edge bg-ground/20"
+                  >
+                    <span className="text-xs md:text-sm text-ink-muted">未割当</span>
+                  </div>
+                );
+              }
+
               const assignment = assignments.find((item) => item.teamId === team.id && item.taskLabelId === label.id);
               const member = members.find((item) => item.id === assignment?.memberId);
               const isSelected = selectedCell?.teamId === team.id && selectedCell?.taskLabelId === label.id;

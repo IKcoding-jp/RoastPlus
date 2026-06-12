@@ -1,13 +1,10 @@
 import { useState, useRef, useCallback } from 'react';
 import { Member } from '@/types';
+import type { AssignmentCellTarget } from './types';
 
 export function useCellInteraction(members: Member[]) {
   const [selectedCell, setSelectedCell] = useState<{ teamId: string; taskLabelId: string } | null>(null);
-  const [contextMenu, setContextMenu] = useState<{
-    teamId: string;
-    taskLabelId: string;
-    memberId: string | null;
-  } | null>(null);
+  const [contextMenu, setContextMenu] = useState<AssignmentCellTarget | null>(null);
   const [editingMemberName, setEditingMemberName] = useState('');
   const [isExclusionSettingsOpen, setIsExclusionSettingsOpen] = useState(false);
 

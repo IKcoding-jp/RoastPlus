@@ -3,6 +3,7 @@ import { Team, TaskLabel, Assignment, Member, TableSettings } from '@/types';
 import { MdDelete, MdCheck } from 'react-icons/md';
 import { DEFAULT_TABLE_SETTINGS } from './types';
 import { Button, Input, Badge } from '@/components/ui';
+import { formatTeamTitle } from '../../lib/tableModalLogic';
 
 type MobileListViewProps = {
   teams: Team[];
@@ -51,9 +52,6 @@ export const MobileListView: React.FC<MobileListViewProps> = ({
   handleCellClick,
 }) => {
   const headerLabels = tableSettings?.headerLabels ?? DEFAULT_TABLE_SETTINGS.headerLabels;
-  const formatTeamTitle = (teamName?: string) => {
-    return teamName && teamName.trim().length > 0 ? `${teamName.trim()}班` : '';
-  };
 
   return (
     <div className="md:hidden w-full space-y-4 px-2">
