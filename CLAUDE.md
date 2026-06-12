@@ -50,7 +50,7 @@ RoastPlus は、ドリップパックコーヒー製造現場（約8名・iPad�
 - **ファイル肥大を防ぐ**: `page.tsx` は表示とイベント結線に徹する。1ファイルが約300行を超えそうなら、先にフック・コンポーネント・`lib/` への分割を検討する。
 - **日付・時刻は日本時間のローカルタイム前提**: `getMonth()` は0始まりなので、文字列化するときは必ず `+1` する。日付キーの生成に `toISOString()` を使わない（UTCにずれて日付がまたがる）。新しいフォーマッタを書く前に、既存ユーティリティを探して再利用する。
 - **集計・CSV は `lib/productionRecords.ts` に一元化されている**: 数式・CSVフォーマットを変更するときは、`lib/productionRecords.test.ts` を同じPRで更新する。
-- **Service Worker（`public/sw.js`）を変更したらキャッシュバージョンを上げる**: `CACHE_NAME` / `RUNTIME_CACHE` の上げ忘れは古い画面が配信され続ける事故につながる。プリキャッシュ対象を変える場合は、オフライン要件の設計判断を `docs/steering/` に残す。
+- **Service Worker（`public/sw.js`）を変更したら `SW_VERSION` を +1 する**: 上げ忘れは古い画面が配信され続ける事故につながる（`CACHE_NAME` / `RUNTIME_CACHE` は `SW_VERSION` から導出される）。プリキャッシュ対象を変える場合は、`docs/steering/TECH_SPEC.md` の「プリキャッシュ方針」と `lib/pwa/sw.test.ts` を同時に更新する。
 - **共通UIは `components/ui/` を使う**: 生の `<button>`・`<select>`・checkbox はESLintカスタムルールで禁止。デザインルールは `DESIGN.md`、実装規約は `docs/steering/GUIDELINES.md` に従う。
 
 ## 変更種別ごとの必須チェック
