@@ -13,9 +13,29 @@ const makeBean = (overrides: Partial<DefectBean> & { id: string; name: string })
   ...overrides,
 });
 
-const beanA = makeBean({ id: 'a', name: 'アフリカ豆', characteristics: '果実味', isMaster: true, order: 1, createdAt: '2026-01-01T00:00:00.000Z' });
-const beanB = makeBean({ id: 'b', name: 'ブラジル豆', tasteImpact: '苦味強め', isMaster: false, order: 2, createdAt: '2026-02-01T00:00:00.000Z' });
-const beanC = makeBean({ id: 'c', name: 'コロンビア豆', removalReason: '発酵臭', isMaster: false, createdAt: '2026-03-01T00:00:00.000Z' });
+const beanA = makeBean({
+  id: 'a',
+  name: 'アフリカ豆',
+  characteristics: '果実味',
+  isMaster: true,
+  order: 1,
+  createdAt: '2026-01-01T00:00:00.000Z',
+});
+const beanB = makeBean({
+  id: 'b',
+  name: 'ブラジル豆',
+  tasteImpact: '苦味強め',
+  isMaster: false,
+  order: 2,
+  createdAt: '2026-02-01T00:00:00.000Z',
+});
+const beanC = makeBean({
+  id: 'c',
+  name: 'コロンビア豆',
+  removalReason: '発酵臭',
+  isMaster: false,
+  createdAt: '2026-03-01T00:00:00.000Z',
+});
 
 describe('filterDefectBeans', () => {
   it('検索クエリなし・フィルタall のとき全件返す', () => {

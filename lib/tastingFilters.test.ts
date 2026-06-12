@@ -16,9 +16,24 @@ const makeSession = (overrides: Partial<TastingSession> & { id: string; beanName
   ...overrides,
 });
 
-const sessionA = makeSession({ id: 'a', beanName: 'エチオピア', roastLevel: '浅煎り', createdAt: '2026-01-01T00:00:00.000Z' });
-const sessionB = makeSession({ id: 'b', beanName: 'ブラジル', roastLevel: '中煎り', createdAt: '2026-02-01T00:00:00.000Z' });
-const sessionC = makeSession({ id: 'c', beanName: 'グアテマラ', roastLevel: '深煎り', createdAt: '2026-03-01T00:00:00.000Z' });
+const sessionA = makeSession({
+  id: 'a',
+  beanName: 'エチオピア',
+  roastLevel: '浅煎り',
+  createdAt: '2026-01-01T00:00:00.000Z',
+});
+const sessionB = makeSession({
+  id: 'b',
+  beanName: 'ブラジル',
+  roastLevel: '中煎り',
+  createdAt: '2026-02-01T00:00:00.000Z',
+});
+const sessionC = makeSession({
+  id: 'c',
+  beanName: 'グアテマラ',
+  roastLevel: '深煎り',
+  createdAt: '2026-03-01T00:00:00.000Z',
+});
 
 describe('filterTastingSessions', () => {
   it('クエリなし・dateFrom/To なし・roastLevels なしで全件返す', () => {
@@ -106,7 +121,9 @@ describe('countActiveTastingFilters', () => {
   });
 
   it('searchQuery のみ設定で 1', () => {
-    expect(countActiveTastingFilters({ searchQuery: 'test', dateFrom: '', dateTo: '', selectedRoastLevels: [] })).toBe(1);
+    expect(countActiveTastingFilters({ searchQuery: 'test', dateFrom: '', dateTo: '', selectedRoastLevels: [] })).toBe(
+      1
+    );
   });
 
   it('全部設定で 4', () => {
@@ -121,6 +138,8 @@ describe('countActiveTastingFilters', () => {
   });
 
   it('空白のみのクエリはカウントしない', () => {
-    expect(countActiveTastingFilters({ searchQuery: '   ', dateFrom: '', dateTo: '', selectedRoastLevels: [] })).toBe(0);
+    expect(countActiveTastingFilters({ searchQuery: '   ', dateFrom: '', dateTo: '', selectedRoastLevels: [] })).toBe(
+      0
+    );
   });
 });

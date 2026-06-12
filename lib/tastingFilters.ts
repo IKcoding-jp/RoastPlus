@@ -3,7 +3,7 @@ import type { TastingSession } from '@/types';
 export type TastingSortOption = 'newest' | 'oldest' | 'beanName';
 export type RoastLevel = '浅煎り' | '中煎り' | '中深煎り' | '深煎り';
 
-export interface TastingFilterParams {
+interface TastingFilterParams {
   searchQuery: string;
   sortOption: TastingSortOption;
   dateFrom: string;
@@ -66,7 +66,9 @@ export function filterAndSortTastingSessions(
   );
 }
 
-export function countActiveTastingFilters(params: Pick<TastingFilterParams, 'searchQuery' | 'dateFrom' | 'dateTo' | 'selectedRoastLevels'>): number {
+export function countActiveTastingFilters(
+  params: Pick<TastingFilterParams, 'searchQuery' | 'dateFrom' | 'dateTo' | 'selectedRoastLevels'>
+): number {
   let count = 0;
   if (params.searchQuery.trim()) count++;
   if (params.dateFrom) count++;

@@ -1,9 +1,6 @@
 import { useState, useMemo } from 'react';
 import type { TastingSession } from '@/types';
-import {
-  filterAndSortTastingSessions,
-  countActiveTastingFilters,
-} from '@/lib/tastingFilters';
+import { filterAndSortTastingSessions, countActiveTastingFilters } from '@/lib/tastingFilters';
 import type { TastingSortOption, RoastLevel } from '@/lib/tastingFilters';
 
 export function useTastingFilters(sessions: TastingSession[]) {
@@ -14,8 +11,7 @@ export function useTastingFilters(sessions: TastingSession[]) {
   const [selectedRoastLevels, setSelectedRoastLevels] = useState<RoastLevel[]>([]);
 
   const filteredAndSortedSessions = useMemo(
-    () =>
-      filterAndSortTastingSessions(sessions, { searchQuery, sortOption, dateFrom, dateTo, selectedRoastLevels }),
+    () => filterAndSortTastingSessions(sessions, { searchQuery, sortOption, dateFrom, dateTo, selectedRoastLevels }),
     [sessions, searchQuery, sortOption, dateFrom, dateTo, selectedRoastLevels]
   );
 
