@@ -378,19 +378,19 @@ const DIFFICULTY_STYLES = {
 
 ```typescript
 import { describe, it, expect } from 'vitest';
-import { formatTime } from '@/lib/drip-guide/formatTime';
+import { formatSecondsAsTimer } from '@/lib/dateUtils';
 
-describe('formatTime', () => {
+describe('formatSecondsAsTimer', () => {
   it('should format seconds correctly', () => {
-    expect(formatTime(60)).toBe('1:00');
+    expect(formatSecondsAsTimer(60)).toBe('01:00');
   });
 
   it('should format minutes and seconds correctly', () => {
-    expect(formatTime(90)).toBe('1:30');
+    expect(formatSecondsAsTimer(90)).toBe('01:30');
   });
 
   it('should handle zero seconds', () => {
-    expect(formatTime(0)).toBe('0:00');
+    expect(formatSecondsAsTimer(0)).toBe('00:00');
   });
 });
 ```

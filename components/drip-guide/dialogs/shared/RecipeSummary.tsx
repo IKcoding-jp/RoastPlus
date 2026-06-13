@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Coffee, Drop, Timer } from 'phosphor-react';
-import { formatTime } from '@/lib/drip-guide/formatTime';
+import { formatSecondsAsTimer as formatTime } from '@/lib/dateUtils';
 
 interface RecipeSummaryProps {
   beanAmountGram: number;

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { getTomorrowDateString, getNextWeekday, formatDateToYMD } from '@/lib/dateUtils';
 
 export type ViewMode = 'calendar' | 'year' | 'month';
 
@@ -24,41 +25,10 @@ export function useDatePicker({ selectedDate, isWeekend, getTodayString }: UseDa
   const todayDate = new Date(today + 'T00:00:00');
   const currentYear = todayDate.getFullYear();
 
-  // 翌日の日付を取得
-  const getTomorrowString = () => {
-    const now = new Date();
-    now.setDate(now.getDate() + 1);
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
-  // 次の平日を取得する関数
-  const getNextWeekday = (dateString: string): string => {
-    const date = new Date(dateString + 'T00:00:00');
-    date.setDate(date.getDate() + 1);
-    while (date.getDay() === 0 || date.getDay() === 6) {
-      date.setDate(date.getDate() + 1);
-    }
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
-
-  const tomorrow = getTomorrowString();
+  const tomorrow = getTomorrowDateString();
   // 翌日（土日なら次の平日）が最大選択可能日
   const maxSelectableDate = isWeekend(tomorrow) ? getNextWeekday(today) : tomorrow;
   const maxSelectableDateObj = useMemo(() => new Date(maxSelectableDate + 'T00:00:00'), [maxSelectableDate]);
-
-  // 日付文字列フォーマット関数
-  const formatDateString = (date: Date): string => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
 
   // カレンダーの日付配列を生成
   const calendarDays = useMemo(() => {
@@ -78,7 +48,7 @@ export function useDatePicker({ selectedDate, isWeekend, getTodayString }: UseDa
       days.push({
         date,
         isCurrentMonth: false,
-        dateString: formatDateString(date),
+        dateString: formatDateToYMD(date),
       });
     }
 
@@ -88,7 +58,7 @@ export function useDatePicker({ selectedDate, isWeekend, getTodayString }: UseDa
       days.push({
         date,
         isCurrentMonth: true,
-        dateString: formatDateString(date),
+        dateString: formatDateToYMD(date),
       });
     }
 
@@ -99,7 +69,7 @@ export function useDatePicker({ selectedDate, isWeekend, getTodayString }: UseDa
       days.push({
         date,
         isCurrentMonth: false,
-        dateString: formatDateString(date),
+        dateString: formatDateToYMD(date),
       });
     }
 

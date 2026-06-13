@@ -2,6 +2,7 @@
 
 import { HiXMark } from 'react-icons/hi2';
 import { MdAdd, MdDelete } from 'react-icons/md';
+import { formatMinutesToHHMM } from '@/lib/dateUtils';
 
 import { Button, IconButton, Input, Modal } from '@/components/ui';
 import { type WorkChimePeriod, type WorkChimePeriodKind, type WorkChimeSettings } from '@/lib/workChime';
@@ -20,9 +21,7 @@ function minutesFromTime(value: string): number {
 
 function timeFromMinutes(value: number): string {
   const normalized = Math.max(0, Math.min(23 * 60 + 59, value));
-  const hours = Math.floor(normalized / 60);
-  const minutes = normalized % 60;
-  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+  return formatMinutesToHHMM(normalized);
 }
 
 function getNextPeriodDraft(periods: WorkChimePeriod[]): WorkChimePeriod {

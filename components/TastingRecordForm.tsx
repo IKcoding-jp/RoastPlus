@@ -10,7 +10,7 @@ import { User, Calendar, Thermometer, Coffee } from 'phosphor-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input, Select, Textarea, Button } from '@/components/ui';
 import { ROAST_LEVELS } from '@/lib/constants';
-import { formatDateString } from '@/lib/dateUtils';
+import { getTodayDateString } from '@/lib/dateUtils';
 import { TastingRecordFormScores } from './TastingRecordFormScores';
 
 interface TastingRecordFormProps {
@@ -58,7 +58,7 @@ export function TastingRecordForm({
   const [selectedMemberId, setSelectedMemberId] = useState<string>(record?.memberId || '');
   const [beanName, setBeanName] = useState(record?.beanName || sessionInfo?.beanName || '');
   const [tastingDate, setTastingDate] = useState(
-    record?.tastingDate || (sessionInfo ? sessionInfo.createdAt.split('T')[0] : formatDateString())
+    record?.tastingDate || (sessionInfo ? sessionInfo.createdAt.split('T')[0] : getTodayDateString())
   );
   const [roastLevel, setRoastLevel] = useState<'浅煎り' | '中煎り' | '中深煎り' | '深煎り'>(
     record?.roastLevel || sessionInfo?.roastLevel || '中深煎り'

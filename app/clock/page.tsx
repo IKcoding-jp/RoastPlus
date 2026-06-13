@@ -43,7 +43,7 @@ function getPreviewChime(): DueWorkChime | null {
   };
 }
 
-function formatTime(date: Date, use24Hour: boolean): { h: string; m: string; s: string; ampm?: string } {
+function buildClockTimeParts(date: Date, use24Hour: boolean): { h: string; m: string; s: string; ampm?: string } {
   let hours = date.getHours();
   let ampm: string | undefined;
 
@@ -60,7 +60,7 @@ function formatTime(date: Date, use24Hour: boolean): { h: string; m: string; s: 
   };
 }
 
-function formatDate(date: Date): string {
+function buildClockDateString(date: Date): string {
   const y = date.getFullYear();
   const m = date.getMonth() + 1;
   const d = date.getDate();
@@ -146,7 +146,7 @@ export default function ClockPage() {
     );
   }
 
-  const time = formatTime(now, settings.use24Hour);
+  const time = buildClockTimeParts(now, settings.use24Hour);
 
   return (
     <div
@@ -211,7 +211,7 @@ export default function ClockPage() {
               color: colors.dateText,
             }}
           >
-            {formatDate(now)}
+            {buildClockDateString(now)}
           </p>
         )}
 
