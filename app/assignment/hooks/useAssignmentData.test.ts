@@ -90,4 +90,18 @@ describe('useAssignmentData', () => {
     expect(consoleErrorSpy).toHaveBeenCalledWith('Failed to load assignment master data:', error);
     consoleErrorSpy.mockRestore();
   });
+
+  it('担当表の購読が初回エラーでも読み込み中のままにしない', async () => {
+    // 成功コールバックは呼ばず onError だけ発火させ、初回から購読が失敗する状況を再現する
+    mocks.subscribeLatestAssignmentDay.mockImplementation((_userId, _callback, options) => {
+      options?.onError?.();
+      return unsubscribe;
+    });
+
+    const { result } = renderHook(() => useAssignmentData('user-1', false));
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false);
+    });
+  });
 });

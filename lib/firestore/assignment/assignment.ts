@@ -68,7 +68,7 @@ export const updateAssignmentDay = async (userId: string, date: string, assignme
 export const subscribeLatestAssignmentDay = (
   userId: string,
   callback: (data: AssignmentDay | null) => void,
-  options?: { onEmpty?: () => Promise<void> }
+  options?: { onEmpty?: () => Promise<void>; onError?: () => void }
 ) => {
   const assignmentDaysCol = getAssignmentDaysCollection(userId);
   const latestQuery = query(assignmentDaysCol, orderBy('updatedAt', 'desc'), limit(1));
@@ -97,7 +97,9 @@ export const subscribeLatestAssignmentDay = (
           initializing = false;
         }
       }
-    }
+    },
+    // 初回購読がエラーで成功しない場合でも、呼び出し側がローディングを解除できるよう通知する
+    () => options?.onError?.()
   );
 };
 

@@ -56,6 +56,25 @@ describe('createSyncedSubscription', () => {
     expect(attachCount).toBe(2);
   });
 
+  it('購読失敗時に任意の onSubscribeError を呼ぶ（初回エラーでローディングを解除する用途）', () => {
+    let lastOnError: (error: { code?: string }) => void = () => {};
+    const onSubscribeError = vi.fn();
+
+    createSyncedSubscription<string>(
+      (_onNext, onError) => {
+        lastOnError = onError;
+        return () => {};
+      },
+      vi.fn(),
+      onSubscribeError
+    );
+
+    lastOnError({ code: 'unavailable' });
+
+    expect(onSubscribeError).toHaveBeenCalledTimes(1);
+    expect(onSubscribeError).toHaveBeenCalledWith({ code: 'unavailable' });
+  });
+
   it('解除後は再購読タイマーが発火せず、同期エラーも解除する', () => {
     let attachCount = 0;
     let lastOnError: (error: { code?: string }) => void = () => {};

@@ -15,11 +15,15 @@ const RESUBSCRIBE_MAX_DELAY_MS = 30_000;
  *
  * @param attach 成功ハンドラ・エラーハンドラを受け取り onSnapshot を張って unsubscribe を返す関数
  * @param onData 成功スナップショットの処理
+ * @param onSubscribeError 購読エラー時に reportSyncError とは別に呼ぶ任意のフック。
+ *   初回スナップショットが届く前にエラーが続くと、成功コールバックに依存したローディング解除が
+ *   行われず画面が固まりうるため、呼び出し側がローディングを解除する等に使う。
  * @returns 購読解除関数
  */
 export function createSyncedSubscription<S>(
   attach: (onNext: (snapshot: S) => void, onError: (error: { code?: string }) => void) => () => void,
-  onData: (snapshot: S) => void
+  onData: (snapshot: S) => void,
+  onSubscribeError?: (error: { code?: string }) => void
 ): () => void {
   let stopped = false;
   let retryCount = 0;
@@ -37,6 +41,8 @@ export function createSyncedSubscription<S>(
         console.error('Error in assignment Firestore subscription:', error);
         // エラー時は onData を呼ばない（既存データを保持）。同期できていないことを UI へ通知する
         reportSyncError(toSyncErrorType(error));
+        // 初回エラーでローディングが解除されない問題に対応するため、呼び出し側へエラーを通知する
+        onSubscribeError?.(error);
 
         // 同一世代でエラーが連続した場合は前のタイマーを破棄し、二重再購読を防ぐ
         if (retryTimeoutId) {
