@@ -76,7 +76,7 @@ export const EmptyState = forwardRef<HTMLDivElement, EmptyStateProps>(
       >
         {icon && <div className={`text-ink-muted ${currentSize.icon}`}>{icon}</div>}
         <h3 className={`font-semibold text-ink ${currentSize.title}`}>{title}</h3>
-        {description && <p className={`mt-1 text-ink-muted ${currentSize.description} max-w-sm`}>{description}</p>}
+        {description && <p className={`mt-1 text-ink-muted ${currentSize.description} max-w-md`}>{description}</p>}
         {action && <div className="mt-4">{action}</div>}
       </div>
     );

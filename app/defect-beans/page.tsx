@@ -166,6 +166,7 @@ export default function DefectBeansPage() {
   };
 
   const selectedDefectBeans = filteredDefectBeans.filter((bean) => selectedIds.has(bean.id));
+  const isFiltering = !!(searchQuery || filterOption !== 'all');
 
   return (
     <div className="min-h-screen pt-16 pb-2 sm:pb-4 px-4 sm:px-6 lg:px-8 transition-colors duration-1000 bg-page">
@@ -226,24 +227,20 @@ export default function DefectBeansPage() {
         {filteredDefectBeans.length === 0 ? (
           <EmptyState
             icon={
-              !!(searchQuery || filterOption !== 'all') ? (
+              isFiltering ? (
                 <HiSearch className="w-10 h-10 sm:w-12 sm:h-12 text-spot" />
               ) : (
                 <HiOutlineCollection className="w-10 h-10 sm:w-12 sm:h-12 text-spot" />
               )
             }
-            title={
-              !!(searchQuery || filterOption !== 'all')
-                ? '検索条件に一致する欠点豆がありません'
-                : '欠点豆が登録されていません'
-            }
+            title={isFiltering ? '検索条件に一致する欠点豆がありません' : '欠点豆が登録されていません'}
             description={
-              !!(searchQuery || filterOption !== 'all')
+              isFiltering
                 ? '別のキーワードで検索するか、フィルタを変更してみてください。'
                 : '最初の欠点豆を追加して、図鑑を始めましょう。'
             }
             action={
-              !(searchQuery || filterOption !== 'all') ? (
+              !isFiltering ? (
                 <Button
                   variant="primary"
                   onClick={() => setShowAddForm(true)}
@@ -255,6 +252,7 @@ export default function DefectBeansPage() {
               ) : undefined
             }
             size="lg"
+            className="!py-12 sm:!py-16"
           />
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
