@@ -38,8 +38,8 @@ RoastPlus は、ドリップパックコーヒー製造現場（約8名・iPad�
 現場の業務データを預かるアプリのため、以下を必ず守ります。
 
 - **保存・購読の失敗を黙って握りつぶさない。** Firestore の保存・購読・トランザクションのエラー処理を新しく書くときは、必ずユーザーへの通知（トースト・バナー等）につなげる。`console.error` だけのエラー処理を新規に書かない。
-- **エラー処理の線引き**: localStorage キャッシュ・音声再生・ブラウザ通知APIの失敗は黙認してよい（graceful degradation）。業務データの読み書きの失敗は黙認しない。
-- **ユーザーデータの書き込みは既存のデータ層を経由する。** `lib/firestore/` 配下の関数（write-queue・トランザクションヘルパー）を使い、ページやコンポーネントから Firestore SDK を直接呼ばない。
+- **エラー処理は3択から選ぶ**: (1) 業務データの保存・購読の失敗 → `reportSaveError`・トースト等で必ずユーザーに通知する。(2) UI操作（フォーム送信等）の失敗 → トーストまたはローカルの error state で表示する。(3) localStorage キャッシュ・音声再生・ブラウザ通知APIの失敗 → 黙認してよい（graceful degradation）。業務データの読み書きの失敗は黙認しない。
+- **ユーザーデータの書き込み・購読は既存のデータ層を経由する。** `lib/firestore/` 配下の関数（write-queue・トランザクションヘルパー）を使い、ページ・コンポーネント・`app/<機能>/lib/` から Firestore SDK（`setDoc` / `onSnapshot` 等）を直接呼ばない。購読には必ずエラーコールバックを渡し、失敗を `lib/syncStatus.ts` の通知につなげる。既存の `app/assignment/lib/firebase/` はレガシーの例外であり、触る PR で段階的に `lib/firestore/` へ移行する。新規コードでこのパターンを真似しない。
 - **`firestore.rules` / `storage.rules` の変更はテスト駆動で行う。** 先に `tests/rules/` へテストを書き、`npm run test:rules` で検証する。権限を緩める方向の変更は、必ずユーザーに確認してから行う。
 - **本番データの変更・削除は、ユーザーの明示依頼なしに絶対に行わない。**
 
@@ -48,10 +48,14 @@ RoastPlus は、ドリップパックコーヒー製造現場（約8名・iPad�
 - **依存方向は一方向のみ**: `types/ → lib/ → hooks/ → components/ → app/`。特に `lib/` から `@/components/*` を import しない。循環依存禁止（詳細は `docs/steering/REPOSITORY.md`）。
 - **業務ロジックは `lib/` の純粋関数に置く**: 計算・集計・フィルタ・ソート・日付処理は `lib/`（または `app/<機能>/lib/`）に置き、単体テストを付ける。`page.tsx` やコンポーネントに直書きしない。
 - **ファイル肥大を防ぐ**: `page.tsx` は表示とイベント結線に徹する。1ファイルが約300行を超えそうなら、先にフック・コンポーネント・`lib/` への分割を検討する。
-- **日付・時刻は日本時間のローカルタイム前提**: `getMonth()` は0始まりなので、文字列化するときは必ず `+1` する。日付キーの生成に `toISOString()` を使わない（UTCにずれて日付がまたがる）。新しいフォーマッタを書く前に、既存ユーティリティを探して再利用する。
+- **日付・時刻は日本時間のローカルタイム前提**: `getMonth()` は0始まりなので、文字列化するときは必ず `+1` する。日付キーの生成に `toISOString()` を使わない（UTCにずれて日付がまたがる）。
+- **日付・時刻のフォーマット/パースは `lib/dateUtils.ts` に集約する**: 新しいフォーマット処理が必要になったら、まず `lib/dateUtils.ts` を確認し、なければそこに追加してテストを書く。ページ・フック・コンポーネント内にローカルの日付フォーマット関数を定義しない。曜日名などの定数は `lib/constants.ts` に置く。
 - **集計・CSV は `lib/productionRecords.ts` に一元化されている**: 数式・CSVフォーマットを変更するときは、`lib/productionRecords.test.ts` を同じPRで更新する。
 - **Service Worker（`public/sw.js`）を変更したら `SW_VERSION` を +1 する**: 上げ忘れは古い画面が配信され続ける事故につながる（`CACHE_NAME` / `RUNTIME_CACHE` は `SW_VERSION` から導出される）。プリキャッシュ対象を変える場合は、`docs/steering/TECH_SPEC.md` の「プリキャッシュ方針」と `lib/pwa/sw.test.ts` を同時に更新する。
 - **共通UIは `components/ui/` を使う**: 生の `<button>`・`<select>`・checkbox はESLintカスタムルールで禁止。デザインルールは `DESIGN.md`、実装規約は `docs/steering/GUIDELINES.md` に従う。
+- **try/catch は「実際に例外を投げうる処理」だけを包む**: 同期の純粋計算や例外を投げない API（`new Date()` 等）を try/catch で包まない。防御が必要なら値の検証（`isNaN` 等）で行う。
+- **ドメイン型（Firestore に保存されるデータの型）は `types/` 配下に置く**: コンポーネントの Props 型や export しないローカル型はファイル内定義でよい。
+- **同名で目的の異なるユーティリティ関数を作らない**: 既存と名前が衝突する場合は、目的が分かる名前を付ける（例: `formatTime` ではなく `formatSecondsAsTimer`）。
 
 ## 変更種別ごとの必須チェック
 
