@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { Coffee, CalendarBlank, Thermometer, Trash, Plus, Warning } from 'phosphor-react';
 import { Input, Select, Button } from '@/components/ui';
 import { ROAST_LEVELS } from '@/lib/constants';
-import { formatDateString } from '@/lib/dateUtils';
+import { getTodayDateString } from '@/lib/dateUtils';
 
 interface TastingSessionFormProps {
   session: TastingSession | null;
@@ -21,7 +21,7 @@ export function TastingSessionForm({ session, onSave, onCancel, onDelete }: Tast
   const { showToast } = useToastContext();
 
   const [beanName, setBeanName] = useState(session?.beanName || '');
-  const [createdAt, setCreatedAt] = useState(session?.createdAt ? session.createdAt.split('T')[0] : formatDateString());
+  const [createdAt, setCreatedAt] = useState(session?.createdAt ? session.createdAt.split('T')[0] : getTodayDateString());
   const [roastLevel, setRoastLevel] = useState<'浅煎り' | '中煎り' | '中深煎り' | '深煎り'>(
     session?.roastLevel || '中深煎り'
   );

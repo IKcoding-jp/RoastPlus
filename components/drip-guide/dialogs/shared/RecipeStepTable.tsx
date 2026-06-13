@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { DripStep } from '@/lib/drip-guide/types';
-import { formatTime } from '@/lib/drip-guide/formatTime';
+import { formatSecondsAsTimer as formatTime } from '@/lib/dateUtils';
 import { Button } from '@/components/ui';
 
 interface RecipeStepTableProps {

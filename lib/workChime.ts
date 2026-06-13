@@ -1,3 +1,5 @@
+import { formatDateToYMD, formatTimeHM } from '@/lib/dateUtils';
+
 export type WorkChimeKind = 'break' | 'work-start' | 'work-resume' | 'cleanup-start';
 export type WorkChimePeriodKind = 'work' | 'break' | 'cleanup';
 
@@ -132,18 +134,8 @@ function normalizeSettings(value: unknown): WorkChimeSettings {
   };
 }
 
-function dateKey(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-function timeKey(date: Date): string {
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  return `${hours}:${minutes}`;
-}
+const dateKey = formatDateToYMD;
+const timeKey = formatTimeHM;
 
 function getSortedPeriods(settings: WorkChimeSettings): WorkChimePeriod[] {
   return [...settings.periods].sort((a, b) => a.start.localeCompare(b.start));

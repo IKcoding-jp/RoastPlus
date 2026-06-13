@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { formatTime } from '@/lib/drip-guide/formatTime';
+import { formatSecondsAsTimer as formatTime } from '@/lib/dateUtils';
 import type { DripStep } from '@/lib/drip-guide/types';
 
 interface FocusGuideDisplayProps {
