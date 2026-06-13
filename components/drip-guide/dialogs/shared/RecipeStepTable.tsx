@@ -11,6 +11,8 @@ interface RecipeStepTableProps {
   showPourAmount?: boolean;
 }
 
+const HEAD_STYLES = 'pb-2 text-[11px] font-bold tracking-[0.1em] text-ink-muted';
+
 export const RecipeStepTable: React.FC<RecipeStepTableProps> = ({
   steps,
   onStepDetailClick,
@@ -18,16 +20,14 @@ export const RecipeStepTable: React.FC<RecipeStepTableProps> = ({
 }) => {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+      <table className="w-full text-[13px]">
         <thead>
-          <tr className="border-b border-edge">
-            <th className="text-left py-2 px-2 font-semibold text-ink-sub">開始時刻</th>
-            <th className="text-left py-2 px-2 font-semibold text-ink-sub">
-              {showPourAmount ? 'タイトル' : 'ステップ'}
-            </th>
-            {showPourAmount && <th className="text-right py-2 px-2 font-semibold text-ink-sub">注湯量(g)</th>}
-            <th className="text-right py-2 px-2 font-semibold text-ink-sub">累積(g)</th>
-            {onStepDetailClick && <th className="text-center py-2 px-2 font-semibold text-ink-sub">詳細</th>}
+          <tr>
+            <th className={`${HEAD_STYLES} text-left`}>時間</th>
+            <th className={`${HEAD_STYLES} text-left`}>ステップ</th>
+            {showPourAmount && <th className={`${HEAD_STYLES} text-right`}>注湯</th>}
+            <th className={`${HEAD_STYLES} text-right`}>累計</th>
+            {onStepDetailClick && <th className={`${HEAD_STYLES} text-center`}>詳細</th>}
           </tr>
         </thead>
         <tbody>
@@ -37,13 +37,17 @@ export const RecipeStepTable: React.FC<RecipeStepTableProps> = ({
             const pourAmount = currentTarget - prevTarget;
 
             return (
-              <tr key={step.id} className="border-b border-edge/50">
-                <td className="py-2 px-2 text-ink-sub font-mono">{formatTime(step.startTimeSec)}</td>
-                <td className="py-2 px-2 text-ink-sub">{step.title}</td>
-                {showPourAmount && <td className="py-2 px-2 text-right text-ink font-semibold">{pourAmount}</td>}
-                <td className="py-2 px-2 text-right text-ink font-semibold">{step.targetTotalWater ?? '-'}</td>
+              <tr key={step.id} className="border-t border-edge">
+                <td className="py-2.5 pr-2 font-num tabular-nums text-ink-muted">{formatTime(step.startTimeSec)}</td>
+                <td className="py-2.5 pr-2 font-semibold text-ink">{step.title}</td>
+                {showPourAmount && (
+                  <td className="py-2.5 pl-2 text-right font-num font-bold tabular-nums text-ink">{pourAmount}g</td>
+                )}
+                <td className="py-2.5 pl-2 text-right font-num tabular-nums text-ink-muted">
+                  {step.targetTotalWater != null ? `${step.targetTotalWater}g` : '-'}
+                </td>
                 {onStepDetailClick && (
-                  <td className="py-2 px-2 text-center">
+                  <td className="py-2.5 pl-2 text-center">
                     <Button
                       variant="ghost"
                       size="sm"
