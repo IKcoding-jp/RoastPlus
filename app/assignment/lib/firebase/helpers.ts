@@ -3,9 +3,6 @@
 // このファイルへ新しいロジックを追加しない。後続 #544〜#546 で各消費者を新モジュール直参照へ移行し、
 // 最終的に旧ディレクトリごと削除する。
 export {
-  getTeamsCollection,
-  getMembersCollection,
-  getTaskLabelsCollection,
   getAssignmentDaysCollection,
   getShuffleEventsCollection,
   getShuffleHistoryCollection,
