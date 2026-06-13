@@ -8,16 +8,12 @@ export {
   getAssignmentDaysCollection,
   getShuffleEventsCollection,
   getShuffleHistoryCollection,
-  getAssignmentSettingsCollection,
-  getManagersCollection,
-  getPairExclusionsCollection,
 } from './references';
 
 // 汎用ロジック・定数
 export {
   toMillisSafe,
   DEFAULT_SHUFFLE_SETTINGS,
-  DEFAULT_TABLE_SETTINGS,
   normalizeAssignmentsForDate,
   sortAssignmentsStable,
   areAssignmentsEqual,
