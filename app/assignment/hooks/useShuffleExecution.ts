@@ -8,7 +8,7 @@ import {
   createShuffleHistory,
   fetchRecentShuffleHistory,
   updateMemberTeam,
-} from '../lib/firebase';
+} from '@/lib/firestore/assignment';
 import { calculateAssignment } from '@/app/assignment/lib/shuffle';
 import { serverTimestamp, Timestamp } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';

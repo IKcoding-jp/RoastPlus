@@ -39,7 +39,7 @@ RoastPlus は、ドリップパックコーヒー製造現場（約8名・iPad�
 
 - **保存・購読の失敗を黙って握りつぶさない。** Firestore の保存・購読・トランザクションのエラー処理を新しく書くときは、必ずユーザーへの通知（トースト・バナー等）につなげる。`console.error` だけのエラー処理を新規に書かない。
 - **エラー処理は3択から選ぶ**: (1) 業務データの保存・購読の失敗 → `reportSaveError`・トースト等で必ずユーザーに通知する。(2) UI操作（フォーム送信等）の失敗 → トーストまたはローカルの error state で表示する。(3) localStorage キャッシュ・音声再生・ブラウザ通知APIの失敗 → 黙認してよい（graceful degradation）。業務データの読み書きの失敗は黙認しない。
-- **ユーザーデータの書き込み・購読は既存のデータ層を経由する。** `lib/firestore/` 配下の関数（write-queue・トランザクションヘルパー）を使い、ページ・コンポーネント・`app/<機能>/lib/` から Firestore SDK（`setDoc` / `onSnapshot` 等）を直接呼ばない。購読には必ずエラーコールバックを渡し、失敗を `lib/syncStatus.ts` の通知につなげる。既存の `app/assignment/lib/firebase/` はレガシーの例外であり、触る PR で段階的に `lib/firestore/` へ移行する。新規コードでこのパターンを真似しない。
+- **ユーザーデータの書き込み・購読は既存のデータ層を経由する。** `lib/firestore/` 配下の関数（write-queue・トランザクションヘルパー）を使い、ページ・コンポーネント・`app/<機能>/lib/` から Firestore SDK（`setDoc` / `onSnapshot` 等）を直接呼ばない。購読には必ずエラーコールバックを渡し、失敗を `lib/syncStatus.ts` の通知につなげる。新規コードで Firestore SDK を直接呼ぶパターンを真似しない。
 - **`firestore.rules` / `storage.rules` の変更はテスト駆動で行う。** 先に `tests/rules/` へテストを書き、`npm run test:rules` で検証する。権限を緩める方向の変更は、必ずユーザーに確認してから行う。
 - **本番データの変更・削除は、ユーザーの明示依頼なしに絶対に行わない。**
 

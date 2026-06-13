@@ -25,7 +25,7 @@ import {
   subscribePairExclusions,
   subscribeShuffleSettings,
   DEFAULT_SHUFFLE_SETTINGS,
-} from '../lib/firebase';
+} from '@/lib/firestore/assignment';
 
 const getLocalTodayDate = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tokyo' }).format(new Date());
 
@@ -144,11 +144,19 @@ export function useAssignmentData(userId: string | null, authLoading: boolean) {
   useEffect(() => {
     if (!userId || authLoading) return;
 
-    const unsubAssignment = subscribeLatestAssignmentDay(userId, (data) => {
-      setAssignmentDay(data);
-      setActiveDate(data?.date ?? '');
-      setIsAssignmentLoaded(true);
-    });
+    const unsubAssignment = subscribeLatestAssignmentDay(
+      userId,
+      (data) => {
+        setAssignmentDay(data);
+        setActiveDate(data?.date ?? '');
+        setIsAssignmentLoaded(true);
+      },
+      {
+        // 購読エラー時は既存データを保持したままローディングだけ解除する。
+        // （同期失敗は createSyncedSubscription が syncStatus バナーで通知）
+        onError: () => setIsAssignmentLoaded(true),
+      }
+    );
 
     const unsubSettings = subscribeTableSettings(userId, (settings) => {
       setTableSettings(settings);

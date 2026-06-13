@@ -15,7 +15,7 @@ import {
   addPairExclusion,
   deletePairExclusion,
   updateShuffleSettings,
-} from './lib/firebase';
+} from '@/lib/firestore/assignment';
 import { useAssignmentData, useShuffleExecution, useAssignmentHandlers } from './hooks';
 import { FaUserTie } from 'react-icons/fa';
 import { HiPlus, HiCog } from 'react-icons/hi';

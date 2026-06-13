@@ -14,7 +14,7 @@ import {
   deleteTeam,
   updateTeam,
   updateTableSettings,
-} from '../lib/firebase';
+} from '@/lib/firestore/assignment';
 
 type UseAssignmentHandlersParams = {
   userId: string | null;
