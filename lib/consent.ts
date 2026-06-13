@@ -34,14 +34,13 @@ export function createConsentData(): UserConsent {
 
 // 同意日時をフォーマット
 export function formatConsentDate(isoDate: string): string {
-  try {
-    const date = new Date(isoDate);
-    return date.toLocaleDateString('ja-JP', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  } catch {
+  const date = new Date(isoDate);
+  if (isNaN(date.getTime())) {
     return isoDate;
   }
+  return date.toLocaleDateString('ja-JP', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 }

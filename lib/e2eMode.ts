@@ -1,4 +1,4 @@
-import type { User } from 'firebase/auth';
+import type { User, UserMetadata, IdTokenResult } from 'firebase/auth';
 import type { AppData } from '@/types';
 import { createConsentData } from '@/lib/consent';
 
@@ -17,7 +17,7 @@ function canUseStorage(): boolean {
 }
 
 export function getE2EUser(): User {
-  return {
+  const user: User = {
     uid: E2E_USER_ID,
     email: E2E_EMAIL,
     displayName: 'E2E User',
@@ -27,14 +27,14 @@ export function getE2EUser(): User {
     photoURL: null,
     providerData: [],
     providerId: 'password',
-    metadata: {},
+    metadata: {} as UserMetadata,
     refreshToken: 'e2e-refresh-token',
     tenantId: null,
     delete: async () => {},
     getIdToken: async () => 'e2e-token',
-    getIdTokenResult: async () => ({
+    getIdTokenResult: async (): Promise<IdTokenResult> => ({
       authTime: new Date(0).toISOString(),
-      expirationTime: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+      expirationTime: new Date(0).toISOString(),
       issuedAtTime: new Date(0).toISOString(),
       signInProvider: 'password',
       signInSecondFactor: null,
@@ -47,7 +47,8 @@ export function getE2EUser(): User {
       email: E2E_EMAIL,
       displayName: 'E2E User',
     }),
-  } as unknown as User;
+  };
+  return user;
 }
 
 export function isE2ESignedIn(): boolean {

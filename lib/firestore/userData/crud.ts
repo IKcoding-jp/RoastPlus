@@ -62,7 +62,7 @@ export async function getUserData(userId: string): Promise<AppData> {
     }
 
     // ドキュメントが存在しない場合はデフォルトデータを作成
-    const cleanedDefaultData = removeUndefinedFields(defaultData) as unknown as Record<string, unknown>;
+    const cleanedDefaultData = removeUndefinedFields(defaultData) as Record<string, unknown>;
     await setDoc(userDocRef, cleanedDefaultData);
     return defaultData;
   } catch (error) {

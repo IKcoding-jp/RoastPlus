@@ -145,28 +145,24 @@ describe('consent', () => {
       expect(formatted).toMatch(/25日/);
     });
 
-    it('無効な日付形式の場合は"Invalid Date"を返す', () => {
+    it('無効な日付形式の場合は元の文字列をそのまま返す', () => {
       const invalidDate = 'invalid-date';
       const formatted = formatConsentDate(invalidDate);
 
-      // new Date('invalid-date')はInvalid Dateオブジェクトを生成
-      // toLocaleDateString()は"Invalid Date"文字列を返す（例外は投げない）
-      expect(formatted).toBe('Invalid Date');
+      expect(formatted).toBe(invalidDate);
     });
 
-    it('空文字列の場合は"Invalid Date"を返す', () => {
+    it('空文字列の場合は空文字列をそのまま返す', () => {
       const formatted = formatConsentDate('');
 
-      // new Date('')はInvalid Dateオブジェクトを生成
-      expect(formatted).toBe('Invalid Date');
+      expect(formatted).toBe('');
     });
 
-    it('部分的に無効な日付の場合は"Invalid Date"を返す', () => {
+    it('部分的に無効な日付の場合は元の文字列をそのまま返す', () => {
       const partiallyInvalid = '2024-99-99T00:00:00.000Z';
       const formatted = formatConsentDate(partiallyInvalid);
 
-      // 無効な日付はInvalid Dateオブジェクトになる
-      expect(formatted).toBe('Invalid Date');
+      expect(formatted).toBe(partiallyInvalid);
     });
 
     it('タイムゾーンが異なる日付も正しく処理できる', () => {

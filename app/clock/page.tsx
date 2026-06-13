@@ -12,8 +12,7 @@ import { WorkChimeScheduleModal } from '@/components/clock/WorkChimeScheduleModa
 import { useWorkChime } from '@/hooks/useWorkChime';
 import { getThemeColors, getFontFamily, getFontWidthFactor, getScaledClamp } from '@/lib/clockSettings';
 import type { DueWorkChime, WorkChimeKind } from '@/lib/workChime';
-
-const DAY_NAMES = ['日', '月', '火', '水', '木', '金', '土'];
+import { WEEKDAY_NAMES } from '@/lib/constants';
 
 function getPreviewChime(): DueWorkChime | null {
   if (typeof window === 'undefined') return null;
@@ -64,7 +63,7 @@ function buildClockDateString(date: Date): string {
   const y = date.getFullYear();
   const m = date.getMonth() + 1;
   const d = date.getDate();
-  const day = DAY_NAMES[date.getDay()];
+  const day = WEEKDAY_NAMES[date.getDay()];
   return `${y}/${m}/${d} (${day})`;
 }
 

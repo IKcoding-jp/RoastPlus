@@ -3,7 +3,7 @@
  * JST（日本標準時）前提。toISOString() は使用しない（UTCずれ防止）。
  */
 
-const DAY_NAMES_JA = ['日', '月', '火', '水', '木', '金', '土'] as const;
+import { WEEKDAY_NAMES } from '@/lib/constants';
 
 /** DateオブジェクトをYYYY-MM-DD形式の文字列に変換（JST基準） */
 export function formatDateToYMD(date: Date): string {
@@ -57,7 +57,7 @@ export function formatDateToJapanese(date: Date): string {
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const day = date.getDate();
-  const weekday = DAY_NAMES_JA[date.getDay()];
+  const weekday = WEEKDAY_NAMES[date.getDay()];
   return `${year}年${month}月${day}日（${weekday}）`;
 }
 
