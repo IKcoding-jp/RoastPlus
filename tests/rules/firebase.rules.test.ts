@@ -471,6 +471,27 @@ describe('Firestore rules', () => {
       await assertFails(firestoreFor(OWN_UID).doc(nestedPath).get());
     });
   });
+
+  describe('inventory', () => {
+    it('allows any signed-in member to read/write, denies anonymous (team-shared)', async () => {
+      const item = { name: 'ドリップ袋', status: 'low' };
+      const ownerDoc = firestoreFor(OWN_UID).doc('inventory/item_1');
+      const otherDoc = firestoreFor(OTHER_UID).doc('inventory/item_1');
+      const anonymousDoc = firestoreFor().doc('inventory/item_1');
+
+      // 未認証は読み書きとも拒否
+      await assertFails(anonymousDoc.get());
+      await assertFails(anonymousDoc.set(item));
+
+      // 認証済みメンバーは読み書き可
+      await assertSucceeds(ownerDoc.set(item));
+      await assertSucceeds(ownerDoc.get());
+
+      // 別メンバーも読み書き可（チーム共有。defectBeans と異なり全員が編集可）
+      await assertSucceeds(otherDoc.get());
+      await assertSucceeds(otherDoc.set({ name: 'ドリップ袋', status: 'out' }));
+    });
+  });
 });
 
 describe('Storage rules', () => {
