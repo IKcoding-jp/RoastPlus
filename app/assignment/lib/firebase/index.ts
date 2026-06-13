@@ -10,7 +10,7 @@ export {
   fetchRecentAssignments,
 } from './assignment';
 
-// masterData
+// masterData（lib/firestore/assignment/masterData に移設済み）
 export {
   fetchTeams,
   fetchMembers,
@@ -26,7 +26,7 @@ export {
   addTaskLabel,
   deleteTaskLabel,
   updateTaskLabel,
-} from './masterData';
+} from '@/lib/firestore/assignment';
 
 // shuffle
 export {
