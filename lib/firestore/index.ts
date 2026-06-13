@@ -15,7 +15,6 @@ export {
   subscribePackageEntries,
 } from './productionRecords';
 export {
-  getInventoryCollectionRef,
   subscribeInventoryItems,
   addInventoryItem,
   updateInventoryItem,

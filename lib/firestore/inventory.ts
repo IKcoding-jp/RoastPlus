@@ -15,7 +15,7 @@ import { getDb } from './common';
 import { buildInventoryItemInput, normalizeInventoryStatus } from '@/lib/inventory';
 import type { InventoryItem, InventoryItemInput } from '@/types';
 
-export function getInventoryCollectionRef() {
+function getInventoryCollectionRef() {
   return collection(getDb(), 'inventory');
 }
 

@@ -10,7 +10,7 @@ import type { InventoryStatus } from '@/types';
  *
  * 状態は色だけに頼らず「色 + ドット + 日本語ラベル」で示し、セグメントは選択中のみ着色する。
  */
-export interface StatusVisual {
+interface StatusVisual {
   /** 日本語ラベル（十分/少ない/切れた） */
   label: string;
   /** セグメント選択中の塗り(背景+文字色)。 */

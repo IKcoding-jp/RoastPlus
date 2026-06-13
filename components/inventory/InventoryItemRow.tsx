@@ -10,7 +10,7 @@ import type { FirestoreTimestamp, InventoryItem, InventoryStatus } from '@/types
  * 最終更新時刻を「M/D HH:mm」形式に整形する。
  * updatedAt が保留書き込み等で未確定（undefined/変換不能）なら null を返す。
  */
-export function formatUpdatedAt(value: FirestoreTimestamp | undefined): string | null {
+function formatUpdatedAt(value: FirestoreTimestamp | undefined): string | null {
   const date = toJSDate(value);
   if (!date) {
     return null;
