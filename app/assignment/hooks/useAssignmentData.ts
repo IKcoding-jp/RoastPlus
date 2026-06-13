@@ -25,7 +25,7 @@ import {
   subscribePairExclusions,
   subscribeShuffleSettings,
   DEFAULT_SHUFFLE_SETTINGS,
-} from '../lib/firebase';
+} from '@/lib/firestore/assignment';
 
 const getLocalTodayDate = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Tokyo' }).format(new Date());
 

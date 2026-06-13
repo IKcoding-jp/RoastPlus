@@ -19,7 +19,7 @@ const mocks = vi.hoisted(() => ({
   subscribeShuffleSettings: vi.fn(),
 }));
 
-vi.mock('../lib/firebase', () => ({
+vi.mock('@/lib/firestore/assignment', () => ({
   fetchTeams: mocks.fetchTeams,
   fetchMembers: mocks.fetchMembers,
   fetchTaskLabels: mocks.fetchTaskLabels,

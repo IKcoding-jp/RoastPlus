@@ -60,7 +60,7 @@ vi.mock('./components/AssignmentSettingsModal', () => ({
   AssignmentSettingsModal: () => null,
 }));
 
-vi.mock('./lib/firebase', () => ({
+vi.mock('@/lib/firestore/assignment', () => ({
   setManager: vi.fn(),
   deleteManager: vi.fn(),
   addPairExclusion: vi.fn(),
