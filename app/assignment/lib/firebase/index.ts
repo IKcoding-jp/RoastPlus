@@ -37,7 +37,7 @@ export {
   fetchRecentShuffleHistory,
 } from './shuffle';
 
-// settings
+// settings（lib/firestore/assignment/settings に移設済み）
 export {
   subscribeTableSettings,
   updateTableSettings,
@@ -49,4 +49,4 @@ export {
   subscribePairExclusions,
   addPairExclusion,
   deletePairExclusion,
-} from './settings';
+} from '@/lib/firestore/assignment';
