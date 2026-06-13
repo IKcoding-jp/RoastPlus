@@ -1,11 +1,7 @@
 // lib/firestore/assignment バレルエクスポート（issue #543）
 
 // コレクション参照
-export {
-  getAssignmentDaysCollection,
-  getShuffleEventsCollection,
-  getShuffleHistoryCollection,
-} from './references';
+export { getAssignmentDaysCollection, getShuffleEventsCollection, getShuffleHistoryCollection } from './references';
 
 // 汎用ロジック・定数
 export {
