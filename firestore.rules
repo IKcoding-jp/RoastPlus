@@ -143,6 +143,14 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // 在庫・不足品（チーム共有・シングルテナント前提）
+    // 認証済みメンバー全員が読み書き・削除可能（owner isolation の意図的な例外）。
+    // 「現場メンバーが"足りない"を共有し、本社が見て発注する」共有ボードのため、
+    // 全員が同じ inventory コレクションを編集できる必要がある。
+    match /inventory/{itemId} {
+      allow read, write: if request.auth != null;
+    }
+
     // 担当表機能（ルート直下は無効化）
     // 設計当初からデータは /users/{userId}/ 配下に置く構造のため、
     // ルート直下コレクションへの誤アクセスを明示的に拒否する。
