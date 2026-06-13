@@ -21,7 +21,7 @@ interface StatusToggleProps {
 export function StatusToggle({ value, onChange, disabled }: StatusToggleProps) {
   return (
     <div
-      className="inline-flex w-full gap-0.5 rounded-[10px] border border-edge bg-ground p-0.5 sm:w-auto"
+      className="flex w-full gap-0.5 rounded-[10px] border border-edge bg-ground p-0.5"
       role="group"
       aria-label="在庫状態"
     >
@@ -40,7 +40,7 @@ export function StatusToggle({ value, onChange, disabled }: StatusToggleProps) {
             aria-pressed={selected}
             disabled={disabled}
             onClick={() => onChange(status)}
-            className={`inline-flex h-[34px] flex-1 items-center justify-center gap-1.5 rounded-[7px] px-3 text-[13px] font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-spot/40 motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50 sm:min-w-[72px] sm:flex-none ${stateClass}`}
+            className={`inline-flex h-[34px] flex-1 items-center justify-center gap-1.5 rounded-[7px] px-3 text-[13px] font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-spot/40 motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50 ${stateClass}`}
           >
             <span
               className={`h-[7px] w-[7px] shrink-0 rounded-full bg-current ${selected ? 'opacity-100' : 'opacity-50'}`}

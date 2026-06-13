@@ -37,7 +37,14 @@ export function subscribeInventoryItems(
   return onSnapshot(
     itemsQuery,
     (snapshot) => {
-      callback(snapshot.docs.map((itemDoc) => normalizeInventoryItem(itemDoc.id, itemDoc.data())));
+      // serverTimestamps: 'estimate' … 書き込み確定前の serverTimestamp を null にせず
+      // ローカル推定時刻で埋める。これで状態変更直後に「最終更新」の日付が一瞬消えて
+      // 再表示される（チラつく）のを防ぐ。推定と確定の差は表示の分単位では変わらない。
+      callback(
+        snapshot.docs.map((itemDoc) =>
+          normalizeInventoryItem(itemDoc.id, itemDoc.data({ serverTimestamps: 'estimate' }))
+        )
+      );
     },
     (error) => {
       console.error('Failed to subscribe inventory items:', error);

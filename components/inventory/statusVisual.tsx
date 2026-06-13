@@ -13,34 +13,34 @@ import type { InventoryStatus } from '@/types';
 interface StatusVisual {
   /** 日本語ラベル（十分/少ない/切れた） */
   label: string;
-  /** セグメント選択中の塗り(背景+文字色)。 */
+  /** セグメント選択中の塗り。薄い状態色背景＋状態色文字（DESIGN.md 9.7 準拠・塗りつぶしにしない） */
   segActive: string;
   /** 淡色チップの背景（要発注タグ用） */
   subtleBg: string;
   /** 状態色のテキスト */
   text: string;
-  /** 状態ドットの色 */
+  /** 状態ドットの色（カード左端のカラーバーにも流用） */
   dot: string;
 }
 
 export const STATUS_VISUAL: Record<InventoryStatus, StatusVisual> = {
   enough: {
     label: STATUS_LABELS.enough,
-    segActive: 'bg-success text-white',
+    segActive: 'bg-success-subtle text-success',
     subtleBg: 'bg-success-subtle',
     text: 'text-success',
     dot: 'bg-success',
   },
   low: {
     label: STATUS_LABELS.low,
-    segActive: 'bg-warning text-white',
+    segActive: 'bg-warning-subtle text-warning',
     subtleBg: 'bg-warning-subtle',
     text: 'text-warning',
     dot: 'bg-warning',
   },
   out: {
     label: STATUS_LABELS.out,
-    segActive: 'bg-danger text-white',
+    segActive: 'bg-danger-subtle text-danger',
     subtleBg: 'bg-danger-subtle',
     text: 'text-danger',
     dot: 'bg-danger',

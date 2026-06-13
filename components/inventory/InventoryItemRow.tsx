@@ -1,8 +1,9 @@
 'use client';
 
-import { FiEdit2, FiTrash2 } from 'react-icons/fi';
+import { FiEdit2, FiTrash2, FiClock } from 'react-icons/fi';
 import { IconButton } from '@/components/ui';
 import { StatusToggle } from './StatusToggle';
+import { STATUS_VISUAL } from './statusVisual';
 import { toJSDate } from '@/lib/firestoreUtils';
 import type { FirestoreTimestamp, InventoryItem, InventoryStatus } from '@/types';
 
@@ -30,41 +31,48 @@ interface InventoryItemRowProps {
 }
 
 /**
- * 「すべての品目」リストの1行。カードの羅列ではなく、親カード内に border で区切って並べる行レイアウト。
- * 左=品目名+最終更新 / 中=状態セグメント / 右=編集・削除アイコン。
- * 狭い画面ではセグメントを名前の下に折り返す。
+ * 「すべての品目」の1件カード。
+ * 上段=状態ドット＋品目名＋編集/削除 / 中段=最終更新 / 下段=状態セグメント、の縦構成。
+ * 1件ずつ独立したカードにし、状態を変えても並び順・タップ位置が動かないようにする。
  */
 export function InventoryItemRow({ item, onEdit, onDelete, onStatusChange }: InventoryItemRowProps) {
   const updatedAtLabel = formatUpdatedAt(item.updatedAt);
+  const visual = STATUS_VISUAL[item.status];
 
   return (
-    <div className="flex flex-wrap items-center gap-3.5 px-4 py-3">
-      <div className="min-w-0 flex-1">
-        <span className="text-sm font-bold text-ink">{item.name}</span>
-        {updatedAtLabel && <div className="mt-0.5 text-[11.5px] text-ink-muted">最終更新 {updatedAtLabel}</div>}
+    <div className="rounded-xl border border-edge bg-surface p-3.5 shadow-card-glow">
+      <div className="flex items-center gap-2">
+        {/* 状態ドット（緑=十分 / アンバー=少ない / 赤=切れた）。一目で状態が分かる */}
+        <span className={`h-[9px] w-[9px] shrink-0 rounded-full ${visual.dot}`} aria-hidden="true" />
+        <span className="min-w-0 truncate text-sm font-bold text-ink">{item.name}</span>
+        {/* 最終更新は品目名の横に置いてコンパクト化。estimate により値が消えずチラつかない */}
+        {updatedAtLabel && (
+          <span className="flex shrink-0 items-center gap-1 text-[11px] text-ink-muted">
+            <FiClock className="h-3 w-3 shrink-0" aria-hidden="true" />
+            {updatedAtLabel}
+          </span>
+        )}
+        <div className="ml-auto flex shrink-0 items-center gap-0.5">
+          <IconButton
+            variant="ghost"
+            aria-label={`${item.name}を編集`}
+            onClick={() => onEdit(item)}
+            className="!min-h-0 !min-w-0 h-8 w-8 !p-0"
+          >
+            <FiEdit2 className="h-4 w-4" />
+          </IconButton>
+          <IconButton
+            variant="danger"
+            aria-label={`${item.name}を削除`}
+            onClick={() => onDelete(item)}
+            className="!min-h-0 !min-w-0 h-8 w-8 !p-0"
+          >
+            <FiTrash2 className="h-4 w-4" />
+          </IconButton>
+        </div>
       </div>
-
-      <div className="order-3 w-full sm:order-none sm:w-auto">
+      <div className="mt-2.5">
         <StatusToggle value={item.status} onChange={(status) => onStatusChange(item, status)} />
-      </div>
-
-      <div className="flex shrink-0 items-center gap-0.5">
-        <IconButton
-          variant="ghost"
-          aria-label={`${item.name}を編集`}
-          onClick={() => onEdit(item)}
-          className="!min-h-0 !min-w-0 h-8 w-8 !p-0"
-        >
-          <FiEdit2 className="h-4 w-4" />
-        </IconButton>
-        <IconButton
-          variant="danger"
-          aria-label={`${item.name}を削除`}
-          onClick={() => onDelete(item)}
-          className="!min-h-0 !min-w-0 h-8 w-8 !p-0"
-        >
-          <FiTrash2 className="h-4 w-4" />
-        </IconButton>
       </div>
     </div>
   );

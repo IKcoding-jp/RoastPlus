@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { MdInventory2, MdAdd } from 'react-icons/md';
-import { Button, Card, Dialog, EmptyState, FloatingNav } from '@/components/ui';
+import { FiBell } from 'react-icons/fi';
+import { Button, Dialog, EmptyState, FloatingNav } from '@/components/ui';
 import { InventoryItemRow } from '@/components/inventory/InventoryItemRow';
 import { InventoryItemModal } from '@/components/inventory/InventoryItemModal';
 import { ReorderList } from '@/components/inventory/ReorderList';
@@ -113,7 +114,7 @@ export default function InventoryPage() {
     <div className="min-h-screen bg-page px-4 pb-16 pt-20 transition-colors duration-1000 sm:px-6 sm:pb-20">
       <FloatingNav backHref="/" />
 
-      <div className="mx-auto w-full max-w-3xl">
+      <div className="mx-auto w-full max-w-5xl">
         <header>
           <div className="mb-1.5 flex items-center gap-1.5 text-[11px] font-bold tracking-[0.14em] text-ink-muted">
             <MdInventory2 className="h-[15px] w-[15px]" />
@@ -138,33 +139,44 @@ export default function InventoryPage() {
           </div>
         </header>
 
-        <section className="mt-7">
-          <div className="mb-2.5 flex items-center gap-2 pl-0.5">
-            <h2 className="text-[15px] font-bold text-ink">要発注リスト</h2>
-            <span
-              className={`inline-grid h-5 min-w-5 place-items-center rounded-full px-1.5 text-xs font-bold ${
-                reorderCount > 0 ? 'bg-danger-subtle text-danger' : 'bg-ground text-ink-muted'
-              }`}
-            >
-              {reorderCount}
-            </span>
-          </div>
-          <ReorderList items={items} onResolve={handleResolve} />
-        </section>
+        {/* 要発注（左）と すべての品目（右）を左右に並べる。縦積みだと要発注が増えたとき
+            右の操作リストが押し下げられタップ位置が動くため、md以上では2カラムにする。
+            items-start で各列を自然な高さにし、片方の伸縮がもう片方に影響しないようにする。 */}
+        <div className="mt-7 grid grid-cols-1 gap-x-6 gap-y-7 md:grid-cols-2 md:items-start">
+          {/* 左: 要発注リスト。見出しごとパネルに内包してまとまりを出す。
+              右の状態から導出し、🟡🔴が増減してもこの列だけが伸び縮みする。 */}
+          <section className="overflow-hidden rounded-2xl border border-edge bg-surface shadow-card">
+            <div className="flex items-center gap-2 border-b border-edge-subtle px-4 py-3.5">
+              <FiBell className="h-4 w-4 text-ink-sub" aria-hidden="true" />
+              <h2 className="text-[15px] font-bold text-ink">要発注リスト</h2>
+              <span
+                className={`inline-grid h-5 min-w-5 place-items-center rounded-full px-1.5 text-xs font-bold ${
+                  reorderCount > 0 ? 'bg-danger-subtle text-danger' : 'bg-ground text-ink-muted'
+                }`}
+              >
+                {reorderCount}
+              </span>
+            </div>
+            <ReorderList items={items} onResolve={handleResolve} />
+          </section>
 
-        <section className="mt-7">
-          <div className="mb-2.5 pl-0.5">
-            <h2 className="text-[15px] font-bold text-ink">すべての品目</h2>
-          </div>
-          {showLoading ? (
-            <Card variant="table">
-              <div className="p-4 text-sm text-ink-sub">読み込み中...</div>
-            </Card>
-          ) : items.length === 0 ? (
-            <EmptyState title="品目がありません" description="「品目を追加」から在庫を登録しましょう" />
-          ) : (
-            <Card variant="table">
-              <div className="divide-y divide-edge-subtle">
+          {/* 右: すべての品目。見出しごとパネルに内包。並び順は createdAt 固定でタップしても動かない。
+              本体も白(パネルのまま)。品目カードは枠線＋薄い影で区切る。 */}
+          <section className="overflow-hidden rounded-2xl border border-edge bg-surface shadow-card">
+            <div className="flex items-center gap-2 border-b border-edge-subtle px-4 py-3.5">
+              <h2 className="text-[15px] font-bold text-ink">すべての品目</h2>
+              <span className="inline-grid h-5 min-w-5 place-items-center rounded-full bg-ground px-1.5 text-xs font-bold text-ink-muted">
+                {items.length}
+              </span>
+            </div>
+            {showLoading ? (
+              <div className="px-4 py-4 text-sm text-ink-sub">読み込み中...</div>
+            ) : items.length === 0 ? (
+              <div className="p-4">
+                <EmptyState title="品目がありません" description="「品目を追加」から在庫を登録しましょう" />
+              </div>
+            ) : (
+              <div className="space-y-2.5 p-3 sm:p-3.5">
                 {items.map((item) => (
                   <InventoryItemRow
                     key={item.id}
@@ -175,9 +187,9 @@ export default function InventoryPage() {
                   />
                 ))}
               </div>
-            </Card>
-          )}
-        </section>
+            )}
+          </section>
+        </div>
       </div>
 
       {modalOpen && (
