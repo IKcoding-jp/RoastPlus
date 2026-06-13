@@ -45,10 +45,7 @@ describe('toMillisSafe', () => {
 
 describe('normalizeAssignmentsForDate', () => {
   it('全件に指定日を付与し memberId 未指定は null になる', () => {
-    const result = normalizeAssignmentsForDate(
-      [{ teamId: 't1', taskLabelId: 'l1' } as Assignment],
-      '2026-06-13'
-    );
+    const result = normalizeAssignmentsForDate([{ teamId: 't1', taskLabelId: 'l1' } as Assignment], '2026-06-13');
     expect(result).toEqual([{ teamId: 't1', taskLabelId: 'l1', memberId: null, assignedDate: '2026-06-13' }]);
   });
 

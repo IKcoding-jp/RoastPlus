@@ -99,7 +99,11 @@ describe('runWriteWithSync', () => {
   });
 
   it('失敗時は reportSaveError を呼び、例外を再 throw する', async () => {
-    await expect(runWriteWithSync(async () => { throw { code: 'permission-denied' }; })).rejects.toEqual({
+    await expect(
+      runWriteWithSync(async () => {
+        throw { code: 'permission-denied' };
+      })
+    ).rejects.toEqual({
       code: 'permission-denied',
     });
     expect(getSaveError()).toBe('permission-denied');

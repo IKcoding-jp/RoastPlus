@@ -1,13 +1,7 @@
 // assignment の購読・保存エラーをユーザー通知（lib/syncStatus）につなぐ基盤（issue #543）
 // 手本は lib/firestore/userData/。assignment は小さな保存が多いので write-queue 級は過剰（YAGNI）。
 // 薄いラッパー 2 つに留める。後続 #544〜#546 の各関数がこれを使う。
-import {
-  reportSyncError,
-  clearSyncError,
-  reportSaveError,
-  clearSaveError,
-  toSyncErrorType,
-} from '@/lib/syncStatus';
+import { reportSyncError, clearSyncError, reportSaveError, clearSaveError, toSyncErrorType } from '@/lib/syncStatus';
 
 // onSnapshot はエラーで購読が恒久停止するため、指数バックオフで再購読する（subscribeUserData と同方針）
 const RESUBSCRIBE_BASE_DELAY_MS = 1000;
