@@ -123,14 +123,16 @@ export const subscribePairExclusions = (
 
 /**
  * ペア除外設定を追加（重複チェック付き）
- * 「既に登録済み」エラーはバリデーションエラーのため reportSaveError は発火させない。
- * Firestore エラーのみ runWriteWithSync 経由で通知する。
+ * 重複チェックの getDocs は runWriteWithSync を通さない。
+ * runWriteWithSync は成功時に clearSaveError を呼ぶため、
+ * 読み取り成功で既存の保存エラーバナーが消えるサイドエフェクトを防ぐ。
+ * 「既に登録済み」エラーはバリデーションエラーとして呼び出し元に re-throw する。
  */
 export const addPairExclusion = async (userId: string, memberId1: string, memberId2: string): Promise<void> => {
   const [normalizedId1, normalizedId2] = normalizePairIds(memberId1, memberId2);
   const pairExclusionsCol = getPairExclusionsCollection(userId);
-  const existingSnapshot = await runWriteWithSync(() =>
-    getDocs(query(pairExclusionsCol, where('memberId1', '==', normalizedId1), where('memberId2', '==', normalizedId2)))
+  const existingSnapshot = await getDocs(
+    query(pairExclusionsCol, where('memberId1', '==', normalizedId1), where('memberId2', '==', normalizedId2))
   );
   if (!existingSnapshot.empty) {
     throw new Error('この組み合わせは既に登録されています');
