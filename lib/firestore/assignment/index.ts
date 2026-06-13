@@ -23,5 +23,6 @@ export {
   areAssignmentsEqual,
 } from './helpers';
 
-// 購読・保存のエラー通知基盤
-export { createSyncedSubscription, runWriteWithSync } from './sync';
+// 購読・保存のエラー通知基盤は ./sync に置く。
+// 消費者が現れる #544〜#546 で、各消費者の import に合わせてここへ再エクスポートを追加する
+// （未消費の API をバレルに先出しすると knip が未使用検出するため、消費と同時に公開する）。

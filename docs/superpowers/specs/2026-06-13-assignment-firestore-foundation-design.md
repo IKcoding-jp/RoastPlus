@@ -86,7 +86,7 @@ export async function runWriteWithSync<T>(operation: () => Promise<T>): Promise<
 
 ### 4. index.ts — バレル
 
-references / helpers / sync の公開 API を re-export。
+references / helpers の公開 API を re-export。`sync.ts` の `createSyncedSubscription` / `runWriteWithSync` は消費者が現れる #544〜#546 でバレルへ追加する（未消費の API をバレルに先出しすると knip が未使用検出するため、消費と同時に公開する）。それまでは `./sync` から直接 import する。
 
 ## データフロー
 
