@@ -21,7 +21,9 @@ export function TastingSessionForm({ session, onSave, onCancel, onDelete }: Tast
   const { showToast } = useToastContext();
 
   const [beanName, setBeanName] = useState(session?.beanName || '');
-  const [createdAt, setCreatedAt] = useState(session?.createdAt ? session.createdAt.split('T')[0] : getTodayDateString());
+  const [createdAt, setCreatedAt] = useState(
+    session?.createdAt ? session.createdAt.split('T')[0] : getTodayDateString()
+  );
   const [roastLevel, setRoastLevel] = useState<'浅煎り' | '中煎り' | '中深煎り' | '深煎り'>(
     session?.roastLevel || '中深煎り'
   );
