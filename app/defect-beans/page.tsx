@@ -2,20 +2,19 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { useAuth } from '@/lib/auth';
-import { HiPlus } from 'react-icons/hi';
+import { HiPlus, HiSearch, HiOutlineCollection } from 'react-icons/hi';
 import { MdCompareArrows } from 'react-icons/md';
 import LoginPage from '@/app/login/page';
 import { useDefectBeans } from '@/hooks/useDefectBeans';
 import { useDefectBeanSettings } from '@/hooks/useDefectBeanSettings';
 import { useDeveloperMode } from '@/hooks/useDeveloperMode';
 import { useToastContext } from '@/components/Toast';
-import { Button, FloatingNav } from '@/components/ui';
+import { Button, EmptyState, FloatingNav } from '@/components/ui';
 import { DefectBeanCard } from '@/components/DefectBeanCard';
 import { DefectBeanForm } from '@/components/DefectBeanForm';
 import { DefectBeanCompare } from '@/components/DefectBeanCompare';
 import { Loading } from '@/components/Loading';
 import { FilterMenu } from '@/components/defect-beans/FilterMenu';
-import { EmptyState } from '@/components/defect-beans/EmptyState';
 import type { DefectBean } from '@/types';
 import { filterAndSortDefectBeans } from '@/lib/defectBeans';
 import type { DefectBeanFilterOption as FilterOption, DefectBeanSortOption as SortOption } from '@/lib/defectBeans';
@@ -226,8 +225,36 @@ export default function DefectBeansPage() {
         {/* グリッド表示 */}
         {filteredDefectBeans.length === 0 ? (
           <EmptyState
-            hasSearchOrFilter={!!(searchQuery || filterOption !== 'all')}
-            onAddClick={() => setShowAddForm(true)}
+            icon={
+              !!(searchQuery || filterOption !== 'all') ? (
+                <HiSearch className="w-10 h-10 sm:w-12 sm:h-12 text-spot" />
+              ) : (
+                <HiOutlineCollection className="w-10 h-10 sm:w-12 sm:h-12 text-spot" />
+              )
+            }
+            title={
+              !!(searchQuery || filterOption !== 'all')
+                ? '検索条件に一致する欠点豆がありません'
+                : '欠点豆が登録されていません'
+            }
+            description={
+              !!(searchQuery || filterOption !== 'all')
+                ? '別のキーワードで検索するか、フィルタを変更してみてください。'
+                : '最初の欠点豆を追加して、図鑑を始めましょう。'
+            }
+            action={
+              !(searchQuery || filterOption !== 'all') ? (
+                <Button
+                  variant="primary"
+                  onClick={() => setShowAddForm(true)}
+                  className="shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                >
+                  <HiPlus className="w-5 h-5" />
+                  <span className="font-medium">欠点豆を追加</span>
+                </Button>
+              ) : undefined
+            }
+            size="lg"
           />
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">

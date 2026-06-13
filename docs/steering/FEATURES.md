@@ -240,7 +240,7 @@ interface TastingSession {
 | 要素 | 内容 |
 |-----|------|
 | **ページ** | `app/defect-beans/page.tsx`（一覧・詳細表示を同一画面で扱う） |
-| **コンポーネント** | `components/defect-beans/FilterMenu.tsx`（検索・絞り込み・ソートを統合したモーダル）<br>`components/defect-beans/EmptyState.tsx`<br>`components/DefectBeanCard.tsx`（フェードインアニメーション・優先度制御対応） |
+| **コンポーネント** | `components/defect-beans/FilterMenu.tsx`（検索・絞り込み・ソートを統合したモーダル）<br>`components/ui/EmptyState.tsx`（空状態表示・汎用版を利用）<br>`components/DefectBeanCard.tsx`（フェードインアニメーション・優先度制御対応） |
 | **フック** | `hooks/useDefectBeans.ts`（アップロード前の画像圧縮を統合）<br>`hooks/useDefectBeanSettings.ts` |
 | **ユーティリティ** | `lib/imageCompression.ts`（Canvas APIベースのクライアントサイド画像圧縮） |
 | **Firestore** | `defectBeans` コレクション（共有データ、全ユーザー共通） |
