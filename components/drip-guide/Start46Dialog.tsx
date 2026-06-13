@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { AnimatePresence, motion, type MotionProps } from 'framer-motion';
+import { ArrowRight } from 'phosphor-react';
 import { useRouter } from 'next/navigation';
 import { generateRecipe46, type Taste46, type Strength46 } from '@/lib/drip-guide/recipe46';
 import { getLast46Taste, getLast46Strength, setLast46Taste, setLast46Strength } from '@/lib/localStorage';
@@ -87,34 +88,42 @@ export const Start46Dialog: React.FC<Start46DialogProps> = ({ isOpen, onClose, i
             onClick={onClose}
           >
             <div
-              className="w-full max-w-2xl rounded-2xl border border-edge bg-overlay shadow-2xl my-8"
+              className="w-full max-w-3xl rounded-[28px] border border-edge bg-overlay shadow-2xl my-8"
               onClick={(e) => e.stopPropagation()}
             >
               <Dialog46Header />
 
-              <Dialog46Form
-                servings={servings}
-                taste={taste}
-                strength={strength}
-                onServingsChange={setServings}
-                onTasteChange={setTaste}
-                onStrengthChange={setStrength}
-                onDescriptionClick={() => setIsDescriptionModalOpen(true)}
-              />
+              <div className="grid gap-7 px-7 pt-5 md:grid-cols-[1.1fr_1fr]">
+                <Dialog46Form
+                  servings={servings}
+                  taste={taste}
+                  strength={strength}
+                  onServingsChange={setServings}
+                  onTasteChange={setTaste}
+                  onStrengthChange={setStrength}
+                  onDescriptionClick={() => setIsDescriptionModalOpen(true)}
+                />
 
-              <Dialog46Preview recipe={previewRecipe} />
+                <div className="min-w-0 md:border-l md:border-edge md:pl-7">
+                  <Dialog46Preview recipe={previewRecipe} />
+                </div>
+              </div>
 
-              <div className="flex items-center justify-between px-5 pb-5 pt-1">
-                <Button variant="ghost" size="sm" onClick={onClose} className="gap-2">
-                  <span className="text-base">×</span>
+              <div className="flex justify-end gap-2.5 px-7 pb-7 pt-6">
+                <Button
+                  variant="ghost"
+                  onClick={onClose}
+                  className="!rounded-2xl border border-edge !px-5 !text-sm !font-semibold !text-ink-sub hover:bg-ground"
+                >
                   閉じる
                 </Button>
                 <Button
                   variant="primary"
                   onClick={handleStartGuide}
-                  className="!rounded-full !px-5 !py-3 active:scale-[0.99] touch-manipulation"
+                  className="gap-2 !rounded-2xl !px-7 !text-sm active:scale-[0.99] touch-manipulation"
                 >
                   ガイド開始
+                  <ArrowRight size={16} weight="bold" />
                 </Button>
               </div>
             </div>

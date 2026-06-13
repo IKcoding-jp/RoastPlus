@@ -298,7 +298,7 @@ interface TastingSession {
 #### デフォルトレシピの追加方針
 - `lib/drip-guide/mockData.ts` の `MOCK_RECIPES` 配列に追加する（新規ファイル不要）
 - 表示順は `components/drip-guide/RecipeList.tsx` の `defaultOrder` 配列で管理: `['recipe-001', 'recipe-003', 'recipe-046']`
-- `isManualMode: true` のレシピは `StartHintDialog` に「手順はタップで進みます」の説明が表示される
+- `isManualMode: true` のレシピは `StartHintDialog` に「手順は「次へ」タップで進む」の説明が表示される
 
 #### レシピ計算
 - **4:6メソッド**: `lib/drip-guide/recipe46.ts` で計算ロジック実装

@@ -29,6 +29,14 @@ const playfair = localFont({
   fallback: ['Georgia', 'Times New Roman', 'serif'],
 });
 
+const outfit = localFont({
+  src: './fonts/Outfit-latin.woff2',
+  variable: '--font-outfit',
+  weight: '100 900',
+  display: 'swap',
+  fallback: ['sans-serif'],
+});
+
 export const metadata: Metadata = {
   title: 'RoastPlus',
   description: 'コーヒー豆加工業務をサポートするWebアプリ',
@@ -60,7 +68,7 @@ export default function RootLayout({
   const e2eMode = process.env.NEXT_PUBLIC_E2E_MODE === 'true';
 
   return (
-    <html lang="ja" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
+    <html lang="ja" className={`${inter.variable} ${playfair.variable} ${outfit.variable}`} suppressHydrationWarning>
       <body
         className="antialiased font-serif bg-page"
         data-roastplus-e2e-mode={e2eMode ? 'true' : 'false'}
