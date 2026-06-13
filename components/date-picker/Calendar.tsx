@@ -20,7 +20,7 @@ interface CalendarProps {
   yearList: number[];
   selectedYear: number | null;
   monthNames: string[];
-  weekdays: string[];
+  weekdays: readonly string[];
   isWeekend: (dateString: string) => boolean;
   onDateClick: (dateString: string) => void;
   onYearSelect: (year: number) => void;

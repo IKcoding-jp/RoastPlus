@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { getTomorrowDateString, getNextWeekday, formatDateToYMD } from '@/lib/dateUtils';
+import { WEEKDAY_NAMES } from '@/lib/constants';
 
 export type ViewMode = 'calendar' | 'year' | 'month';
 
@@ -141,8 +142,6 @@ export function useDatePicker({ selectedDate, isWeekend, getTodayString }: UseDa
 
   const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
 
-  const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-
   // 年リストを生成（現在の年から10年前まで）
   const yearList = useMemo(() => {
     const years: number[] = [];
@@ -166,7 +165,7 @@ export function useDatePicker({ selectedDate, isWeekend, getTodayString }: UseDa
     canGoToNextMonth,
     yearList,
     monthNames,
-    weekdays,
+    weekdays: WEEKDAY_NAMES,
     handlePreviousMonth,
     handleNextMonth,
     handleYearMonthClick,

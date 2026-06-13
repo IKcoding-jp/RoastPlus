@@ -15,7 +15,6 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
   const { showToast } = useToastContext();
   const {
     capturedImage,
-    isVideoReady,
     canCapture,
     videoRef,
     canvasRef,
@@ -54,7 +53,6 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
         containerRef={containerRef}
         guideSize={guideSize}
         handleVideoReady={handleVideoReady}
-        isVideoReady={isVideoReady}
       />
 
       {/* コントロール */}

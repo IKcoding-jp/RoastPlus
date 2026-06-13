@@ -173,10 +173,7 @@ async function performWrite(userId: string, data: AppData, options: SaveUserData
     lastWriteTime = Date.now();
 
     const userDocRef = getUserDocRef(userId);
-    const cleanedData: Record<string, unknown> = removeUndefinedFields<AppData>(data) as unknown as Record<
-      string,
-      unknown
-    >;
+    const cleanedData = removeUndefinedFields(data) as Record<string, unknown>;
 
     const setOrDelete = <T>(value: T | undefined): T | FieldValue => {
       return value !== undefined ? value : deleteField();

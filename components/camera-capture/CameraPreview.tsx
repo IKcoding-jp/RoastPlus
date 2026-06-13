@@ -20,7 +20,6 @@ interface CameraPreviewProps {
   containerRef: RefObject<HTMLDivElement | null>;
   guideSize: GuideSize;
   handleVideoReady: () => void;
-  isVideoReady: boolean;
 }
 
 export function CameraPreview({

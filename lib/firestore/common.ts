@@ -29,13 +29,18 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 }
 
 // undefinedのフィールドを削除する関数。Firestoreはundefinedを保存できないため。
-export function removeUndefinedFields<T>(obj: T): T {
+export function removeUndefinedFields(obj: null): null;
+export function removeUndefinedFields(obj: undefined): undefined;
+export function removeUndefinedFields(obj: Record<string, unknown>): Record<string, unknown>;
+export function removeUndefinedFields(obj: unknown[]): unknown[];
+export function removeUndefinedFields(obj: unknown): unknown;
+export function removeUndefinedFields(obj: unknown): unknown {
   if (obj === null || obj === undefined) {
     return obj;
   }
 
   if (Array.isArray(obj)) {
-    return obj.map((item) => removeUndefinedFields(item)) as unknown as T;
+    return obj.map((item) => removeUndefinedFields(item));
   }
 
   if (isPlainObject(obj)) {
@@ -53,7 +58,7 @@ export function removeUndefinedFields<T>(obj: T): T {
         }
       }
     }
-    return cleaned as unknown as T;
+    return cleaned;
   }
 
   return obj;

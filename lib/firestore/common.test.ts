@@ -89,8 +89,9 @@ describe('removeUndefinedFields', () => {
   it('ネストしたプレーンオブジェクト内のクラスインスタンスも素通しする', () => {
     const sentinel = new FieldValueLike();
     const result = removeUndefinedFields({ nested: { createdAt: sentinel, junk: undefined } });
-    expect(result.nested.createdAt).toBe(sentinel);
-    expect('junk' in result.nested).toBe(false);
+    const nested = result.nested as Record<string, unknown>;
+    expect(nested.createdAt).toBe(sentinel);
+    expect('junk' in nested).toBe(false);
   });
 });
 
