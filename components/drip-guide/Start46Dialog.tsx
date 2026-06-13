@@ -88,12 +88,12 @@ export const Start46Dialog: React.FC<Start46DialogProps> = ({ isOpen, onClose, i
             onClick={onClose}
           >
             <div
-              className="w-full max-w-2xl rounded-[28px] border border-edge bg-overlay shadow-2xl my-8"
+              className="w-full max-w-3xl rounded-[28px] border border-edge bg-overlay shadow-2xl my-8"
               onClick={(e) => e.stopPropagation()}
             >
               <Dialog46Header />
 
-              <div className="grid gap-7 px-7 pt-5 md:grid-cols-[1.4fr_1fr]">
+              <div className="grid gap-7 px-7 pt-5 md:grid-cols-[1.1fr_1fr]">
                 <Dialog46Form
                   servings={servings}
                   taste={taste}

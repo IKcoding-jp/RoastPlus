@@ -20,14 +20,14 @@ export const RecipeStepTable: React.FC<RecipeStepTableProps> = ({
 }) => {
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-[13px]">
+      <table className="w-full table-fixed text-xs">
         <thead>
           <tr>
-            <th className={`${HEAD_STYLES} text-left`}>時間</th>
+            <th className={`${HEAD_STYLES} w-[3.2rem] text-left`}>時間</th>
             <th className={`${HEAD_STYLES} text-left`}>ステップ</th>
-            {showPourAmount && <th className={`${HEAD_STYLES} text-right`}>注湯</th>}
-            <th className={`${HEAD_STYLES} text-right`}>累計</th>
-            {onStepDetailClick && <th className={`${HEAD_STYLES} text-center`}>詳細</th>}
+            {showPourAmount && <th className={`${HEAD_STYLES} w-[2.8rem] text-right`}>注湯</th>}
+            <th className={`${HEAD_STYLES} w-[3rem] text-right`}>累計</th>
+            {onStepDetailClick && <th className={`${HEAD_STYLES} w-12 text-center`}>詳細</th>}
           </tr>
         </thead>
         <tbody>
@@ -37,17 +37,17 @@ export const RecipeStepTable: React.FC<RecipeStepTableProps> = ({
             const pourAmount = currentTarget - prevTarget;
 
             return (
-              <tr key={step.id} className="border-t border-edge">
-                <td className="py-2.5 pr-2 font-num tabular-nums text-ink-muted">{formatTime(step.startTimeSec)}</td>
-                <td className="py-2.5 pr-2 font-semibold text-ink">{step.title}</td>
+              <tr key={step.id} className="border-t border-edge align-top">
+                <td className="py-2.5 pr-1 font-num tabular-nums text-ink-muted">{formatTime(step.startTimeSec)}</td>
+                <td className="py-2.5 pr-2 font-semibold leading-snug text-ink">{step.title}</td>
                 {showPourAmount && (
-                  <td className="py-2.5 pl-2 text-right font-num font-bold tabular-nums text-ink">{pourAmount}g</td>
+                  <td className="py-2.5 pl-1 text-right font-num font-bold tabular-nums text-ink">{pourAmount}g</td>
                 )}
-                <td className="py-2.5 pl-2 text-right font-num tabular-nums text-ink-muted">
+                <td className="py-2.5 pl-1 text-right font-num tabular-nums text-ink-muted">
                   {step.targetTotalWater != null ? `${step.targetTotalWater}g` : '-'}
                 </td>
                 {onStepDetailClick && (
-                  <td className="py-2.5 pl-2 text-center">
+                  <td className="py-2.5 pl-1 text-center">
                     <Button
                       variant="ghost"
                       size="sm"
