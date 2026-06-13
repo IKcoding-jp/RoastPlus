@@ -14,3 +14,10 @@ export {
   subscribeRoastEntries,
   subscribePackageEntries,
 } from './productionRecords';
+export {
+  subscribeInventoryItems,
+  addInventoryItem,
+  updateInventoryItem,
+  setInventoryItemStatus,
+  deleteInventoryItem,
+} from './inventory';
