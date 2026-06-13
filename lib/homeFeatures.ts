@@ -25,6 +25,11 @@ export const HOME_FEATURES = [
     description: '月次の生産実績を記録',
   },
   {
+    key: 'inventory',
+    title: '在庫',
+    description: '不足品を共有・要発注',
+  },
+  {
     key: 'drip-guide',
     title: 'ドリップガイド',
     description: '淹れ方の手順',

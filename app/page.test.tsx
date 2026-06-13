@@ -40,6 +40,10 @@ vi.mock('@/hooks/useChristmasMode', () => ({
   }),
 }));
 
+vi.mock('@/hooks/useInventory', () => ({
+  useInventory: () => ({ items: [], isLoading: false }),
+}));
+
 vi.mock('@/hooks/useHomeFeatureVisibility', () => ({
   useHomeFeatureVisibility: () => ({
     isVisible: (key: string) => mocks.visibleKeys.has(key),

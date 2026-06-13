@@ -5,15 +5,17 @@ import { useEffect, useState } from 'react';
 import type { IconType } from 'react-icons';
 import { FaCoffee, FaUsers } from 'react-icons/fa';
 import { IoSettings } from 'react-icons/io5';
-import { MdCoffeeMaker, MdFactory } from 'react-icons/md';
+import { MdCoffeeMaker, MdFactory, MdInventory2 } from 'react-icons/md';
 import { RiBookFill, RiCalendarScheduleFill } from 'react-icons/ri';
 import { Loading } from '@/components/Loading';
 import { ActionCard } from '@/components/home/ActionCard';
 import { HomeHeader } from '@/components/home/HomeHeader';
 import { useChristmasMode } from '@/hooks/useChristmasMode';
 import { useHomeFeatureVisibility } from '@/hooks/useHomeFeatureVisibility';
+import { useInventory } from '@/hooks/useInventory';
 import { useAuth } from '@/lib/auth';
 import { getUserData } from '@/lib/firestore';
+import { countReorderItems } from '@/lib/inventory';
 import { needsConsent } from '@/lib/consent';
 import type { HomeFeatureKey } from '@/lib/homeFeatures';
 import dynamic from 'next/dynamic';
@@ -43,6 +45,7 @@ const CHRISTMAS_ICONS: Record<string, IconType> = {
   tasting: FaTree,
   'defect-beans': GiGingerbreadMan,
   'production-record': MdFactory,
+  inventory: MdInventory2,
   'drip-guide': GiCandyCanes,
   settings: IoSettings,
 };
@@ -89,6 +92,14 @@ const ACTIONS: Action[] = [
     icon: MdFactory,
   },
   {
+    key: 'inventory',
+    title: '在庫',
+    label: 'INVENTORY',
+    description: '不足品を共有・要発注',
+    href: '/inventory',
+    icon: MdInventory2,
+  },
+  {
     key: 'drip-guide',
     title: 'ドリップガイド',
     label: 'DRIP GUIDE',
@@ -122,7 +133,11 @@ export default function HomePage(_props: HomePageProps = {}) {
   const [checkingConsent, setCheckingConsent] = useState(true);
   const { isChristmasMode } = useChristmasMode();
   const { isVisible } = useHomeFeatureVisibility();
-  const visibleActions = ACTIONS.filter((action) => isVisible(action.key));
+  const { items: inventoryItems } = useInventory();
+  const reorderCount = countReorderItems(inventoryItems);
+  const visibleActions = ACTIONS.filter((action) => isVisible(action.key)).map((action) =>
+    action.key === 'inventory' ? { ...action, badge: reorderCount > 0 ? `要発注${reorderCount}` : undefined } : action
+  );
 
   // スプラッシュ画面の表示時間を管理（フェードアウト時間を加味）
   useEffect(() => {

@@ -9,3 +9,4 @@ export * from './settings';
 export * from './notification';
 export * from './defect-beans';
 export * from './production-record';
+export * from './inventory';

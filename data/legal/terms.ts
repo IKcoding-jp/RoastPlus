@@ -17,7 +17,7 @@ export const TERMS_SECTIONS: TermsSection[] = [
     title: '第2条（サービスの概要）',
     content: [
       '本サービスは、コーヒー加工業務の支援を目的としたアプリケーションです。',
-      '主な機能として、担当表、スケジュール、生産記録、試飲感想記録、ドリップガイド、欠点豆図鑑などを提供します。',
+      '主な機能として、担当表、スケジュール、生産記録、試飲感想記録、ドリップガイド、欠点豆図鑑、在庫・不足品の共有などを提供します。',
     ],
   },
   {
@@ -100,4 +100,4 @@ export const TERMS_SECTIONS: TermsSection[] = [
   },
 ];
 
-export const TERMS_LAST_UPDATED = '2026年6月5日';
+export const TERMS_LAST_UPDATED = '2026年6月13日';
