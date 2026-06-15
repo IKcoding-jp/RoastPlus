@@ -12,11 +12,7 @@ const listeners = vi.hoisted(() => ({
 }));
 
 vi.mock('firebase/auth', () => ({
-  onAuthStateChanged: (
-    _auth: unknown,
-    next: (user: User | null) => void,
-    error?: (error: unknown) => void
-  ) => {
+  onAuthStateChanged: (_auth: unknown, next: (user: User | null) => void, error?: (error: unknown) => void) => {
     listeners.next = next;
     listeners.error = error ?? null;
     return listeners.unsubscribe;
