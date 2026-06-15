@@ -55,8 +55,20 @@ export function useAssignmentHandlers({
 
         return Array.from(map.values());
       });
+
+      // 配置先の班とメンバー登録上の班がズレると、班内シャッフルでそのメンバーが
+      // 登録班の列へ戻り、班またぎや未割り当ての原因になる。手動配置の時点で
+      // Member.teamId を配置先スロットの班へ同期し、ズレを発生させない
+      // （班またぎの入れ替えを行う handleSwapAssignments と同じ方針）。
+      if (memberId) {
+        const currentTeam = members.find((m) => m.id === memberId)?.teamId;
+        if (currentTeam !== undefined && currentTeam !== targetAsg.teamId) {
+          await updateMemberTeam(userId, memberId, targetAsg.teamId);
+          setMembers((prev) => prev.map((m) => (m.id === memberId ? { ...m, teamId: targetAsg.teamId } : m)));
+        }
+      }
     },
-    [userId, activeDate]
+    [userId, activeDate, members, setMembers]
   );
 
   // メンバー名変更

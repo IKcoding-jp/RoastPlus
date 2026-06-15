@@ -787,3 +787,294 @@ describe('calculateAssignment - 未割り当てメンバーの除外', () => {
     }
   });
 });
+
+// ヘルパー: 結果から「メンバーID → 配置された班(列)」のマップを取得
+const getMemberTeamMap = (result: Assignment[]): Map<string, string> => {
+  const map = new Map<string, string>();
+  for (const a of result) {
+    if (a.memberId) map.set(a.memberId, a.teamId);
+  }
+  return map;
+};
+
+// 班内シャッフルバグの回帰テスト群。
+// 担当表のセルへ手動配置すると Assignment.teamId（表示上の列）は変わるが Member.teamId は
+// 元のまま残ることがあり、両者がズレる。従来の solveTeamMode は Member.teamId でグループ化
+// していたため、班OFFシャッフルでメンバーが登録班の列へ"戻り"（＝班をまたぎ）、その列が
+// 定員超過になると誰かが未割り当てになっていた。修正後は「現在占めているスロットの班(列)」を
+// 基準にするため、列が維持され班またぎ・未割り当てが発生しない。
+describe('calculateAssignment - 班内シャッフル: 現在の列を維持（teamId ズレへの耐性）', () => {
+  it('① Member.teamId とスロットがズレたメンバーは現在の列に留まり班をまたがない', () => {
+    const teams: Team[] = [
+      { id: 'teamA', name: '班A' },
+      { id: 'teamB', name: '班B' },
+    ];
+    const taskLabels: TaskLabel[] = [
+      { id: 'task1', leftLabel: 'タスク1' },
+      { id: 'task2', leftLabel: 'タスク2' },
+    ];
+    // m1: 登録は teamB だが現在 teamB 列ではなく teamB スロット…ではなく下記でズラす。
+    // m1(登録teamA) と m2(登録teamB) を相互にズラして配置する。
+    const members: Member[] = [
+      { id: 'm1', name: 'メンバー1', teamId: 'teamA', excludedTaskLabelIds: [], active: true },
+      { id: 'm2', name: 'メンバー2', teamId: 'teamB', excludedTaskLabelIds: [], active: true },
+      { id: 'm3', name: 'メンバー3', teamId: 'teamA', excludedTaskLabelIds: [], active: true },
+      { id: 'm4', name: 'メンバー4', teamId: 'teamB', excludedTaskLabelIds: [], active: true },
+    ];
+    // 現在の配置（表示上の列）: m1→teamB列, m2→teamA列, m3→teamA列, m4→teamB列
+    const currentAssignments: Assignment[] = [
+      { teamId: 'teamA', taskLabelId: 'task1', memberId: 'm3', assignedDate: '2026-03-12' },
+      { teamId: 'teamB', taskLabelId: 'task1', memberId: 'm1', assignedDate: '2026-03-12' },
+      { teamId: 'teamA', taskLabelId: 'task2', memberId: 'm2', assignedDate: '2026-03-12' },
+      { teamId: 'teamB', taskLabelId: 'task2', memberId: 'm4', assignedDate: '2026-03-12' },
+    ];
+    // 各メンバーが「現在いる列」（＝ currentAssignments の teamId）に留まることを期待
+    const expectedTeam: Record<string, string> = { m1: 'teamB', m2: 'teamA', m3: 'teamA', m4: 'teamB' };
+
+    for (let i = 0; i < 50; i++) {
+      const result = calculateAssignment(
+        teams,
+        taskLabels,
+        members,
+        [],
+        '2026-03-12',
+        currentAssignments,
+        undefined,
+        false
+      );
+      const teamMap = getMemberTeamMap(result);
+      for (const [id, team] of Object.entries(expectedTeam)) {
+        // 行(タスク)はシャッフルで入れ替わってよいが、列(班)は維持される
+        expect(teamMap.get(id)).toBe(team);
+      }
+    }
+  });
+
+  it('② ズレありでも全員配置され、未割り当てが新たに発生しない（定員超過の解消）', () => {
+    // teamA に占有上3人(m1,m2,m3)、teamB に1人(m4) を寄せる。
+    // ただし Member.teamId は逆寄り（m1..m3=teamB, m4=teamA）にして強いズレを作る。
+    // 修正前は Member.teamId 基準で teamB に3人来て、teamB の解放スロット不足で未割り当てが発生する。
+    const teams: Team[] = [
+      { id: 'teamA', name: '班A' },
+      { id: 'teamB', name: '班B' },
+    ];
+    const taskLabels: TaskLabel[] = [
+      { id: 'task1', leftLabel: 'タスク1' },
+      { id: 'task2', leftLabel: 'タスク2' },
+      { id: 'task3', leftLabel: 'タスク3' },
+    ];
+    const members: Member[] = [
+      { id: 'm1', name: 'メンバー1', teamId: 'teamB', excludedTaskLabelIds: [], active: true },
+      { id: 'm2', name: 'メンバー2', teamId: 'teamB', excludedTaskLabelIds: [], active: true },
+      { id: 'm3', name: 'メンバー3', teamId: 'teamB', excludedTaskLabelIds: [], active: true },
+      { id: 'm4', name: 'メンバー4', teamId: 'teamA', excludedTaskLabelIds: [], active: true },
+    ];
+    // 表示上: teamA 列に m1,m2,m3（3スロット）、teamB 列に m4（1スロット）、残り teamB は固定枠(null)
+    const currentAssignments: Assignment[] = [
+      { teamId: 'teamA', taskLabelId: 'task1', memberId: 'm1', assignedDate: '2026-03-12' },
+      { teamId: 'teamA', taskLabelId: 'task2', memberId: 'm2', assignedDate: '2026-03-12' },
+      { teamId: 'teamA', taskLabelId: 'task3', memberId: 'm3', assignedDate: '2026-03-12' },
+      { teamId: 'teamB', taskLabelId: 'task1', memberId: 'm4', assignedDate: '2026-03-12' },
+      { teamId: 'teamB', taskLabelId: 'task2', memberId: null, assignedDate: '2026-03-12' },
+      { teamId: 'teamB', taskLabelId: 'task3', memberId: null, assignedDate: '2026-03-12' },
+    ];
+
+    for (let i = 0; i < 50; i++) {
+      const result = calculateAssignment(
+        teams,
+        taskLabels,
+        members,
+        [],
+        '2026-03-12',
+        currentAssignments,
+        undefined,
+        false
+      );
+      // 配置済みだった m1..m4 が全員再配置される（誰も消えない）
+      expectAllMembersAssigned(result, members);
+      // 各メンバーは現在の列を維持（m1..m3=teamA, m4=teamB）
+      const teamMap = getMemberTeamMap(result);
+      expect(teamMap.get('m1')).toBe('teamA');
+      expect(teamMap.get('m2')).toBe('teamA');
+      expect(teamMap.get('m3')).toBe('teamA');
+      expect(teamMap.get('m4')).toBe('teamB');
+      // 元の固定枠(teamB task2/task3 のどちらか…列内で行は動くが)未割り当ては元と同数(=2)のまま
+      const nullSlots = result.filter((a) => a.memberId === null && a.teamId === 'teamB');
+      expect(nullSlots).toHaveLength(2);
+    }
+  });
+
+  it('③ 孤児 teamId（削除班）のメンバーも、現在いる有効な列を維持して配置される', () => {
+    // teamGhost は teams に存在しない（削除済み）。m2 の登録 teamId は teamGhost だが、
+    // 現在は有効な teamB 列のスロットに配置されている。
+    const teams: Team[] = [
+      { id: 'teamA', name: '班A' },
+      { id: 'teamB', name: '班B' },
+    ];
+    const taskLabels: TaskLabel[] = [
+      { id: 'task1', leftLabel: 'タスク1' },
+      { id: 'task2', leftLabel: 'タスク2' },
+    ];
+    const members: Member[] = [
+      { id: 'm1', name: 'メンバー1', teamId: 'teamA', excludedTaskLabelIds: [], active: true },
+      { id: 'm2', name: 'メンバー2', teamId: 'teamGhost', excludedTaskLabelIds: [], active: true },
+      { id: 'm3', name: 'メンバー3', teamId: 'teamB', excludedTaskLabelIds: [], active: true },
+    ];
+    const currentAssignments: Assignment[] = [
+      { teamId: 'teamA', taskLabelId: 'task1', memberId: 'm1', assignedDate: '2026-03-12' },
+      { teamId: 'teamB', taskLabelId: 'task1', memberId: 'm2', assignedDate: '2026-03-12' },
+      { teamId: 'teamA', taskLabelId: 'task2', memberId: null, assignedDate: '2026-03-12' },
+      { teamId: 'teamB', taskLabelId: 'task2', memberId: 'm3', assignedDate: '2026-03-12' },
+    ];
+
+    for (let i = 0; i < 50; i++) {
+      const result = calculateAssignment(
+        teams,
+        taskLabels,
+        members,
+        [],
+        '2026-03-12',
+        currentAssignments,
+        undefined,
+        false
+      );
+      // 孤児 m2 も含め、配置済み全員が再配置される（消失しない）
+      expectAllMembersAssigned(result, members);
+      const teamMap = getMemberTeamMap(result);
+      // m2 は現在の有効な列 teamB を維持（teamGhost には配置されない）
+      expect(teamMap.get('m2')).toBe('teamB');
+      expect(teamMap.get('m1')).toBe('teamA');
+      expect(teamMap.get('m3')).toBe('teamB');
+    }
+  });
+
+  it('③b 純孤児（どのスロットにも居ない）メンバーはシャッフルで配置されない', () => {
+    // m2 は teamGhost 登録かつ currentAssignments のどのスロットにも居ない（未割り当て）。
+    const teams: Team[] = [
+      { id: 'teamA', name: '班A' },
+      { id: 'teamB', name: '班B' },
+    ];
+    const taskLabels: TaskLabel[] = [
+      { id: 'task1', leftLabel: 'タスク1' },
+      { id: 'task2', leftLabel: 'タスク2' },
+    ];
+    const members: Member[] = [
+      { id: 'm1', name: 'メンバー1', teamId: 'teamA', excludedTaskLabelIds: [], active: true },
+      { id: 'm2', name: 'メンバー2', teamId: 'teamGhost', excludedTaskLabelIds: [], active: true },
+      { id: 'm3', name: 'メンバー3', teamId: 'teamB', excludedTaskLabelIds: [], active: true },
+    ];
+    const currentAssignments: Assignment[] = [
+      { teamId: 'teamA', taskLabelId: 'task1', memberId: 'm1', assignedDate: '2026-03-12' },
+      { teamId: 'teamB', taskLabelId: 'task1', memberId: 'm3', assignedDate: '2026-03-12' },
+      { teamId: 'teamA', taskLabelId: 'task2', memberId: null, assignedDate: '2026-03-12' },
+      { teamId: 'teamB', taskLabelId: 'task2', memberId: null, assignedDate: '2026-03-12' },
+    ];
+
+    for (let i = 0; i < 30; i++) {
+      const result = calculateAssignment(
+        teams,
+        taskLabels,
+        members,
+        [],
+        '2026-03-12',
+        currentAssignments,
+        undefined,
+        false
+      );
+      const placedIds = result.filter((a) => a.memberId !== null).map((a) => a.memberId);
+      // 未割り当ての純孤児 m2 は配置されない（既存の「未割り当てメンバーは再配置しない」方針）
+      expect(placedIds).not.toContain('m2');
+      // 元々配置済みの m1,m3 は配置される
+      expect(placedIds).toContain('m1');
+      expect(placedIds).toContain('m3');
+    }
+  });
+
+  it('④ 複数メンバーが循環的にズレていても全員が現在の列を維持する（3班）', () => {
+    const teams: Team[] = [
+      { id: 'teamA', name: '班A' },
+      { id: 'teamB', name: '班B' },
+      { id: 'teamC', name: '班C' },
+    ];
+    const taskLabels: TaskLabel[] = [
+      { id: 'task1', leftLabel: 'タスク1' },
+      { id: 'task2', leftLabel: 'タスク2' },
+    ];
+    // Member.teamId: m1,m2=A / m3,m4=B / m5,m6=C（createThreeTeamData と同じ登録）
+    const members: Member[] = [
+      { id: 'm1', name: 'メンバー1', teamId: 'teamA', excludedTaskLabelIds: [], active: true },
+      { id: 'm2', name: 'メンバー2', teamId: 'teamA', excludedTaskLabelIds: [], active: true },
+      { id: 'm3', name: 'メンバー3', teamId: 'teamB', excludedTaskLabelIds: [], active: true },
+      { id: 'm4', name: 'メンバー4', teamId: 'teamB', excludedTaskLabelIds: [], active: true },
+      { id: 'm5', name: 'メンバー5', teamId: 'teamC', excludedTaskLabelIds: [], active: true },
+      { id: 'm6', name: 'メンバー6', teamId: 'teamC', excludedTaskLabelIds: [], active: true },
+    ];
+    // 表示上は登録班から1つ右へ循環的にズラす（B→A列, C→B列, A→C列）
+    const currentAssignments: Assignment[] = [
+      { teamId: 'teamA', taskLabelId: 'task1', memberId: 'm3', assignedDate: '2026-03-12' },
+      { teamId: 'teamB', taskLabelId: 'task1', memberId: 'm5', assignedDate: '2026-03-12' },
+      { teamId: 'teamC', taskLabelId: 'task1', memberId: 'm1', assignedDate: '2026-03-12' },
+      { teamId: 'teamA', taskLabelId: 'task2', memberId: 'm4', assignedDate: '2026-03-12' },
+      { teamId: 'teamB', taskLabelId: 'task2', memberId: 'm6', assignedDate: '2026-03-12' },
+      { teamId: 'teamC', taskLabelId: 'task2', memberId: 'm2', assignedDate: '2026-03-12' },
+    ];
+    const expectedTeam: Record<string, string> = {
+      m3: 'teamA',
+      m4: 'teamA',
+      m5: 'teamB',
+      m6: 'teamB',
+      m1: 'teamC',
+      m2: 'teamC',
+    };
+
+    for (let i = 0; i < 50; i++) {
+      const result = calculateAssignment(
+        teams,
+        taskLabels,
+        members,
+        [],
+        '2026-03-12',
+        currentAssignments,
+        undefined,
+        false
+      );
+      expectAllMembersAssigned(result, members);
+      const teamMap = getMemberTeamMap(result);
+      for (const [id, team] of Object.entries(expectedTeam)) {
+        expect(teamMap.get(id)).toBe(team);
+      }
+    }
+  });
+
+  it('⑤ 回帰: ズレ無し（Member.teamId と列が一致）の currentAssignments では従来どおり登録班に留まる', () => {
+    const { teams, taskLabels, members } = createTestData();
+    // Member.teamId と完全一致する現在配置
+    const currentAssignments: Assignment[] = [
+      { teamId: 'teamA', taskLabelId: 'task1', memberId: 'm1', assignedDate: '2026-03-12' },
+      { teamId: 'teamB', taskLabelId: 'task1', memberId: 'm3', assignedDate: '2026-03-12' },
+      { teamId: 'teamA', taskLabelId: 'task2', memberId: 'm2', assignedDate: '2026-03-12' },
+      { teamId: 'teamB', taskLabelId: 'task2', memberId: 'm4', assignedDate: '2026-03-12' },
+    ];
+
+    for (let i = 0; i < 50; i++) {
+      const result = calculateAssignment(
+        teams,
+        taskLabels,
+        members,
+        [],
+        '2026-03-12',
+        currentAssignments,
+        undefined,
+        false
+      );
+      expectAllMembersAssigned(result, members);
+      // 各メンバーは登録班（＝現在の列）に留まる
+      for (const a of result) {
+        if (a.memberId) {
+          const member = members.find((m) => m.id === a.memberId);
+          expect(a.teamId).toBe(member!.teamId);
+        }
+      }
+    }
+  });
+});
