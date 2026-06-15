@@ -8,18 +8,13 @@ import { flushPendingUserDataWrites } from '@/lib/firestore';
 import { getE2EUser, isE2EMode, isE2ESignedIn, signOutE2EUser } from './e2eMode';
 
 /**
- * Firebase Authenticationの初期化を待機するPromiseを返す
- * 静的エクスポート環境でも確実に初期化が完了するまで待機する
+ * 認証初期化のタイムアウト（ミリ秒）。
+ * onAuthStateChanged の初回コールバックは通常すぐ発火するが、iOS PWA で
+ * IndexedDB 永続化が詰まる等で遅延・ハングすると loading が解除されず、
+ * 全画面が「読み込み中」で固まる。getUserData（GET_USER_DATA_TIMEOUT_MS）と
+ * 同じ保険をかけ、初回コールバックが来なくても loading を必ず解除する。
  */
-function waitForAuthInit(): Promise<User | null> {
-  return new Promise((resolve) => {
-    // onAuthStateChangedの初期コールバックが呼ばれるまで待機
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      unsubscribe();
-      resolve(user);
-    });
-  });
-}
+export const AUTH_INIT_TIMEOUT_MS = 8000;
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -36,35 +31,37 @@ export function useAuth() {
     }
 
     let isMounted = true;
-    let unsubscribe: (() => void) | null = null;
+    let settled = false;
 
-    // 初期化を待機してから、状態変更リスナーを設定
-    waitForAuthInit()
-      .then((initialUser) => {
+    // loading の解除は初回1回だけ。アンマウント後は無視する。
+    const finishLoading = () => {
+      if (!isMounted || settled) return;
+      settled = true;
+      setLoading(false);
+    };
+
+    // 保険: 初回コールバックが来なくても loading を必ず解除する。
+    // リスナーは貼ったままにし、後から認証状態が確定したら user が更新される。
+    const timeoutId = window.setTimeout(finishLoading, AUTH_INIT_TIMEOUT_MS);
+
+    // 初回・以降の認証状態変更を単一リスナーで監視する
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (nextUser) => {
         if (!isMounted) return;
-
-        setUser(initialUser);
-        setLoading(false);
-
-        // 以降の認証状態変更を監視
-        unsubscribe = onAuthStateChanged(auth, (user) => {
-          if (isMounted) {
-            setUser(user);
-          }
-        });
-      })
-      .catch((error) => {
+        setUser(nextUser);
+        finishLoading();
+      },
+      (error) => {
         console.error('Firebase Authentication初期化エラー:', error);
-        if (isMounted) {
-          setLoading(false);
-        }
-      });
+        finishLoading();
+      }
+    );
 
     return () => {
       isMounted = false;
-      if (unsubscribe) {
-        unsubscribe();
-      }
+      window.clearTimeout(timeoutId);
+      unsubscribe();
     };
   }, []);
 

@@ -84,6 +84,8 @@ iOS（WebKit）はPWAをバックグラウンドで凍結し、ネットワー�
 | 保険 | `lib/firestore/userData/crud.ts` の `getUserData` | サーバー応答が8秒（`GET_USER_DATA_TIMEOUT_MS`）でタイムアウトしたら `getDocFromCache` にフォールバック。キャッシュも無ければエラーを throw し呼び出し側のエラー処理へ |
 | 最後の砦 | `components/Loading.tsx` | 読み込みが10秒（`RELOAD_PROMPT_DELAY_MS`）を超えたら「再読み込み」ボタンを表示。原因を問わず、タスクキルなしで復帰できる |
 
+同じ理由で**認証初期化にも保険をかける**。`lib/auth.ts` の `useAuth` は `onAuthStateChanged` の初回コールバックが来なくても8秒（`AUTH_INIT_TIMEOUT_MS`）で `loading` を解除する。各ページは `useAuth().loading` の間 `<Loading />` を表示するため、ここがハングすると全画面が初回起動時に固まる（リスナーは貼ったままにし、後から確定した認証状態は `setUser` で追従する）。
+
 ---
 
 ## 3. 生産記録のドキュメントID戦略
