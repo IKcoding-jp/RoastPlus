@@ -181,6 +181,19 @@ export const calculateAssignment = (
     .filter((a) => a.memberId === null && !validSlotKeys.has(`${a.teamId}__${a.taskLabelId}`))
     .map((a) => ({ teamId: a.teamId, taskLabelId: a.taskLabelId, memberId: null, assignedDate: targetDate }));
 
+  // 班内モードの「自分の班」は、登録上の Member.teamId ではなく、現在占めているスロットの
+  // 班（＝担当表に表示されている列）で判定する。セルへの手動配置などで Member.teamId と
+  // 表示列がズレても、列を維持したままシャッフルでき、班またぎや未割り当てが起きない。
+  // 現存しない班（削除済み）のスロットは validSlotKeys に無いため除外し、フォールバックに落ちる。
+  const slotTeamByMemberId = new Map<string, string>();
+  (currentAssignments ?? []).forEach((a) => {
+    if (a.memberId !== null && validSlotKeys.has(`${a.teamId}__${a.taskLabelId}`)) {
+      slotTeamByMemberId.set(a.memberId, a.teamId);
+    }
+  });
+  const teamOfMember = (memberId: string): string =>
+    slotTeamByMemberId.get(memberId) ?? memberById.get(memberId)!.teamId;
+
   // 3. 固定枠（未割当スロット）の特定
   //   memberId === null のスロットは「その担当の人数配置」を表す業務上の意味を持つため、
   //   位置を固定したまま探索対象から外す（穴は動かさない）。
@@ -304,7 +317,7 @@ export const calculateAssignment = (
     const remainingByTeam = new Map<string, string[]>();
     teamIds.forEach((tid) => remainingByTeam.set(tid, []));
     eligibleMembers.forEach((m) => {
-      remainingByTeam.get(m.teamId)?.push(m.id);
+      remainingByTeam.get(teamOfMember(m.id))?.push(m.id);
     });
     // 班ごとの「この行以降に残っている解放スロット数」（固定枠を除く）
     const unlockedSuffixByTeam = new Map<string, number[]>();
@@ -372,7 +385,7 @@ export const calculateAssignment = (
 
       for (const c of combos) {
         c.group.forEach((id) => {
-          const rem = remainingByTeam.get(memberById.get(id)!.teamId)!;
+          const rem = remainingByTeam.get(teamOfMember(id))!;
           rem.splice(rem.indexOf(id), 1);
         });
         currentSol.push(c.picks);
@@ -381,7 +394,7 @@ export const calculateAssignment = (
 
         currentSol.pop();
         c.group.forEach((id) => {
-          remainingByTeam.get(memberById.get(id)!.teamId)!.push(id);
+          remainingByTeam.get(teamOfMember(id))!.push(id);
         });
         if (nodes > NODE_LIMIT) return;
       }
