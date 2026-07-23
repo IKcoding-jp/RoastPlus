@@ -66,11 +66,7 @@ export async function addInventoryItem(userId: string, input: InventoryItemInput
 }
 
 /** 既存品目の内容を更新（merge）。createdAt は触らない。 */
-export async function updateInventoryItem(
-  userId: string,
-  id: string,
-  input: InventoryItemInput
-): Promise<void> {
+export async function updateInventoryItem(userId: string, id: string, input: InventoryItemInput): Promise<void> {
   const normalized = buildInventoryItemInput(input);
   await setDoc(
     doc(getInventoryCollectionRef(userId), id),
