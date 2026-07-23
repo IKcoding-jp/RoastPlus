@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
@@ -96,7 +97,7 @@ function LoginForm() {
           </h1>
         </div>
 
-        <p className="mb-6 text-center text-sm text-ink-sub">共有アカウントでログインしてください。</p>
+        <p className="mb-6 text-center text-sm text-ink-sub">メールアドレスでログインしてください。</p>
 
         {/* フォーム */}
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -129,6 +130,13 @@ function LoginForm() {
             ログイン
           </Button>
         </form>
+
+        <p className="mt-6 text-center text-sm text-ink-sub">
+          アカウントをお持ちでない方は{' '}
+          <Link href="/signup" className="text-header-accent underline">
+            アカウントを作成
+          </Link>
+        </p>
       </div>
     </div>
   );
