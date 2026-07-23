@@ -21,7 +21,6 @@ export function useInventory(userId: string | null): { items: InventoryItem[]; i
       return;
     }
 
-     
     setIsLoading(true);
     const unsubscribe = subscribeInventoryItems(
       userId,
