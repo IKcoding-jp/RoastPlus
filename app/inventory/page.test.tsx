@@ -95,12 +95,11 @@ describe('InventoryPage', () => {
 
     // 確認ダイアログが表示される
     expect(screen.getByText('品目を削除しますか？')).toBeInTheDocument();
-    expect(screen.getByText('共有在庫なので全員に反映されます')).toBeInTheDocument();
 
     // ダイアログの確定ボタン「削除」で初めて削除される。
     // 一覧の削除はアイコンボタン（aria-label に品目名を含む）なので、
     // ダイアログの確定ボタン「削除」とは name で区別できる。
     fireEvent.click(screen.getByRole('button', { name: '削除' }));
-    await waitFor(() => expect(deleteInventoryItem).toHaveBeenCalledWith('a'));
+    await waitFor(() => expect(deleteInventoryItem).toHaveBeenCalledWith('u1', 'a'));
   });
 });

@@ -27,7 +27,7 @@ const E2E_SAMPLE_ITEMS: InventoryItem[] = [
 
 export default function InventoryPage() {
   const { user, loading } = useAuth();
-  const { items: liveItems, isLoading } = useInventory();
+  const { items: liveItems, isLoading } = useInventory(user?.uid ?? null);
   const { showToast } = useToastContext();
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<InventoryItem | null>(null);
@@ -57,10 +57,10 @@ export default function InventoryPage() {
   const handleSave = async (input: InventoryItemInput) => {
     try {
       if (editing) {
-        await updateInventoryItem(editing.id, input);
+        await updateInventoryItem(user!.uid, editing.id, input);
         showToast('品目を更新しました', 'success');
       } else {
-        await addInventoryItem(input);
+        await addInventoryItem(user!.uid, input);
         showToast('品目を追加しました', 'success');
       }
       setModalOpen(false);
@@ -73,7 +73,7 @@ export default function InventoryPage() {
   // 通常の状態トグル。頻繁に押すため成功トーストは出さず、失敗時のみ通知する。
   const handleStatusChange = async (item: InventoryItem, status: InventoryStatus) => {
     try {
-      await setInventoryItemStatus(item.id, status);
+      await setInventoryItemStatus(user!.uid, item.id, status);
     } catch {
       showToast('状態の更新に失敗しました', 'error');
     }
@@ -82,7 +82,7 @@ export default function InventoryPage() {
   // 要発注リストの「対応済みにする」。完了した安心感を伝えるため成功トーストを出す。
   const handleResolve = async (item: InventoryItem) => {
     try {
-      await setInventoryItemStatus(item.id, 'enough');
+      await setInventoryItemStatus(user!.uid, item.id, 'enough');
       showToast('対応済みにしました', 'success');
     } catch {
       showToast('状態の更新に失敗しました', 'error');
@@ -95,7 +95,7 @@ export default function InventoryPage() {
     }
     setIsDeleting(true);
     try {
-      await deleteInventoryItem(deleteTarget.id);
+      await deleteInventoryItem(user!.uid, deleteTarget.id);
       showToast('品目を削除しました', 'success');
       setDeleteTarget(null);
     } catch {
@@ -208,7 +208,7 @@ export default function InventoryPage() {
       <Dialog
         isOpen={deleteTarget !== null}
         title="品目を削除しますか？"
-        description="共有在庫なので全員に反映されます"
+        description="この操作は取り消せません"
         variant="danger"
         confirmText="削除"
         isLoading={isDeleting}
