@@ -472,24 +472,31 @@ describe('Firestore rules', () => {
     });
   });
 
-  describe('inventory', () => {
-    it('allows any signed-in member to read/write, denies anonymous (team-shared)', async () => {
+  describe('inventory (legacy root path)', () => {
+    it('denies all access to the old root-level inventory collection', async () => {
       const item = { name: 'ドリップ袋', status: 'low' };
-      const ownerDoc = firestoreFor(OWN_UID).doc('inventory/item_1');
-      const otherDoc = firestoreFor(OTHER_UID).doc('inventory/item_1');
-      const anonymousDoc = firestoreFor().doc('inventory/item_1');
+      await assertFails(firestoreFor(OWN_UID).doc('inventory/item_1').get());
+      await assertFails(firestoreFor(OWN_UID).doc('inventory/item_1').set(item));
+      await assertFails(firestoreFor().doc('inventory/item_1').get());
+    });
+  });
 
-      // 未認証は読み書きとも拒否
+  describe('users/{uid}/inventory/{itemId}', () => {
+    it('allows only the signed-in owner to read and write their inventory items', async () => {
+      const item = { name: 'ドリップ袋', status: 'low' };
+      const path = `users/${OWN_UID}/inventory/item_1`;
+      const ownerDoc = firestoreFor(OWN_UID).doc(path);
+      const otherDoc = firestoreFor(OTHER_UID).doc(path);
+      const anonymousDoc = firestoreFor().doc(path);
+
       await assertFails(anonymousDoc.get());
       await assertFails(anonymousDoc.set(item));
 
-      // 認証済みメンバーは読み書き可
       await assertSucceeds(ownerDoc.set(item));
       await assertSucceeds(ownerDoc.get());
 
-      // 別メンバーも読み書き可（チーム共有。defectBeans と異なり全員が編集可）
-      await assertSucceeds(otherDoc.get());
-      await assertSucceeds(otherDoc.set({ name: 'ドリップ袋', status: 'out' }));
+      await assertFails(otherDoc.get());
+      await assertFails(otherDoc.set(item));
     });
   });
 });
