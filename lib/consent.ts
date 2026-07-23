@@ -1,8 +1,8 @@
 import { UserConsent } from '@/types';
 
 // バージョン定義
-export const TERMS_VERSION = '1.2.0';
-export const PRIVACY_POLICY_VERSION = '1.3.0';
+export const TERMS_VERSION = '1.3.0';
+export const PRIVACY_POLICY_VERSION = '1.4.0';
 
 // 同意が必要かどうかをチェック
 export function needsConsent(userConsent: UserConsent | undefined): boolean {
