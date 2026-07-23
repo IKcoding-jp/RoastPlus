@@ -2,7 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import type { User } from 'firebase/auth';
 
-import { useAuth, AUTH_INIT_TIMEOUT_MS } from './auth';
+import { useAuth, AUTH_INIT_TIMEOUT_MS, signUpWithEmail } from './auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 // onAuthStateChanged に渡されたコールバックを手動発火できるよう保持する
 const listeners = vi.hoisted(() => ({
@@ -18,6 +19,7 @@ vi.mock('firebase/auth', () => ({
     return listeners.unsubscribe;
   },
   signOut: vi.fn(),
+  createUserWithEmailAndPassword: vi.fn(),
 }));
 
 vi.mock('firebase/firestore', () => ({
@@ -117,5 +119,22 @@ describe('useAuth', () => {
     unmount();
 
     expect(listeners.unsubscribe).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('signUpWithEmail', () => {
+  it('createUserWithEmailAndPassword を呼び出す', async () => {
+    vi.mocked(createUserWithEmailAndPassword).mockResolvedValue({} as never);
+
+    await signUpWithEmail('new@example.com', 'password123');
+
+    expect(createUserWithEmailAndPassword).toHaveBeenCalledWith(expect.anything(), 'new@example.com', 'password123');
+  });
+
+  it('失敗時はエラーをそのままthrowする', async () => {
+    const authError = { code: 'auth/email-already-in-use' };
+    vi.mocked(createUserWithEmailAndPassword).mockRejectedValue(authError);
+
+    await expect(signUpWithEmail('dup@example.com', 'password123')).rejects.toEqual(authError);
   });
 });

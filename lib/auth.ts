@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { User, onAuthStateChanged, signOut as firebaseSignOut } from 'firebase/auth';
+import { User, onAuthStateChanged, signOut as firebaseSignOut, createUserWithEmailAndPassword } from 'firebase/auth';
 import { clearIndexedDbPersistence, terminate, waitForPendingWrites } from 'firebase/firestore';
 import { auth, db } from './firebase';
 import { flushPendingUserDataWrites } from '@/lib/firestore';
@@ -66,6 +66,11 @@ export function useAuth() {
   }, []);
 
   return { user, loading };
+}
+
+/** メールアドレス＋パスワードで新規アカウントを作成する。 */
+export async function signUpWithEmail(email: string, password: string): Promise<void> {
+  await createUserWithEmailAndPassword(auth, email, password);
 }
 
 export async function signOut() {
