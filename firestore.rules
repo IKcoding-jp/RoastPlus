@@ -143,12 +143,12 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // 在庫・不足品（チーム共有・シングルテナント前提）
-    // 認証済みメンバー全員が読み書き・削除可能（owner isolation の意図的な例外）。
-    // 「現場メンバーが"足りない"を共有し、本社が見て発注する」共有ボードのため、
-    // 全員が同じ inventory コレクションを編集できる必要がある。
+    // 在庫・不足品（旧: チーム共有・シングルテナント前提のルート直下コレクション）
+    // ポートフォリオ公開に伴い誰でもサインアップ可能になったため、
+    // 他の廃止済みルート直下コレクション（teams/members等）と同様に無効化した。
+    // 実際のアクセス許可は下記「在庫・不足品（ユーザー配下）」を参照。
     match /inventory/{itemId} {
-      allow read, write: if request.auth != null;
+      allow read, write: if false;
     }
 
     // 担当表機能（ルート直下は無効化）
@@ -207,6 +207,11 @@ service cloud.firestore {
       allow read, write: if isOwner(userId);
     }
     match /users/{userId}/pairExclusions/{exclusionId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // 在庫・不足品（ユーザー配下）: アカウントごとに分離
+    match /users/{userId}/inventory/{itemId} {
       allow read, write: if isOwner(userId);
     }
 

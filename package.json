@@ -1,6 +1,6 @@
 {
   "name": "roastplus",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -85,6 +85,7 @@
     "next": {
       "postcss": "8.5.15"
     },
+    "sharp": "^0.35.3",
     "universal-analytics": {
       "uuid": "14.0.0"
     }

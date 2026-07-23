@@ -44,11 +44,12 @@ describe('LoginPage', () => {
     mocks.getSearchParam.mockReturnValue(null);
   });
 
-  it('ログインフォームが表示される', async () => {
+  it('ログインフォームとサインアップ導線が表示される', async () => {
     render(<LoginPage />);
     expect(await screen.findByLabelText('メールアドレス')).toBeInTheDocument();
     expect(screen.getByLabelText('パスワード')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'ログイン' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'アカウントを作成' })).toHaveAttribute('href', '/signup');
   });
 
   it('ログイン成功時にホームへリダイレクトする', async () => {

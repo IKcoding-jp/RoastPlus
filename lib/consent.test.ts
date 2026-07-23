@@ -5,11 +5,11 @@ import type { UserConsent } from '@/types';
 describe('consent', () => {
   describe('定数', () => {
     it('TERMS_VERSIONが定義されている', () => {
-      expect(TERMS_VERSION).toBe('1.2.0');
+      expect(TERMS_VERSION).toBe('1.3.0');
     });
 
     it('PRIVACY_POLICY_VERSIONが定義されている', () => {
-      expect(PRIVACY_POLICY_VERSION).toBe('1.3.0');
+      expect(PRIVACY_POLICY_VERSION).toBe('1.4.0');
     });
   });
 

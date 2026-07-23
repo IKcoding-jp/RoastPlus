@@ -11,12 +11,12 @@ import {
   type DocumentData,
   type Unsubscribe,
 } from 'firebase/firestore';
-import { getDb } from './common';
+import { getUserDocRef } from './common';
 import { buildInventoryItemInput, normalizeInventoryStatus } from '@/lib/inventory';
 import type { InventoryItem, InventoryItemInput } from '@/types';
 
-function getInventoryCollectionRef() {
-  return collection(getDb(), 'inventory');
+function getInventoryCollectionRef(userId: string) {
+  return collection(getUserDocRef(userId), 'inventory');
 }
 
 function normalizeInventoryItem(id: string, data: DocumentData): InventoryItem {
@@ -30,10 +30,11 @@ function normalizeInventoryItem(id: string, data: DocumentData): InventoryItem {
 }
 
 export function subscribeInventoryItems(
+  userId: string,
   callback: (items: InventoryItem[]) => void,
   onError?: (error: Error) => void
 ): Unsubscribe {
-  const itemsQuery = query(getInventoryCollectionRef(), orderBy('createdAt', 'desc'));
+  const itemsQuery = query(getInventoryCollectionRef(userId), orderBy('createdAt', 'desc'));
   return onSnapshot(
     itemsQuery,
     (snapshot) => {
@@ -55,9 +56,9 @@ export function subscribeInventoryItems(
 }
 
 /** 新規品目を追加（自動ID）。 */
-export async function addInventoryItem(input: InventoryItemInput): Promise<void> {
+export async function addInventoryItem(userId: string, input: InventoryItemInput): Promise<void> {
   const normalized = buildInventoryItemInput(input);
-  await addDoc(getInventoryCollectionRef(), {
+  await addDoc(getInventoryCollectionRef(userId), {
     ...normalized,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
@@ -65,20 +66,28 @@ export async function addInventoryItem(input: InventoryItemInput): Promise<void>
 }
 
 /** 既存品目の内容を更新（merge）。createdAt は触らない。 */
-export async function updateInventoryItem(id: string, input: InventoryItemInput): Promise<void> {
+export async function updateInventoryItem(userId: string, id: string, input: InventoryItemInput): Promise<void> {
   const normalized = buildInventoryItemInput(input);
-  await setDoc(doc(getInventoryCollectionRef(), id), { ...normalized, updatedAt: serverTimestamp() }, { merge: true });
+  await setDoc(
+    doc(getInventoryCollectionRef(userId), id),
+    { ...normalized, updatedAt: serverTimestamp() },
+    { merge: true }
+  );
 }
 
 /** ステータスだけを1タップ変更（merge）。 */
-export async function setInventoryItemStatus(id: string, status: InventoryItem['status']): Promise<void> {
+export async function setInventoryItemStatus(
+  userId: string,
+  id: string,
+  status: InventoryItem['status']
+): Promise<void> {
   await setDoc(
-    doc(getInventoryCollectionRef(), id),
+    doc(getInventoryCollectionRef(userId), id),
     { status: normalizeInventoryStatus(status), updatedAt: serverTimestamp() },
     { merge: true }
   );
 }
 
-export async function deleteInventoryItem(id: string): Promise<void> {
-  await deleteDoc(doc(getInventoryCollectionRef(), id));
+export async function deleteInventoryItem(userId: string, id: string): Promise<void> {
+  await deleteDoc(doc(getInventoryCollectionRef(userId), id));
 }

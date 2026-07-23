@@ -1,57 +1,28 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import Link from 'next/link';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import Link from 'next/link';
+import { signUpWithEmail } from '@/lib/auth';
 import { Loading } from '@/components/Loading';
 import { Input, Button } from '@/components/ui';
-import { E2E_EMAIL, E2E_PASSWORD, isE2EMode, signInE2EUser } from '@/lib/e2eMode';
 import { getSafeReturnUrl } from '@/lib/returnUrl';
-import { useToastContext } from '@/components/Toast';
 
-function LoginForm() {
+function SignupForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { showToast } = useToastContext();
-
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (window.localStorage.getItem('roastplus_cache_clear_failed') === '1') {
-      window.localStorage.removeItem('roastplus_cache_clear_failed');
-      showToast(
-        'ログアウト時に端末内のデータを完全に消去できませんでした。共有端末の場合は、他のRoastPlusのタブを閉じてからもう一度ログアウトしてください。',
-        'error'
-      );
-    }
-  }, [showToast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
     setLoading(true);
 
     try {
-      if (isE2EMode()) {
-        if (email !== E2E_EMAIL || password !== E2E_PASSWORD) {
-          setError('メールアドレスもしくはパスワードが違います');
-          return;
-        }
-
-        signInE2EUser();
-        const redirectUrl = getSafeReturnUrl(searchParams.get('returnUrl'), '/');
-        router.push(redirectUrl);
-        return;
-      }
-
-      await signInWithEmailAndPassword(auth, email, password);
-      // returnUrlがあればそのURLに、なければホームにリダイレクト
+      await signUpWithEmail(email, password);
       const redirectUrl = getSafeReturnUrl(searchParams.get('returnUrl'), '/');
       router.push(redirectUrl);
     } catch (err: unknown) {
@@ -63,17 +34,11 @@ function LoginForm() {
         case 'auth/invalid-email':
           errorMessage = 'メールアドレスの形式が正しくありません';
           break;
-        case 'auth/user-disabled':
-          errorMessage = 'このアカウントは無効化されています';
+        case 'auth/email-already-in-use':
+          errorMessage = 'このメールアドレスは既に使用されています';
           break;
-        case 'auth/user-not-found':
-          errorMessage = 'アカウントが見つかりません';
-          break;
-        case 'auth/wrong-password':
-          errorMessage = 'パスワードが正しくありません';
-          break;
-        case 'auth/invalid-credential':
-          errorMessage = 'メールアドレスもしくはパスワードが違います';
+        case 'auth/weak-password':
+          errorMessage = 'パスワードは6文字以上で入力してください';
           break;
         case 'auth/network-request-failed':
           errorMessage = 'ネットワークエラーが発生しました';
@@ -97,11 +62,9 @@ function LoginForm() {
           </h1>
         </div>
 
-        <p className="mb-6 text-center text-sm text-ink-sub">メールアドレスでログインしてください。</p>
+        <p className="mb-6 text-center text-sm text-ink-sub">新しいアカウントを作成します。</p>
 
-        {/* フォーム */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* メールアドレス */}
           <Input
             label="メールアドレス"
             type="email"
@@ -111,7 +74,6 @@ function LoginForm() {
             required
           />
 
-          {/* パスワード */}
           <Input
             label="パスワード"
             type="password"
@@ -125,16 +87,15 @@ function LoginForm() {
 
           {error && <p className="text-sm text-red-600">{error}</p>}
 
-          {/* 送信ボタン */}
           <Button type="submit" disabled={loading} loading={loading} fullWidth>
-            ログイン
+            アカウントを作成
           </Button>
         </form>
 
         <p className="mt-6 text-center text-sm text-ink-sub">
-          アカウントをお持ちでない方は{' '}
-          <Link href="/signup" className="text-header-accent underline">
-            アカウントを作成
+          すでにアカウントをお持ちの方は{' '}
+          <Link href="/login" className="text-header-accent underline">
+            ログイン
           </Link>
         </p>
       </div>
@@ -142,7 +103,7 @@ function LoginForm() {
   );
 }
 
-export default function LoginPage() {
+export default function SignupPage() {
   return (
     <Suspense
       fallback={
@@ -154,7 +115,7 @@ export default function LoginPage() {
         </div>
       }
     >
-      <LoginForm />
+      <SignupForm />
     </Suspense>
   );
 }

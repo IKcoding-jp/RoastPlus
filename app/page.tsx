@@ -133,7 +133,7 @@ export default function HomePage(_props: HomePageProps = {}) {
   const [checkingConsent, setCheckingConsent] = useState(true);
   const { isChristmasMode } = useChristmasMode();
   const { isVisible } = useHomeFeatureVisibility();
-  const { items: inventoryItems } = useInventory();
+  const { items: inventoryItems } = useInventory(user?.uid ?? null);
   const reorderCount = countReorderItems(inventoryItems);
   const visibleActions = ACTIONS.filter((action) => isVisible(action.key)).map((action) =>
     action.key === 'inventory' ? { ...action, badge: reorderCount > 0 ? `要発注${reorderCount}` : undefined } : action

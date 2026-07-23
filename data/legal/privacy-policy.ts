@@ -30,7 +30,7 @@ export const PRIVACY_POLICY_SECTIONS: PrivacyPolicySection[] = [
       '・試飲感想記録（評価スコア、感想コメント、豆名など）',
       '・欠点豆図鑑（欠点豆の名前、特徴など）',
       '・ドリップガイド（レシピ名、抽出手順など）',
-      '・在庫・不足品（品目名、在庫状態など。チーム内で共有されます）',
+      '・在庫・不足品（品目名、在庫状態など。アカウントごとに保存されます）',
       '',
       '【画像データ】',
       '・欠点豆の画像（Firebase Storageに保存）',
@@ -160,4 +160,4 @@ export const PRIVACY_POLICY_SECTIONS: PrivacyPolicySection[] = [
   },
 ];
 
-export const PRIVACY_POLICY_LAST_UPDATED = '2026年6月13日';
+export const PRIVACY_POLICY_LAST_UPDATED = '2026年7月24日';
