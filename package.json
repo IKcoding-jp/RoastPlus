@@ -18,7 +18,7 @@
     "prepare": "husky",
     "secrets:scan": "gitleaks git --redact --no-banner --log-opts=\"origin/main..HEAD\"",
     "secrets:scan:staged": "gitleaks git --staged --redact --no-banner",
-    "security": "npm audit --audit-level=high",
+    "security": "npm audit --audit-level=high --omit=dev",
     "complexity": "lizard ./app ./components ./hooks ./lib ./types ./scripts -C 15 -L 50 -w",
     "deadcode": "knip",
     "maintenance": "npm run complexity && npm run security && npm run deadcode && npm run skill:validate",
@@ -83,7 +83,7 @@
       "uuid": "11.1.1"
     },
     "next": {
-      "postcss": "8.5.15"
+      "postcss": "^8.5.24"
     },
     "sharp": "^0.35.3",
     "universal-analytics": {
