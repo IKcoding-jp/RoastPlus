@@ -53,11 +53,13 @@ next-env.d.ts
 
 # Claude Code local settings
 .claude/settings.local.json
+.claude/settings.json
 NUL
 
 # Agent/IDE/Tool local files
 .agent/
 .agents/
+.serena/project.yml
 .cursor/
 .playwright-mcp/
 .superpowers/
