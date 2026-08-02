@@ -4,13 +4,11 @@ import React from 'react';
 import { Play, Pause, ArrowCounterClockwise, X, ArrowLeft, ArrowRight, CheckCircle } from 'phosphor-react';
 import { clsx } from 'clsx';
 import Link from 'next/link';
-import type { DripStep } from '@/lib/drip-guide/types';
 import { IconButton } from '@/components/ui';
 
 interface FooterControlsProps {
   isManualMode: boolean;
   isRunning: boolean;
-  nextStep?: DripStep | null;
   manualStepIndex: number;
   stepsLength: number;
   currentStepIndex: number;

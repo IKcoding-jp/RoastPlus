@@ -12,6 +12,7 @@ import {
   formatTimeHM,
   formatMinutesToHHMM,
   formatSecondsAsTimer,
+  formatSecondsAsShortRemaining,
 } from './dateUtils';
 
 describe('formatDateToYMD', () => {
@@ -143,5 +144,25 @@ describe('formatSecondsAsTimer', () => {
     expect(formatSecondsAsTimer(0)).toBe('00:00');
     expect(formatSecondsAsTimer(60)).toBe('01:00');
     expect(formatSecondsAsTimer(3661)).toBe('61:01');
+  });
+});
+
+describe('formatSecondsAsShortRemaining', () => {
+  it('60秒未満は秒だけで表す', () => {
+    expect(formatSecondsAsShortRemaining(45)).toBe('45秒');
+    expect(formatSecondsAsShortRemaining(3)).toBe('3秒');
+    expect(formatSecondsAsShortRemaining(0)).toBe('0秒');
+    expect(formatSecondsAsShortRemaining(59)).toBe('59秒');
+  });
+
+  it('60秒以上はM:SS形式（分の先頭ゼロなし）で表す', () => {
+    expect(formatSecondsAsShortRemaining(60)).toBe('1:00');
+    expect(formatSecondsAsShortRemaining(80)).toBe('1:20');
+    expect(formatSecondsAsShortRemaining(605)).toBe('10:05');
+  });
+
+  it('負値と小数を0秒側に丸める', () => {
+    expect(formatSecondsAsShortRemaining(-5)).toBe('0秒');
+    expect(formatSecondsAsShortRemaining(12.7)).toBe('12秒');
   });
 });

@@ -644,6 +644,65 @@ select option {
   }
 }
 
+/* ドリップガイド: 次ステップ直前アラート（画面外周のリング＋せり上がる予告バー） */
+@keyframes drip-alert-ring {
+  0%,
+  100% {
+    opacity: 0.45;
+    box-shadow: inset 0 0 0 8px var(--spot);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: inset 0 0 0 18px var(--spot);
+  }
+}
+
+@keyframes drip-alert-beat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes drip-alert-slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-drip-alert-ring {
+  animation: drip-alert-ring 1s ease-in-out infinite;
+}
+
+.animate-drip-alert-beat {
+  animation: drip-alert-beat 1s ease-in-out infinite;
+}
+
+.animate-drip-alert-slide-up {
+  animation: drip-alert-slide-up 0.4s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* 点滅・拍動は止め、色と面積だけで直前を伝える */
+  .animate-drip-alert-ring {
+    animation: none;
+    opacity: 1;
+    box-shadow: inset 0 0 0 14px var(--spot);
+  }
+
+  .animate-drip-alert-beat,
+  .animate-drip-alert-slide-up {
+    animation: none;
+    transform: none;
+  }
+}
+
 /* Scrollbar Hiding Utilities */
 .scrollbar-hide {
   -ms-overflow-style: none;
