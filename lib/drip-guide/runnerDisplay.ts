@@ -1,11 +1,11 @@
 import { formatSecondsAsShortRemaining } from '@/lib/dateUtils';
 import type { DripStep } from './types';
 
-/** 次ステップ予告の直前強調に切り替わる残り秒数（カウントダウン音と同じタイミング） */
-export const NEXT_STEP_SOON_THRESHOLD_SEC = 3;
+/** 次ステップ直前アラートに切り替わる残り秒数（カウントダウン音と同じタイミング） */
+const NEXT_STEP_SOON_THRESHOLD_SEC = 3;
 
 /** ステップ見出しを主見出しと補足（括弧内）に分解した結果 */
-export interface SplitStepTitle {
+interface SplitStepTitle {
   mainTitle: string;
   detail?: string;
 }
