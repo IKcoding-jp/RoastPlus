@@ -95,3 +95,17 @@ export function formatSecondsAsTimer(seconds: number): string {
   const s = seconds % 60;
   return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
+
+/**
+ * 残り秒数を短い可読形式に変換（例: 45 → "45秒" / 80 → "1:20"）。
+ * 60秒未満は秒だけ、60秒以上はM:SS（分の先頭ゼロなし）。負値は0秒扱い。
+ */
+export function formatSecondsAsShortRemaining(seconds: number): string {
+  const safe = Math.max(0, Math.floor(seconds));
+  if (safe < 60) {
+    return `${safe}秒`;
+  }
+  const m = Math.floor(safe / 60);
+  const s = safe % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
