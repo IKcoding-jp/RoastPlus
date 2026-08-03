@@ -63,6 +63,7 @@ NUL
 .cursor/
 .playwright-mcp/
 .superpowers/
+.codex-dev/
 
 # Remotion (別管理)
 remotion/
