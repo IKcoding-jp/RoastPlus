@@ -20,7 +20,7 @@ interface ClockHeaderNavProps {
  */
 export function ClockHeaderNav({ colors, onOpenChimeSchedule, onOpenSettings }: ClockHeaderNavProps) {
   // 規約 local/no-raw-button に従い Button を使用。色はテーマ追従のためインラインstyleで上書き。
-  const pillClassName = 'gap-2 !rounded-full !px-3.5 active:scale-95';
+  const pillClassName = 'gap-2 rounded-full! px-3.5! active:scale-95';
   const pillStyle = { backgroundColor: colors.uiBg, color: colors.uiText };
 
   return (

@@ -125,7 +125,7 @@ export function WorkChimeScheduleModal({ show, settings, onUpdate, onClose }: Wo
                   variant="ghost"
                   size="sm"
                   onClick={() => updatePeriod(period.id, { kind: 'work' })}
-                  className="!min-h-[36px] !rounded-md !border !px-4 transition-colors"
+                  className="min-h-9! rounded-md! border! px-4! transition-colors"
                   style={getKindButtonStyle('work', period.kind)}
                 >
                   作業
@@ -135,7 +135,7 @@ export function WorkChimeScheduleModal({ show, settings, onUpdate, onClose }: Wo
                   variant="ghost"
                   size="sm"
                   onClick={() => updatePeriod(period.id, { kind: 'break' })}
-                  className="!min-h-[36px] !rounded-md !border !px-4 transition-colors"
+                  className="min-h-9! rounded-md! border! px-4! transition-colors"
                   style={getKindButtonStyle('break', period.kind)}
                 >
                   休憩
@@ -145,7 +145,7 @@ export function WorkChimeScheduleModal({ show, settings, onUpdate, onClose }: Wo
                   variant="ghost"
                   size="sm"
                   onClick={() => updatePeriod(period.id, { kind: 'cleanup' })}
-                  className="!min-h-[36px] !rounded-md !border !px-4 transition-colors"
+                  className="min-h-9! rounded-md! border! px-4! transition-colors"
                   style={getKindButtonStyle('cleanup', period.kind)}
                 >
                   掃除
@@ -170,7 +170,7 @@ export function WorkChimeScheduleModal({ show, settings, onUpdate, onClose }: Wo
                 type="time"
                 value={period.start}
                 onChange={(e) => updatePeriod(period.id, { start: e.target.value })}
-                className="!px-3 !py-2 !text-base"
+                className="px-3! py-2! text-base!"
               />
               <span className="pb-3 text-sm font-bold text-ink-muted">-</span>
               <Input
@@ -178,7 +178,7 @@ export function WorkChimeScheduleModal({ show, settings, onUpdate, onClose }: Wo
                 type="time"
                 value={period.end}
                 onChange={(e) => updatePeriod(period.id, { end: e.target.value })}
-                className="!px-3 !py-2 !text-base"
+                className="px-3! py-2! text-base!"
               />
             </div>
           </div>
@@ -186,7 +186,7 @@ export function WorkChimeScheduleModal({ show, settings, onUpdate, onClose }: Wo
       </div>
 
       <div className="shrink-0 border-t border-edge bg-overlay px-4 py-4">
-        <Button type="button" variant="secondary" fullWidth onClick={addPeriod} className="!min-h-[48px]">
+        <Button type="button" variant="secondary" fullWidth onClick={addPeriod} className="min-h-12!">
           <MdAdd className="mr-1.5 h-5 w-5" />
           時間帯を追加
         </Button>

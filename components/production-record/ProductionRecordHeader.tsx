@@ -48,7 +48,7 @@ export function ProductionRecordHeader({
             options={monthOptions}
             value={selectedMonth}
             onChange={(event) => onSelectMonth(event.target.value)}
-            className="sm:w-[160px] !min-h-[42px] !py-2 !text-base"
+            className="sm:w-[160px] !min-h-[42px] py-2! text-base!"
           />
         )}
         <Button
@@ -56,7 +56,7 @@ export function ProductionRecordHeader({
           size="sm"
           variant="secondary"
           onClick={onOpenMonthMenu}
-          className="!min-h-[42px] whitespace-nowrap !py-2 !text-base"
+          className="!min-h-[42px] whitespace-nowrap py-2! text-base!"
         >
           <MdSettings className="h-5 w-5" />
           月の設定

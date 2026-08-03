@@ -163,7 +163,7 @@ function RoastScheduleMemoDialogInner({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-[100] p-4" onClick={onCancel}>
+    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-100 p-4" onClick={onCancel}>
       <div
         className="rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto border-2 bg-overlay border-edge-strong"
         onClick={(e) => e.stopPropagation()}

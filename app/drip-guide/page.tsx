@@ -21,7 +21,7 @@ export default function DripGuidePage() {
         right={
           <Link
             href="/drip-guide/new"
-            className="inline-flex items-center gap-2 bg-btn-primary hover:bg-btn-primary-hover text-btn-primary-text px-4 py-2 rounded-lg font-semibold transition-colors shadow-sm min-h-[44px]"
+            className="inline-flex items-center gap-2 bg-btn-primary hover:bg-btn-primary-hover text-btn-primary-text px-4 py-2 rounded-lg font-semibold transition-colors shadow-sm min-h-11"
           >
             <HiPlus size={20} />
             <span className="hidden sm:inline">新規レシピ</span>

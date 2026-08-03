@@ -73,7 +73,7 @@ export default function AssignmentPage() {
             variant="outline"
             size="sm"
             onClick={() => setIsSettingsModalOpen(true)}
-            className="!rounded-full !px-3 !py-2 shadow-md !bg-surface !text-ink-sub hover:!bg-ground !border !border-edge-strong"
+            className="rounded-full! px-3! py-2! shadow-md bg-surface! text-ink-sub! hover:bg-ground! border! border-edge-strong!"
             title="詳細設定"
           >
             <HiCog className="w-5 h-5" />
@@ -114,8 +114,8 @@ export default function AssignmentPage() {
           variant={data.manager ? 'outline' : 'primary'}
           size="md"
           onClick={() => setIsManagerDialogOpen(true)}
-          className={`!flex !items-center !gap-2 !px-4 !py-3 !rounded-lg shadow-lg ${
-            data.manager ? '!bg-surface hover:!bg-ground !border-edge' : ''
+          className={`flex! items-center! gap-2! px-4! py-3! rounded-lg! shadow-lg ${
+            data.manager ? 'bg-surface! hover:bg-ground! border-edge!' : ''
           }`}
         >
           {data.manager ? (

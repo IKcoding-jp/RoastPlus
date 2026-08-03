@@ -53,7 +53,7 @@ export const RecipeStepTable: React.FC<RecipeStepTableProps> = ({
                       size="sm"
                       type="button"
                       onClick={() => onStepDetailClick(step.id, step.title)}
-                      className="!min-h-0 !px-1 !py-0.5 !text-xs underline !text-spot hover:!text-spot-hover"
+                      className="min-h-0! !px-1 !py-0.5 !text-xs underline !text-spot hover:!text-spot-hover"
                     >
                       詳細
                     </Button>

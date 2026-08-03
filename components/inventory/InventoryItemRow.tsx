@@ -57,7 +57,7 @@ export function InventoryItemRow({ item, onEdit, onDelete, onStatusChange }: Inv
             variant="ghost"
             aria-label={`${item.name}を編集`}
             onClick={() => onEdit(item)}
-            className="!min-h-0 !min-w-0 h-8 w-8 !p-0"
+            className="min-h-0! min-w-0! h-8 w-8 !p-0"
           >
             <FiEdit2 className="h-4 w-4" />
           </IconButton>
@@ -65,7 +65,7 @@ export function InventoryItemRow({ item, onEdit, onDelete, onStatusChange }: Inv
             variant="danger"
             aria-label={`${item.name}を削除`}
             onClick={() => onDelete(item)}
-            className="!min-h-0 !min-w-0 h-8 w-8 !p-0"
+            className="min-h-0! min-w-0! h-8 w-8 !p-0"
           >
             <FiTrash2 className="h-4 w-4" />
           </IconButton>

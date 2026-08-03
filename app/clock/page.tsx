@@ -258,7 +258,7 @@ export default function ClockPage() {
                 variant="primary"
                 size="sm"
                 onClick={enableAudio}
-                className="col-span-2 mt-1 w-full !min-h-11 !px-4 sm:col-span-1 sm:mt-0 sm:w-auto"
+                className="col-span-2 mt-1 w-full !min-h-11 px-4! sm:col-span-1 sm:mt-0 sm:w-auto"
                 style={{
                   backgroundColor: colors.accent,
                   color: '#FFFFFF',

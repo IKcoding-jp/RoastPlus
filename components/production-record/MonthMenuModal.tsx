@@ -75,7 +75,7 @@ export function MonthMenuModal({
               label="対象月"
               value={newMonthInput}
               onChange={(event) => onChangeNewMonth(event.target.value || getCurrentProductionMonth())}
-              className="flex-1 !min-h-[42px] !py-2 !text-base"
+              className="flex-1 !min-h-[42px] py-2! text-base!"
             />
             <Button
               type="button"

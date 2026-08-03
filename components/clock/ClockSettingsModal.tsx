@@ -77,7 +77,7 @@ export function ClockSettingsModal({
                     onClick={() => onUpdate({ theme: key })}
                     variant="ghost"
                     size="sm"
-                    className="flex flex-col items-center gap-1.5 min-w-[52px] !p-1 !min-h-0 !min-w-0 h-auto"
+                    className="flex flex-col items-center gap-1.5 min-w-13 p-1! min-h-0! min-w-0! h-auto"
                     aria-label={`テーマ: ${theme.label}`}
                   >
                     <div
@@ -120,7 +120,7 @@ export function ClockSettingsModal({
                     onClick={() => onUpdate({ fontKey: key })}
                     variant="ghost"
                     size="sm"
-                    className="flex items-center justify-between px-4 py-3 !rounded-xl text-left !min-h-0 w-full !font-normal"
+                    className="flex items-center justify-between px-4 py-3 rounded-xl! text-left min-h-0! w-full font-normal!"
                     style={{
                       backgroundColor: isSelected ? `${themeColors.accent}18` : themeColors.uiBg,
                       borderWidth: '1.5px',
@@ -198,19 +198,19 @@ export function ClockSettingsModal({
           <section>
             <SectionLabel color={themeColors.uiText}>表示オプション</SectionLabel>
             <div className="mt-2 space-y-1">
-              <div className="flex items-center justify-between py-3 px-1 min-h-[44px]">
+              <div className="flex items-center justify-between py-3 px-1 min-h-11">
                 <span className="text-sm font-medium" style={{ color: themeColors.text }}>
                   24時間表示
                 </span>
                 <Switch checked={settings.use24Hour} onChange={(e) => onUpdate({ use24Hour: e.target.checked })} />
               </div>
-              <div className="flex items-center justify-between py-3 px-1 min-h-[44px]">
+              <div className="flex items-center justify-between py-3 px-1 min-h-11">
                 <span className="text-sm font-medium" style={{ color: themeColors.text }}>
                   秒を表示
                 </span>
                 <Switch checked={settings.showSeconds} onChange={(e) => onUpdate({ showSeconds: e.target.checked })} />
               </div>
-              <div className="flex items-center justify-between py-3 px-1 min-h-[44px]">
+              <div className="flex items-center justify-between py-3 px-1 min-h-11">
                 <span className="text-sm font-medium" style={{ color: themeColors.text }}>
                   日付を表示
                 </span>
@@ -223,7 +223,7 @@ export function ClockSettingsModal({
           <section>
             <SectionLabel color={themeColors.uiText}>作業チャイム</SectionLabel>
             <div className="mt-2 space-y-1">
-              <div className="flex items-center justify-between py-3 px-1 min-h-[44px]">
+              <div className="flex items-center justify-between py-3 px-1 min-h-11">
                 <div>
                   <span className="text-sm font-medium block" style={{ color: themeColors.text }}>
                     作業チャイム
@@ -240,7 +240,7 @@ export function ClockSettingsModal({
 
               {workChimeSettings.enabled && (
                 <>
-                  <div className="flex items-center justify-between py-3 px-1 min-h-[44px]">
+                  <div className="flex items-center justify-between py-3 px-1 min-h-11">
                     <span className="text-sm font-medium" style={{ color: themeColors.text }}>
                       音を鳴らす
                     </span>
@@ -254,7 +254,7 @@ export function ClockSettingsModal({
                   </div>
 
                   {workChimeSettings.soundEnabled && (
-                    <div className="flex items-center justify-between gap-3 py-3 px-1 min-h-[44px]">
+                    <div className="flex items-center justify-between gap-3 py-3 px-1 min-h-11">
                       <div>
                         <span className="text-sm font-medium block" style={{ color: themeColors.text }}>
                           チャイム音
@@ -274,7 +274,7 @@ export function ClockSettingsModal({
                           variant="primary"
                           size="sm"
                           onClick={onEnableWorkChimeAudio}
-                          className="!px-3"
+                          className="px-3!"
                           style={{
                             backgroundColor: themeColors.accent,
                             color: themeColors.bg,
@@ -305,7 +305,7 @@ export function ClockSettingsModal({
                         size="sm"
                         onClick={() => onTestWorkChime('break')}
                         aria-label="休憩開始をテスト"
-                        className="w-full !px-3"
+                        className="w-full px-3!"
                       >
                         休憩開始
                       </Button>
@@ -315,7 +315,7 @@ export function ClockSettingsModal({
                         size="sm"
                         onClick={() => onTestWorkChime('work-start')}
                         aria-label="作業開始をテスト"
-                        className="w-full !px-3"
+                        className="w-full px-3!"
                       >
                         作業開始
                       </Button>
@@ -325,14 +325,14 @@ export function ClockSettingsModal({
                         size="sm"
                         onClick={() => onTestWorkChime('cleanup-start')}
                         aria-label="掃除開始をテスト"
-                        className="w-full !px-3"
+                        className="w-full px-3!"
                       >
                         掃除開始
                       </Button>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between py-3 px-1 min-h-[44px]">
+                  <div className="flex items-center justify-between py-3 px-1 min-h-11">
                     <div>
                       <span className="text-sm font-medium block" style={{ color: themeColors.text }}>
                         音声アナウンス（未実装）

@@ -130,7 +130,7 @@ function HeightSettingsModalContent({
               setHeightConfig(null);
             }
           }}
-          className="!flex !items-center !justify-center !gap-1"
+          className="flex! items-center! !justify-center gap-1!"
         >
           <MdDelete size={18} />
           削除

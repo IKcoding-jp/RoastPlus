@@ -39,7 +39,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
           <IconButton
             variant="ghost"
             onClick={onResetTimer}
-            className="!p-2 flex-col gap-1 text-ink-muted hover:text-ink-sub active:scale-95 min-h-[44px] min-w-[44px]"
+            className="!p-2 flex-col gap-1 text-ink-muted hover:text-ink-sub active:scale-95 min-h-11 min-w-[44px]"
             aria-label="リセット"
           >
             <div className="p-3 rounded-full bg-ground">
@@ -53,7 +53,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
             onClick={onGoToPrevStep}
             disabled={manualStepIndex === 0}
             className={clsx(
-              '!p-2 flex-col gap-1 active:scale-95 min-h-[44px] min-w-[44px]',
+              '!p-2 flex-col gap-1 active:scale-95 min-h-11 min-w-[44px]',
               manualStepIndex === 0 ? 'text-ink-muted/50' : 'text-ink-muted hover:text-ink-sub'
             )}
             aria-label="前へ"
@@ -85,7 +85,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
             <IconButton
               variant="ghost"
               onClick={onComplete}
-              className="!p-2 flex-col gap-1 text-success hover:text-success/80 active:scale-95 min-h-[44px] min-w-[44px]"
+              className="!p-2 flex-col gap-1 text-success hover:text-success/80 active:scale-95 min-h-11 min-w-[44px]"
               aria-label="完了"
             >
               <div className="p-3 rounded-full bg-success-subtle">
@@ -97,7 +97,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
             <IconButton
               variant="ghost"
               onClick={onGoToNextStep}
-              className="!p-2 flex-col gap-1 text-ink-muted hover:text-ink-sub active:scale-95 min-h-[44px] min-w-[44px]"
+              className="!p-2 flex-col gap-1 text-ink-muted hover:text-ink-sub active:scale-95 min-h-11 min-w-[44px]"
               aria-label="次へ"
             >
               <div className="p-3 rounded-full bg-ground">
@@ -109,7 +109,7 @@ export const FooterControls: React.FC<FooterControlsProps> = ({
 
           <Link
             href="/drip-guide"
-            className="flex flex-col items-center gap-1 text-ink-muted hover:text-ink-sub transition-colors p-2 active:scale-95 min-h-[44px] min-w-[44px]"
+            className="flex flex-col items-center gap-1 text-ink-muted hover:text-ink-sub transition-colors p-2 active:scale-95 min-h-11 min-w-[44px]"
           >
             <div className="p-3 rounded-full bg-ground">
               <X size={24} />

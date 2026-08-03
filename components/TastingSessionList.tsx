@@ -313,7 +313,7 @@ export function TastingSessionList({
       badge={activeFilterCount}
       title="フィルター"
       aria-label="フィルター"
-      className="!px-3 !py-2 gap-1.5"
+      className="px-3! py-2! gap-1.5"
     >
       <Faders size={20} weight={activeFilterCount > 0 ? 'fill' : 'bold'} />
       <span className="text-xs sm:text-sm whitespace-nowrap">フィルター</span>
@@ -327,14 +327,14 @@ export function TastingSessionList({
           variant="surface"
           size="sm"
           onClick={() => setIsEmptyPreview((current) => !current)}
-          className="!px-3 !py-2 gap-1.5"
+          className="px-3! py-2! gap-1.5"
         >
           <span className="text-xs sm:text-sm whitespace-nowrap">
             {isEmptyPreview ? '元の表示に戻す' : '空表示を確認'}
           </span>
         </Button>
       )}
-      <Button variant="surface" size="sm" onClick={handleAddSampleData} className="!px-3 !py-2 gap-1.5">
+      <Button variant="surface" size="sm" onClick={handleAddSampleData} className="px-3! py-2! gap-1.5">
         <span className="text-xs sm:text-sm whitespace-nowrap">テストデータを追加</span>
       </Button>
     </div>

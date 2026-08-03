@@ -60,11 +60,11 @@ export const CompletionScreen: React.FC<CompletionScreenProps> = ({ onReset }) =
       <p className="text-ink-sub mb-8">お疲れ様でした。美味しいコーヒーを楽しみましょう。</p>
 
       <div className="flex gap-4">
-        <Button variant="outline" onClick={onReset} className="!rounded-full">
+        <Button variant="outline" onClick={onReset} className="rounded-full!">
           もう一度淹れる
         </Button>
         <Link href="/drip-guide">
-          <Button variant="primary" className="!rounded-full">
+          <Button variant="primary" className="rounded-full!">
             一覧に戻る
           </Button>
         </Link>

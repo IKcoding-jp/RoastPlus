@@ -130,27 +130,27 @@ export function OCRRoastScheduleEditor({
                     </div>
                     <div className="flex flex-wrap gap-1.5">
                       {schedule.beanName && (
-                        <Badge size="sm" variant="secondary" className="!text-[10px]">
+                        <Badge size="sm" variant="secondary" className="text-[10px]!">
                           豆: {schedule.beanName}
                         </Badge>
                       )}
                       {schedule.beanName2 && schedule.blendRatio && (
-                        <Badge size="sm" variant="secondary" className="!text-[10px]">
+                        <Badge size="sm" variant="secondary" className="text-[10px]!">
                           副豆 {schedule.beanName2}（{schedule.blendRatio}）
                         </Badge>
                       )}
                       {schedule.weight && (
-                        <Badge size="sm" variant="secondary" className="!text-[10px]">
+                        <Badge size="sm" variant="secondary" className="text-[10px]!">
                           {schedule.weight}g
                         </Badge>
                       )}
                       {schedule.roastLevel && (
-                        <Badge size="sm" variant="coffee" className="!text-[10px]">
+                        <Badge size="sm" variant="coffee" className="text-[10px]!">
                           {schedule.roastLevel}
                         </Badge>
                       )}
                       {schedule.bagCount && (
-                        <Badge size="sm" variant="secondary" className="!text-[10px]">
+                        <Badge size="sm" variant="secondary" className="text-[10px]!">
                           {schedule.bagCount}袋
                         </Badge>
                       )}
@@ -199,7 +199,7 @@ export function OCRRoastScheduleEditor({
           })
         )}
 
-        <Button onClick={handleAdd} variant="primary" size="sm" className="w-full !px-3 !py-2 !min-h-[36px] !text-sm">
+        <Button onClick={handleAdd} variant="primary" size="sm" className="w-full px-3! py-2! min-h-9! text-sm!">
           <HiPlus className="h-5 w-5" />
           <span>ローストスケジュールを追加</span>
         </Button>

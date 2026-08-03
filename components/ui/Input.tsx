@@ -46,7 +46,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     const inputType = isPasswordField && showPassword ? 'text' : type;
 
     // 入力部品の統一寸法（Select / NumberInput と揃える）。py-3・影なしのフラット。
-    const baseStyles = 'w-full rounded-lg border-2 px-4 py-3 text-lg transition-all duration-200 min-h-[44px]';
+    const baseStyles = 'w-full rounded-lg border-2 px-4 py-3 text-lg transition-all duration-200 min-h-11';
 
     const themeStyles =
       'bg-field border-edge text-ink placeholder:text-ink-muted hover:border-edge-strong focus:border-spot focus:bg-field focus:outline-none focus:ring-2 focus:ring-spot-subtle';

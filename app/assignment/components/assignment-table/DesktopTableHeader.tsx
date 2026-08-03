@@ -71,7 +71,7 @@ export const DesktopTableHeader: React.FC<DesktopTableHeaderProps> = ({
           if (e.key === 'Escape') setIsAddingTeam(false);
         }}
         variant="dark"
-        className="!min-h-[30px] !w-20 !border-none !px-1 !py-1 !text-sm"
+        className="!min-h-[30px] !w-20 !border-none !px-1 py-1! text-sm!"
       />
       <IconButton variant="primary" size="sm" onClick={handleAddTeam} title="班を追加">
         <MdAdd size={18} />
@@ -142,7 +142,7 @@ export const DesktopTableHeader: React.FC<DesktopTableHeaderProps> = ({
             variant="outline"
             size="sm"
             onClick={() => setIsAddingTeam(true)}
-            className="!min-h-[34px] !text-sm md:!text-base !gap-1 !bg-transparent"
+            className="!min-h-[34px] text-sm! md:!text-base gap-1! !bg-transparent"
           >
             <MdAdd className="md:w-5 md:h-5" /> 最初の班を追加
           </Button>
@@ -170,7 +170,7 @@ export const DesktopTableHeader: React.FC<DesktopTableHeaderProps> = ({
                 onKeyDown={(e) => e.key === 'Enter' && handleUpdateTeam(team.id)}
                 onBlur={() => handleUpdateTeam(team.id)}
                 variant="light"
-                className="!text-sm md:!text-base"
+                className="text-sm! md:!text-base"
               />
             ) : (
               <div

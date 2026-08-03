@@ -139,7 +139,7 @@ export const StepEditor: React.FC<StepEditorProps> = ({ steps, onChange, isManua
         fullWidth
         onClick={addStep}
         type="button"
-        className="!border-2 !border-dashed !border-edge gap-2"
+        className="!border-2 !border-dashed border-edge! gap-2"
       >
         <Plus size={20} />
         ステップを追加

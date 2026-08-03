@@ -113,14 +113,14 @@ export const Start46Dialog: React.FC<Start46DialogProps> = ({ isOpen, onClose, i
                 <Button
                   variant="ghost"
                   onClick={onClose}
-                  className="!rounded-2xl border border-edge !px-5 !text-sm !font-semibold !text-ink-sub hover:bg-ground"
+                  className="rounded-2xl! border border-edge !px-5 text-sm! !font-semibold text-ink-sub! hover:bg-ground"
                 >
                   閉じる
                 </Button>
                 <Button
                   variant="primary"
                   onClick={handleStartGuide}
-                  className="gap-2 !rounded-2xl !px-7 !text-sm active:scale-[0.99] touch-manipulation"
+                  className="gap-2 rounded-2xl! !px-7 text-sm! active:scale-[0.99] touch-manipulation"
                 >
                   ガイド開始
                   <ArrowRight size={16} weight="bold" />

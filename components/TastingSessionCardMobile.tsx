@@ -38,13 +38,13 @@ export function TastingSessionCardMobile({
 
   return (
     <>
-      <div className="flex-shrink-0 w-[calc(100vw-2rem)] h-full snap-center" style={{ scrollSnapStop: 'always' }}>
+      <div className="shrink-0 w-[calc(100vw-2rem)] h-full snap-center" style={{ scrollSnapStop: 'always' }}>
         <Link href={`/tasting?sessionId=${session.id}`} className="block h-full">
           <Card variant="hoverable" className="p-0 flex flex-col h-full overflow-hidden shadow-lg">
             <div className="relative z-10 flex flex-col h-full">
               <div className="flex flex-col h-full">
                 {/* ヘッダー（タイトル） */}
-                <div className={`flex-shrink-0 p-5 pb-4 border-b border-dashed ${cardBorderClass}`}>
+                <div className={`shrink-0 p-5 pb-4 border-b border-dashed ${cardBorderClass}`}>
                   <div className="flex items-center gap-3">
                     <div className="flex-1 min-w-0">
                       <h3
@@ -103,7 +103,7 @@ export function TastingSessionCardMobile({
 
                   {/* 横バーチャート（スコア表示） */}
                   {recordCount > 0 && (
-                    <div className={`flex-shrink-0 border-t border-dashed ${cardBorderClass} pt-2 mt-2`}>
+                    <div className={`shrink-0 border-t border-dashed ${cardBorderClass} pt-2 mt-2`}>
                       <div className="space-y-1.5">
                         {[
                           { label: '苦味', value: averageScores.bitterness, color: '#3e2723' },
@@ -113,7 +113,7 @@ export function TastingSessionCardMobile({
                           { label: '香り', value: averageScores.aroma, color: '#00897b' },
                         ].map((item) => (
                           <div key={item.label} className="flex items-center gap-2">
-                            <span className={`text-[12px] font-bold ${textSecondaryClass} w-11 flex-shrink-0`}>
+                            <span className={`text-[12px] font-bold ${textSecondaryClass} w-11 shrink-0`}>
                               {item.label}
                             </span>
                             <div className={`flex-1 h-1.5 ${bgMutedClass} rounded overflow-hidden`}>
@@ -135,7 +135,7 @@ export function TastingSessionCardMobile({
                   )}
 
                   {/* AI分析ボタン */}
-                  <div className={`flex-shrink-0 border-t border-dashed ${cardBorderClass} pt-2 mt-2`}>
+                  <div className={`shrink-0 border-t border-dashed ${cardBorderClass} pt-2 mt-2`}>
                     {!hasAnalysis && !isAnalyzing && recordCount === 0 && (
                       <p className={`text-center text-xs ${textSecondaryClass} italic py-2`}>
                         記録が追加されるとAI分析が開始されます
@@ -158,7 +158,7 @@ export function TastingSessionCardMobile({
                           setAiModalSession(session);
                         }}
                         fullWidth
-                        className="justify-between !px-3 !py-2.5"
+                        className="justify-between px-3! !py-2.5"
                       >
                         <div className="flex items-center gap-2">
                           <Notepad size={18} weight="fill" className={iconAccentClass} />
@@ -178,7 +178,7 @@ export function TastingSessionCardMobile({
       {/* AI分析モーダル */}
       <AnimatePresence>
         {aiModalSession && (
-          <div className="fixed inset-0 z-[100] flex items-end justify-center">
+          <div className="fixed inset-0 z-100 flex items-end justify-center">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

@@ -7,7 +7,7 @@ import type { InventoryItem, InventoryItemInput, InventoryStatus } from '@/types
 
 // 共通 Input は text-lg・厚いpaddingで大きいため、在庫まわりの
 // コンパクト基調(13〜14px・控えめpadding)に合わせて className で上書きする。
-const FIELD_CLASS = '!min-h-0 !rounded-[10px] !border !px-3 !py-2 !text-sm';
+const FIELD_CLASS = 'min-h-0! !rounded-[10px] border! px-3! py-2! text-sm!';
 
 interface InventoryItemModalProps {
   /** モーダルの表示/非表示 */

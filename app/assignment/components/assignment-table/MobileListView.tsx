@@ -68,20 +68,20 @@ export const MobileListView: React.FC<MobileListViewProps> = ({
                     value={editLeftLabel}
                     onChange={(e) => setEditLeftLabel(e.target.value)}
                     placeholder={headerLabels.left}
-                    className="!p-2 !text-lg !font-bold !min-h-0"
+                    className="!p-2 !text-lg !font-bold min-h-0!"
                   />
                   <div className="flex gap-2">
                     <Input
                       value={editRightLabel}
                       onChange={(e) => setEditRightLabel(e.target.value)}
                       placeholder={headerLabels.right}
-                      className="flex-1 !p-2 !text-sm !min-h-0"
+                      className="flex-1 !p-2 text-sm! min-h-0!"
                     />
                     <Button
                       variant="success"
                       size="sm"
                       onClick={() => saveLabel(label.id)}
-                      className="!p-2 !min-h-0 shrink-0"
+                      className="!p-2 min-h-0! shrink-0"
                     >
                       <MdCheck size={20} />
                     </Button>
@@ -89,7 +89,7 @@ export const MobileListView: React.FC<MobileListViewProps> = ({
                       variant="danger"
                       size="sm"
                       onClick={() => handleDeleteTaskLabel(label.id)}
-                      className="!p-2 !min-h-0 shrink-0"
+                      className="!p-2 min-h-0! shrink-0"
                     >
                       <MdDelete size={20} />
                     </Button>
@@ -144,15 +144,15 @@ export const MobileListView: React.FC<MobileListViewProps> = ({
                         onTouchEnd={handleCellTouchEnd}
                         onTouchMove={handleCellTouchMove}
                         onClick={() => handleCellClick(team.id, label.id)}
-                        className={`!min-h-0 !rounded-md !px-2 !py-3 !shadow-none truncate select-none ${
+                        className={`min-h-0! rounded-md! !px-2 py-3! !shadow-none truncate select-none ${
                           member && isSelected
                             ? '!border-spot !bg-spot !text-on-spot ring-2 ring-spot/20'
                             : member
-                              ? '!border-edge !bg-surface hover:!bg-spot-surface'
+                              ? 'border-edge! bg-surface! hover:!bg-spot-surface'
                               : ''
                         } ${
-                          !member && isSelected ? '!bg-surface !border-spot' : ''
-                        } ${!member && !isSelected ? '!border-dashed !border-edge-strong !bg-surface !text-ink-muted' : ''}`}
+                          !member && isSelected ? 'bg-surface! !border-spot' : ''
+                        } ${!member && !isSelected ? '!border-dashed border-edge-strong! bg-surface! !text-ink-muted' : ''}`}
                       >
                         {member ? member.name : '未割当'}
                       </Button>

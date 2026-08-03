@@ -67,7 +67,7 @@ export default function SchedulePage() {
             size="sm"
             onClick={moveToPreviousDay}
             aria-label="前日"
-            className="active:scale-90 transition-transform !min-h-0 !min-w-0 !h-8 !w-8 !p-1"
+            className="active:scale-90 transition-transform min-h-0! min-w-0! !h-8 !w-8 p-1!"
           >
             <HiChevronLeft className="h-4 w-4" />
           </IconButton>
@@ -76,7 +76,7 @@ export default function SchedulePage() {
             size="sm"
             onClick={() => setIsDatePickerOpen(true)}
             aria-label="日付を選択"
-            className="!min-h-0 !px-2 !py-1"
+            className="min-h-0! !px-2 py-1!"
           >
             <span className="text-[15px] font-bold tracking-tight font-sans whitespace-nowrap leading-tight text-ink">
               {formatDateString(selectedDate)}
@@ -88,7 +88,7 @@ export default function SchedulePage() {
             onClick={moveToNextDay}
             disabled={isMaxDate}
             aria-label="翌日"
-            className="active:scale-90 transition-transform !min-h-0 !min-w-0 !h-8 !w-8 !p-1"
+            className="active:scale-90 transition-transform min-h-0! min-w-0! !h-8 !w-8 p-1!"
           >
             <HiChevronRight className="h-4 w-4" />
           </IconButton>
@@ -96,7 +96,7 @@ export default function SchedulePage() {
       </div>
       <div className="w-full flex-1 flex flex-col min-h-0 lg:max-w-7xl lg:mx-auto">
         {/* 日付ナビゲーション */}
-        <div className="mb-2 flex-shrink-0 flex justify-center">
+        <div className="mb-2 shrink-0 flex justify-center">
           {/* スマホレイアウト：FloatingNav右に統合済み */}
           {/* タブレット・デスクトップレイアウト：横並び */}
           <div className="hidden sm:flex flex-row items-center gap-3 md:gap-4 px-5 py-2 md:px-6 md:py-2.5 rounded-2xl shadow-lg bg-surface border border-edge">
@@ -117,7 +117,7 @@ export default function SchedulePage() {
                 aria-label="日付を選択"
                 className="gap-2 md:gap-2.5"
               >
-                <HiCalendar className="h-5 w-5 md:h-6 md:w-6 flex-shrink-0 text-spot" />
+                <HiCalendar className="h-5 w-5 md:h-6 md:w-6 shrink-0 text-spot" />
                 <span className="text-base md:text-lg font-bold tracking-tight font-sans whitespace-nowrap leading-tight text-ink">
                   {formatDateString(selectedDate)}
                 </span>
@@ -133,16 +133,16 @@ export default function SchedulePage() {
                 <HiChevronRight className="h-5 w-5 md:h-6 md:w-6" />
               </IconButton>
             </div>
-            <div className="flex-shrink-0 h-7 md:h-8 flex items-center">
+            <div className="shrink-0 h-7 md:h-8 flex items-center">
               <div className="w-px h-full bg-edge"></div>
             </div>
             <div className="flex items-center gap-2 md:gap-2.5">
-              <HiClock className="h-5 w-5 md:h-6 md:w-6 flex-shrink-0 text-spot" />
+              <HiClock className="h-5 w-5 md:h-6 md:w-6 shrink-0 text-spot" />
               <span className="text-base md:text-lg font-bold tracking-tight font-sans whitespace-nowrap leading-tight text-ink">
                 {formatTime(currentTime)}
               </span>
             </div>
-            <div className="flex-shrink-0 h-7 md:h-8 flex items-center">
+            <div className="shrink-0 h-7 md:h-8 flex items-center">
               <div className="w-px h-full bg-edge"></div>
             </div>
             <IconButton variant="ghost" size="md" onClick={() => setIsOCROpen(true)} aria-label="画像から読み取り">
@@ -154,10 +154,10 @@ export default function SchedulePage() {
         {/* タブナビゲーション（スマホ版：画面下部に固定） */}
         <div className="lg:hidden fixed bottom-0 left-0 right-0 z-20 px-4 pb-4">
           <div className="flex items-end gap-3 justify-center">
-            <TabsList className="flex-1 !rounded-2xl shadow-xl !p-1 sm:!p-1.5 !bg-surface border border-edge">
+            <TabsList className="flex-1 rounded-2xl! shadow-xl p-1! sm:!p-1.5 bg-surface! border border-edge">
               <TabsTrigger
                 value="today"
-                className="py-3.5 sm:py-4 text-xs sm:text-sm font-semibold !rounded-xl aria-selected:!bg-spot aria-selected:!text-on-spot aria-selected:!shadow-md"
+                className="py-3.5 sm:py-4 text-xs sm:text-sm font-semibold rounded-xl! aria-selected:!bg-spot aria-selected:!text-on-spot aria-selected:!shadow-md"
               >
                 本日のスケジュール
               </TabsTrigger>
@@ -166,14 +166,14 @@ export default function SchedulePage() {
                 variant="primary"
                 size="md"
                 onClick={() => setIsOCROpen(true)}
-                className="relative z-20 -my-3 mx-1 flex-shrink-0 !w-12 !h-12 !rounded-full shadow-lg !bg-spot !text-on-spot active:scale-95 transition-transform ring-4 ring-surface"
+                className="relative z-20 -my-3 mx-1 shrink-0 !w-12 !h-12 rounded-full! shadow-lg !bg-spot !text-on-spot active:scale-95 transition-transform ring-4 ring-surface"
                 aria-label="画像から読み取り"
               >
                 <HiCamera className="h-5 w-5" />
               </IconButton>
               <TabsTrigger
                 value="roast"
-                className="py-3.5 sm:py-4 text-xs sm:text-sm font-semibold !rounded-xl aria-selected:!bg-spot aria-selected:!text-on-spot aria-selected:!shadow-md"
+                className="py-3.5 sm:py-4 text-xs sm:text-sm font-semibold rounded-xl! aria-selected:!bg-spot aria-selected:!text-on-spot aria-selected:!shadow-md"
               >
                 ローストスケジュール
               </TabsTrigger>

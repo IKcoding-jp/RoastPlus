@@ -45,7 +45,7 @@ export function MemberSelectionModal({ data, state, callbacks }: MemberSelection
                         handleAddMember(current.taskLabelId, current.teamId);
                       }
                     }}
-                    className="!py-2 !text-sm"
+                    className="py-2! text-sm!"
                     autoFocus
                   />
                 </div>
@@ -71,7 +71,7 @@ export function MemberSelectionModal({ data, state, callbacks }: MemberSelection
                       callbacks.onUpdateMember(createEmptyAssignment(current.teamId, current.taskLabelId), member.id);
                       setCurrent(null);
                     }}
-                    className="flex-1 !justify-start !text-left !text-ink hover:!bg-ground"
+                    className="flex-1 !justify-start text-left! !text-ink hover:bg-ground!"
                   >
                     {member.name}
                   </Button>

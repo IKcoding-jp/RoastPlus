@@ -83,7 +83,7 @@ export function CameraPreview({
 
             {/* 中央の縦長エリア */}
             <div className="absolute inset-0 flex items-center justify-center">
-              <div ref={guideRef} className="relative w-[70%] max-w-md aspect-[3/4]">
+              <div ref={guideRef} className="relative w-[70%] max-w-md aspect-3/4">
                 {/* 縦長の枠線 */}
                 <div className="absolute inset-0 border-2 border-white rounded-lg shadow-lg z-10">
                   {/* 角のマーカー */}

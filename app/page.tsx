@@ -194,7 +194,7 @@ export default function HomePage(_props: HomePageProps = {}) {
   return (
     <div
       className={`h-dvh flex flex-col overflow-hidden animate-home-page relative transition-colors duration-1000 bg-page text-ink ${
-        isChristmasMode ? 'bg-[radial-gradient(circle_at_center,_#0a2f1a_0%,_#051a0e_100%)]' : ''
+        isChristmasMode ? 'bg-[radial-gradient(circle_at_center,#0a2f1a_0%,#051a0e_100%)]' : ''
       }`}
     >
       {isChristmasMode && <Snowfall />}
@@ -212,7 +212,7 @@ export default function HomePage(_props: HomePageProps = {}) {
 
       {/* メインコンテンツ */}
       <main className="relative z-10 mx-auto w-full max-w-6xl px-4 pt-2 pb-2 sm:px-6 sm:pt-3 sm:pb-3 flex-1 min-h-0">
-        <div className="flex h-full flex-col gap-2 md:grid md:h-auto md:grid-cols-4 md:gap-4 md:[grid-auto-rows:1fr]">
+        <div className="flex h-full flex-col gap-2 md:grid md:h-auto md:grid-cols-4 md:gap-4 md:auto-rows-[1fr]">
           {visibleActions.map(({ key, title, label, description, href, icon: DefaultIcon, badge }, index) => {
             const Icon = isChristmasMode ? CHRISTMAS_ICONS[key] || DefaultIcon : DefaultIcon;
 

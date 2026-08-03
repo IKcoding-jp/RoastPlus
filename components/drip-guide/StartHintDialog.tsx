@@ -134,14 +134,14 @@ export const StartHintDialog: React.FC<StartHintDialogProps> = ({
                 <Button
                   variant="ghost"
                   onClick={onClose}
-                  className="!rounded-2xl border border-edge !px-5 !text-sm !font-semibold !text-ink-sub hover:bg-ground"
+                  className="rounded-2xl! border border-edge !px-5 text-sm! !font-semibold text-ink-sub! hover:bg-ground"
                 >
                   閉じる
                 </Button>
                 <Button
                   variant="primary"
                   onClick={onStart}
-                  className="flex-1 gap-2 !rounded-2xl !text-[15px] active:scale-[0.99] touch-manipulation"
+                  className="flex-1 gap-2 rounded-2xl! !text-[15px] active:scale-[0.99] touch-manipulation"
                 >
                   ガイド開始
                   <ArrowRight size={16} weight="bold" />

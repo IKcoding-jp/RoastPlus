@@ -59,7 +59,7 @@ export function Loading({ message = '読み込み中...', fullScreen = true }: L
       <div className="text-center">
         <div className="flex justify-center mb-4">
           {isLoading || !animationData ? (
-            <div className="w-[200px] h-[200px] flex items-center justify-center">
+            <div className="w-50 h-50 flex items-center justify-center">
               <div className="text-ink-muted">読み込み中...</div>
             </div>
           ) : (

@@ -126,7 +126,7 @@ function TodayScheduleInner({ data, onUpdate, selectedDate, currentSchedule, onC
           onHourChange={handleHourInputChange}
           onMinuteChange={handleMinuteInputChange}
           onAdd={addTimeLabel}
-          wrapperClassName="flex items-center gap-1.5 md:gap-2 flex-shrink-0"
+          wrapperClassName="flex items-center gap-1.5 md:gap-2 shrink-0"
         />
       </div>
 
@@ -145,7 +145,7 @@ function TodayScheduleInner({ data, onUpdate, selectedDate, currentSchedule, onC
                 {/* 時間表示 */}
                 <div
                   onClick={() => handleEditGroup(group.time)}
-                  className="flex-shrink-0 w-16 md:w-18 text-center px-2 py-1 rounded-lg text-sm md:text-base font-semibold cursor-pointer transition-colors tabular-nums shadow-sm bg-surface text-ink border border-edge group-hover:border-header-bg/40 group-hover:text-header-bg"
+                  className="shrink-0 w-16 md:w-18 text-center px-2 py-1 rounded-lg text-sm md:text-base font-semibold cursor-pointer transition-colors tabular-nums shadow-sm bg-surface text-ink border border-edge group-hover:border-header-bg/40 group-hover:text-header-bg"
                 >
                   {group.time || '--:--'}
                 </div>
@@ -183,7 +183,7 @@ function TodayScheduleInner({ data, onUpdate, selectedDate, currentSchedule, onC
 
                       {label.assignee && (
                         <div className="flex items-center gap-1.5 mt-1 ml-1">
-                          <HiUser className="h-3.5 w-3.5 flex-shrink-0 text-ink-muted" />
+                          <HiUser className="h-3.5 w-3.5 shrink-0 text-ink-muted" />
                           <span className="text-sm px-2 py-0.5 rounded-full text-ink-muted bg-ground">
                             {label.assignee}
                           </span>

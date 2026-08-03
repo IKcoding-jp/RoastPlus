@@ -32,7 +32,7 @@ export function TimeEditDialog({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-[100] p-4" onClick={onCancel}>
+    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-100 p-4" onClick={onCancel}>
       <div
         className="bg-white rounded-lg shadow-xl max-w-md w-full border-2 border-gray-300"
         onClick={(e) => e.stopPropagation()}
@@ -111,7 +111,7 @@ export function TimeEditDialog({
                         variant="danger"
                         size="sm"
                         onClick={() => onDeleteLabel(label.id)}
-                        className="!min-h-[36px]"
+                        className="min-h-9!"
                       >
                         削除
                       </Button>

@@ -76,8 +76,8 @@ describe('TastingSessionFilterModal', () => {
         screen.getByRole('button', { name: '深煎り' }),
       ].forEach((chip) => {
         expect(chip).toHaveClass('!min-h-[40px]');
-        expect(chip).toHaveClass('!rounded-lg');
-        expect(chip).toHaveClass('!py-2');
+        expect(chip).toHaveClass('rounded-lg!');
+        expect(chip).toHaveClass('py-2!');
       });
 
       [
@@ -85,7 +85,7 @@ describe('TastingSessionFilterModal', () => {
         screen.getByRole('button', { name: '古い順' }),
         screen.getByRole('button', { name: '名前順' }),
       ].forEach((row) => {
-        expect(row).toHaveClass('!rounded-lg');
+        expect(row).toHaveClass('rounded-lg!');
         expect(row).toHaveClass('!justify-start');
       });
     });
@@ -148,8 +148,8 @@ describe('TastingSessionFilterModal', () => {
 
       inputs.forEach((input) => {
         expect(input).toHaveClass('!min-h-[40px]');
-        expect(input).toHaveClass('!rounded-lg');
-        expect(input).toHaveClass('!text-sm');
+        expect(input).toHaveClass('rounded-lg!');
+        expect(input).toHaveClass('text-sm!');
       });
     });
   });

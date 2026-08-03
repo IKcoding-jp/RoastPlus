@@ -37,7 +37,7 @@ function SegmentGroup<T extends string>({ options, labels, value, onChange }: Se
             aria-pressed={selected}
             onClick={() => onChange(option)}
             className={`!min-h-[44px] flex-1 whitespace-nowrap !rounded-[11px] !px-1 !py-2.5 !text-[13px] transition-colors touch-manipulation ${
-              selected ? '!bg-spot !font-bold !text-on-spot' : '!font-semibold !text-ink-sub hover:!bg-ground'
+              selected ? '!bg-spot !font-bold !text-on-spot' : '!font-semibold text-ink-sub! hover:bg-ground!'
             }`}
           >
             {labels[option]}
@@ -64,7 +64,7 @@ export const Dialog46Form: React.FC<Dialog46FormProps> = ({
         type="button"
         variant="ghost"
         onClick={onDescriptionClick}
-        className="!min-h-0 flex w-full items-center gap-2.5 !justify-start !rounded-2xl border border-edge !px-4 !py-3.5 !text-left transition-colors hover:bg-ground touch-manipulation"
+        className="min-h-0! flex w-full items-center gap-2.5 !justify-start rounded-2xl! border border-edge px-4! !py-3.5 text-left! transition-colors hover:bg-ground touch-manipulation"
       >
         <BookOpen size={18} className="shrink-0 text-spot" />
         <span className="flex-1 text-sm font-bold text-ink">4:6メソッドのポイント（必読）</span>
@@ -84,7 +84,7 @@ export const Dialog46Form: React.FC<Dialog46FormProps> = ({
             value: String(s),
             label: `${s}人前 (${s * 10}g / ${s * 150}g)`,
           }))}
-          className="!rounded-2xl !border !py-3 !text-sm !font-bold cursor-pointer"
+          className="rounded-2xl! border! py-3! text-sm! !font-bold cursor-pointer"
           aria-label="人前を選択"
         />
       </div>

@@ -39,10 +39,10 @@ export function ScheduleCard({
 
   // アイコンの取得
   const getIcon = () => {
-    if (isRoasterOn) return <HiFire className="text-xl md:text-xl flex-shrink-0 text-orange-500" />;
-    if (isRoast) return <PiCoffeeBeanFill className="text-xl md:text-xl flex-shrink-0 text-amber-700" />;
-    if (isAfterPurge) return <FaSnowflake className="text-xl md:text-xl flex-shrink-0 text-blue-500" />;
-    if (isChaffCleaning) return <FaBroom className="text-xl md:text-xl flex-shrink-0 text-gray-600" />;
+    if (isRoasterOn) return <HiFire className="text-xl md:text-xl shrink-0 text-orange-500" />;
+    if (isRoast) return <PiCoffeeBeanFill className="text-xl md:text-xl shrink-0 text-amber-700" />;
+    if (isAfterPurge) return <FaSnowflake className="text-xl md:text-xl shrink-0 text-blue-500" />;
+    if (isChaffCleaning) return <FaBroom className="text-xl md:text-xl shrink-0 text-gray-600" />;
     return null;
   };
 
@@ -182,13 +182,13 @@ export function ScheduleCard({
     >
       <div className="flex items-center gap-3">
         {/* 左側：時間バッジまたはアイコン */}
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
           {schedule.time ? (
-            <div className="flex-shrink-0 w-16 md:w-18 text-center px-2 py-1 rounded-lg text-sm md:text-base font-semibold tabular-nums shadow-sm bg-surface text-ink border border-edge">
+            <div className="shrink-0 w-16 md:w-18 text-center px-2 py-1 rounded-lg text-sm md:text-base font-semibold tabular-nums shadow-sm bg-surface text-ink border border-edge">
               {schedule.time}
             </div>
           ) : (
-            <div className="flex-shrink-0 w-16 md:w-18"></div>
+            <div className="shrink-0 w-16 md:w-18"></div>
           )}
           {getIcon()}
         </div>

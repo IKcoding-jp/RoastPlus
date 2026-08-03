@@ -62,7 +62,7 @@ export function EmptyScheduleState({
             </Button>
           )}
           {onAdd && (
-            <Button variant="ghost" size="sm" onClick={onAdd} className="gap-1.5 !text-ink hover:!bg-ground">
+            <Button variant="ghost" size="sm" onClick={onAdd} className="gap-1.5 !text-ink hover:bg-ground!">
               <HiPlus className="w-3.5 h-3.5" />
               {addLabel}
             </Button>

@@ -121,7 +121,7 @@ export default function ContactPage() {
             {/* エラーメッセージ */}
             {status === 'error' && errorMessage && (
               <div className="mb-6 p-4 bg-danger-subtle border border-danger rounded-lg flex items-start gap-3">
-                <HiExclamationCircle className="h-5 w-5 text-danger flex-shrink-0 mt-0.5" />
+                <HiExclamationCircle className="h-5 w-5 text-danger shrink-0 mt-0.5" />
                 <div>
                   <p className="text-danger font-medium">エラーが発生しました</p>
                   <p className="text-danger text-sm mt-1">{errorMessage}</p>

@@ -195,7 +195,7 @@ export function MonthSettingsModal({
                 const requiredKg = (greenBeanTotalGram * (ratio / 100)) / 1000;
                 // セルいっぱいの枠なし入力。フォーカスは枠ではなく塗り＋内側リングで示す。
                 const cellInput =
-                  'min-h-[44px] w-full bg-transparent px-3 py-2 text-base text-ink placeholder:text-ink-muted focus:bg-field focus:outline-none focus:ring-2 focus:ring-inset focus:ring-spot-subtle';
+                  'min-h-11 w-full bg-transparent px-3 py-2 text-base text-ink placeholder:text-ink-muted focus:bg-field focus:outline-none focus:ring-2 focus:ring-inset focus:ring-spot-subtle';
                 return (
                   <div key={item.id} className="grid grid-cols-[1fr_92px_104px_44px] divide-x divide-edge">
                     {/* 豆名 */}
@@ -223,7 +223,7 @@ export function MonthSettingsModal({
                     </div>
                     {/* 必要量：派生表示（読み取り専用）。0のときは薄色で静かに */}
                     <div
-                      className={`flex min-h-[44px] items-center px-3 py-2 text-sm font-bold tabular-nums ${
+                      className={`flex min-h-11 items-center px-3 py-2 text-sm font-bold tabular-nums ${
                         requiredKg > 0 ? 'text-ink' : 'text-ink-muted'
                       }`}
                     >
