@@ -92,7 +92,7 @@ function LoginForm() {
     <div className="flex min-h-screen items-center justify-center bg-page px-4">
       <div className="w-full max-w-md rounded-lg bg-surface p-8 shadow-md border border-edge">
         <div className="mb-8 flex flex-col items-center rounded-xl bg-[#3a261d] py-6 shadow-inner">
-          <h1 className="text-4xl font-bold tracking-tight text-header-text font-[var(--font-playfair)]">
+          <h1 className="text-4xl font-bold tracking-tight text-header-text font-brand">
             Roast<span className="text-header-accent">Plus</span>
           </h1>
         </div>

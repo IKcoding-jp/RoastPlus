@@ -21,7 +21,7 @@ function PatternFadeUp({ phase, compact }: PatternProps) {
   return (
     <div className="flex flex-col items-center">
       <h1
-        className={`${textSize(compact)} font-bold tracking-[0.04em] leading-none font-[var(--font-playfair)] transition-all duration-700 ease-out ${
+        className={`${textSize(compact)} font-bold tracking-[0.04em] leading-none font-brand transition-all duration-700 ease-out ${
           phase >= 1 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'
         }`}
       >
@@ -30,7 +30,7 @@ function PatternFadeUp({ phase, compact }: PatternProps) {
       </h1>
       <div className={`${spacing(compact)} flex justify-center`}>
         <div
-          className={`h-[2px] rounded-full transition-all duration-700 ease-out ${
+          className={`h-0.5 rounded-full transition-all duration-700 ease-out ${
             phase >= 2 ? `${lineWidth(compact)} opacity-100` : 'w-0 opacity-0'
           }`}
           style={{
@@ -56,7 +56,7 @@ function PatternScaleBreathe({ phase, compact }: PatternProps) {
   return (
     <div className="flex flex-col items-center">
       <h1
-        className={`${textSize(compact)} font-bold tracking-[0.04em] leading-none font-[var(--font-playfair)] transition-all duration-800 ease-out ${
+        className={`${textSize(compact)} font-bold tracking-[0.04em] leading-none font-brand transition-all duration-800 ease-out ${
           phase >= 1 ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
         } ${phase >= 2 ? 'animate-[breathe_2s_ease-in-out_infinite]' : ''}`}
       >
@@ -92,7 +92,7 @@ function PatternLetterStagger({ phase, compact }: PatternProps) {
 
   return (
     <div className="flex flex-col items-center">
-      <h1 className={`${textSize(compact)} font-bold tracking-[0.04em] leading-none font-[var(--font-playfair)] flex`}>
+      <h1 className={`${textSize(compact)} font-bold tracking-[0.04em] leading-none font-brand flex`}>
         {letters.map((letter, i) => (
           <span
             key={i}
@@ -111,7 +111,7 @@ function PatternLetterStagger({ phase, compact }: PatternProps) {
       </h1>
       <div className={`${spacing(compact)} flex justify-center`}>
         <div
-          className={`h-[2px] rounded-full transition-all duration-700 ease-out ${
+          className={`h-0.5 rounded-full transition-all duration-700 ease-out ${
             phase >= 2 ? `${lineWidth(compact)} opacity-100` : 'w-0 opacity-0'
           }`}
           style={{
@@ -137,9 +137,7 @@ function PatternLetterStagger({ phase, compact }: PatternProps) {
 function PatternSlideReveal({ phase, compact }: PatternProps) {
   return (
     <div className="flex flex-col items-center">
-      <h1
-        className={`${textSize(compact)} font-bold tracking-[0.04em] leading-none font-[var(--font-playfair)] flex overflow-hidden`}
-      >
+      <h1 className={`${textSize(compact)} font-bold tracking-[0.04em] leading-none font-brand flex overflow-hidden`}>
         <span
           className={`text-white transition-all duration-700 ease-out ${
             phase >= 1 ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'
@@ -158,7 +156,7 @@ function PatternSlideReveal({ phase, compact }: PatternProps) {
       </h1>
       <div className={`${spacing(compact)} flex justify-center`}>
         <div
-          className={`h-[2px] rounded-full transition-all duration-700 ease-out ${
+          className={`h-0.5 rounded-full transition-all duration-700 ease-out ${
             phase >= 2 ? `${lineWidth(compact)} opacity-100` : 'w-0 opacity-0'
           }`}
           style={{
@@ -184,7 +182,7 @@ function PatternGlowPulse({ phase, compact }: PatternProps) {
   return (
     <div className="flex flex-col items-center">
       <h1
-        className={`${textSize(compact)} font-bold tracking-[0.04em] leading-none font-[var(--font-playfair)] transition-all duration-800 ease-out ${
+        className={`${textSize(compact)} font-bold tracking-[0.04em] leading-none font-brand transition-all duration-800 ease-out ${
           phase >= 1 ? 'opacity-100' : 'opacity-0'
         }`}
         style={{
@@ -214,7 +212,7 @@ function PatternGlowPulse({ phase, compact }: PatternProps) {
       </h1>
       <div className={`${spacing(compact)} flex justify-center`}>
         <div
-          className={`h-[2px] rounded-full transition-all duration-700 ease-out ${
+          className={`h-0.5 rounded-full transition-all duration-700 ease-out ${
             phase >= 2 ? `${lineWidth(compact)} opacity-100` : 'w-0 opacity-0'
           }`}
           style={{

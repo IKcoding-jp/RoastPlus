@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 
+/* 過去の仕様・計画・作業ログはクラス名の検出対象から外す。
+   古いクラス名を拾って未使用CSSが生成されるのを防ぐ */
+@source not '../docs';
+@source not '../.superpowers';
+
 :root {
   --background: #fdf8f0;
   --foreground: #171717;
@@ -480,6 +485,11 @@
   --font-mono: var(--font-geist-mono);
   --font-nunito: var(--font-nunito);
   --font-num: var(--font-outfit);
+  /* ブランド表記（ロゴ・スプラッシュ・ログイン/新規登録の見出し）用。
+     書体をクラス側の任意値で直接指定すると Tailwind v4 では font-weight として
+     解釈され効かないため、ここでユーティリティ化する
+     （コメント内にクラス名を書くと Tailwind が拾ってしまうので書かない） */
+  --font-brand: var(--font-inter);
 }
 
 /* stylelint-enable at-rule-no-unknown */
