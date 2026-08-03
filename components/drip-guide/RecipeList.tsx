@@ -176,7 +176,7 @@ export const RecipeList: React.FC<RecipeListProps> = ({ recipes, onDelete }) => 
                     value: String(serving),
                     label: `${serving}人前`,
                   }))}
-                  className="!text-sm !font-medium !py-2 !px-3 cursor-pointer"
+                  className="text-sm! !font-medium py-2! px-3! cursor-pointer"
                   aria-label="人前を選択"
                 />
               </div>
@@ -185,7 +185,7 @@ export const RecipeList: React.FC<RecipeListProps> = ({ recipes, onDelete }) => 
                 variant="primary"
                 fullWidth
                 onClick={() => handleOpenStart(recipe.id)}
-                className={clsx('mt-auto gap-2 !rounded-lg active:scale-[0.98] touch-manipulation')}
+                className={clsx('mt-auto gap-2 rounded-lg! active:scale-[0.98] touch-manipulation')}
               >
                 <Play size={20} weight="fill" />
                 ガイド開始

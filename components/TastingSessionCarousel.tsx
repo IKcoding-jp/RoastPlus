@@ -149,7 +149,7 @@ export function TastingSessionCarousel({
           {sessionData.map(({ session, recordCount, averageScores, comments }) => (
             <div
               key={session.id}
-              className="flex-shrink-0 w-full h-full snap-center flex justify-center"
+              className="shrink-0 w-full h-full snap-center flex justify-center"
               style={{ scrollSnapStop: 'always' }}
             >
               <div className="w-full max-w-5xl h-full">
@@ -168,7 +168,7 @@ export function TastingSessionCarousel({
           ))}
         </div>
 
-        <div className="flex-shrink-0 flex justify-center gap-1.5 py-2">
+        <div className="shrink-0 flex justify-center gap-1.5 py-2">
           {sessionData.map((_, index) => (
             <div
               key={index}
@@ -207,7 +207,7 @@ export function TastingSessionCarousel({
         </div>
 
         {/* ページインジケーター */}
-        <div className="flex-shrink-0 flex justify-center gap-1.5 py-2">
+        <div className="shrink-0 flex justify-center gap-1.5 py-2">
           {sessionData.map((_, index) => (
             <div
               key={index}

@@ -53,7 +53,7 @@ export function TastingSessionCardDesktop({
             <div className="h-full flex flex-col">
               {/* ヘッダー */}
               <div
-                className={`px-8 pt-6 pb-5 border-b border-dashed ${cardBorderClass} flex items-center justify-between flex-shrink-0`}
+                className={`px-8 pt-6 pb-5 border-b border-dashed ${cardBorderClass} flex items-center justify-between shrink-0`}
               >
                 <div className="flex items-center gap-6 flex-1 min-w-0">
                   <div>
@@ -96,7 +96,7 @@ export function TastingSessionCardDesktop({
                 {/* 感想 (左) */}
                 <div className={`flex-1 p-6 border-r border-dashed ${cardBorderClass} relative min-w-0`}>
                   <div className="relative z-10 flex flex-col h-full">
-                    <div className="flex items-center justify-between mb-4 flex-shrink-0">
+                    <div className="flex items-center justify-between mb-4 shrink-0">
                       <div className={`flex items-center gap-2 ${textPrimaryClass}`}>
                         <Quotes size={20} weight="fill" />
                         <h4 className="text-base font-bold">感想</h4>
@@ -138,7 +138,7 @@ export function TastingSessionCardDesktop({
                 </div>
 
                 {/* チャート (右) */}
-                <div className="w-80 flex-shrink-0 p-6 flex flex-col justify-center relative overflow-hidden">
+                <div className="w-80 shrink-0 p-6 flex flex-col justify-center relative overflow-hidden">
                   {recordCount > 0 ? (
                     <div className="space-y-5 w-full relative z-10">
                       {[
@@ -177,7 +177,7 @@ export function TastingSessionCardDesktop({
               </div>
 
               {/* AI分析レポート (下) */}
-              <div className="px-5 py-3 relative flex-shrink-0">
+              <div className="px-5 py-3 relative shrink-0">
                 <div className="relative z-10">
                   {!hasAnalysis && !isAnalyzing && recordCount === 0 && (
                     <div className="flex items-center justify-center py-1">
@@ -201,7 +201,7 @@ export function TastingSessionCardDesktop({
                         e.stopPropagation();
                         setIsAiModalOpen(true);
                       }}
-                      className="w-full !justify-between !px-4 !py-3 !rounded-lg !shadow-sm hover:!shadow-card"
+                      className="w-full !justify-between px-4! py-3! rounded-lg! !shadow-sm hover:!shadow-card"
                     >
                       <div className="flex items-center gap-2">
                         <Notepad size={18} weight="fill" className={iconAccentClass} />
@@ -219,7 +219,7 @@ export function TastingSessionCardDesktop({
 
               {/* フッター */}
               <div
-                className={`px-8 py-2.5 bg-surface border-t ${borderSectionClass} flex justify-between items-center flex-shrink-0`}
+                className={`px-8 py-2.5 bg-surface border-t ${borderSectionClass} flex justify-between items-center shrink-0`}
               >
                 <div className={`flex items-center gap-1.5 text-xs ${textMutedClass}`}>
                   <CalendarBlank size={14} weight="fill" />
@@ -238,7 +238,7 @@ export function TastingSessionCardDesktop({
 
       <AnimatePresence>
         {isAiModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+          <div className="fixed inset-0 z-100 flex items-center justify-center px-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}

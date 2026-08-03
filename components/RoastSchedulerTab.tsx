@@ -302,7 +302,7 @@ export function RoastSchedulerTab({
           size="sm"
           onClick={handleAdd}
           aria-label="スケジュールを追加"
-          className="!min-h-0 !py-1.5 !px-3 !text-sm !gap-1"
+          className="min-h-0! py-1.5! px-3! text-sm! gap-1!"
         >
           <HiPlus className="h-3.5 w-3.5" />
           <span>追加</span>
@@ -343,7 +343,7 @@ export function RoastSchedulerTab({
                 size="sm"
                 onClick={handleAdd}
                 aria-label="スケジュールを追加"
-                className="!min-h-0 !py-1.5 !px-3 !text-sm !gap-1"
+                className="min-h-0! py-1.5! px-3! text-sm! gap-1!"
               >
                 <HiPlus className="h-3.5 w-3.5" />
                 <span>追加</span>

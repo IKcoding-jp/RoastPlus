@@ -58,7 +58,7 @@ export function DatePickerModal({ selectedDate, onSelect, onCancel, isWeekend, g
                 <Button
                   variant="ghost"
                   onClick={handleYearMonthClick}
-                  className="!min-h-0 !px-2 !py-1 !text-xl md:!text-2xl !font-semibold text-gray-800 hover:text-amber-600 hover:bg-gray-50"
+                  className="min-h-0! !px-2 py-1! !text-xl md:!text-2xl !font-semibold text-gray-800 hover:text-amber-600 hover:bg-gray-50"
                   aria-label="年月を選択"
                 >
                   {currentMonth.year}年{monthNames[currentMonth.month]}

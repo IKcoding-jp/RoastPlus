@@ -61,7 +61,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     const selectId = id || generatedId;
 
     const baseStyles =
-      'w-full rounded-lg border-2 px-4 py-3 text-lg transition-all duration-200 min-h-[44px] appearance-none bg-no-repeat bg-right pr-10';
+      'w-full rounded-lg border-2 px-4 py-3 text-lg transition-all duration-200 min-h-11 appearance-none bg-no-repeat bg-right pr-10';
 
     const themeStyles =
       'border-edge text-ink bg-field hover:border-edge-strong focus:border-spot focus:outline-none focus:ring-2 focus:ring-spot-subtle';

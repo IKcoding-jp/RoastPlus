@@ -49,7 +49,7 @@ export const DesktopTableFooter: React.FC<DesktopTableFooterProps> = ({
               if (e.key === 'Enter') handleAddTaskLabel();
             }}
             placeholder={`${headerLabels.left}を入力`}
-            className="!p-2 !text-sm !min-h-0 !text-center"
+            className="!p-2 text-sm! min-h-0! !text-center"
           />
         </div>
       ) : (
@@ -66,7 +66,7 @@ export const DesktopTableFooter: React.FC<DesktopTableFooterProps> = ({
             size="sm"
             onClick={handleAddTaskLabel}
             disabled={!newLeftLabel.trim()}
-            className="!rounded-full !px-4 shadow-md active:scale-95"
+            className="rounded-full! px-4! shadow-md active:scale-95"
           >
             <MdAdd size={18} />
             <span className="font-medium text-sm">担当を追加</span>
@@ -77,7 +77,7 @@ export const DesktopTableFooter: React.FC<DesktopTableFooterProps> = ({
           size="sm"
           onClick={onShuffle}
           disabled={isShuffleDisabled}
-          className="!rounded-full !px-4 shadow-md active:scale-95"
+          className="rounded-full! px-4! shadow-md active:scale-95"
         >
           <PiShuffleBold className="w-5 h-5" />
           <span className="font-medium text-sm">シャッフル</span>
@@ -93,7 +93,7 @@ export const DesktopTableFooter: React.FC<DesktopTableFooterProps> = ({
               if (e.key === 'Enter') handleAddTaskLabel();
             }}
             placeholder={`${headerLabels.right}を入力`}
-            className="!min-w-0 !p-2 !text-center !text-sm !min-h-0 w-full"
+            className="min-w-0! !p-2 !text-center text-sm! min-h-0! w-full"
           />
         </div>
       ) : (

@@ -196,7 +196,7 @@ export function AssignmentSettingsModal({
                     options={memberOptions}
                     placeholder="選択..."
                     disabled={isLoading}
-                    className="!text-sm !py-2"
+                    className="text-sm! py-2!"
                   />
                   <Select
                     label="メンバー2"
@@ -205,7 +205,7 @@ export function AssignmentSettingsModal({
                     options={memberOptions}
                     placeholder="選択..."
                     disabled={isLoading}
-                    className="!text-sm !py-2"
+                    className="text-sm! py-2!"
                   />
                 </div>
 
@@ -247,7 +247,7 @@ export function AssignmentSettingsModal({
                           size="sm"
                           onClick={() => handleDelete(exclusion.id)}
                           disabled={isLoading}
-                          className="!p-1.5 !min-h-0 !text-red-500 hover:!text-red-700 hover:!bg-red-50"
+                          className="!p-1.5 min-h-0! !text-red-500 hover:!text-red-700 hover:!bg-red-50"
                           aria-label="削除"
                         >
                           <HiTrash className="w-4 h-4" />

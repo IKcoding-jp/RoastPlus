@@ -79,7 +79,7 @@ export function Calendar({
                   onClick={() => onDateClick(day.dateString)}
                   disabled={!isSelectable}
                   className={`
-                    min-h-[44px] rounded-md text-sm md:text-base transition-colors
+                    min-h-11 rounded-md text-sm md:text-base transition-colors
                     ${
                       isSelected
                         ? 'bg-amber-600 text-white font-semibold'

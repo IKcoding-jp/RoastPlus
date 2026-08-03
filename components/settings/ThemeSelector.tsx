@@ -23,12 +23,12 @@ function ThemePreviewCard({
       onClick={onSelect}
       aria-pressed={isSelected}
       className={`
-        relative w-full !rounded-2xl !min-h-0 !font-normal
-        !text-left bg-surface
+        relative w-full rounded-2xl! min-h-0! font-normal!
+        text-left! bg-surface
         flex flex-col items-center
-        !pt-5 !px-3.5 !pb-4
+        pt-5! px-3.5! pb-4!
         transition-all duration-200 ease-out
-        ${isSelected ? '!border-[2px] border-spot' : '!border-[1.5px] border-edge-subtle hover:border-edge'}
+        ${isSelected ? 'border-2! border-spot' : 'border-[1.5px]! border-edge-subtle hover:border-edge'}
       `}
       style={isSelected ? { boxShadow: '0 0 0 3px rgba(217,119,6,0.12)' } : undefined}
     >

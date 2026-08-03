@@ -141,7 +141,7 @@ export function OCRConfirmModal({
     >
       <div className="flex flex-col h-full">
         {/* ヘッダー */}
-        <div className="flex items-center justify-between gap-3 px-4 py-3 border-b flex-shrink-0 border-edge bg-overlay">
+        <div className="flex items-center justify-between gap-3 px-4 py-3 border-b shrink-0 border-edge bg-overlay">
           <div className="flex min-w-0 items-center gap-2">
             <h2 className="text-base font-bold tracking-tight text-ink">読み取り結果の確認</h2>
             <span className="text-[11px] text-ink-sub">
@@ -154,21 +154,21 @@ export function OCRConfirmModal({
             onClick={onCancel}
             rounded
             aria-label="閉じる"
-            className="!rounded-full"
+            className="rounded-full!"
           >
             <HiX className="h-4 w-4 sm:h-5 sm:w-5" />
           </IconButton>
         </div>
 
         {hasExistingData && (
-          <div className="flex items-center justify-end gap-2 px-4 py-2 border-b flex-shrink-0 border-edge bg-ground/40">
+          <div className="flex items-center justify-end gap-2 px-4 py-2 border-b shrink-0 border-edge bg-ground/40">
             <span className="text-[11px] font-semibold text-ink-sub">保存方法</span>
             <div className="flex rounded-lg bg-overlay p-0.5 border border-edge">
               <Button
                 variant={mode === 'replace' ? 'primary' : 'ghost'}
                 size="sm"
                 onClick={() => setMode('replace')}
-                className="!min-h-[28px] !px-3 !text-xs"
+                className="!min-h-[28px] px-3! !text-xs"
               >
                 置き換え
               </Button>
@@ -176,7 +176,7 @@ export function OCRConfirmModal({
                 variant={mode === 'add' ? 'primary' : 'ghost'}
                 size="sm"
                 onClick={() => setMode('add')}
-                className="!min-h-[28px] !px-3 !text-xs"
+                className="!min-h-[28px] px-3! !text-xs"
               >
                 追加
               </Button>
@@ -193,14 +193,14 @@ export function OCRConfirmModal({
               onValueChange={(value) => setActiveTab(value as TabType)}
               className="flex flex-col flex-1 min-h-0"
             >
-              <div className="border-b border-edge flex-shrink-0">
+              <div className="border-b border-edge shrink-0">
                 <TabsList className="mt-2 grid grid-cols-2">
-                  <TabsTrigger value="timeLabels" className="text-xs !gap-1.5 !px-2 !py-1.5 !min-h-0">
+                  <TabsTrigger value="timeLabels" className="text-xs !gap-1.5 !px-2 py-1.5! min-h-0!">
                     <HiClock className="h-4 w-4" />
                     <span>本日の予定</span>
                     <span className="rounded-full px-2 py-0.5 text-xs bg-ground text-ink">{timeLabels.length}</span>
                   </TabsTrigger>
-                  <TabsTrigger value="roastSchedules" className="text-xs !gap-1.5 !px-2 !py-1.5 !min-h-0">
+                  <TabsTrigger value="roastSchedules" className="text-xs !gap-1.5 !px-2 py-1.5! min-h-0!">
                     <HiFire className="h-4 w-4" />
                     <span>ロースト</span>
                     <span className="rounded-full px-2 py-0.5 text-xs bg-ground text-ink">{roastSchedules.length}</span>
@@ -269,13 +269,13 @@ export function OCRConfirmModal({
         </div>
 
         {/* フッター */}
-        <div className="flex items-center justify-between px-4 py-3 border-t gap-2 flex-shrink-0 border-edge bg-overlay">
+        <div className="flex items-center justify-between px-4 py-3 border-t gap-2 shrink-0 border-edge bg-overlay">
           <Button
             variant="secondary"
             size="sm"
             onClick={onRetry}
             aria-label="再解析"
-            className="!border-edge !bg-ground !text-ink-sub hover:!bg-surface hover:!text-ink"
+            className="border-edge! !bg-ground text-ink-sub! hover:!bg-surface hover:!text-ink"
           >
             <HiRefresh className="h-4 w-4" />
             再解析

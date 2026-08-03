@@ -16,7 +16,7 @@ export default function Error({ reset }: { error: Error & { digest?: string }; r
         </Button>
         <Link
           href="/"
-          className="min-h-[44px] px-5 rounded-xl border border-edge text-ink text-[15px] font-semibold flex items-center"
+          className="min-h-11 px-5 rounded-xl border border-edge text-ink text-[15px] font-semibold flex items-center"
         >
           ホームへ
         </Link>

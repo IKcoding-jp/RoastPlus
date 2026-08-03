@@ -61,7 +61,7 @@ export function DefectBeanCard({
       >
         {/* 画像 */}
         <div
-          className="relative w-full aspect-square cursor-pointer flex-shrink-0 p-2.5 bg-gradient-to-br from-stone-50 via-amber-50/30 to-stone-100"
+          className="relative w-full aspect-square cursor-pointer shrink-0 p-2.5 bg-linear-to-br from-stone-50 via-amber-50/30 to-stone-100"
           onClick={(e) => {
             e.stopPropagation(); // カードクリックを防ぐ
             setShowImageModal(true);
@@ -72,7 +72,7 @@ export function DefectBeanCard({
           {/* 内側の細い枠（上品なゴールド、光沢感） */}
           <div className="absolute inset-2 border-[1.5px] border-amber-500/70 rounded-lg shadow-[inset_0_1px_2px_rgba(255,255,255,0.3),inset_0_-1px_2px_rgba(0,0,0,0.1)]"></div>
           {/* 画像コンテナ */}
-          <div className="absolute inset-[10px] bg-surface-alt rounded-lg overflow-hidden shadow-inner">
+          <div className="absolute inset-2.5 bg-surface-alt rounded-lg overflow-hidden shadow-inner">
             <Image
               src={defectBean.imageUrl}
               alt={defectBean.name}
@@ -96,7 +96,7 @@ export function DefectBeanCard({
         {/* 情報 */}
         <div className="p-2 flex flex-col flex-1 min-h-0">
           {/* 名称 */}
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <div className="flex items-start justify-between gap-2">
               <h3 className="text-sm font-semibold text-ink mb-1">{defectBean.name}</h3>
             </div>
@@ -106,21 +106,21 @@ export function DefectBeanCard({
           <div className="space-y-1.5 flex-1 min-h-0">
             <div>
               <h4 className="text-xs font-semibold text-ink-sub mb-0.5">特徴</h4>
-              <p className="text-xs text-ink-sub whitespace-pre-wrap line-clamp-3 min-h-[2.5rem]">
+              <p className="text-xs text-ink-sub whitespace-pre-wrap line-clamp-3 min-h-10">
                 {defectBean.characteristics || <span className="text-ink-muted">未入力</span>}
               </p>
             </div>
 
             <div>
               <h4 className="text-xs font-semibold text-ink-sub mb-0.5">味への影響</h4>
-              <p className="text-xs text-ink-sub whitespace-pre-wrap line-clamp-3 min-h-[2.5rem]">
+              <p className="text-xs text-ink-sub whitespace-pre-wrap line-clamp-3 min-h-10">
                 {defectBean.tasteImpact || <span className="text-ink-muted">未入力</span>}
               </p>
             </div>
 
             <div>
               <h4 className="text-xs font-semibold text-ink-sub mb-0.5">省く理由</h4>
-              <p className="text-xs text-ink-sub whitespace-pre-wrap line-clamp-3 min-h-[2.5rem]">
+              <p className="text-xs text-ink-sub whitespace-pre-wrap line-clamp-3 min-h-10">
                 {defectBean.removalReason || <span className="text-ink-muted">未入力</span>}
               </p>
             </div>
@@ -129,29 +129,29 @@ export function DefectBeanCard({
           {/* 設定切り替え */}
           {onToggleSetting && (
             <div
-              className="flex gap-1.5 pt-1.5 border-t border-edge mt-auto flex-shrink-0"
+              className="flex gap-1.5 pt-1.5 border-t border-edge mt-auto shrink-0"
               onClick={(e) => e.stopPropagation()}
             >
               <Button
                 variant="danger"
                 size="sm"
                 onClick={() => handleToggleSetting(true)}
-                className={`flex-1 !px-1.5 sm:!px-2 !py-1.5 !text-[10px] sm:!text-xs !min-h-[36px] gap-0.5 sm:gap-1 whitespace-nowrap ${
-                  shouldRemove === true ? '' : '!bg-gray-200 !text-gray-700 hover:!bg-gray-300'
+                className={`flex-1 px-1.5! sm:px-2! py-1.5! text-[10px]! sm:text-xs! min-h-9! gap-0.5 sm:gap-1 whitespace-nowrap ${
+                  shouldRemove === true ? '' : 'bg-gray-200! text-gray-700! hover:bg-gray-300!'
                 }`}
               >
-                <HiXCircle className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                <HiXCircle className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
                 <span>省く</span>
               </Button>
               <Button
                 variant="success"
                 size="sm"
                 onClick={() => handleToggleSetting(false)}
-                className={`flex-1 !px-1.5 sm:!px-2 !py-1.5 !text-[10px] sm:!text-xs !min-h-[36px] gap-0.5 sm:gap-1 whitespace-nowrap ${
-                  shouldRemove === false ? '' : '!bg-gray-200 !text-gray-700 hover:!bg-gray-300'
+                className={`flex-1 px-1.5! sm:px-2! py-1.5! text-[10px]! sm:text-xs! min-h-9! gap-0.5 sm:gap-1 whitespace-nowrap ${
+                  shouldRemove === false ? '' : 'bg-gray-200! text-gray-700! hover:bg-gray-300!'
                 }`}
               >
-                <HiCheck className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                <HiCheck className="h-3 w-3 sm:h-4 sm:w-4 shrink-0" />
                 <span>省かない</span>
               </Button>
             </div>

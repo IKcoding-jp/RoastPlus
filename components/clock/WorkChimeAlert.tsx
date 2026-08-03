@@ -23,7 +23,7 @@ export function WorkChimeAlert({ chime, colors, onClose }: WorkChimeAlertProps) 
       style={{ backgroundColor: `${colors.bg}b8` }}
     >
       <div
-        className="relative flex min-h-[290px] w-full max-w-4xl flex-col items-center justify-center overflow-hidden rounded-lg border border-t-[8px] px-8 py-12 text-center shadow-[0_16px_38px_rgba(33,23,20,0.10)] sm:min-h-[330px] sm:px-14"
+        className="relative flex min-h-72.5 w-full max-w-4xl flex-col items-center justify-center overflow-hidden rounded-lg border border-t-8 px-8 py-12 text-center shadow-[0_16px_38px_rgba(33,23,20,0.10)] sm:min-h-82.5 sm:px-14"
         style={{
           backgroundColor: colors.bg,
           borderColor: colors.uiBg,

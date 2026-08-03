@@ -190,7 +190,7 @@ export default function DefectBeansPage() {
                 size="sm"
                 onClick={toggleCompareMode}
                 title={compareMode ? '選択モード' : '比較モード'}
-                className="!px-3 !py-2 gap-1.5"
+                className="px-3! py-2! gap-1.5"
               >
                 <MdCompareArrows className="h-5 w-5" />
                 <span className="text-xs sm:text-sm">{compareMode ? '選択モード' : '比較'}</span>
@@ -201,7 +201,7 @@ export default function DefectBeansPage() {
                   size="sm"
                   onClick={handleShowCompare}
                   title="比較を表示"
-                  className="!px-3 !py-2 gap-1.5"
+                  className="px-3! py-2! gap-1.5"
                 >
                   比較 ({selectedIds.size})
                 </Button>
@@ -212,7 +212,7 @@ export default function DefectBeansPage() {
                   size="sm"
                   onClick={() => setShowAddForm(true)}
                   title="欠点豆を追加"
-                  className="!px-3 !py-2 gap-1.5"
+                  className="px-3! py-2! gap-1.5"
                 >
                   <HiPlus className="h-5 w-5" />
                   <span className="text-xs sm:text-sm">追加</span>

@@ -14,7 +14,7 @@ export function NextChimeStrip({ currentPeriod, nextChime, colors }: NextChimeSt
 
   return (
     <div
-      className="absolute left-1/2 bottom-5 sm:bottom-8 z-10 flex min-h-[54px] w-[calc(100%-2rem)] max-w-3xl -translate-x-1/2 flex-col items-center justify-center gap-1 rounded-2xl border px-4 py-2 text-center sm:flex-row sm:gap-6 sm:rounded-full sm:px-6"
+      className="absolute left-1/2 bottom-5 sm:bottom-8 z-10 flex min-h-13.5 w-[calc(100%-2rem)] max-w-3xl -translate-x-1/2 flex-col items-center justify-center gap-1 rounded-2xl border px-4 py-2 text-center sm:flex-row sm:gap-6 sm:rounded-full sm:px-6"
       style={{
         backgroundColor: colors.bg,
         borderColor: colors.uiBg,

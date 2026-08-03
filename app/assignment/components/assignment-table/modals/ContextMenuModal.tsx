@@ -67,7 +67,7 @@ export function ContextMenuModal({ data, state, setMemberMenu, callbacks }: Cont
                           setCurrent(null);
                         }
                       }}
-                      className="!py-2"
+                      className="py-2!"
                     />
                   </div>
                   <IconButton

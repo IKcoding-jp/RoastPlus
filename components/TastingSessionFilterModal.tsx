@@ -13,7 +13,7 @@ import {
 
 type SortOption = 'newest' | 'oldest' | 'beanName';
 
-const inputControlClassName = '!min-h-[40px] !rounded-lg !py-2 !text-sm';
+const inputControlClassName = '!min-h-[40px] rounded-lg! py-2! text-sm!';
 interface TastingSessionFilterModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -120,7 +120,7 @@ export function TastingSessionFilterModal({
             size="sm"
             type="button"
             onClick={handleReset}
-            className="!min-h-0 !px-0 !py-0 !rounded-none !text-xs !font-semibold !text-spot underline underline-offset-2 hover:!text-spot-hover"
+            className="min-h-0! !px-0 !py-0 !rounded-none !text-xs !font-semibold !text-spot underline underline-offset-2 hover:!text-spot-hover"
           >
             リセット
           </Button>
@@ -128,10 +128,10 @@ export function TastingSessionFilterModal({
       }
       footer={
         <>
-          <Button variant="surface" onClick={onClose} className="flex-1 !min-h-[44px] !rounded-lg !text-sm">
+          <Button variant="surface" onClick={onClose} className="flex-1 !min-h-[44px] rounded-lg! text-sm!">
             キャンセル
           </Button>
-          <Button variant="primary" onClick={handleApply} className="flex-1 !min-h-[44px] !rounded-lg !text-sm">
+          <Button variant="primary" onClick={handleApply} className="flex-1 !min-h-[44px] rounded-lg! text-sm!">
             適用
           </Button>
         </>
@@ -195,7 +195,7 @@ export function TastingSessionFilterModal({
               type="button"
               aria-pressed={tempSelectedRoastLevels.includes(level)}
               onClick={() => handleRoastLevelToggle(level)}
-              className="!min-h-[40px] !px-1.5 !text-[12px] whitespace-nowrap"
+              className="!min-h-[40px] px-1.5! !text-[12px] whitespace-nowrap"
             >
               {level}
             </FilterOptionButton>

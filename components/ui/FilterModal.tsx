@@ -78,7 +78,7 @@ export function FilterSearchInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`pl-10 !py-2 !text-sm !min-h-[40px] ${className}`}
+        className={`pl-10 py-2! text-sm! !min-h-[40px] ${className}`}
         {...props}
       />
     </div>
@@ -94,7 +94,7 @@ export function FilterOptionButton({ selected = false, className = '', children,
     <Button
       variant={selected ? 'ghost' : 'surface'}
       size="sm"
-      className={`flex-1 !rounded-lg !px-3 !py-2 gap-1.5 justify-center ${
+      className={`flex-1 rounded-lg! px-3! py-2! gap-1.5 justify-center ${
         selected ? '!bg-spot !text-on-spot !border-spot' : ''
       } ${className}`}
       {...props}
@@ -120,10 +120,10 @@ export function FilterSortOption({
     <Button
       variant="ghost"
       size="sm"
-      className={`!min-h-0 w-full !justify-start !px-3 !py-2 !text-sm !rounded-lg gap-2 [-webkit-tap-highlight-color:transparent] ${
+      className={`min-h-0! w-full !justify-start px-3! py-2! text-sm! rounded-lg! gap-2 [-webkit-tap-highlight-color:transparent] ${
         selected
-          ? '!bg-spot-surface !text-spot !font-bold !border !border-spot/30 shadow-sm active:!bg-spot-surface'
-          : '!border !border-transparent !text-ink-sub hover:!bg-ground active:!bg-ground'
+          ? '!bg-spot-surface !text-spot !font-bold border! !border-spot/30 shadow-sm active:!bg-spot-surface'
+          : 'border! !border-transparent text-ink-sub! hover:bg-ground! active:!bg-ground'
       } ${className}`}
       {...props}
     >

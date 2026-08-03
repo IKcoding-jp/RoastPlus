@@ -87,8 +87,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     // ベーススタイル
-    const baseStyles =
-      'inline-flex items-center justify-center font-semibold rounded-lg transition-colors min-h-[44px]';
+    const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-lg transition-colors min-h-11';
 
     // サイズスタイル
     const sizeStyles = {

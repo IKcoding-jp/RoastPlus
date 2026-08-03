@@ -5,7 +5,7 @@ import { HiClock } from 'react-icons/hi';
 import { useChristmasMode } from '@/hooks/useChristmasMode';
 import { Button } from '@/components/ui';
 
-const LOGO_TEXT_BASE = 'text-2xl md:text-3xl font-[var(--font-inter)] font-extrabold tracking-[-0.04em] leading-none';
+const LOGO_TEXT_BASE = 'text-2xl md:text-3xl font-brand font-extrabold tracking-[-0.04em] leading-none';
 
 export function HomeHeader() {
   const router = useRouter();
@@ -53,7 +53,7 @@ export function HomeHeader() {
             size="sm"
             onClick={() => router.push('/clock')}
             aria-label="デジタル時計を表示"
-            className="gap-2 !rounded-xl !border-header-accent !text-header-accent hover:!bg-header-btn-hover active:scale-95 focus:outline-none focus:ring-2 focus:ring-header-accent/50 focus:ring-offset-2"
+            className="gap-2 rounded-xl! !border-header-accent !text-header-accent hover:!bg-header-btn-hover active:scale-95 focus:outline-none focus:ring-2 focus:ring-header-accent/50 focus:ring-offset-2"
           >
             <HiClock className="h-5 w-5" aria-hidden="true" />
             時計

@@ -267,7 +267,7 @@ function TastingPageContent() {
                   size="sm"
                   onClick={() => router.push('/tasting/sessions/new')}
                   aria-label="新規セッション作成"
-                  className="!px-3 !py-2 gap-1.5 shadow-md"
+                  className="px-3! py-2! gap-1.5 shadow-md"
                 >
                   <HiPlus size={20} />
                   <span className="text-xs sm:text-sm whitespace-nowrap">セッションを作成</span>

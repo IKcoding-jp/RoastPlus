@@ -131,7 +131,7 @@ export default function InventoryPage() {
                 setEditing(null);
                 setModalOpen(true);
               }}
-              className="!min-h-0 shrink-0 gap-1.5 !rounded-[10px] !px-4 !py-2 !text-sm"
+              className="min-h-0! shrink-0 gap-1.5 !rounded-[10px] px-4! py-2! text-sm!"
             >
               <MdAdd className="h-4 w-4" aria-hidden="true" />
               品目を追加

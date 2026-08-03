@@ -34,12 +34,7 @@ export function OCRTimeLabelEditor({ timeLabels, onUpdate, onDelete }: OCRTimeLa
       )}
 
       {/* 追加ボタン */}
-      <Button
-        onClick={editor.handleAdd}
-        variant="primary"
-        size="sm"
-        className="w-full !px-3 !py-2 !min-h-[36px] !text-sm"
-      >
+      <Button onClick={editor.handleAdd} variant="primary" size="sm" className="w-full px-3! py-2! min-h-9! text-sm!">
         <HiPlus className="h-5 w-5" />
         <span>スケジュールを追加</span>
       </Button>

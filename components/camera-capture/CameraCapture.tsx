@@ -73,7 +73,7 @@ export function CameraCapture({ onCapture, onCancel }: CameraCaptureProps) {
             onClick={capturePhoto}
             disabled={!canCapture}
             rounded
-            className={`w-20 h-20 bg-white border-4 border-gray-300 min-h-[80px] min-w-[80px] ${
+            className={`w-20 h-20 bg-white border-4 border-gray-300 min-h-20 min-w-20 ${
               canCapture ? 'hover:bg-gray-100' : ''
             }`}
             aria-label="撮影"

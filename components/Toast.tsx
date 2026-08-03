@@ -79,13 +79,13 @@ function ToastItem({ toast, onClose }: { toast: ToastType; onClose: () => void }
       className={`w-full sm:w-auto sm:min-w-[300px] sm:max-w-[420px] rounded-lg border border-edge border-l-4 bg-surface shadow-card px-4 py-3 flex items-start gap-3 pointer-events-auto animate-in slide-in-from-bottom-2 sm:slide-in-from-right-4 fade-in duration-200 ${styles.border}`}
       role="alert"
     >
-      <div className={`flex-shrink-0 mt-0.5 ${styles.icon}`}>{getIcon()}</div>
+      <div className={`shrink-0 mt-0.5 ${styles.icon}`}>{getIcon()}</div>
       <div className="flex-1 text-sm font-medium leading-relaxed text-ink">{toast.message}</div>
       <IconButton
         onClick={onClose}
         variant="ghost"
         size="sm"
-        className="flex-shrink-0 text-ink-muted hover:text-ink !min-h-0 !min-w-0 !p-0"
+        className="shrink-0 text-ink-muted hover:text-ink min-h-0! min-w-0! !p-0"
         aria-label="閉じる"
       >
         <IoClose className="w-4 h-4" />

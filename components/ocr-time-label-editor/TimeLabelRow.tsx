@@ -61,7 +61,7 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
                 max={23}
                 required
                 placeholder="時"
-                className="w-16 text-center !text-sm"
+                className="w-16 text-center text-sm!"
               />
               <span className="text-ink-sub">:</span>
               <NumberInput
@@ -75,7 +75,7 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
                 min={0}
                 max={59}
                 placeholder="分"
-                className="w-16 text-center !text-sm"
+                className="w-16 text-center text-sm!"
               />
             </div>
           </div>
@@ -132,7 +132,7 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
                 min={0}
                 max={23}
                 placeholder="時"
-                className="w-16 text-center !text-sm"
+                className="w-16 text-center text-sm!"
               />
               <span className="text-ink-sub">:</span>
               <NumberInput
@@ -146,7 +146,7 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
                 min={0}
                 max={59}
                 placeholder="分"
-                className="w-16 text-center !text-sm"
+                className="w-16 text-center text-sm!"
               />
               <span className="text-sm text-ink-muted">まで</span>
               {editingContinuesUntil.hour && (
@@ -179,13 +179,13 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
                       value={subTask.content}
                       onChange={(e) => handleUpdateSubTask(subTask.id, { content: e.target.value })}
                       placeholder="タスク内容"
-                      className="!py-1.5 !text-sm"
+                      className="py-1.5! text-sm!"
                     />
                     <Input
                       value={subTask.assignee || ''}
                       onChange={(e) => handleUpdateSubTask(subTask.id, { assignee: e.target.value || undefined })}
                       placeholder="担当者（任意）"
-                      className="!py-1 !text-xs"
+                      className="py-1! !text-xs"
                     />
                   </div>
                   <IconButton
@@ -242,7 +242,7 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
 
             <div className="ml-[86px] flex flex-wrap items-center gap-1.5">
               {label.assignee && (
-                <Badge size="sm" variant="secondary" className="!text-[10px]">
+                <Badge size="sm" variant="secondary" className="text-[10px]!">
                   <span className="inline-flex items-center gap-1">
                     <HiUser className="h-3 w-3" />
                     {label.assignee}
@@ -250,7 +250,7 @@ export function TimeLabelRow({ label, isEditing, editor, onDelete }: TimeLabelRo
                 </Badge>
               )}
               {label.memo && (
-                <Badge size="sm" variant="secondary" className="!text-[10px]">
+                <Badge size="sm" variant="secondary" className="text-[10px]!">
                   メモあり
                 </Badge>
               )}
