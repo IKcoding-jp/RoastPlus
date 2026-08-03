@@ -105,7 +105,6 @@ RoastPlus は、ドリップパックコーヒー製造現場（約8名・iPad�
 
 ## MCP / ツールの使い分け
 
-- **Serena MCP**：コードファイルの読み書きは Serena MCP を優先する（グローバル設定準拠）。
 - **firebase MCP**：Firestore の構造・Rules・Functions ログの**調査**に積極活用する。`firestore_*_document`（書込・削除）系は不可逆なため、ユーザーの明示依頼があるときだけ実行し、本番データの変更は原則行わない。
 - **chrome-devtools MCP**：実装画面のライブ確認・パフォーマンス計測・アクセシビリティ確認に使う。現場 iPad 中心のため `emulate` で iPad 幅を再現し、必要に応じ `lighthouse_audit` で PWA 品質を確認する。E2E は playwright と役割を分ける。
 - **playwright MCP**：E2E が失敗したときにブラウザを実際に操作して原因を特定する。新規 E2E を書く前に、セレクタ・操作手順を MCP で試してからコードに落とす。

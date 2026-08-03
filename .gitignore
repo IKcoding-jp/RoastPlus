@@ -59,7 +59,6 @@ NUL
 # Agent/IDE/Tool local files
 .agent/
 .agents/
-.serena/project.yml
 .cursor/
 .playwright-mcp/
 .superpowers/
