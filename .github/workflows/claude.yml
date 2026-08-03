@@ -11,7 +11,9 @@ on:
     types: [submitted]
 
 jobs:
-  claude:
+  # @claude を書いた本人がこのリポジトリへの書込権限を持つかを先に確認する。
+  # claude ジョブは書込権限を持つため、第三者のコメントで起動させない。
+  authorize:
     if: |
       (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
       (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
@@ -20,10 +22,39 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: read
-      issues: read
+    outputs:
+      trusted: ${{ steps.permission.outputs.trusted }}
+    steps:
+      - name: Check actor repository permission
+        id: permission
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          set -euo pipefail
+
+          permission=$(gh api "repos/${REPOSITORY}/collaborators/${ACTOR}/permission" --jq '.permission' 2>/dev/null || echo none)
+
+          case "$permission" in
+            admin|maintain|write)
+              echo "trusted=true" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "trusted=false" >> "$GITHUB_OUTPUT"
+              ;;
+          esac
+
+  claude:
+    needs: authorize
+    if: needs.authorize.outputs.trusted == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # ブランチ作成・push に必要
+      pull-requests: write # PR の作成・コメント投稿に必要
+      issues: write # Issue へのコメント投稿に必要
       id-token: write
-      actions: read # Required for Claude to read CI results on PRs
+      actions: read # PR の CI 結果を読むために必要
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
