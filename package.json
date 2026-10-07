@@ -93,6 +93,9 @@
     "universal-analytics": {
       "uuid": "14.0.0"
     },
-    "eslint-plugin-react-hooks": "7.0.1"
+    "eslint-plugin-react-hooks": "7.0.1",
+    "@firebase/firestore": {
+      "@grpc/grpc-js": "^1.14.5"
+    }
   }
 }
