@@ -71,7 +71,7 @@
     "jsdom": "^28.1.0",
     "knip": "^5.86.0",
     "lint-staged": "^16.3.3",
-    "postcss": "^8.5.10",
+    "postcss": "^8.5.29",
     "prettier": "^3.8.1",
     "tailwindcss": "^4",
     "tsx": "^4.7.0",
@@ -92,6 +92,10 @@
     "sharp": "^0.35.3",
     "universal-analytics": {
       "uuid": "14.0.0"
+    },
+    "eslint-plugin-react-hooks": "7.0.1",
+    "@firebase/firestore": {
+      "@grpc/grpc-js": "^1.14.5"
     }
   }
 }
