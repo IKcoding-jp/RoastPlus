@@ -84,6 +84,8 @@ export default function SettingsPage() {
     try {
       await signOut();
       // signOut で Firestore インスタンスを終了したため、フルリロードで再初期化する
+      // router.push だと再初期化されないので、意図的に location で遷移する
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.href = '/login';
     } catch (error) {
       if (error instanceof Error && error.name === 'OfflineLogoutError') {
