@@ -196,7 +196,7 @@ Firestore
 ### Cloud Functions v2
 
 **ディレクトリ**: `functions/`
-**ランタイム**: Node.js 20（`firebase.json` と `functions/package.json`）
+**ランタイム**: Node.js 24（`firebase.json` と `functions/package.json`）
 **SDK**: `firebase-functions` / `firebase-admin` は `functions/package.json` を正とする
 **実装**: Callable Functions v2（`firebase-functions/v2/https`）
 

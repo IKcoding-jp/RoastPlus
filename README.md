@@ -94,7 +94,7 @@ RoastPlus は、ドリップパックコーヒーの製造現場で、**実際�
 - npm（`package-lock.json` に従って `npm install` / `npm ci` を実行）
 - Firebase プロジェクト（Authentication / Firestore / Storage / Cloud Functions / Hosting）
 
-補足: Cloud Functions の実行ランタイムは Node.js 20 です。Functions 側の詳細は `functions/package.json` と `functions/README.md` を参照してください。
+補足: Cloud Functions の実行ランタイムは Node.js 24 です。Functions 側の詳細は `functions/package.json` と `functions/README.md` を参照してください。
 
 ### セットアップ
 
