@@ -6,7 +6,7 @@ RoastPlus のAI処理は Firebase Cloud Functions v2 経由で実行します。
 
 | 項目 | 内容 |
 | --- | --- |
-| ランタイム | Node.js 20（`firebase.json` / `functions/package.json`） |
+| ランタイム | Node.js 24（`firebase.json` / `functions/package.json`） |
 | 言語 | TypeScript |
 | エントリーポイント | `functions/src/index.ts` |
 | 公開関数 | `ocrScheduleFromImage`, `analyzeTastingSession` |
